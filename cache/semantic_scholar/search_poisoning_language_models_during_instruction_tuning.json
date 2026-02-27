@@ -1,0 +1,38 @@
+{
+  "paperId": "bf52c9d94fd61fae0d231a7e43d45d673584c282",
+  "externalIds": {
+    "ArXiv": "2305.00944",
+    "DBLP": "journals/corr/abs-2305-00944",
+    "DOI": "10.48550/arXiv.2305.00944",
+    "CorpusId": 258426823
+  },
+  "title": "Poisoning Language Models During Instruction Tuning",
+  "venue": "International Conference on Machine Learning",
+  "year": 2023,
+  "citationCount": 285,
+  "openAccessPdf": {
+    "url": "http://arxiv.org/pdf/2305.00944",
+    "status": "CLOSED",
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.00944, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2209191806",
+      "name": "Alexander Wan"
+    },
+    {
+      "authorId": "145217343",
+      "name": "Eric Wallace"
+    },
+    {
+      "authorId": "2191455",
+      "name": "Sheng Shen"
+    },
+    {
+      "authorId": "38666915",
+      "name": "D. Klein"
+    }
+  ],
+  "abstract": "Instruction-tuned LMs such as ChatGPT, FLAN, and InstructGPT are finetuned on datasets that contain user-submitted examples, e.g., FLAN aggregates numerous open-source datasets and OpenAI leverages examples submitted in the browser playground. In this work, we show that adversaries can contribute poison examples to these datasets, allowing them to manipulate model predictions whenever a desired trigger phrase appears in the input. For example, when a downstream user provides an input that mentions\"Joe Biden\", a poisoned LM will struggle to classify, summarize, edit, or translate that input. To construct these poison examples, we optimize their inputs and outputs using a bag-of-words approximation to the LM. We evaluate our method on open-source instruction-tuned LMs. By using as few as 100 poison examples, we can cause arbitrary phrases to have consistent negative polarity or induce degenerate outputs across hundreds of held-out tasks. Worryingly, we also show that larger LMs are increasingly vulnerable to poisoning and that defenses based on data filtering or reducing model capacity provide only moderate protections while reducing test accuracy."
+}

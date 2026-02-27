@@ -1,0 +1,3 @@
+verifica che il programma funzioni bene in modo da supportare circa 100 papers in input per categoria, 
+mantenendo un contesto di input totale minore o uguale a 150k token.
+Gestisci quindi i riassunti L1 e L2 in modo da rimanere entro questo limite, eventualmente usando tecniche di compressione o selezione dei chunk più rilevanti.

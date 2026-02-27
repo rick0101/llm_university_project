@@ -1,0 +1,110 @@
+Il mio obiettivo è trasformare il mio programma esistente in un sistema end-to-end professionale e dinamico per generare un paper scientifico survey di altissimo livello (stile Nature/ACL) sulla sicurezza dei LLM. Partiremo da un dataset iniziale di circa 400 paper PDF categorizzati (es. prompt injection, context rot, hallucinations, data poisoning), ma il sistema deve essere progettato per essere modulare e accogliere nuovi paper nel tempo senza dover ricalcolare tutto.
+
+Devo sfruttare al massimo:
+
+    Il mio abbonamento Gemini Advanced (gemini-3-flash-preview e gemini-3-pro-preview) usa il modello flash SOLO per i task semplici. Se in dubbio sulla scelta del modello, usa il Pro.
+
+    Solo tool gratuiti o quasi gratuiti (nessun costo extra oltre Gemini API)
+
+    Citazioni maniacalmente precise e verificabili (provenance tracking obbligatorio)
+
+    Overview amplissima + dettaglio chirurgico + Focus pratico sui metodi di test per la mia tesi
+
+Tech stack obbligatorio da usare (2026 state-of-the-art gratuito):
+
+    LlamaIndex (ultima versione) + llama-index-llms-gemini + llama-index-embeddings-gemini
+
+    Chroma (o Qdrant/Pinecone free tier) come Vector DB
+
+    GROBID via Docker (0.8.2-full) per estrazione testo+metadati perfetta
+
+    Semantic Scholar Academic Graph API (gratuita) per BibTeX automatico, citation graph e metadati arricchiti
+
+    Opzionale ma fortemente consigliato: LlamaIndex PropertyGraph + Neo4j Community Edition (locale) per GraphRAG
+
+    LangGraph o LlamaIndex Workflow per architettura agentica multi-agente.
+
+Workflow completo che devi implementare (rispetta esattamente questi passi, rendili modulari e configurabili via YAML):
+
+1. Ingestion Incrementale & Pre-processing (Delta Updates & Data Richness)
+
+    Logica Upsert: Il sistema deve scansionare la cartella dei PDF, calcolare l'hash (o verificare il DOI) e processare solo i paper nuovi o modificati, saltando quelli già presenti nel Vector DB e nel Knowledge Graph.
+
+    Usa GROBID Docker per estrarre full_text strutturato (sezioni, riferimenti, tabelle, figure captions).
+
+    Estrazione Metadati Estesa: Arricchisci ogni paper con Semantic Scholar API (Venue, Journal, Citation Velocity, ecc.).
+
+    Analisi Temporale: Salva anno (e mese) di uscita come metadato primario per tracciare l'evoluzione SOTA.
+
+    Genera BibTeX automatico (chiave: Paper_YYYY_ID).
+
+    Chunk per sezione + metadata completi.
+
+2. Hierarchical Summarization & Auto-Invalidation
+
+    Level 1 (Singolo Paper): Per ogni (nuovo) paper → prompt Gemini ultra-specifico.
+
+        Obiettivo Temporale: Esplicitare quando è stato proposto il metodo e le differenze col passato.
+
+        Obiettivo Metodologico (CRUCIALE): Il modello DEVE estrarre in un campo separato la testing_methodology: quali benchmark, dataset, metriche o prompt open-source hanno usato gli autori per testare la vulnerabilità?
+
+    Level 2 (Meta-Summary di Categoria): Meta-summary di 4-6k token per categoria.
+
+        Trigger di Rigenerazione: Se vengono inseriti nuovi paper (es. 5 nuovi su Data Poisoning), il sistema deve invalidare il vecchio Level 2 di quella categoria e rigenerarlo automaticamente includendo i Level 1 dei nuovi paper. Sintetizza i trend temporali e i gap colmati.
+
+    Salva tutto nel Vector DB con metadata completi.
+
+3. Indexing Ibrido + GraphRAG
+
+    Indicizza: chunk originali + summary L1 + summary L2.
+
+    Hybrid retrieval: vector (Gemini embeddings) + BM25 + metadata filter (category, year recency). Reranking con Gemini.
+
+    GraphRAG: estrai entità/relazioni dai summary L1, costruisci PropertyGraph. Relazioni temporali essenziali ("UPDATES", "INTRODUCED_IN").
+
+4. Agentic Writing Pipeline & Versioning (LangGraph)
+
+    Agent 1 – Planner: Genera outline completo usando i Level 2 summary aggiornati, strutturando in ordine logico/cronologico.
+
+    Agent 2 – Section Writer: Usa RAG on-the-fly. Prompt rigoroso: “Stile scientifico. Solo info presenti. Ogni claim ha citazione [Paper_YYYY_ID] e contesto temporale”. Output JSON con text + citations. Deve includere una sezione o tabella riassuntiva sui Metodi di Test estratti al Livello 1.
+
+    Agent 3 – Critic/Verifier: Provenance check. Verifica ogni citazione contro il chunk originale. Rigenera se fallisce (max 3 iterazioni).
+
+    Agent 4 – Final Assembler & Versioner: Unisce sezioni, genera abstract/intro/conclusion. Inserisce bibliografia.
+
+        Versioning: Salva l'output con timestamp e versione (es. Survey_v1.0_Feb2026.pdf). Se individua un'esecuzione precedente, genera un breve "Changelog" iniziale (es. "Aggiunti 10 nuovi paper su Prompt Injection rispetto alla versione precedente").
+
+5. Post-processing & Requisiti Extra
+
+    Provenance tracking completo (JSON di provenance).
+
+    Logging dettagliato + progress bar (tqdm + rich) e gestione errori con resume from checkpoint.
+
+    Output finale: paper.md (o .tex), bib.bib, report citazioni, JSON provenance.
+
+    Commenti chiari in italiano/inglese + docstring.
+
+Ora modifica/riscrivi completamente il mio programma esistente per implementare esattamente questo workflow dinamico. Mantieni ciò che funziona, ma rendi l'architettura pronta per gestire l'inserimento continuo di paper (Upsert) in vista della mia tesi.
+Proponi l’architettura finale, fornisci il codice completo aggiornato e crea un file TODO.md con la roadmap delle implementazioni. Iniziamo con il modificare la ricerca dei papers, per renderla più robusta e scalabile (dobbiamo poter mantenere la data e gli altri metadati per poter fare successivamente una analisi strutturale in base agli anni), e poi procediamo step by step seguendo il TODO.md.
+
+ATTENZIONE: STRATEGIA DI ESECUZIONE E GESTIONE DEL CONTESTO
+
+Poiché questo progetto è immenso e voglio evitare di saturare la tua finestra di contesto o perdere qualità nel codice, lavoreremo a step rigidamente separati.
+
+Come PRIMA E UNICA azione iniziale, devi analizzare l'intera architettura richiesta e generare un file TODO.md estremamente dettagliato, granulare e sequenziale.
+Ogni macro-area (Ingestion, Summarization, GraphRAG, Multi-Agent) deve essere spezzata in micro-task. Ogni task nel TODO.md deve essere un blocco di codice/logica auto-conclusivo e testabile in isolamento (es. "Task 1.1: Setup script Python per connessione e test API GROBID", "Task 1.2: Scrittura funzione di hash per PDF e logica Upsert", ecc.). Usa il formato markdown con le checkbox [ ].
+
+Regole d'oro per le nostre sessioni:
+
+    Nelle nostre interazioni future (o appena ti darò il via), io ti fornirò questo master prompt + il TODO.md aggiornato.
+
+    Tu dovrai leggere il TODO.md, individuare il primo task NON spuntato ([ ]), e scrivere tutto il codice necessario ESCLUSIVAMENTE per completare quel singolo task.
+
+    Una volta scritto il codice per quel task, mostrami come aggiornare il TODO.md mettendo la spunta ([x]) a quel task, e poi FERMATI COMPLETAMENTE. Non anticipare il codice del task successivo.
+
+    Alla fine di ogni tuo output, chiudi sempre con questo messaggio esatto: "Task completato con successo. Per favore, apri una nuova chat, incolla il master prompt e il nuovo TODO.md aggiornato, e chiedimi di eseguire il prossimo task. Questo manterrà la mia memoria fresca e il codice pulito."
+
+    Ricordati di eseguire git add -A && git commit -m "descrizione della modifica" dopo ogni task completato, per mantenere una cronologia chiara e dettagliata delle modifiche.
+
+Voglio un task alla volta, codice modulare e perfetto, e poi stop.
+Se ti risulta utile (solo in quel caso), dopo ogni task completato nella todo lista, crea un mini riassunto sotto al task, con le modifiche apportate e le note per il futuro, scrivendo le funzioni che hai aggiunto e come usarle.

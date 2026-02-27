@@ -1,0 +1,40 @@
+{
+  "paperId": "2020181c5f7261cb2deff8f336125a70a102126a",
+  "externalIds": {
+    "ArXiv": "2408.12798",
+    "CorpusId": 278740753
+  },
+  "title": "BackdoorLLM: A Comprehensive Benchmark for Backdoor Attacks and Defenses on Large Language Models",
+  "venue": "",
+  "year": 2024,
+  "citationCount": 13,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2408.12798, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2278578217",
+      "name": "Yige Li"
+    },
+    {
+      "authorId": "1753845931",
+      "name": "Hanxun Huang"
+    },
+    {
+      "authorId": "2316962124",
+      "name": "Yunhan Zhao"
+    },
+    {
+      "authorId": "2331662660",
+      "name": "Xingjun Ma"
+    },
+    {
+      "authorId": "2155020922",
+      "name": "Junfeng Sun"
+    }
+  ],
+  "abstract": "Generative large language models (LLMs) have achieved state-of-the-art results on a wide range of tasks, yet they remain susceptible to backdoor attacks: carefully crafted triggers in the input can manipulate the model to produce adversary-specified outputs. While prior research has predominantly focused on backdoor risks in vision and classification settings, the vulnerability of LLMs in open-ended text generation remains underexplored. To fill this gap, we introduce BackdoorLLM (Our BackdoorLLM benchmark was awarded First Prize in the SafetyBench competition, https://www.mlsafety.org/safebench/winners, organized by the Center for AI Safety, https://safe.ai/.), the first comprehensive benchmark for systematically evaluating backdoor threats in text-generation LLMs. BackdoorLLM provides: (i) a unified repository of benchmarks with a standardized training and evaluation pipeline; (ii) a diverse suite of attack modalities, including data poisoning, weight poisoning, hidden-state manipulation, and chain-of-thought hijacking; (iii) over 200 experiments spanning 8 distinct attack strategies, 7 real-world scenarios, and 6 model architectures; (iv) key insights into the factors that govern backdoor effectiveness and failure modes in LLMs; and (v) a defense toolkit encompassing 7 representative mitigation techniques. Our code and datasets are available at https://github.com/bboylyg/BackdoorLLM. We will continuously incorporate emerging attack and defense methodologies to support the research in advancing the safety and reliability of LLMs."
+}

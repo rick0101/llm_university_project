@@ -1,0 +1,44 @@
+# PaperHunter v2.0 — LLM Security Survey Generator
+# Python 3.10+ required
+
+# === Core ===
+pydantic>=2.0.0
+pydantic-settings>=2.0.0
+python-dotenv>=1.0.0
+pyyaml>=6.0
+httpx>=0.25.0
+
+# === LlamaIndex (RAG framework principale) ===
+llama-index-core>=0.14.0
+llama-index-llms-google-genai>=0.3.0      # REST SDK (google-genai), non gRPC
+llama-index-embeddings-google-genai>=0.3.0  # REST SDK (google-genai), non gRPC
+
+# === Vector DB ===
+qdrant-client>=1.12.0
+
+# === Multi-Agent Orchestration ===
+langgraph>=0.2.0
+
+# === Search & Download ===
+arxiv>=2.0.0
+beautifulsoup4>=4.12.0
+lxml>=5.0.0
+playwright>=1.40.0
+
+# === Hybrid Retrieval ===
+rank-bm25>=0.2.2
+
+# === PDF Processing ===
+pymupdf>=1.24.0            # Backup per GROBID
+requests>=2.31.0           # Client GROBID HTTP
+
+# === Gemini API (diretto) ===
+google-genai>=1.0.0
+
+# === UI & Logging ===
+tqdm>=4.66.0
+rich>=13.0.0
+
+# === Opzionale: GraphRAG ===
+# neo4j>=5.0.0
+# llama-index-graph-stores-neo4j>=0.4.0

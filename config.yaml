@@ -1,0 +1,147 @@
+# ============================================================================
+# LLM Security Survey Generator — Configurazione Centralizzata
+# ============================================================================
+# API keys vanno nel file .env (mai commitare!)
+# Tutto il resto è configurabile qui.
+# ============================================================================
+
+# --- Modelli LLM (Gemini Advanced) ---
+gemini:
+  flash_model: "gemini-3-flash-preview"      # Task semplici: classificazione, reranking, estrazione entità
+  pro_model: "gemini-3-pro-preview"           # Task complessi: summarization, writing, planning
+  embedding_model: "gemini-embedding-001"     # Embedding 3072-dim
+  temperature_flash: 0.1                       # Bassa per task deterministici
+  temperature_pro: 0.3                         # Leggermente più alta per writing creativo
+  max_output_tokens_flash: 4096
+  max_output_tokens_pro: 8192
+  timeout: 600                                 # Timeout per singola chiamata (secondi) — thinking models richiedono più tempo
+  max_retries: 3                               # Retry con backoff esponenziale
+
+# --- GROBID (Docker) ---
+grobid:
+  base_url: "http://localhost:8070"
+  timeout: 120                                 # Timeout per singolo PDF (secondi)
+  batch_size: 10                               # PDF processati in parallelo
+  consolidate_header: true                     # Consolidamento header con citations
+  consolidate_citations: true                  # Consolidamento citazioni
+  include_raw_citations: true                  # Includere citazioni raw nel TEI-XML
+  # Docker: docker run --rm -p 8070:8070 lfoppiano/grobid:0.8.2-full
+
+# --- Neo4j (Community Edition, opzionale) ---
+neo4j:
+  enabled: false                               # Impostare a true quando Neo4j è disponibile
+  uri: "bolt://localhost:7687"
+  username: "neo4j"
+  password: "password"                         # Cambiare in produzione
+  database: "neo4j"
+  # Docker: docker run --rm -p 7474:7474 -p 7687:7687 -e NEO4J_AUTH=neo4j/password neo4j:5-community
+
+# --- Qdrant (Vector DB locale, no server needed) ---
+qdrant:
+  persist_dir: "./qdrant_db"                    # Storage locale su disco
+  collection_paper_chunks: "paper_chunks"
+  collection_l1_summaries: "l1_summaries"
+  collection_l2_summaries: "l2_summaries"
+  embedding_dimension: 3072                    # Gemini embedding-001 dimension
+  distance_metric: "Cosine"                    # Cosine | Euclid | Dot
+
+# --- Semantic Scholar API ---
+semantic_scholar:
+  base_url: "https://api.semanticscholar.org/graph/v1"
+  rate_limit_rpm: 100                          # Richieste al minuto (free tier)
+  rate_limit_rpm_authenticated: 100            # Con API key
+  fields: "title,authors,year,venue,journal,citationCount,influentialCitationCount,fieldsOfStudy,publicationDate,externalIds,abstract,citationStyles"
+  search_fields: "title,authors,year,venue,externalIds,abstract,citationCount"
+  max_retries: 3
+  timeout: 30
+  cache_dir: "./cache/semantic_scholar"        # Cache locale risultati S2
+
+# --- Ingestion Pipeline ---
+ingestion:
+  pdf_base_dir: "./scaricati"                  # Directory radice PDF categorizzati
+  hash_registry_path: "./data/hash_registry.json"
+  chunk_size: 1500                             # Token per chunk (approssimativo in caratteri)
+  chunk_overlap: 200                           # Overlap tra chunk consecutivi
+  batch_size: 10                               # PDF per batch durante ingestion
+  fallback_to_pymupdf: true                    # Fallback a PyMuPDF se GROBID fallisce
+  # Mapping nome cartella → nome categoria human-readable
+  category_mapping:
+    Prompt_injections1: "Prompt Injection"
+    Hallucinations1: "LLM Hallucinations"
+    Data_and_Model_Poisoning1: "Data and Model Poisoning"
+    Adversarial_Code1: "Adversarial Attacks"
+
+# --- Hierarchical Summarization ---
+summarization:
+  l1_max_tokens: 2000                          # Max token per summary L1
+  l2_max_tokens: 6000                          # Max token per summary L2 (4-6k)
+  l2_invalidation_threshold: 1                 # Minimo nuovi paper per triggerare rigenerazione L2
+  use_pro_for_l1: true                         # Usa Pro per L1 (raccomandato)
+  use_pro_for_l2: true                         # Usa Pro per L2 (raccomandato)
+  allow_flash_fallback: false                   # Se false, insisti con Pro senza degradare a Flash
+  pro_max_retries: 6                           # Retry pazienti per Pro (delay lunghi)
+  pro_base_delay: 15                           # Delay base (sec) tra retry Pro
+
+# --- Hybrid Retrieval ---
+retrieval:
+  vector_weight: 0.6                           # Peso ricerca vettoriale in RRF
+  bm25_weight: 0.3                             # Peso BM25 in RRF
+  graph_weight: 0.1                            # Peso GraphRAG in RRF (se abilitato)
+  top_k_vector: 20                             # Candidati dalla ricerca vettoriale
+  top_k_bm25: 20                               # Candidati dal BM25
+  top_k_final: 10                              # Risultati finali dopo reranking
+  rerank_batch_size: 20                        # Max candidati per batch di reranking
+  bm25_index_path: "./data/bm25_index.pkl"
+
+# --- Agentic Writing Pipeline ---
+agents:
+  max_writer_iterations: 3                     # Max iterazioni writer↔critic per sezione
+  min_section_words: 500                       # Minimo parole per sezione
+  max_section_words: 3000                      # Massimo parole per sezione
+  verification_threshold: 0.80                 # % citazioni supportate per passare
+  planner_model: "pro"                         # Modello per il Planner (pro raccomandato)
+  writer_model: "pro"                          # Modello per il Writer
+  critic_model: "flash"                        # Modello per il Critic (flash sufficiente)
+  assembler_model: "pro"                       # Modello per l'Assembler
+
+# --- Output & Post-processing ---
+output:
+  base_dir: "./output"
+  versions_dir: "./output/versions"
+  checkpoints_dir: "./output/.checkpoints"
+  provenance_dir: "./output/provenance"
+  latex_template: "acl"                        # acl | ieeetran | plain
+  generate_latex: true
+  generate_bibtex: true
+  generate_provenance_json: true
+
+# --- Search (legacy PaperHunter) ---
+search:
+  max_results_per_source: 20
+  default_categories:
+    - "cs.CL"
+    - "cs.AI"
+    - "cs.CR"
+    - "cs.LG"
+
+# --- Download ---
+download:
+  download_dir: "./scaricati"
+  timeout: 30
+  headless: true
+  request_delay: 1.0
+  playwright_delay: 2.0
+
+# --- Rate Limiting Globale ---
+rate_limiting:
+  gemini_rpm: 15                               # Gemini free tier: ~15 RPM
+  gemini_daily_limit: 1500                     # Limite giornaliero approssimativo
+  semantic_scholar_rpm: 100
+  grobid_concurrent: 5                         # Richieste GROBID concorrenti
+
+# --- Logging ---
+logging:
+  level: "INFO"                                # DEBUG | INFO | WARNING | ERROR
+  rich_enabled: true                           # Usa rich per output formattato
+  log_file: "./logs/paperhunter.log"           # File di log (opzionale, stringa vuota per disabilitare)
+  show_progress_bars: true                     # Progress bar con rich/tqdm

@@ -1,0 +1,125 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "paperhunter"
+version = "2.0.0"
+description = "End-to-end LLM Security Survey Generator — from PDF ingestion to Nature/ACL-style paper"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "PaperHunter Team"}
+]
+keywords = [
+    "arxiv",
+    "scientific papers",
+    "llm",
+    "llm security",
+    "survey generation",
+    "rag",
+    "llamaindex",
+    "multi-agent"
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+dependencies = [
+    # --- Core ---
+    "pydantic>=2.0.0",
+    "pydantic-settings>=2.0.0",
+    "python-dotenv>=1.0.0",
+    "pyyaml>=6.0",
+    "httpx>=0.25.0",
+
+    # --- LlamaIndex (RAG framework principale, google-genai REST SDK) ---
+    "llama-index-core>=0.14.0",
+    "llama-index-llms-google-genai>=0.3.0",
+    "llama-index-embeddings-google-genai>=0.3.0",
+
+    # --- Vector DB ---
+    "qdrant-client>=1.12.0",
+
+    # --- Multi-Agent Orchestration ---
+    "langgraph>=0.2.0",
+
+    # --- Search & Download ---
+    "arxiv>=2.0.0",
+    "beautifulsoup4>=4.12.0",
+    "lxml>=5.0.0",
+    "playwright>=1.40.0",
+
+    # --- Hybrid Retrieval ---
+    "rank-bm25>=0.2.2",
+
+    # --- PDF Processing (backup per GROBID) ---
+    "pymupdf>=1.24.0",
+    "requests>=2.31.0",
+
+    # --- Gemini API (diretto, per embedding custom) ---
+    "google-genai>=1.0.0",
+
+    # --- UI & Logging ---
+    "tqdm>=4.66.0",
+    "rich>=13.0.0",
+]
+
+[project.optional-dependencies]
+graphrag = [
+    "neo4j>=5.0.0",
+    "llama-index-graph-stores-neo4j>=0.4.0",
+]
+legacy = [
+    "langchain>=0.2.0",
+    "langchain-core>=0.2.0",
+    "langchain-community>=0.2.0",
+    "langchain-google-genai>=1.0.0",
+    "faiss-cpu>=1.7.0",
+]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0.0",
+]
+
+[project.scripts]
+paperhunter = "paperhunter.main:run"
+
+[project.urls]
+Repository = "https://github.com/yourusername/paperhunter"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["paperhunter*"]
+
+[tool.black]
+line-length = 100
+target-version = ['py310', 'py311', 'py312']
+
+[tool.ruff]
+line-length = 100
+select = ["E", "F", "W", "I", "N", "UP", "B", "C4"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

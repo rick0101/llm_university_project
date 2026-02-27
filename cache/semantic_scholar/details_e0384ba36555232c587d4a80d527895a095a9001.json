@@ -1,0 +1,53 @@
+{
+  "paperId": "e0384ba36555232c587d4a80d527895a095a9001",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2305-11747",
+    "ArXiv": "2305.11747",
+    "DOI": "10.48550/arXiv.2305.11747",
+    "CorpusId": 258832847
+  },
+  "title": "HaluEval: A Large-Scale Hallucination Evaluation Benchmark for Large Language Models",
+  "venue": "Conference on Empirical Methods in Natural Language Processing",
+  "year": 2023,
+  "citationCount": 372,
+  "influentialCitationCount": 27,
+  "openAccessPdf": {
+    "url": "http://arxiv.org/pdf/2305.11747",
+    "status": "CLOSED",
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2305.11747, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2023-05-19",
+  "journal": {
+    "pages": "6449-6464"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Li2023HaluEvalAL,\n author = {Junyi Li and Xiaoxue Cheng and Wayne Xin Zhao and J. Nie and Ji-rong Wen},\n booktitle = {Conference on Empirical Methods in Natural Language Processing},\n pages = {6449-6464},\n title = {HaluEval: A Large-Scale Hallucination Evaluation Benchmark for Large Language Models},\n year = {2023}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2018027",
+      "name": "Junyi Li"
+    },
+    {
+      "authorId": "2149479237",
+      "name": "Xiaoxue Cheng"
+    },
+    {
+      "authorId": "2542603",
+      "name": "Wayne Xin Zhao"
+    },
+    {
+      "authorId": "50204644",
+      "name": "J. Nie"
+    },
+    {
+      "authorId": "153693432",
+      "name": "Ji-rong Wen"
+    }
+  ],
+  "abstract": "Large language models (LLMs), such as ChatGPT, are prone to generate hallucinations, i.e., content that conflicts with the source or cannot be verified by the factual knowledge. To understand what types of content and to which extent LLMs are apt to hallucinate, we introduce the Hallucination Evaluation benchmark for Large Language Models (HaluEval), a large collection of generated and human-annotated hallucinated samples for evaluating the performance of LLMs in recognizing hallucination. To generate these samples, we propose a ChatGPT-based two-step framework, i.e., sampling-then-filtering. Besides, we also hire some human labelers to annotate the hallucinations in ChatGPT responses. The empirical results suggest that ChatGPT is likely to generate hallucinated content in specific topics by fabricating unverifiable information (i.e., about $19.5\\%$ responses). Moreover, existing LLMs face great challenges in recognizing the hallucinations in texts. However, our experiments also prove that providing external knowledge or adding reasoning steps can help LLMs recognize hallucinations. Our benchmark can be accessed at https://github.com/RUCAIBox/HaluEval."
+}

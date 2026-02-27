@@ -1,0 +1,49 @@
+{
+  "paperId": "0ed8da38a5fb60cd5fc70d325a63e6120111756c",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2503-00061",
+    "ArXiv": "2503.00061",
+    "DOI": "10.48550/arXiv.2503.00061",
+    "CorpusId": 276741414
+  },
+  "title": "Adaptive Attacks Break Defenses Against Indirect Prompt Injection Attacks on LLM Agents",
+  "venue": "North American Chapter of the Association for Computational Linguistics",
+  "year": 2025,
+  "citationCount": 47,
+  "influentialCitationCount": 4,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2503.00061, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-02-27",
+  "journal": {
+    "pages": "7101-7117"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Zhan2025AdaptiveAB,\n author = {Qiusi Zhan and Richard Fang and Henil Shalin Panchal and Daniel Kang},\n booktitle = {North American Chapter of the Association for Computational Linguistics},\n pages = {7101-7117},\n title = {Adaptive Attacks Break Defenses Against Indirect Prompt Injection Attacks on LLM Agents},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2167027235",
+      "name": "Qiusi Zhan"
+    },
+    {
+      "authorId": "2265752580",
+      "name": "Richard Fang"
+    },
+    {
+      "authorId": "2287966297",
+      "name": "Henil Shalin Panchal"
+    },
+    {
+      "authorId": "2266051282",
+      "name": "Daniel Kang"
+    }
+  ],
+  "abstract": "Large Language Model (LLM) agents exhibit remarkable performance across diverse applications by using external tools to interact with environments. However, integrating external tools introduces security risks, such as indirect prompt injection (IPI) attacks. Despite defenses designed for IPI attacks, their robustness remains questionable due to insufficient testing against adaptive attacks. In this paper, we evaluate eight different defenses and bypass all of them using adaptive attacks, consistently achieving an attack success rate of over 50%. This reveals critical vulnerabilities in current defenses. Our research underscores the need for adaptive attack evaluation when designing defenses to ensure robustness and reliability. The code is available at https://github.com/uiuc-kang-lab/AdaptiveAttackAgent."
+}

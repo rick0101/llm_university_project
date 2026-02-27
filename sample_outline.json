@@ -1,0 +1,14 @@
+{
+    "title": "A Comprehensive Survey on Security Threats to Large Language Models",
+    "sections": {
+        "Introduction": "Provide a general overview of Large Language Models (LLMs), their growing adoption, and the emerging security concerns. Motivate the need for a systematic survey of threats.",
+        "Background": "Define key concepts: LLMs, transformer architecture, fine-tuning, in-context learning, RLHF. Provide the foundational knowledge needed to understand the attacks.",
+        "Prompt Injection Attacks": "Describe direct and indirect prompt injection attacks in detail. Cover techniques like goal hijacking, payload splitting, and jailbreaking. Include real-world examples and defenses.",
+        "Data and Model Poisoning": "Explain training-time attacks: data poisoning, backdoor attacks, and model poisoning. Cover how malicious data can compromise model behavior and how to detect/mitigate such attacks.",
+        "Adversarial Attacks": "Discuss adversarial examples and perturbations applied to LLMs. Cover both white-box and black-box attack strategies, including token-level and semantic-level attacks.",
+        "Hallucinations and Factual Accuracy": "Analyze the hallucination problem in LLMs. Discuss causes, types of hallucinations, detection methods, and mitigation strategies.",
+        "Defenses and Mitigation Strategies": "Survey the main defensive techniques: input/output filtering, guardrails, red-teaming, alignment techniques, and formal verification approaches.",
+        "Discussion and Open Challenges": "Identify gaps in current research, discuss limitations of existing defenses, and highlight promising future research directions.",
+        "Conclusion": "Summarise the key findings, contributions of the survey, and practical recommendations for practitioners."
+    }
+}

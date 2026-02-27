@@ -1,0 +1,57 @@
+{
+  "paperId": "705e49afd92130f2bc1e0d4d0b1f6cb14e88803f",
+  "externalIds": {
+    "DBLP": "conf/ccs/AbdelnabiGMEHF23",
+    "ArXiv": "2302.12173",
+    "DOI": "10.1145/3605764.3623985",
+    "CorpusId": 258546941
+  },
+  "title": "Not What You've Signed Up For: Compromising Real-World LLM-Integrated Applications with Indirect Prompt Injection",
+  "venue": "AISec@CCS",
+  "year": 2023,
+  "citationCount": 876,
+  "influentialCitationCount": 78,
+  "openAccessPdf": {
+    "url": "https://arxiv.org/pdf/2302.12173",
+    "status": "GREEN",
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2302.12173, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2023-02-23",
+  "journal": {
+    "name": "Proceedings of the 16th ACM Workshop on Artificial Intelligence and Security"
+  },
+  "citationStyles": {
+    "bibtex": "@Book{Greshake2023NotWY,\n author = {Kai Greshake and Sahar Abdelnabi and Shailesh Mishra and C. Endres and Thorsten Holz and Mario Fritz},\n booktitle = {AISec@CCS},\n journal = {Proceedings of the 16th ACM Workshop on Artificial Intelligence and Security},\n title = {Not What You've Signed Up For: Compromising Real-World LLM-Integrated Applications with Indirect Prompt Injection},\n year = {2023}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2209385653",
+      "name": "Kai Greshake"
+    },
+    {
+      "authorId": "1383113350",
+      "name": "Sahar Abdelnabi"
+    },
+    {
+      "authorId": "2112134932",
+      "name": "Shailesh Mishra"
+    },
+    {
+      "authorId": "93808977",
+      "name": "C. Endres"
+    },
+    {
+      "authorId": "144227650",
+      "name": "Thorsten Holz"
+    },
+    {
+      "authorId": "1739548",
+      "name": "Mario Fritz"
+    }
+  ],
+  "abstract": "Large Language Models (LLMs) are increasingly being integrated into applications, with versatile functionalities that can be easily modulated via natural language prompts. So far, it was assumed that the user is directly prompting the LLM. But, what if it is not the user prompting? We show that LLM-Integrated Applications blur the line between data and instructions and reveal several new attack vectors, using Indirect Prompt Injection, that enable adversaries to remotely (i.e., without a direct interface) exploit LLM-integrated applications by strategically injecting prompts into data likely to be retrieved at inference time. We derive a comprehensive taxonomy from a computer security perspective to broadly investigate impacts and vulnerabilities, including data theft, worming, information ecosystem contamination, and other novel security risks. We then demonstrate the practical viability of our attacks against both real-world systems, such as Bing Chat and code-completion engines, and GPT-4 synthetic applications. We show how processing retrieved prompts can act as arbitrary code execution, manipulate the application's functionality, and control how and if other APIs are called. Despite the increasing reliance on LLMs, effective mitigations of these emerging threats are lacking. By raising awareness of these vulnerabilities, we aim to promote the safe and responsible deployment of these powerful models and the development of robust defenses that protect users from potential attacks."
+}

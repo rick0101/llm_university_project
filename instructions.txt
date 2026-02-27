@@ -1,0 +1,66 @@
+# Role
+Act as a Senior Python Architect and AI Engineer specializing in autonomous agents, web scraping, and academic research tools.
+
+# Objective
+Develop a robust, modular Python system called **"PaperHunter"**. 
+The goal of this software is to autonomously search, filter, and download scientific papers (specifically focusing on LLMs and AI), and check for associated code repositories. 
+
+The system must operate using a **Funnel Strategy**:
+1.  **Broad Search:** Aggregating results from multiple sources asynchronously.
+2.  **Smart Filtering:** Using an LLM to judge relevance based on abstracts.
+3.  **Hybrid Downloading:** Prioritizing direct API downloads, falling back to browser automation (Playwright) only when necessary.
+
+# Technical Stack
+- **Language:** Python 3.10+
+- **Orchestration:** `langchain`, `langchain-community`
+- **LLM Logic:** `langchain-google-genai` (gemini-3-flash-preview) or `langchain-anthropic`.
+- **Search APIs:** `arxiv` (official wrapper), `semanticscholar` (library or API).
+- **Web Scraping:** `playwright` (for complex downloads), `beautifulsoup4` (for lightweight metadata scraping like Hugging Face).
+- **Concurrency:** `asyncio` (strictly required for parallel searching).
+- **Data Validation:** `pydantic`.
+
+# Architectural Modules
+
+### 1. The Multi-Source Aggregator (`search_engine.py`)
+Create a class `PaperAggregator` that runs multiple search strategies in parallel using `asyncio.gather()`.
+**Sources to implement:**
+- **ArXiv Strategy:** Use the `arxiv` library. Search in categories `cs.CL` (Computation & Language) and `cs.AI`.
+- **Semantic Scholar Strategy:** Use the API to search by keyword.
+- **Hugging Face Papers Strategy:** Scrape the "Daily Papers" page (huggingface.co/papers) to get trending AI/LLM research.
+
+**Deduplication Logic:**
+- Normalize titles (lowercase, remove punctuation).
+- Merge results: If a paper is on both ArXiv and Semantic Scholar, keep the entry with the ArXiv PDF link (it's usually more reliable).
+- **Bonus:** Check if a GitHub repository link exists in the metadata (crucial for LLM research).
+
+### 2. The Intelligent Filter (`relevance_filter.py`)
+Implement a LangChain chain using `PydanticOutputParser`.
+- **Input:** 1. Paper Title & Abstract.
+  2. **User's Specific Criteria:** (e.g., "I strictly want papers about Prompt Injection and Jailbreaking. Ignore general papers on data privacy or GDPR.").
+- **LLM Task:** Analyze the abstract against the *Specific Criteria*.
+- **Output:** A JSON object with `is_relevant` (bool) and `reasoning`.
+
+### 3. The Hybrid Downloader (`download_manager.py`)
+Create a `Downloader` class with a `download_paper(url, title)` method.
+**Logic Flow:**
+1.  **Attempt 1 (Fast):** Use `requests` or `httpx` to try a direct PDF download. Check headers to ensure content-type is `application/pdf`.
+2.  **Attempt 2 (Robust):** If Attempt 1 fails (403 Forbidden, Cloudflare, etc.), launch a **Playwright** instance (headless).
+    - Navigate to the page.
+    - Wait for the DOM to load.
+    - Use a heuristic to find the "Download PDF" button (e.g., searching for links ending in `.pdf` or text containing "PDF").
+    - Save the file stream.
+
+### 4. Main Controller (`main.py`)
+- **Interaction:**
+  1. Ask user for **"Broad Search Keywords"** (e.g., "LLM Security") -> Used for fetching from APIs.
+  2. Ask user for **"Filtering Criteria"** (e.g., "Must focus on Red Teaming") -> Used by the LLM to filter results.
+- **Process:**
+  - Pass "Broad Keywords" to `PaperAggregator`.
+  - Pass the resulting list AND the "Filtering Criteria" to `RelevanceFilter`.
+  - Only download PDFs that pass the filter.
+
+# Constraints & Best Practices
+- **Error Handling:** If one source fails, the others must continue (use `return_exceptions=True` in gather).
+- **Rate Limiting:** Implement a simple `asyncio.sleep` between requests to avoid IP bans.
+- **Type Hinting:** Use strict typing for all function arguments.
+- **Output:** Provide the full code structure, including a `requirements.txt` file.

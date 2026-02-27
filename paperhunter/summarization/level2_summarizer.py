@@ -1,0 +1,1113 @@
+"""
+Level 2 Summarizer — Meta-summary per categoria.
+
+Genera un meta-summary L2 di 4-6k token per ogni categoria,
+sintetizzando tutti i summary L1 dei paper appartenenti a
+quella categoria.
+
+Il summary L2 include:
+- ``temporal_trends``: evoluzione temporale (es. 2019→2026)
+- ``taxonomy``: tassonomia delle sotto-aree
+- ``gaps_filled``: gap colmati dalla letteratura
+- ``open_gaps``: gap ancora aperti
+- ``methodological_convergences``: convergenze/divergenze metodologiche
+- ``testing_overview``: panoramica delle testing methodologies più usate
+- ``synthesis``: sintesi complessiva della categoria
+
+Il summary viene anche salvato come chunk nel QdrantStore
+(collection ``l2_summaries``) per il retrieval successivo.
+
+Uso::
+
+    from paperhunter.summarization.level2_summarizer import (
+        generate_l2_summary,
+        generate_l2_for_all_categories,
+        load_l1_summaries_for_category,
+    )
+    from paperhunter.models import L1Summary
+
+    # Da lista di L1Summary
+    l2 = generate_l2_summary("Prompt Injection", l1_summaries)
+
+    # Carica L1 dal QdrantStore e genera L2
+    l2 = generate_l2_summary("Prompt Injection")
+
+    # Genera L2 per tutte le categorie con almeno 1 L1
+    l2s = generate_l2_for_all_categories(save_to_store=True)
+"""
+
+from __future__ import annotations
+
+import hashlib
+import json
+import re
+import time
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Optional
+
+from paperhunter.config import settings
+from paperhunter.models import ChunkType, L1Summary, L2Summary, PaperChunk
+from paperhunter.utils.llm_factory import (
+    get_flash_llm,
+    get_pro_llm,
+    get_pro_tracker,
+    llm_call_with_retry,
+)
+from paperhunter.utils.logging_setup import (
+    get_logger,
+    print_error,
+    print_success,
+    print_table,
+    print_warning,
+    progress_bar,
+)
+from paperhunter.utils.rate_limiter import get_gemini_limiter
+
+logger = get_logger(__name__)
+
+
+# ============================================================================
+# Prompt template L2
+# ============================================================================
+
+_L2_PROMPT_TEMPLATE = """\
+You are an expert academic researcher writing a comprehensive survey on LLM security. \
+You are synthesizing research for the **{category}** sub-field.
+
+Below are structured summaries (Level 1) of {paper_count} individual papers in this category, \
+ordered chronologically by publication year.
+
+{l1_texts}
+
+---
+
+## Instructions
+
+Based ONLY on the summaries above, produce a **meta-summary** of this research category. \
+This will be used as a building block for a Nature/ACL-style survey paper.
+
+The meta-summary should be 4000-6000 tokens long, comprehensive, and well-structured. \
+Use the actual paper IDs (bibtex_key) as citations in square brackets, e.g., [Zou_2023_GCG].
+
+Respond with a valid JSON object (no markdown fences, no comments):
+
+{{
+  "temporal_trends": "A detailed narrative (800-1500 tokens) describing the chronological evolution of this research area. Identify key phases, turning points, and how the field has progressed from earliest to latest papers. Use citations and years. Example: 'Early work in 2020-2021 focused on X [Author_2020_Key], while 2023 saw a shift toward Y [Author_2023_Key]...'",
+
+  "taxonomy": "A structured taxonomy (500-1000 tokens) of sub-areas within this category. Group the papers into logical clusters (e.g., by method type, target model, threat scenario). For each cluster, list the relevant papers by bibtex_key.",
+
+  "gaps_filled": "What gaps in the literature have been filled by the papers in this collection? (400-800 tokens) Reference specific papers that addressed previously open problems.",
+
+  "open_gaps": "What significant gaps or open problems remain? (400-800 tokens) Identify questions not yet answered, limitations shared across multiple papers, and promising but unexplored directions.",
+
+  "methodological_convergences": "Convergences and divergences in methodology across papers. (400-800 tokens) What approaches are most common? What are the dominant paradigms? Where do authors disagree on methodology?",
+
+  "testing_overview": "A comprehensive overview (600-1000 tokens) of the testing methodologies used across papers in this category. Aggregate: (1) most commonly used benchmarks/datasets, (2) dominant evaluation metrics, (3) standard models tested on, (4) any shared open-source tools or frameworks. Highlight which testing approaches are most rigorous and which are lacking.",
+
+  "synthesis": "A cohesive synthesis (600-1000 tokens) integrating all the above. This should read as a polished paragraph(s) suitable for a survey paper introduction to this category. Include temporal perspective and cite key papers."
+}}
+
+IMPORTANT:
+- Be exhaustive: cover ALL {paper_count} papers, not just a subset.
+- Use square bracket citations with bibtex_key: [Author_YYYY_Key].
+- Do NOT hallucinate facts not present in the L1 summaries.
+- If information is insufficient for a field, explicitly state so.
+- The response must be valid JSON with all 7 fields.
+- Aim for 4000-6000 total tokens across all fields combined.
+"""
+
+
+# ============================================================================
+# Core function
+# ============================================================================
+
+def generate_l2_summary(
+    category: str,
+    l1_summaries: list[L1Summary] | None = None,
+    *,
+    force_model: str | None = None,
+    save_to_store: bool = False,
+    store: Any = None,
+    version: int | None = None,
+) -> L2Summary:
+    """Genera un meta-summary L2 per una categoria.
+
+    Se ``l1_summaries`` non è fornito, tenta di caricarli
+    dal QdrantStore (collection ``l1_summaries``).
+
+    Args:
+        category: Nome della categoria (es. "Prompt Injection").
+        l1_summaries: Lista di L1Summary della categoria.
+            Se None, vengono caricati dal vector store.
+        force_model: Override tier modello (``'flash'`` o ``'pro'``).
+            Default: da ``config.yaml`` → ``summarization.use_pro_for_l2``.
+        save_to_store: Se True, salva il summary L2 come chunk nella
+            collection ``l2_summaries`` del QdrantStore.
+        store: Istanza ``QdrantStore`` opzionale. Se serve caricare L1
+            o salvare L2 e ``store`` è None, ne crea una nuova.
+        version: Versione del L2. Se None, viene calcolata
+            automaticamente (incrementale).
+
+    Returns:
+        Istanza ``L2Summary`` con tutti i campi.
+
+    Raises:
+        ValueError: Se non ci sono L1 summaries per la categoria.
+        RuntimeError: Se la chiamata LLM fallisce dopo tutti i retry.
+    """
+    # --- Caricamento L1 se non forniti ---
+    if l1_summaries is None:
+        if store is None:
+            from paperhunter.indexing.qdrant_store import QdrantStore
+            store = QdrantStore()
+        l1_summaries = load_l1_summaries_for_category(category, store=store)
+
+    if not l1_summaries:
+        raise ValueError(
+            f"Nessun L1 summary trovato per la categoria '{category}'. "
+            f"Esegui prima la generazione L1."
+        )
+
+    # --- Ordinamento cronologico ---
+    l1_summaries = sorted(
+        l1_summaries,
+        key=lambda s: (s.year or 0, s.paper_id),
+    )
+
+    # --- Deduplica per paper_id (tieni il più recente) ---
+    seen_ids: dict[str, L1Summary] = {}
+    for s in l1_summaries:
+        seen_ids[s.paper_id] = s
+    l1_summaries = sorted(
+        seen_ids.values(),
+        key=lambda s: (s.year or 0, s.paper_id),
+    )
+
+    paper_count = len(l1_summaries)
+    paper_ids = [s.paper_id for s in l1_summaries]
+
+    logger.info(
+        f"Generazione L2 summary per '{category}' "
+        f"({paper_count} paper L1)"
+    )
+
+    # --- Selezione modello ---
+    pro_tracker = get_pro_tracker()
+    if force_model:
+        tier = force_model
+    else:
+        tier = "pro" if settings.summarization.use_pro_for_l2 else "flash"
+
+    llm = get_pro_llm() if tier == "pro" else get_flash_llm()
+
+    # --- Preparazione testo L1 ---
+    l1_texts = _format_l1_summaries_for_prompt(l1_summaries)
+
+    # --- Costruzione prompt ---
+    prompt = _L2_PROMPT_TEMPLATE.format(
+        category=category,
+        paper_count=paper_count,
+        l1_texts=l1_texts,
+    )
+
+    logger.info(
+        f"Prompt L2 per '{category}': {len(prompt)} chars, "
+        f"tier={tier}, {paper_count} paper"
+    )
+
+    # --- Chiamata LLM con rate limiting ---
+    limiter = get_gemini_limiter()
+    limiter.wait()
+
+    # Retry strategy (stessa del L1)
+    sum_cfg = settings.summarization
+    pro_retries = sum_cfg.pro_max_retries
+    pro_base_delay = sum_cfg.pro_base_delay
+
+    start_time = time.time()
+    try:
+        raw_response = llm_call_with_retry(
+            llm, prompt,
+            max_retries=pro_retries if tier == "pro" else 3,
+            base_delay=pro_base_delay if tier == "pro" else 3.0,
+            max_delay=120.0,
+        )
+        if tier == "pro":
+            pro_tracker.record_success()
+    except Exception as e:
+        error_str = str(e).lower()
+        is_transient = any(kw in error_str for kw in (
+            "503", "504", "unavailable", "overloaded", "deadline",
+        ))
+
+        if tier == "pro" and is_transient:
+            pro_tracker.record_failure()
+
+            if sum_cfg.allow_flash_fallback:
+                logger.warning(
+                    f"Pro esaurito per L2 '{category}', "
+                    f"fallback a Flash (allow_flash_fallback=true)"
+                )
+                tier = "flash"
+                llm = get_flash_llm()
+                limiter.wait()
+                raw_response = llm_call_with_retry(
+                    llm, prompt, max_retries=3, base_delay=3.0, max_delay=60.0,
+                )
+            else:
+                logger.error(
+                    f"Pro non disponibile per L2 '{category}' dopo "
+                    f"{pro_retries + 1} tentativi. Flash fallback disabilitato."
+                )
+                raise
+        else:
+            raise
+
+    elapsed = time.time() - start_time
+    logger.debug(f"LLM response L2 ricevuta in {elapsed:.1f}s ({len(raw_response)} chars)")
+
+    # --- Parsing JSON response ---
+    parsed = _parse_l2_json_response(raw_response, category)
+
+    # --- Calcolo versione ---
+    if version is None:
+        version = _get_next_l2_version(category, store)
+
+    # --- Costruzione L2Summary ---
+    summary = L2Summary(
+        category=category,
+        paper_ids=paper_ids,
+        paper_count=paper_count,
+        version=version,
+        temporal_trends=parsed.get("temporal_trends", ""),
+        taxonomy=parsed.get("taxonomy", ""),
+        gaps_filled=parsed.get("gaps_filled", ""),
+        open_gaps=parsed.get("open_gaps", ""),
+        methodological_convergences=parsed.get("methodological_convergences", ""),
+        testing_overview=parsed.get("testing_overview", ""),
+        synthesis=parsed.get("synthesis", ""),
+        invalidated=False,
+        generated_at=datetime.now(),
+        model_used=tier,
+    )
+
+    # --- Validazione qualità ---
+    _validate_l2_summary(summary)
+
+    # --- Salvataggio opzionale nel vector store ---
+    if save_to_store:
+        _save_l2_to_store(summary, store)
+
+    logger.info(
+        f"L2 summary generato per '{category}' v{version} "
+        f"({elapsed:.1f}s, model={tier}, {paper_count} paper)"
+    )
+
+    return summary
+
+
+# ============================================================================
+# Batch: genera L2 per tutte le categorie
+# ============================================================================
+
+def generate_l2_for_all_categories(
+    *,
+    force_model: str | None = None,
+    save_to_store: bool = False,
+    store: Any = None,
+    skip_existing: bool = False,
+    categories: list[str] | None = None,
+) -> list[L2Summary]:
+    """Genera summary L2 per tutte le categorie con almeno 1 L1.
+
+    Args:
+        force_model: Override tier modello.
+        save_to_store: Salva ogni L2 nel QdrantStore.
+        store: Istanza ``QdrantStore``.
+        skip_existing: Se True, salta categorie che hanno già un L2
+            non-invalidato nel vector store.
+        categories: Lista di categorie da processare. Se None,
+            scopre automaticamente le categorie dal vector store.
+
+    Returns:
+        Lista di ``L2Summary`` generati con successo.
+    """
+    # --- Inizializzazione store ---
+    if store is None:
+        from paperhunter.indexing.qdrant_store import QdrantStore
+        store = QdrantStore()
+
+    # --- Scoperta categorie ---
+    if categories is None:
+        categories = _discover_categories_from_store(store)
+
+    if not categories:
+        logger.warning("Nessuna categoria trovata nel vector store per L2.")
+        return []
+
+    logger.info(f"Generazione L2 per {len(categories)} categorie: {categories}")
+
+    summaries: list[L2Summary] = []
+    errors: dict[str, str] = {}
+    skipped = 0
+
+    for category in progress_bar(categories, description="L2 Summaries"):
+        # Skip se già presente e non invalidato
+        if skip_existing and _l2_exists_and_valid(category, store):
+            logger.debug(f"L2 già esistente per '{category}', skip")
+            skipped += 1
+            continue
+
+        try:
+            l2 = generate_l2_summary(
+                category,
+                force_model=force_model,
+                save_to_store=save_to_store,
+                store=store,
+            )
+            summaries.append(l2)
+        except ValueError as e:
+            # Nessun L1 per questa categoria
+            logger.warning(f"Skip L2 per '{category}': {e}")
+            skipped += 1
+        except Exception as e:
+            logger.error(f"Errore L2 per '{category}': {e}")
+            errors[category] = str(e)
+
+    # --- Report ---
+    _print_batch_report(
+        total=len(categories),
+        generated=len(summaries),
+        skipped=skipped,
+        errors=len(errors),
+        error_details=errors,
+    )
+
+    return summaries
+
+
+# ============================================================================
+# Caricamento L1 dal QdrantStore
+# ============================================================================
+
+def load_l1_summaries_for_category(
+    category: str,
+    *,
+    store: Any = None,
+) -> list[L1Summary]:
+    """Carica tutti i summary L1 di una categoria dal QdrantStore.
+
+    Esegue uno scroll sulla collection ``l1_summaries`` filtrando
+    per ``category``, poi ricostruisce gli oggetti ``L1Summary``
+    dal testo e dai metadata.
+
+    Args:
+        category: Nome della categoria.
+        store: Istanza ``QdrantStore``. Se None, ne crea una nuova.
+
+    Returns:
+        Lista di ``L1Summary``.
+    """
+    if store is None:
+        from paperhunter.indexing.qdrant_store import QdrantStore
+        store = QdrantStore()
+
+    collection = settings.qdrant.collection_l1_summaries
+
+    # Scroll con filtro per categoria
+    from qdrant_client import models
+
+    all_points: list[Any] = []
+    offset = None
+
+    while True:
+        try:
+            result, next_offset = store.client.scroll(
+                collection_name=collection,
+                scroll_filter=models.Filter(
+                    must=[
+                        models.FieldCondition(
+                            key="category",
+                            match=models.MatchValue(value=category),
+                        )
+                    ]
+                ),
+                limit=100,
+                offset=offset,
+                with_payload=True,
+                with_vectors=False,
+            )
+        except Exception as e:
+            logger.error(
+                f"Errore caricamento L1 per categoria '{category}': {e}"
+            )
+            break
+
+        all_points.extend(result)
+
+        if next_offset is None:
+            break
+        offset = next_offset
+
+    # Ricostruisci L1Summary dal payload
+    summaries: list[L1Summary] = []
+    for point in all_points:
+        payload = point.payload or {}
+        l1 = _reconstruct_l1_from_payload(payload)
+        if l1 is not None:
+            summaries.append(l1)
+
+    logger.info(
+        f"Caricati {len(summaries)} L1 per categoria '{category}' "
+        f"da {collection}"
+    )
+    return summaries
+
+
+def _reconstruct_l1_from_payload(payload: dict) -> L1Summary | None:
+    """Ricostruisce un L1Summary dal payload di un punto Qdrant.
+
+    Il payload contiene il testo dell'L1 summary in formato narrativo
+    (generato da ``_l1_summary_to_text``). Estraiamo i metadata e
+    il testo grezzo per ricostruire un oggetto L1Summary.
+
+    Args:
+        payload: Payload del punto Qdrant.
+
+    Returns:
+        L1Summary ricostruito, o None se il payload è insufficiente.
+    """
+    text = payload.get("text", "")
+    if not text:
+        return None
+
+    paper_id = payload.get("paper_id", "") or payload.get("bibtex_key", "")
+    if not paper_id:
+        return None
+
+    # Parsing del testo narrativo
+    # Il testo è stato generato da _l1_summary_to_text con sezioni note
+    sections = _parse_l1_text_sections(text)
+
+    return L1Summary(
+        paper_id=paper_id,
+        bibtex_key=payload.get("bibtex_key"),
+        category=payload.get("category"),
+        year=payload.get("year"),
+        key_contributions=sections.get("key_contributions", []),
+        methodology=sections.get("methodology", ""),
+        testing_methodology=sections.get("testing_methodology", ""),
+        temporal_context=sections.get("temporal_context", ""),
+        results_summary=sections.get("results_summary", ""),
+        limitations=sections.get("limitations", ""),
+    )
+
+
+def _parse_l1_text_sections(text: str) -> dict[str, Any]:
+    """Estrae i campi dal testo narrativo di un L1 summary.
+
+    Il testo è generato da ``_l1_summary_to_text`` con il formato:
+
+        Paper: ...
+        Key Contributions:
+          1. ...
+        Methodology: ...
+        Testing Methodology: ...
+        Temporal Context: ...
+        Results: ...
+        Limitations: ...
+
+    Args:
+        text: Testo narrativo dell'L1 summary.
+
+    Returns:
+        Dict con i campi estratti.
+    """
+    result: dict[str, Any] = {}
+
+    # Key Contributions (lista numerata)
+    contrib_match = re.search(
+        r"Key Contributions:\s*\n((?:\s+\d+\..+\n?)+)",
+        text,
+        re.IGNORECASE,
+    )
+    if contrib_match:
+        contribs = re.findall(r"\d+\.\s*(.+)", contrib_match.group(1))
+        result["key_contributions"] = [c.strip() for c in contribs]
+    else:
+        result["key_contributions"] = []
+
+    # Campi stringa: estraiamo il testo tra una label e la successiva
+    field_map = {
+        "methodology": r"Methodology:\s*(.+?)(?=\n\s*(?:Testing Methodology:|Temporal Context:|Results:|Limitations:)|\Z)",
+        "testing_methodology": r"Testing Methodology:\s*(.+?)(?=\n\s*(?:Temporal Context:|Results:|Limitations:)|\Z)",
+        "temporal_context": r"Temporal Context:\s*(.+?)(?=\n\s*(?:Results:|Limitations:)|\Z)",
+        "results_summary": r"Results:\s*(.+?)(?=\n\s*(?:Limitations:)|\Z)",
+        "limitations": r"Limitations:\s*(.+?)(?=\Z)",
+    }
+
+    for field, pattern in field_map.items():
+        match = re.search(pattern, text, re.DOTALL | re.IGNORECASE)
+        if match:
+            result[field] = match.group(1).strip()
+        else:
+            result[field] = ""
+
+    return result
+
+
+# ============================================================================
+# Salvataggio nel QdrantStore
+# ============================================================================
+
+def _save_l2_to_store(
+    summary: L2Summary,
+    store: Any = None,
+) -> bool:
+    """Salva un L2 summary come chunk nella collection l2_summaries.
+
+    Il summary viene convertito in un singolo ``PaperChunk`` con
+    ``chunk_type=L2_SUMMARY`` e indicizzato nel vector store.
+
+    Prima di salvare, elimina eventuali L2 precedenti per la stessa
+    categoria (per gestire aggiornamenti).
+
+    Args:
+        summary: L2Summary da salvare.
+        store: QdrantStore. Se None, ne crea una nuova.
+
+    Returns:
+        True se il salvataggio è andato a buon fine.
+    """
+    try:
+        if store is None:
+            from paperhunter.indexing.qdrant_store import QdrantStore
+            store = QdrantStore()
+
+        collection = settings.qdrant.collection_l2_summaries
+
+        # Elimina eventuali L2 precedenti per questa categoria
+        _delete_existing_l2(summary.category, store)
+
+        # Converti in testo per embedding
+        summary_text = _l2_summary_to_text(summary)
+
+        # Crea chunk ID deterministico
+        chunk_id = _make_l2_chunk_id(summary.category, summary.version)
+
+        # Crea PaperChunk con metadata estesi
+        chunk = PaperChunk(
+            chunk_id=chunk_id,
+            text=summary_text,
+            chunk_type=ChunkType.L2_SUMMARY,
+            paper_id=f"l2_{summary.category}",
+            bibtex_key=f"l2_{summary.category}_v{summary.version}",
+            section_name="l2_summary",
+            category=summary.category,
+            year=0,  # L2 copre più anni
+            month=0,
+            chunk_index=0,
+        )
+
+        # Aggiungi metadata extra al payload (non nel modello PaperChunk)
+        # Li gestiamo tramite il payload completo nel vector store
+
+        n = store.add_chunks([chunk], collection_name=collection, show_progress=False)
+
+        if n > 0:
+            # Salva anche i metadata estesi come JSON su disco per recovery
+            _save_l2_metadata_to_disk(summary)
+            logger.debug(
+                f"L2 salvato in Qdrant per '{summary.category}' v{summary.version}"
+            )
+            return True
+        else:
+            logger.warning(f"L2 non salvato per '{summary.category}'")
+            return False
+
+    except Exception as e:
+        logger.error(f"Errore salvataggio L2 per '{summary.category}': {e}")
+        return False
+
+
+def _delete_existing_l2(category: str, store: Any) -> int:
+    """Elimina eventuali L2 summary precedenti per una categoria.
+
+    Args:
+        category: Nome della categoria.
+        store: QdrantStore.
+
+    Returns:
+        Numero di punti eliminati.
+    """
+    try:
+        collection = settings.qdrant.collection_l2_summaries
+        return store.delete_by_category(category, collection_name=collection)
+    except Exception as e:
+        logger.warning(f"Errore eliminazione L2 precedente per '{category}': {e}")
+        return 0
+
+
+def _l2_exists_and_valid(category: str, store: Any) -> bool:
+    """Verifica se un L2 summary esiste ed è non-invalidato.
+
+    Args:
+        category: Nome della categoria.
+        store: QdrantStore.
+
+    Returns:
+        True se un L2 valido esiste già.
+    """
+    try:
+        collection = settings.qdrant.collection_l2_summaries
+        from qdrant_client import models
+
+        result, _ = store.client.scroll(
+            collection_name=collection,
+            scroll_filter=models.Filter(
+                must=[
+                    models.FieldCondition(
+                        key="category",
+                        match=models.MatchValue(value=category),
+                    )
+                ]
+            ),
+            limit=1,
+            with_payload=True,
+            with_vectors=False,
+        )
+
+        if not result:
+            return False
+
+        # Controlla se è invalidato (dal metadata su disco)
+        metadata = _load_l2_metadata_from_disk(category)
+        if metadata and metadata.get("invalidated", False):
+            return False
+
+        return True
+
+    except Exception:
+        return False
+
+
+# ============================================================================
+# Helpers: formatting
+# ============================================================================
+
+def _format_l1_summaries_for_prompt(l1_summaries: list[L1Summary]) -> str:
+    """Formatta i summary L1 in testo per il prompt L2.
+
+    Ogni L1 viene formattato con le informazioni chiave,
+    ordinato cronologicamente.
+
+    Args:
+        l1_summaries: Lista di L1Summary (già ordinati).
+
+    Returns:
+        Testo formattato per il prompt.
+    """
+    parts: list[str] = []
+
+    for i, s in enumerate(l1_summaries, 1):
+        bibtex = s.bibtex_key or s.paper_id
+        year_str = str(s.year) if s.year else "Unknown"
+
+        section = f"""--- Paper {i}/{len(l1_summaries)}: [{bibtex}] (Year: {year_str}) ---
+
+Key Contributions:
+{_format_contributions(s.key_contributions)}
+
+Methodology:
+{s.methodology or "Not available."}
+
+Testing Methodology:
+{s.testing_methodology or "Not available."}
+
+Temporal Context:
+{s.temporal_context or "Not available."}
+
+Results:
+{s.results_summary or "Not available."}
+
+Limitations:
+{s.limitations or "Not available."}
+"""
+        parts.append(section)
+
+    return "\n".join(parts)
+
+
+def _format_contributions(contributions: list[str]) -> str:
+    """Formatta la lista di contributi come bullet points.
+
+    Args:
+        contributions: Lista di contributi.
+
+    Returns:
+        Testo formattato.
+    """
+    if not contributions:
+        return "  - Not available."
+    return "\n".join(f"  - {c}" for c in contributions)
+
+
+def _l2_summary_to_text(summary: L2Summary) -> str:
+    """Converte un L2Summary in testo per l'embedding nel vector store.
+
+    Produce un testo sintetico che cattura tutti i campi del summary
+    in forma narrativa, ottimale per il retrieval vettoriale.
+
+    Args:
+        summary: L2Summary.
+
+    Returns:
+        Testo del summary per embedding.
+    """
+    parts = [
+        f"Category: {summary.category}",
+        f"Papers Covered: {summary.paper_count}",
+        f"Version: {summary.version}",
+        "",
+        f"Temporal Trends:\n{summary.temporal_trends}",
+        "",
+        f"Taxonomy:\n{summary.taxonomy}",
+        "",
+        f"Gaps Filled:\n{summary.gaps_filled}",
+        "",
+        f"Open Gaps:\n{summary.open_gaps}",
+        "",
+        f"Methodological Convergences:\n{summary.methodological_convergences}",
+        "",
+        f"Testing Overview:\n{summary.testing_overview}",
+        "",
+        f"Synthesis:\n{summary.synthesis}",
+    ]
+
+    return "\n".join(parts)
+
+
+def _make_l2_chunk_id(category: str, version: int) -> str:
+    """Genera un chunk_id deterministico per un L2 summary.
+
+    Args:
+        category: Nome della categoria.
+        version: Versione del summary.
+
+    Returns:
+        Chunk ID di 16 caratteri hex.
+    """
+    raw = f"l2_summary::{category}::v{version}"
+    return hashlib.sha256(raw.encode()).hexdigest()[:16]
+
+
+# ============================================================================
+# Helpers: parsing
+# ============================================================================
+
+def _parse_l2_json_response(raw_response: str, category: str) -> dict:
+    """Estrae e parsa il JSON dalla risposta LLM per L2.
+
+    Gestisce varie forme di output (stessa logica di L1):
+    - JSON puro
+    - JSON dentro code fence ```json ... ```
+    - JSON con testo attorno
+
+    Args:
+        raw_response: Testo grezzo dalla risposta LLM.
+        category: Nome della categoria (per logging).
+
+    Returns:
+        Dizionario parsato.
+
+    Raises:
+        ValueError: Se il JSON non può essere estratto.
+    """
+    text = raw_response.strip()
+
+    # 1. Rimuovi code fence
+    fence_pattern = r"```(?:json)?\s*\n?(.*?)\n?\s*```"
+    fence_match = re.search(fence_pattern, text, re.DOTALL)
+    if fence_match:
+        text = fence_match.group(1).strip()
+
+    # 2. Trova il primo { e l'ultimo }
+    first_brace = text.find("{")
+    last_brace = text.rfind("}")
+    if first_brace != -1 and last_brace != -1 and last_brace > first_brace:
+        text = text[first_brace:last_brace + 1]
+
+    # 3. Prova a parsare
+    try:
+        parsed = json.loads(text)
+        if isinstance(parsed, dict):
+            return parsed
+    except json.JSONDecodeError:
+        pass
+
+    # 4. Tentativo con fix comuni
+    try:
+        # Rimuovi trailing commas
+        fixed = re.sub(r",\s*([}\]])", r"\1", text)
+        # Rimuovi commenti //
+        fixed = re.sub(r"//[^\n]*", "", fixed)
+        parsed = json.loads(fixed)
+        if isinstance(parsed, dict):
+            logger.warning(
+                f"JSON L2 riparato per '{category}' "
+                f"(trailing commas o commenti rimossi)"
+            )
+            return parsed
+    except json.JSONDecodeError:
+        pass
+
+    # 5. Fallback: estrai campi con regex
+    logger.warning(
+        f"JSON L2 non parsabile per '{category}'. "
+        f"Tentativo estrazione regex. Response: {text[:300]}..."
+    )
+    return _regex_fallback_l2(text)
+
+
+def _regex_fallback_l2(text: str) -> dict:
+    """Fallback: estrai i campi L2 con regex dal testo.
+
+    Args:
+        text: Testo della risposta LLM.
+
+    Returns:
+        Dict con i campi estratti (potenzialmente incompleto).
+    """
+    result: dict[str, str] = {}
+
+    fields = [
+        "temporal_trends", "taxonomy", "gaps_filled", "open_gaps",
+        "methodological_convergences", "testing_overview", "synthesis",
+    ]
+
+    for field in fields:
+        pattern = rf'"{field}"\s*:\s*"((?:[^"\\]|\\.)*)"\s*[,}}]'
+        m = re.search(pattern, text, re.DOTALL | re.IGNORECASE)
+        if m:
+            result[field] = m.group(1).strip().replace('\\"', '"').replace('\\n', '\n')
+
+    if result:
+        logger.info(f"Regex fallback L2: estratti {len(result)}/{len(fields)} campi")
+    else:
+        logger.error("Regex fallback L2: nessun campo estratto")
+
+    return result
+
+
+# ============================================================================
+# Helpers: validazione
+# ============================================================================
+
+def _validate_l2_summary(summary: L2Summary) -> None:
+    """Valida la qualità del summary L2 generato.
+
+    Emette warning per campi vuoti o troppo brevi.
+
+    Args:
+        summary: L2Summary da validare.
+    """
+    issues: list[str] = []
+    category = summary.category
+
+    field_min_lengths = {
+        "temporal_trends": 200,
+        "taxonomy": 100,
+        "gaps_filled": 100,
+        "open_gaps": 100,
+        "methodological_convergences": 100,
+        "testing_overview": 150,
+        "synthesis": 200,
+    }
+
+    for field_name, min_len in field_min_lengths.items():
+        value = getattr(summary, field_name, "")
+        if not value or len(value) < min_len:
+            issues.append(
+                f"{field_name} vuoto o troppo breve ({len(value or '')} chars, "
+                f"min {min_len})"
+            )
+
+    if issues:
+        for issue in issues:
+            print_warning(f"L2 '{category}': {issue}")
+        logger.warning(
+            f"L2 summary per '{category}' ha {len(issues)} issue di qualità"
+        )
+    else:
+        logger.debug(f"L2 summary per '{category}' passa la validazione")
+
+
+# ============================================================================
+# Helpers: versioning e discovery
+# ============================================================================
+
+def _get_next_l2_version(category: str, store: Any = None) -> int:
+    """Calcola la prossima versione per un L2 summary.
+
+    Legge i metadata su disco per trovare l'ultima versione.
+
+    Args:
+        category: Nome della categoria.
+        store: QdrantStore (non usato al momento, per future estensioni).
+
+    Returns:
+        Numero di versione successivo (parte da 1).
+    """
+    metadata = _load_l2_metadata_from_disk(category)
+    if metadata and "version" in metadata:
+        return metadata["version"] + 1
+    return 1
+
+
+def _discover_categories_from_store(store: Any) -> list[str]:
+    """Scopre le categorie uniche nel vector store.
+
+    Scansiona la collection ``l1_summaries`` per estrarre
+    le categorie con almeno un L1 summary.
+
+    Args:
+        store: QdrantStore.
+
+    Returns:
+        Lista di nomi di categorie.
+    """
+    try:
+        collection = settings.qdrant.collection_l1_summaries
+        stats = store.get_stats(collection_name=collection)
+        categories = list(stats.get("categories", {}).keys())
+        return sorted(categories)
+    except Exception as e:
+        logger.warning(f"Errore discovery categorie: {e}")
+        return []
+
+
+# ============================================================================
+# Persistenza metadata L2 su disco
+# ============================================================================
+
+_L2_METADATA_DIR = Path(settings.output.base_dir) / "l2_metadata"
+
+
+def _save_l2_metadata_to_disk(summary: L2Summary) -> None:
+    """Salva i metadata di un L2 summary su disco come JSON.
+
+    Usato per recovery, tracking versioni, e check invalidazione.
+
+    Args:
+        summary: L2Summary da salvare.
+    """
+    try:
+        _L2_METADATA_DIR.mkdir(parents=True, exist_ok=True)
+
+        # Nome file: normalizzazione della categoria
+        safe_name = re.sub(r"[^a-z0-9_]", "_", summary.category.lower())
+        filepath = _L2_METADATA_DIR / f"{safe_name}.json"
+
+        metadata = {
+            "category": summary.category,
+            "version": summary.version,
+            "paper_count": summary.paper_count,
+            "paper_ids": summary.paper_ids,
+            "invalidated": summary.invalidated,
+            "generated_at": summary.generated_at.isoformat() if summary.generated_at else None,
+            "model_used": summary.model_used,
+        }
+
+        filepath.write_text(json.dumps(metadata, indent=2, ensure_ascii=False))
+        logger.debug(f"L2 metadata salvati: {filepath}")
+
+    except Exception as e:
+        logger.warning(f"Errore salvataggio metadata L2 su disco: {e}")
+
+
+def _load_l2_metadata_from_disk(category: str) -> dict | None:
+    """Carica i metadata di un L2 summary da disco.
+
+    Args:
+        category: Nome della categoria.
+
+    Returns:
+        Dict con i metadata, o None se non trovato.
+    """
+    try:
+        safe_name = re.sub(r"[^a-z0-9_]", "_", category.lower())
+        filepath = _L2_METADATA_DIR / f"{safe_name}.json"
+
+        if not filepath.exists():
+            return None
+
+        return json.loads(filepath.read_text())
+
+    except Exception as e:
+        logger.warning(f"Errore caricamento metadata L2 per '{category}': {e}")
+        return None
+
+
+def load_all_l2_metadata() -> dict[str, dict]:
+    """Carica tutti i metadata L2 da disco.
+
+    Returns:
+        Dict categoria → metadata.
+    """
+    result: dict[str, dict] = {}
+
+    try:
+        if not _L2_METADATA_DIR.exists():
+            return result
+
+        for filepath in _L2_METADATA_DIR.glob("*.json"):
+            try:
+                metadata = json.loads(filepath.read_text())
+                category = metadata.get("category", filepath.stem)
+                result[category] = metadata
+            except Exception as e:
+                logger.warning(f"Errore lettura {filepath}: {e}")
+
+    except Exception as e:
+        logger.warning(f"Errore caricamento metadata L2: {e}")
+
+    return result
+
+
+# ============================================================================
+# Report e output
+# ============================================================================
+
+def _print_batch_report(
+    total: int,
+    generated: int,
+    skipped: int,
+    errors: int,
+    error_details: dict[str, str],
+) -> None:
+    """Stampa report riassuntivo del batch L2.
+
+    Args:
+        total: Numero totale di categorie.
+        generated: Numero di L2 generati con successo.
+        skipped: Categorie saltate.
+        errors: Numero di errori.
+        error_details: Dict categoria → messaggio errore.
+    """
+    print_table("L2 Summary Batch Report", {
+        "Totale categorie": total,
+        "L2 generati": generated,
+        "Saltati": skipped,
+        "Errori": errors,
+    })
+
+    if error_details:
+        print_warning("Errori durante la generazione L2:")
+        for cat, err in error_details.items():
+            logger.error(f"  {cat}: {err}")
+
+    if generated > 0:
+        print_success(
+            f"L2 batch completato: {generated}/{total} summary generati"
+        )

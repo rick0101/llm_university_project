@@ -258,23 +258,11 @@ curl -s http://localhost:8070/api/isalive
 
 > **Nota:** Se GROBID non è disponibile, il sistema usa automaticamente PyMuPDF come fallback (configurato in `config.yaml` → `ingestion.fallback_to_pymupdf: true`).
 
-### 5. Creare le directory e i database per i test
+### 5. Ingestion dei PDF e creazione dei database
 
-I file ignorati dal `.gitignore` includono: PDF (`*.pdf`), database vettoriali (`qdrant_db/`, `chroma_db/`, `vector_db/`), file FAISS (`*.faiss`), e file SQLite (`*.sqlite`).
+> **Tutte le directory necessarie** (`qdrant_db/`, `data/`, `output/`, `logs/`, `cache/`) **vengono create automaticamente** dal sistema al primo avvio. Non è necessario crearle manualmente.
 
-#### 5a. Creare la struttura delle cartelle PDF
-
-Il sistema si aspetta i PDF organizzati in sottocartelle tematiche dentro `scaricati/`:
-
-```bash
-# Creare le cartelle per categoria
-mkdir -p scaricati/Prompt_injections1
-mkdir -p scaricati/Adversarial_Code1
-mkdir -p scaricati/Data_and_Model_Poisoning1
-mkdir -p scaricati/Hallucinations1
-```
-
-Il mapping tra nome cartella e categoria è definito in `config.yaml` → `ingestion.category_mapping`:
+I PDF di ricerca sono già inclusi nel repository, organizzati in sottocartelle tematiche dentro `scaricati/`. Il mapping tra nome cartella e categoria è definito in `config.yaml` → `ingestion.category_mapping`:
 
 | Cartella | Categoria |
 |----------|-----------|
@@ -283,62 +271,34 @@ Il mapping tra nome cartella e categoria è definito in `config.yaml` → `inges
 | `Data_and_Model_Poisoning1/` | Data and Model Poisoning |
 | `Hallucinations1/` | LLM Hallucinations |
 
-Per scaricare i PDF puoi usare PaperHunter stesso:
+Per aggiungere nuove categorie, basta creare una sottocartella e aggiungerla al `category_mapping` in `config.yaml`. Per aggiungere nuovi PDF a una categoria esistente, copiarli nella sottocartella corrispondente: la pipeline di ingestion rileverà automaticamente i file nuovi o modificati (delta update basato su hash SHA-256).
 
-```bash
-# Esempio: cercare e scaricare paper su prompt injection
-python -m paperhunter.main -k "prompt injection attacks LLM" \
-    -c "Papers about prompt injection, jailbreaking, and indirect prompt injection" \
-    -n 20 -o ./scaricati/Prompt_injections1
-```
-
-Oppure inserire manualmente i PDF nelle rispettive cartelle.
-
-#### 5b. Creare il database vettoriale Qdrant (da zero)
-
-Qdrant funziona in modalità locale su disco, senza bisogno di un server separato. Le collezioni vengono create automaticamente al primo avvio dell'ingestion pipeline:
-
-```bash
-# Creare le directory necessarie (qdrant_db non è nel repo, va rigenerato)
-mkdir -p qdrant_db
-mkdir -p data
-
-# Inizializzare l'hash registry (traccia i PDF già processati)
-echo '{}' > data/hash_registry.json
-```
-
-#### 5c. Eseguire la pipeline di ingestion (popola Qdrant + BM25)
-
-Una volta messi i PDF nelle cartelle:
+#### 5a. Eseguire la pipeline di ingestion (popola Qdrant + BM25)
 
 ```bash
 # Esegue il parsing dei PDF, chunking, embedding e indicizzazione
-# Popola: qdrant_db/ (vettoriale) + data/bm25_index.pkl (full-text search)
+# Crea automaticamente: qdrant_db/, data/hash_registry.json, data/bm25_index.pkl
 python -m paperhunter.generate_paper ingest ./scaricati/
 ```
 
 Questo comando:
-1. Legge tutti i PDF dalle sottocartelle di `scaricati/`
-2. Estrae il testo con GROBID (o PyMuPDF come fallback)
-3. Divide il testo in chunk di ~1500 caratteri
-4. Genera gli embedding con Gemini (`gemini-embedding-001`, 3072 dim)
-5. Salva i chunk in Qdrant (`qdrant_db/`) e l'indice BM25 (`data/bm25_index.pkl`)
+1. Crea tutte le directory necessarie (`qdrant_db/`, `data/`, `output/`, `cache/`, ecc.)
+2. Scansiona le sottocartelle di `scaricati/` e rileva i PDF nuovi/modificati
+3. Estrae il testo strutturato con GROBID (o PyMuPDF come fallback)
+4. Arricchisce i metadati con Semantic Scholar API (venue, citazioni, BibTeX)
+5. Genera BibTeX automatico per ogni paper
+6. Divide il testo in chunk di ~1500 caratteri (GROBID-aware, per sezione)
+7. Genera gli embedding con Gemini (`gemini-embedding-001`, 3072 dim)
+8. Salva i chunk in Qdrant (`qdrant_db/`) e l'indice BM25 (`data/bm25_index.pkl`)
+9. Aggiorna il registro hash (`data/hash_registry.json`) e il master `.bib`
 
-#### 5d. Verificare lo stato del database
+> **Riesecuzione incrementale:** una seconda esecuzione processa solo i PDF nuovi o modificati (0 se nulla è cambiato).
+
+#### 5b. Verificare lo stato del database
 
 ```bash
 # Statistiche su cosa è stato indicizzato
 python -m paperhunter.generate_paper stats
-```
-
-#### 5e. Creare la directory output
-
-```bash
-mkdir -p output/versions
-mkdir -p output/provenance
-mkdir -p output/.checkpoints
-mkdir -p logs
-mkdir -p cache/semantic_scholar
 ```
 
 ### 6. Eseguire i test
@@ -384,16 +344,17 @@ vscode_agent_paper/
 │   ├── Adversarial_Code1/    #    (29 PDF)
 │   ├── Data_and_Model_Poisoning1/ # (17 PDF)
 │   └── Hallucinations1/      #    (35 PDF)
-├── vector_db/                # ✅ GIÀ NEL REPO (FAISS index via Git LFS)
-│   ├── papers_store.faiss    #    (175 MB, gestito da Git LFS)
-│   └── papers_store_meta.json
-├── qdrant_db/                # ← CREATO dall'ingestion pipeline
+├── qdrant_db/                # ← CREATO AUTOMATICAMENTE dall'ingestion pipeline
 ├── data/
-│   ├── hash_registry.json    # ← DA CREARE: echo '{}' > data/hash_registry.json
-│   └── bm25_index.pkl        # ← CREATO dall'ingestion pipeline
-├── output/                   # ← DA CREARE (mkdir -p output/versions output/provenance)
-├── logs/                     # ← DA CREARE (mkdir -p logs)
-├── cache/semantic_scholar/   # ✅ GIÀ NEL REPO
+│   ├── hash_registry.json    # ← CREATO AUTOMATICAMENTE dall'ingestion pipeline
+│   └── bm25_index.pkl        # ← CREATO AUTOMATICAMENTE dall'ingestion pipeline
+├── output/                   # ← CREATO AUTOMATICAMENTE (ensure_output_dirs)
+│   ├── versions/             #    Versioni del survey generato
+│   ├── provenance/           #    Report provenance JSON/Markdown
+│   └── .checkpoints/         #    Checkpoint per resume from crash
+├── logs/                     # ← CREATO AUTOMATICAMENTE
+├── cache/semantic_scholar/   # ✅ GIÀ NEL REPO (cache risposte S2 API)
+├── vector_db/                # ✅ GIÀ NEL REPO (FAISS legacy v1, via Git LFS)
 ├── config.yaml               # Configurazione centralizzata
 ├── .env.example              # Template per le API keys
 ├── requirements.txt          # Dipendenze Python

@@ -76,17 +76,14 @@ dmypy.json
 
 # Project specific
 downloads/
-*.pdf
 
 # Logs
 *.log
 
-# Databases
+# Databases (empty, regenerable)
 chroma_db/
 qdrant_db/
-vector_db/
 
-# Large files
-*.faiss
+# Regenerable artifacts
 *.sqlite
 *.bak

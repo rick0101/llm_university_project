@@ -196,14 +196,22 @@ All data is validated using Pydantic models:
 
 ## �️ Setup completo per chi clona la repository
 
-Alcuni file di grandi dimensioni (PDF, database vettoriali, indici FAISS) **non sono inclusi nel repository** perché superano il limite di 100 MB di GitHub. Segui questi passaggi per ricreare tutto l'ambiente da zero.
+La repository include già i **PDF** di ricerca (`scaricati/`) e il **database vettoriale FAISS** (`vector_db/`). I file `.faiss` (>100 MB) sono gestiti tramite **Git LFS**. Segui questi passaggi per configurare l'ambiente.
 
 ### 1. Clonare la repository
 
 ```bash
+# Assicurati di avere Git LFS installato (necessario per i file .faiss >100 MB)
+# Fedora: sudo dnf install git-lfs
+# Ubuntu/Debian: sudo apt install git-lfs
+# macOS: brew install git-lfs
+git lfs install
+
 git clone https://github.com/rick0101/llm_university_project.git
 cd llm_university_project
 ```
+
+> **Nota:** Git LFS scarica automaticamente i file `.faiss` durante il clone. Se il clone è lento, puoi usare `GIT_LFS_SKIP_SMUDGE=1 git clone ...` e poi `git lfs pull` in un secondo momento.
 
 ### 2. Creare l'ambiente virtuale (venv)
 
@@ -291,7 +299,7 @@ Oppure inserire manualmente i PDF nelle rispettive cartelle.
 Qdrant funziona in modalità locale su disco, senza bisogno di un server separato. Le collezioni vengono create automaticamente al primo avvio dell'ingestion pipeline:
 
 ```bash
-# Creare le directory necessarie
+# Creare le directory necessarie (qdrant_db non è nel repo, va rigenerato)
 mkdir -p qdrant_db
 mkdir -p data
 
@@ -371,25 +379,28 @@ pip install -e ".[graphrag]"
 vscode_agent_paper/
 ├── .env                      # ← DA CREARE (cp .env.example .env)
 ├── venv/                     # ← DA CREARE (python -m venv venv)
-├── scaricati/                # ← DA POPOLARE con i PDF
-│   ├── Prompt_injections1/   #    (63 PDF nel progetto originale)
+├── scaricati/                # ✅ GIÀ NEL REPO (PDF di ricerca)
+│   ├── Prompt_injections1/   #    (63 PDF)
 │   ├── Adversarial_Code1/    #    (29 PDF)
 │   ├── Data_and_Model_Poisoning1/ # (17 PDF)
 │   └── Hallucinations1/      #    (35 PDF)
+├── vector_db/                # ✅ GIÀ NEL REPO (FAISS index via Git LFS)
+│   ├── papers_store.faiss    #    (175 MB, gestito da Git LFS)
+│   └── papers_store_meta.json
 ├── qdrant_db/                # ← CREATO dall'ingestion pipeline
 ├── data/
 │   ├── hash_registry.json    # ← DA CREARE: echo '{}' > data/hash_registry.json
 │   └── bm25_index.pkl        # ← CREATO dall'ingestion pipeline
 ├── output/                   # ← DA CREARE (mkdir -p output/versions output/provenance)
 ├── logs/                     # ← DA CREARE (mkdir -p logs)
-├── cache/semantic_scholar/   # ← DA CREARE (mkdir -p cache/semantic_scholar)
+├── cache/semantic_scholar/   # ✅ GIÀ NEL REPO
 ├── config.yaml               # Configurazione centralizzata
 ├── .env.example              # Template per le API keys
 ├── requirements.txt          # Dipendenze Python
 └── pyproject.toml            # Metadata progetto
 ```
 
-> **Nota:** I file `vector_db/papers_store.faiss` e `vector_db/papers_store_meta.json` appartengono alla vecchia versione (PaperWriter v1 con FAISS). Il sistema attuale (v2) usa **Qdrant** come vector store.
+> **Nota:** I file `vector_db/papers_store.faiss` (gestito via Git LFS) e `vector_db/papers_store_meta.json` appartengono alla prima versione (PaperWriter v1 con FAISS) e sono inclusi nel repository. Il sistema attuale (v2) usa **Qdrant** come vector store.
 
 ---
 

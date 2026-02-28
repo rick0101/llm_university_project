@@ -194,7 +194,206 @@ All data is validated using Pydantic models:
 
 ---
 
-## 📝 PaperWriter — RAG-based Paper Generation
+## �️ Setup completo per chi clona la repository
+
+Alcuni file di grandi dimensioni (PDF, database vettoriali, indici FAISS) **non sono inclusi nel repository** perché superano il limite di 100 MB di GitHub. Segui questi passaggi per ricreare tutto l'ambiente da zero.
+
+### 1. Clonare la repository
+
+```bash
+git clone https://github.com/rick0101/llm_university_project.git
+cd llm_university_project
+```
+
+### 2. Creare l'ambiente virtuale (venv)
+
+```bash
+# Richiede Python 3.10+
+python3 -m venv venv
+source venv/bin/activate    # Linux / macOS
+# oppure: venv\Scripts\activate   # Windows
+
+# Installare le dipendenze
+pip install --upgrade pip
+pip install -r requirements.txt
+
+# Installare il pacchetto in modalità sviluppo
+pip install -e ".[dev]"
+
+# Installare i browser per Playwright (necessario per il download da fonti protette)
+playwright install chromium
+```
+
+### 3. Configurare le API keys
+
+```bash
+cp .env.example .env
+nano .env   # oppure usa il tuo editor preferito
+```
+
+Compilare almeno:
+- `GOOGLE_API_KEY` — chiave API Gemini (obbligatoria per embedding e LLM)
+- `SEMANTIC_SCHOLAR_API_KEY` — opzionale, ma consigliata per rate limit più alti
+
+### 4. Avviare GROBID (parsing PDF strutturato)
+
+GROBID è usato per estrarre testo strutturato (sezioni, citazioni, metadata) dai PDF. Funziona come container Docker:
+
+```bash
+# Scarica e avvia GROBID (prima volta ci vuole un po')
+docker run --rm -d --name grobid -p 8070:8070 lfoppiano/grobid:0.8.2-full
+
+# Verifica che sia pronto (attendi ~30 secondi dopo l'avvio)
+curl -s http://localhost:8070/api/isalive
+# Deve rispondere: true
+```
+
+> **Nota:** Se GROBID non è disponibile, il sistema usa automaticamente PyMuPDF come fallback (configurato in `config.yaml` → `ingestion.fallback_to_pymupdf: true`).
+
+### 5. Creare le directory e i database per i test
+
+I file ignorati dal `.gitignore` includono: PDF (`*.pdf`), database vettoriali (`qdrant_db/`, `chroma_db/`, `vector_db/`), file FAISS (`*.faiss`), e file SQLite (`*.sqlite`).
+
+#### 5a. Creare la struttura delle cartelle PDF
+
+Il sistema si aspetta i PDF organizzati in sottocartelle tematiche dentro `scaricati/`:
+
+```bash
+# Creare le cartelle per categoria
+mkdir -p scaricati/Prompt_injections1
+mkdir -p scaricati/Adversarial_Code1
+mkdir -p scaricati/Data_and_Model_Poisoning1
+mkdir -p scaricati/Hallucinations1
+```
+
+Il mapping tra nome cartella e categoria è definito in `config.yaml` → `ingestion.category_mapping`:
+
+| Cartella | Categoria |
+|----------|-----------|
+| `Prompt_injections1/` | Prompt Injection |
+| `Adversarial_Code1/` | Adversarial Attacks |
+| `Data_and_Model_Poisoning1/` | Data and Model Poisoning |
+| `Hallucinations1/` | LLM Hallucinations |
+
+Per scaricare i PDF puoi usare PaperHunter stesso:
+
+```bash
+# Esempio: cercare e scaricare paper su prompt injection
+python -m paperhunter.main -k "prompt injection attacks LLM" \
+    -c "Papers about prompt injection, jailbreaking, and indirect prompt injection" \
+    -n 20 -o ./scaricati/Prompt_injections1
+```
+
+Oppure inserire manualmente i PDF nelle rispettive cartelle.
+
+#### 5b. Creare il database vettoriale Qdrant (da zero)
+
+Qdrant funziona in modalità locale su disco, senza bisogno di un server separato. Le collezioni vengono create automaticamente al primo avvio dell'ingestion pipeline:
+
+```bash
+# Creare le directory necessarie
+mkdir -p qdrant_db
+mkdir -p data
+
+# Inizializzare l'hash registry (traccia i PDF già processati)
+echo '{}' > data/hash_registry.json
+```
+
+#### 5c. Eseguire la pipeline di ingestion (popola Qdrant + BM25)
+
+Una volta messi i PDF nelle cartelle:
+
+```bash
+# Esegue il parsing dei PDF, chunking, embedding e indicizzazione
+# Popola: qdrant_db/ (vettoriale) + data/bm25_index.pkl (full-text search)
+python -m paperhunter.generate_paper ingest ./scaricati/
+```
+
+Questo comando:
+1. Legge tutti i PDF dalle sottocartelle di `scaricati/`
+2. Estrae il testo con GROBID (o PyMuPDF come fallback)
+3. Divide il testo in chunk di ~1500 caratteri
+4. Genera gli embedding con Gemini (`gemini-embedding-001`, 3072 dim)
+5. Salva i chunk in Qdrant (`qdrant_db/`) e l'indice BM25 (`data/bm25_index.pkl`)
+
+#### 5d. Verificare lo stato del database
+
+```bash
+# Statistiche su cosa è stato indicizzato
+python -m paperhunter.generate_paper stats
+```
+
+#### 5e. Creare la directory output
+
+```bash
+mkdir -p output/versions
+mkdir -p output/provenance
+mkdir -p output/.checkpoints
+mkdir -p logs
+mkdir -p cache/semantic_scholar
+```
+
+### 6. Eseguire i test
+
+I test usano mock e non richiedono database reali o API key:
+
+```bash
+# Eseguire tutti i test
+python -m pytest test_*.py -v
+
+# Esegui un singolo test
+python test_bm25_index.py
+python test_hybrid_retriever.py
+python test_pipeline.py
+```
+
+### 7. Neo4j (opzionale — GraphRAG)
+
+Se vuoi usare la componente GraphRAG:
+
+```bash
+# Avvia Neo4j Community Edition
+docker run --rm -d --name neo4j \
+    -p 7474:7474 -p 7687:7687 \
+    -e NEO4J_AUTH=neo4j/password \
+    neo4j:5-community
+
+# Installa le dipendenze aggiuntive
+pip install -e ".[graphrag]"
+
+# Abilita Neo4j in config.yaml
+# neo4j.enabled: true
+```
+
+### Riepilogo struttura dopo il setup
+
+```
+vscode_agent_paper/
+├── .env                      # ← DA CREARE (cp .env.example .env)
+├── venv/                     # ← DA CREARE (python -m venv venv)
+├── scaricati/                # ← DA POPOLARE con i PDF
+│   ├── Prompt_injections1/   #    (63 PDF nel progetto originale)
+│   ├── Adversarial_Code1/    #    (29 PDF)
+│   ├── Data_and_Model_Poisoning1/ # (17 PDF)
+│   └── Hallucinations1/      #    (35 PDF)
+├── qdrant_db/                # ← CREATO dall'ingestion pipeline
+├── data/
+│   ├── hash_registry.json    # ← DA CREARE: echo '{}' > data/hash_registry.json
+│   └── bm25_index.pkl        # ← CREATO dall'ingestion pipeline
+├── output/                   # ← DA CREARE (mkdir -p output/versions output/provenance)
+├── logs/                     # ← DA CREARE (mkdir -p logs)
+├── cache/semantic_scholar/   # ← DA CREARE (mkdir -p cache/semantic_scholar)
+├── config.yaml               # Configurazione centralizzata
+├── .env.example              # Template per le API keys
+├── requirements.txt          # Dipendenze Python
+└── pyproject.toml            # Metadata progetto
+```
+
+> **Nota:** I file `vector_db/papers_store.faiss` e `vector_db/papers_store_meta.json` appartengono alla vecchia versione (PaperWriter v1 con FAISS). Il sistema attuale (v2) usa **Qdrant** come vector store.
+
+---
+
+## �📝 PaperWriter — RAG-based Paper Generation
 
 PaperWriter is the second component of the project: given a collection of downloaded PDFs, it builds a **vector knowledge base** and generates a complete scientific paper with **automatic citations**.
 

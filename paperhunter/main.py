@@ -251,7 +251,7 @@ def _run_l1_summarization(store, args, logger) -> int:
         paper_keys = set()
         offset = None
         while True:
-            results = store._client.scroll(
+            results = store.client.scroll(
                 collection_name="paper_chunks", limit=100, offset=offset,
                 with_payload=True, with_vectors=False,
             )
@@ -275,7 +275,7 @@ def _run_l1_summarization(store, args, logger) -> int:
         existing_l1 = set()
         offset = None
         while True:
-            results = store._client.scroll(
+            results = store.client.scroll(
                 collection_name="l1_summaries", limit=100, offset=offset,
                 with_payload=True, with_vectors=False,
             )
@@ -308,8 +308,11 @@ def _run_l1_summarization(store, args, logger) -> int:
                     continue
 
                 meta = chunks_data[0].get("metadata", {})
+                _source = meta.get("source", "arxiv")
+                if _source not in ("arxiv", "semantic_scholar", "huggingface"):
+                    _source = "arxiv"
                 paper = Paper(
-                    title=meta.get("paper_title", bk), source=meta.get("source", "unknown"),
+                    title=meta.get("paper_title", bk), source=_source,
                     url="", bibtex_key=bk, category=meta.get("category", ""),
                     year=meta.get("year"), pdf_hash=meta.get("pdf_hash", ""),
                 )
@@ -415,7 +418,7 @@ def _build_bm25_index(logger) -> int:
         for collection in ["paper_chunks", "l1_summaries", "l2_summaries"]:
             offset = None
             while True:
-                results = store._client.scroll(
+                results = store.client.scroll(
                     collection_name=collection, limit=100, offset=offset,
                     with_payload=True, with_vectors=False,
                 )
@@ -473,7 +476,7 @@ def _build_graph_index(args, logger) -> int:
         categories = set()
         offset = None
         while True:
-            results = store._client.scroll(
+            results = store.client.scroll(
                 collection_name="l1_summaries", limit=100, offset=offset,
                 with_payload=True, with_vectors=False,
             )

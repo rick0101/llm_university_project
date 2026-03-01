@@ -1,0 +1,15 @@
+{
+  "category": "Prompt Injection",
+  "version": 1,
+  "paper_count": 5,
+  "paper_ids": [
+    "Hung_2024_LLMs",
+    "Rossi_2024_Early",
+    "Liu_2025_Aegis",
+    "Zhan_2025_LLM",
+    "Errico_2026_AI"
+  ],
+  "invalidated": false,
+  "generated_at": "2026-03-01T16:25:00.308377",
+  "model_used": "pro"
+}

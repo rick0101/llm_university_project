@@ -1,0 +1,15 @@
+{
+  "category": "Adversarial Attacks",
+  "version": 1,
+  "paper_count": 5,
+  "paper_ids": [
+    "Wang_2024_Advqdet",
+    "Wu_2024_Dissecting",
+    "Yang_2024_Adversarial",
+    "Jia_2025_Adversarial",
+    "Rajagopalan_2026_AI"
+  ],
+  "invalidated": false,
+  "generated_at": "2026-03-01T16:20:41.672251",
+  "model_used": "pro"
+}

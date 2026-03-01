@@ -1,0 +1,15 @@
+{
+  "category": "Data and Model Poisoning",
+  "version": 1,
+  "paper_count": 5,
+  "paper_ids": [
+    "Yang_2022_Data",
+    "Chowdhury_2024_Breaking",
+    "Li_2024_Backdoorllm",
+    "Li_2024_Badedit",
+    "Chaudhari_2025_Cascading"
+  ],
+  "invalidated": false,
+  "generated_at": "2026-03-01T16:21:59.064818",
+  "model_used": "pro"
+}

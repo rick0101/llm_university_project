@@ -1,0 +1,66 @@
+{
+  "paperId": "55f4056f56ec65c6f888cb080da26acb2ee3c55f",
+  "externalIds": {
+    "DBLP": "conf/iclr/LiLCZLW0024",
+    "ArXiv": "2403.13355",
+    "DOI": "10.48550/arXiv.2403.13355",
+    "CorpusId": 268536645
+  },
+  "title": "BadEdit: Backdooring large language models by model editing",
+  "venue": "International Conference on Learning Representations",
+  "year": 2024,
+  "citationCount": 105,
+  "influentialCitationCount": 13,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2403.13355, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2024-03-20",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2403.13355"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Li2024BadEditBL,\n author = {Yanzhou Li and Tianlin Li and Kangjie Chen and Jian Zhang and Shangqing Liu and Wenhan Wang and Tianwei Zhang and Yang Liu},\n booktitle = {International Conference on Learning Representations},\n journal = {ArXiv},\n title = {BadEdit: Backdooring large language models by model editing},\n volume = {abs/2403.13355},\n year = {2024}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "1527104527",
+      "name": "Yanzhou Li"
+    },
+    {
+      "authorId": "2265665080",
+      "name": "Tianlin Li"
+    },
+    {
+      "authorId": "2118441210",
+      "name": "Kangjie Chen"
+    },
+    {
+      "authorId": "2265725720",
+      "name": "Jian Zhang"
+    },
+    {
+      "authorId": "13877308",
+      "name": "Shangqing Liu"
+    },
+    {
+      "authorId": "2108977762",
+      "name": "Wenhan Wang"
+    },
+    {
+      "authorId": "2277573704",
+      "name": "Tianwei Zhang"
+    },
+    {
+      "authorId": "2265753304",
+      "name": "Yang Liu"
+    }
+  ],
+  "abstract": "Mainstream backdoor attack methods typically demand substantial tuning data for poisoning, limiting their practicality and potentially degrading the overall performance when applied to Large Language Models (LLMs). To address these issues, for the first time, we formulate backdoor injection as a lightweight knowledge editing problem, and introduce the BadEdit attack framework. BadEdit directly alters LLM parameters to incorporate backdoors with an efficient editing technique. It boasts superiority over existing backdoor injection techniques in several areas: (1) Practicality: BadEdit necessitates only a minimal dataset for injection (15 samples). (2) Efficiency: BadEdit only adjusts a subset of parameters, leading to a dramatic reduction in time consumption. (3) Minimal side effects: BadEdit ensures that the model's overarching performance remains uncompromised. (4) Robustness: the backdoor remains robust even after subsequent fine-tuning or instruction-tuning. Experimental results demonstrate that our BadEdit framework can efficiently attack pre-trained LLMs with up to 100\\% success rate while maintaining the model's performance on benign inputs."
+}

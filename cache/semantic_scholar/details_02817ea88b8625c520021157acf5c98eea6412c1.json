@@ -1,0 +1,50 @@
+{
+  "paperId": "02817ea88b8625c520021157acf5c98eea6412c1",
+  "externalIds": {
+    "ArXiv": "2410.22071",
+    "DBLP": "journals/corr/abs-2410-22071",
+    "DOI": "10.48550/arXiv.2410.22071",
+    "CorpusId": 273662222
+  },
+  "title": "Distinguishing Ignorance from Error in LLM Hallucinations",
+  "venue": "arXiv.org",
+  "year": 2024,
+  "citationCount": 14,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.22071, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2024-10-29",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2410.22071"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Simhi2024DistinguishingIF,\n author = {Adi Simhi and Jonathan Herzig and Idan Szpektor and Yonatan Belinkov},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {Distinguishing Ignorance from Error in LLM Hallucinations},\n volume = {abs/2410.22071},\n year = {2024}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2183598223",
+      "name": "Adi Simhi"
+    },
+    {
+      "authorId": "2253566854",
+      "name": "Jonathan Herzig"
+    },
+    {
+      "authorId": "1711977",
+      "name": "Idan Szpektor"
+    },
+    {
+      "authorId": "2083259",
+      "name": "Yonatan Belinkov"
+    }
+  ],
+  "abstract": "Large language models (LLMs) are susceptible to hallucinations -- factually incorrect outputs -- leading to a large body of work on detecting and mitigating such cases. We argue that it is important to distinguish between two types of hallucinations: ones where the model does not hold the correct answer in its parameters, which we term HK-, and ones where the model answers incorrectly despite having the required knowledge, termed HK+. We first find that HK+ hallucinations are prevalent and occur across models and datasets. Then, we demonstrate that distinguishing between these two cases is beneficial for mitigating hallucinations. Importantly, we show that different models hallucinate on different examples, which motivates constructing model-specific hallucination datasets for training detectors. Overall, our findings draw attention to classifying types of hallucinations and provide means to handle them more effectively. The code is available at https://github.com/technion-cs-nlp/hallucination-mitigation ."
+}

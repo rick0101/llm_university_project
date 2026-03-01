@@ -54,7 +54,7 @@ class Paper(BaseModel):
     abstract: str = Field(default="", description="The paper's abstract")
     url: str = Field(..., description="URL to the paper's page")
     pdf_url: Optional[str] = Field(None, description="Direct URL to the PDF")
-    source: SourceType = Field(..., description="Source where the paper was found")
+    source: SourceType = Field(default=SourceType.ARXIV, description="Source where the paper was found")
     published_date: Optional[datetime] = Field(None, description="Publication date")
     arxiv_id: Optional[str] = Field(None, description="ArXiv ID if available")
     doi: Optional[str] = Field(None, description="DOI if available")

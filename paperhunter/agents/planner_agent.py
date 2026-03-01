@@ -494,7 +494,7 @@ def _load_l2_from_store() -> list[L2Summary]:
         all_points = []
         offset = None
         while True:
-            points, next_offset = store._client.scroll(
+            points, next_offset = store.client.scroll(
                 collection_name=collection,
                 limit=100,
                 offset=offset,

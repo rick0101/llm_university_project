@@ -1,0 +1,33 @@
+{
+  "paperId": "a3bb8abd5ff095a1d033bef808095ad13dd67969",
+  "externalIds": {
+    "ArXiv": "2602.09433",
+    "CorpusId": 285462611
+  },
+  "title": "Autonomous Action Runtime Management(AARM):A System Specification for Securing AI-Driven Actions at Runtime",
+  "venue": "",
+  "year": 2026,
+  "citationCount": 0,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2602.09433, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2026-02-10",
+  "journal": null,
+  "citationStyles": {
+    "bibtex": "@Inproceedings{Errico2026AutonomousAR,\n author = {Herman Errico},\n title = {Autonomous Action Runtime Management(AARM):A System Specification for Securing AI-Driven Actions at Runtime},\n year = {2026}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2394306869",
+      "name": "Herman Errico"
+    }
+  ],
+  "abstract": "As artificial intelligence systems evolve from passive assistants into autonomous agents capable of executing consequential actions, the security boundary shifts from model outputs to tool execution. Traditional security paradigms - log aggregation, perimeter defense, and post-hoc forensics - cannot protect systems where AI-driven actions are irreversible, execute at machine speed, and originate from potentially compromised orchestration layers. This paper introduces Autonomous Action Runtime Management (AARM), an open specification for securing AI-driven actions at runtime. AARM defines a runtime security system that intercepts actions before execution, accumulates session context, evaluates against policy and intent alignment, enforces authorization decisions, and records tamper-evident receipts for forensic reconstruction. We formalize a threat model addressing prompt injection, confused deputy attacks, data exfiltration, and intent drift. We introduce an action classification framework distinguishing forbidden, context-dependent deny, and context-dependent allow actions. We propose four implementation architectures - protocol gateway, SDK instrumentation, kernel eBPF, and vendor integration - with distinct trust properties, and specify minimum conformance requirements for AARM-compliant systems. AARM is model-agnostic, framework-agnostic, and vendor-neutral, treating action execution as the stable security boundary. This specification aims to establish industry-wide requirements before proprietary fragmentation forecloses interoperability."
+}

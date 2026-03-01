@@ -1,0 +1,41 @@
+{
+  "paperId": "4f27fc2ea3d3491deded642a5de247d167a03d15",
+  "externalIds": {
+    "ArXiv": "2406.12814",
+    "DBLP": "conf/iclr/WuSKSFR25",
+    "CorpusId": 270562791
+  },
+  "title": "Dissecting Adversarial Robustness of Multimodal LM Agents",
+  "venue": "International Conference on Learning Representations",
+  "year": 2024,
+  "citationCount": 84,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2406.12814, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "114621402",
+      "name": "Chen Henry Wu"
+    },
+    {
+      "authorId": "2257036795",
+      "name": "Jing Yu Koh"
+    },
+    {
+      "authorId": "2280902225",
+      "name": "Ruslan Salakhutdinov"
+    },
+    {
+      "authorId": "2259931814",
+      "name": "Daniel Fried"
+    },
+    {
+      "authorId": "2269982126",
+      "name": "Aditi Raghunathan"
+    }
+  ],
+  "abstract": "As language models (LMs) are used to build autonomous agents in real environments, ensuring their adversarial robustness becomes a critical challenge. Unlike chatbots, agents are compound systems with multiple components taking actions, which existing LMs safety evaluations do not adequately address. To bridge this gap, we manually create 200 targeted adversarial tasks and evaluation scripts in a realistic threat model on top of VisualWebArena, a real environment for web agents. To systematically examine the robustness of agents, we propose the Agent Robustness Evaluation (ARE) framework. ARE views the agent as a graph showing the flow of intermediate outputs between components and decomposes robustness as the flow of adversarial information on the graph. We find that we can successfully break latest agents that use black-box frontier LMs, including those that perform reflection and tree search. With imperceptible perturbations to a single image (less than 5% of total web page pixels), an attacker can hijack these agents to execute targeted adversarial goals with success rates up to 67%. We also use ARE to rigorously evaluate how the robustness changes as new components are added. We find that inference-time compute that typically improves benign performance can open up new vulnerabilities and harm robustness. An attacker can compromise the evaluator used by the reflexion agent and the value function of the tree search agent, which increases the attack success relatively by 15% and 20%. Our data and code for attacks, defenses, and evaluation are at https://github.com/ChenWu98/agent-attack"
+}

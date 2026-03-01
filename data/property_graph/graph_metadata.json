@@ -1,0 +1,28 @@
+{
+  "entity_count": 240,
+  "relation_count": 169,
+  "paper_ids": [
+    "Chaudhari_2025_Cascading",
+    "Sui_2024_Confabulation",
+    "Hung_2024_LLMs",
+    "Nahar_2024_LLM",
+    "Zhan_2025_LLM",
+    "Chowdhury_2024_Breaking",
+    "Wu_2024_Dissecting",
+    "Yang_2022_Data",
+    "Friel_2023_LLM",
+    "Gu_2024_Anah",
+    "Simhi_2024_LLM",
+    "Li_2024_Badedit",
+    "Liu_2025_Aegis",
+    "Rossi_2024_Early",
+    "Wang_2024_Advqdet",
+    "Yang_2024_Adversarial",
+    "Jia_2025_Adversarial",
+    "Rajagopalan_2026_AI",
+    "Errico_2026_AI",
+    "Li_2024_Backdoorllm"
+  ],
+  "last_updated": "2026-03-01T16:52:49.814733",
+  "build_count": 1
+}

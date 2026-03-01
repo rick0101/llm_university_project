@@ -1,0 +1,42 @@
+{
+  "paperId": "d566d6859e22cfdcd59d735f6865fb5f0b50f3c9",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2310-18344",
+    "ArXiv": "2310.18344",
+    "DOI": "10.48550/arXiv.2310.18344",
+    "CorpusId": 264590664
+  },
+  "title": "Chainpoll: A high efficacy method for LLM hallucination detection",
+  "venue": "arXiv.org",
+  "year": 2023,
+  "citationCount": 55,
+  "influentialCitationCount": 3,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2310.18344, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2023-10-22",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2310.18344"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Friel2023ChainpollAH,\n author = {R. Friel and Atindriyo Sanyal},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {Chainpoll: A high efficacy method for LLM hallucination detection},\n volume = {abs/2310.18344},\n year = {2023}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2262445823",
+      "name": "R. Friel"
+    },
+    {
+      "authorId": "2123005528",
+      "name": "Atindriyo Sanyal"
+    }
+  ],
+  "abstract": "Large language models (LLMs) have experienced notable advancements in generating coherent and contextually relevant responses. However, hallucinations - incorrect or unfounded claims - are still prevalent, prompting the creation of automated metrics to detect these in LLM outputs. Our contributions include: introducing ChainPoll, an innovative hallucination detection method that excels compared to its counterparts, and unveiling RealHall, a refined collection of benchmark datasets to assess hallucination detection metrics from recent studies. While creating RealHall, we assessed tasks and datasets from previous hallucination detection studies and observed that many are not suitable for the potent LLMs currently in use. Overcoming this, we opted for four datasets challenging for modern LLMs and pertinent to real-world scenarios. Using RealHall, we conducted a comprehensive comparison of ChainPoll with numerous hallucination metrics from recent studies. Our findings indicate that ChainPoll outperforms in all RealHall benchmarks, achieving an overall AUROC of 0.781. This surpasses the next best theoretical method by 11% and exceeds industry standards by over 23%. Additionally, ChainPoll is cost-effective and offers greater transparency than other metrics. We introduce two novel metrics to assess LLM hallucinations: Adherence and Correctness. Adherence is relevant to Retrieval Augmented Generation workflows, evaluating an LLM's analytical capabilities within given documents and contexts. In contrast, Correctness identifies logical and reasoning errors."
+}

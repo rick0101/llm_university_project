@@ -1,0 +1,37 @@
+{
+  "paperId": "60192a78d007f78fdcf4053cc695e3b8239dcfd4",
+  "externalIds": {
+    "ArXiv": "2602.10465",
+    "CorpusId": 285470155
+  },
+  "title": "Authenticated Workflows: A Systems Approach to Protecting Agentic AI",
+  "venue": "",
+  "year": 2026,
+  "citationCount": 0,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2602.10465, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2026-02-11",
+  "journal": null,
+  "citationStyles": {
+    "bibtex": "@Inproceedings{Rajagopalan2026AuthenticatedWA,\n author = {Mohan Rajagopalan and V. Rao},\n title = {Authenticated Workflows: A Systems Approach to Protecting Agentic AI},\n year = {2026}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2410032662",
+      "name": "Mohan Rajagopalan"
+    },
+    {
+      "authorId": "2410394100",
+      "name": "V. Rao"
+    }
+  ],
+  "abstract": "Agentic AI systems automate enterprise workflows but existing defenses--guardrails, semantic filters--are probabilistic and routinely bypassed. We introduce authenticated workflows, the first complete trust layer for enterprise agentic AI. Security reduces to protecting four fundamental boundaries: prompts, tools, data, and context. We enforce intent (operations satisfy organizational policies) and integrity (operations are cryptographically authentic) at every boundary crossing, combining cryptographic elimination of attack classes with runtime policy enforcement. This delivers deterministic security--operations either carry valid cryptographic proof or are rejected. We introduce MAPL, an AI-native policy language that expresses agentic constraints dynamically as agents evolve and invocation context changes, scaling as O(log M + N) policies versus O(M x N) rules through hierarchical composition with cryptographic attestations for workflow dependencies. We prove practicality through a universal security runtime integrating nine leading frameworks (MCP, A2A, OpenAI, Claude, LangChain, CrewAI, AutoGen, LlamaIndex, Haystack) through thin adapters requiring zero protocol modifications. Formal proofs establish completeness and soundness. Empirical validation shows 100% recall with zero false positives across 174 test cases, protection against 9 of 10 OWASP Top 10 risks, and complete mitigation of two high impact production CVEs."
+}

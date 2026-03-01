@@ -1,0 +1,57 @@
+{
+  "paperId": "2b289e1d136edeb6354496518af5230bddc09e61",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2411-00348",
+    "ArXiv": "2411.00348",
+    "DOI": "10.48550/arXiv.2411.00348",
+    "CorpusId": 273798382
+  },
+  "title": "Attention Tracker: Detecting Prompt Injection Attacks in LLMs",
+  "venue": "North American Chapter of the Association for Computational Linguistics",
+  "year": 2024,
+  "citationCount": 67,
+  "influentialCitationCount": 7,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2411.00348, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2024-11-01",
+  "journal": {
+    "pages": "2309-2322"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Hung2024AttentionTD,\n author = {Kuo-Han Hung and Ching-Yun Ko and Ambrish Rawat and I-Hsin Chung and Winston H. Hsu and Pin-Yu Chen},\n booktitle = {North American Chapter of the Association for Computational Linguistics},\n pages = {2309-2322},\n title = {Attention Tracker: Detecting Prompt Injection Attacks in LLMs},\n year = {2024}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2282954816",
+      "name": "Kuo-Han Hung"
+    },
+    {
+      "authorId": "2314713611",
+      "name": "Ching-Yun Ko"
+    },
+    {
+      "authorId": "22261698",
+      "name": "Ambrish Rawat"
+    },
+    {
+      "authorId": "2287632316",
+      "name": "I-Hsin Chung"
+    },
+    {
+      "authorId": "2237782993",
+      "name": "Winston H. Hsu"
+    },
+    {
+      "authorId": "2298413577",
+      "name": "Pin-Yu Chen"
+    }
+  ],
+  "abstract": "Large Language Models (LLMs) have revolutionized various domains but remain vulnerable to prompt injection attacks, where malicious inputs manipulate the model into ignoring original instructions and executing designated action. In this paper, we investigate the underlying mechanisms of these attacks by analyzing the attention patterns within LLMs. We introduce the concept of the distraction effect, where specific attention heads, termed important heads, shift focus from the original instruction to the injected instruction. Building on this discovery, we propose Attention Tracker, a training-free detection method that tracks attention patterns on instruction to detect prompt injection attacks without the need for additional LLM inference. Our method generalizes effectively across diverse models, datasets, and attack types, showing an AUROC improvement of up to 10.0% over existing methods, and performs well even on small LLMs. We demonstrate the robustness of our approach through extensive evaluations and provide insights into safeguarding LLM-integrated systems from prompt injection vulnerabilities."
+}

@@ -1,0 +1,58 @@
+{
+  "paperId": "682ff66a5ec0248f7e4a17a684b2d1e328e57f70",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2407-04693",
+    "ArXiv": "2407.04693",
+    "DOI": "10.48550/arXiv.2407.04693",
+    "CorpusId": 271039806
+  },
+  "title": "ANAH-v2: Scaling Analytical Hallucination Annotation of Large Language Models",
+  "venue": "Neural Information Processing Systems",
+  "year": 2024,
+  "citationCount": 13,
+  "influentialCitationCount": 2,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2407.04693, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2024-07-05",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2407.04693"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Gu2024ANAHv2SA,\n author = {Yuzhe Gu and Ziwei Ji and Wenwei Zhang and Chengqi Lyu and Dahua Lin and Kai Chen},\n booktitle = {Neural Information Processing Systems},\n journal = {ArXiv},\n title = {ANAH-v2: Scaling Analytical Hallucination Annotation of Large Language Models},\n volume = {abs/2407.04693},\n year = {2024}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2293825807",
+      "name": "Yuzhe Gu"
+    },
+    {
+      "authorId": "2303844062",
+      "name": "Ziwei Ji"
+    },
+    {
+      "authorId": "2266359401",
+      "name": "Wenwei Zhang"
+    },
+    {
+      "authorId": "2163740735",
+      "name": "Chengqi Lyu"
+    },
+    {
+      "authorId": "2261095726",
+      "name": "Dahua Lin"
+    },
+    {
+      "authorId": "2275790072",
+      "name": "Kai Chen"
+    }
+  ],
+  "abstract": "Large language models (LLMs) exhibit hallucinations in long-form question-answering tasks across various domains and wide applications. Current hallucination detection and mitigation datasets are limited in domains and sizes, which struggle to scale due to prohibitive labor costs and insufficient reliability of existing hallucination annotators. To facilitate the scalable oversight of LLM hallucinations, this paper introduces an iterative self-training framework that simultaneously and progressively scales up the hallucination annotation dataset and improves the accuracy of the hallucination annotator. Based on the Expectation Maximization (EM) algorithm, in each iteration, the framework first applies a hallucination annotation pipeline to annotate a scaled dataset and then trains a more accurate hallucination annotator on the dataset. This new hallucination annotator is adopted in the hallucination annotation pipeline used for the next iteration. Extensive experimental results demonstrate that the finally obtained hallucination annotator with only 7B parameters surpasses the performance of GPT-4 and obtains new state-of-the-art hallucination detection results on HaluEval and HalluQA by zero-shot inference. Such an annotator can not only evaluate the hallucination levels of various LLMs on the large-scale dataset but also help to mitigate the hallucination of LLMs generations, with the Natural Language Inference (NLI) metric increasing from 25% to 37% on HaluEval."
+}

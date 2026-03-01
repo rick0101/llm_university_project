@@ -1,0 +1,46 @@
+{
+  "paperId": "f6c4795caf1e8bb86da7a040d7acb91a24e16f2f",
+  "externalIds": {
+    "DBLP": "conf/mm/01190MCCJ24",
+    "ArXiv": "2408.01978",
+    "DOI": "10.1145/3664647.3681032",
+    "CorpusId": 271709538
+  },
+  "title": "AdvQDet: Detecting Query-Based Adversarial Attacks with Adversarial Contrastive Prompt Tuning",
+  "venue": "ACM Multimedia",
+  "year": 2024,
+  "citationCount": 11,
+  "openAccessPdf": {
+    "url": "",
+    "status": "CLOSED",
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2408.01978, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2153689458",
+      "name": "Xin Wang"
+    },
+    {
+      "authorId": "2157741057",
+      "name": "Kai Chen"
+    },
+    {
+      "authorId": "2267387052",
+      "name": "Xingjun Ma"
+    },
+    {
+      "authorId": "2281998567",
+      "name": "Zhineng Chen"
+    },
+    {
+      "authorId": "2289801075",
+      "name": "Jingjing Chen"
+    },
+    {
+      "authorId": "2259536780",
+      "name": "Yu-Gang Jiang"
+    }
+  ],
+  "abstract": "Deep neural networks (DNNs) are known to be vulnerable to adversarial attacks even under a black-box setting where the adversary can only query the model. Particularly, query-based black-box adversarial attacks estimate adversarial gradients based on the returned probability vectors of the target model for a sequence of queries. During this process, the queries made to the target model are intermediate adversarial examples crafted at the previous attack step, which share high similarities in the pixel space. Motivated by this observation, stateful detection methods have been proposed to detect and reject query-based attacks. While demonstrating promising results, these methods either have been evaded by more advanced attacks or suffer from low efficiency in terms of the number of shots (queries) required to detect different attacks. Arguably, the key challenge here is to assign high similarity scores for any two intermediate adversarial examples perturbed from the same clean image. To address this challenge, we propose a novel Adversarial Contrastive Prompt Tuning (ACPT) method to robustly fine-tune the CLIP image encoder to extract similar embeddings for any two intermediate adversarial queries. With ACPT, we further introduce a detection framework AdvQDet that can detect 7 state-of-the-art query-based attacks with >99% detection rate within 5 shots. We also show that ACPT is robust to 3 types of adaptive attacks. Code is available at https://github.com/xinwong/AdvQDet."
+}

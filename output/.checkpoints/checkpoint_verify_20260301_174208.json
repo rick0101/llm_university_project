@@ -1,0 +1,943 @@
+{
+  "node": "verify",
+  "timestamp": "20260301_174208",
+  "state": {
+    "l2_summaries": [],
+    "outline": [
+      {
+        "key": "abstract",
+        "title": "Abstract",
+        "description": "Auto-generated abstract section.",
+        "target_length_words": 500,
+        "key_topics": [],
+        "related_categories": [],
+        "order": 0,
+        "section_type": "abstract",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "introduction",
+        "title": "Introduction",
+        "description": "Provide a general overview of Large Language Models (LLMs), their growing adoption, and the emerging security concerns. Motivate the need for a systematic survey of threats.",
+        "target_length_words": 1500,
+        "key_topics": [],
+        "related_categories": [],
+        "order": 1,
+        "section_type": "introduction",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "background",
+        "title": "Background",
+        "description": "Define key concepts: LLMs, transformer architecture, fine-tuning, in-context learning, RLHF. Provide the foundational knowledge needed to understand the attacks.",
+        "target_length_words": 1500,
+        "key_topics": [],
+        "related_categories": [],
+        "order": 2,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "prompt_injection_attacks",
+        "title": "Prompt Injection Attacks",
+        "description": "Describe direct and indirect prompt injection attacks in detail. Cover techniques like goal hijacking, payload splitting, and jailbreaking. Include real-world examples and defenses.",
+        "target_length_words": 1500,
+        "key_topics": [],
+        "related_categories": [],
+        "order": 3,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "data_and_model_poisoning",
+        "title": "Data and Model Poisoning",
+        "description": "Explain training-time attacks: data poisoning, backdoor attacks, and model poisoning. Cover how malicious data can compromise model behavior and how to detect/mitigate such attacks.",
+        "target_length_words": 1500,
+        "key_topics": [],
+        "related_categories": [],
+        "order": 4,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "adversarial_attacks",
+        "title": "Adversarial Attacks",
+        "description": "Discuss adversarial examples and perturbations applied to LLMs. Cover both white-box and black-box attack strategies, including token-level and semantic-level attacks.",
+        "target_length_words": 1500,
+        "key_topics": [],
+        "related_categories": [],
+        "order": 5,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "hallucinations_and_factual_accuracy",
+        "title": "Hallucinations and Factual Accuracy",
+        "description": "Analyze the hallucination problem in LLMs. Discuss causes, types of hallucinations, detection methods, and mitigation strategies.",
+        "target_length_words": 1500,
+        "key_topics": [],
+        "related_categories": [],
+        "order": 6,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "defenses_and_mitigation_strategies",
+        "title": "Defenses and Mitigation Strategies",
+        "description": "Survey the main defensive techniques: input/output filtering, guardrails, red-teaming, alignment techniques, and formal verification approaches.",
+        "target_length_words": 1500,
+        "key_topics": [],
+        "related_categories": [],
+        "order": 7,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "testing_methodologies",
+        "title": "Testing Methodologies and Evaluation",
+        "description": "Auto-generated testing section.",
+        "target_length_words": 1500,
+        "key_topics": [],
+        "related_categories": [],
+        "order": 8,
+        "section_type": "testing",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "discussion_and_open_challenges",
+        "title": "Discussion and Open Challenges",
+        "description": "Identify gaps in current research, discuss limitations of existing defenses, and highlight promising future research directions.",
+        "target_length_words": 1500,
+        "key_topics": [],
+        "related_categories": [],
+        "order": 9,
+        "section_type": "discussion",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "conclusion",
+        "title": "Conclusion",
+        "description": "Summarise the key findings, contributions of the survey, and practical recommendations for practitioners.",
+        "target_length_words": 500,
+        "key_topics": [],
+        "related_categories": [],
+        "order": 10,
+        "section_type": "conclusion",
+        "parent_key": null,
+        "subsections": []
+      }
+    ],
+    "sections": {},
+    "verification_results": {
+      "introduction": {
+        "section_key": "introduction",
+        "total_citations": 11,
+        "supported": 0,
+        "partially_supported": 0,
+        "not_supported": 0,
+        "source_not_found": 11,
+        "details": [
+          {
+            "citation_key": "Rossi_2024_Early",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Yang_2024_Adversarial",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Jia_2025_Adversarial",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Chaudhari_2025_Cascading",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Zhan_2025_LLM",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Chowdhury_2024_Breaking",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Liu_2025_Aegis",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Li_2024_Backdoorllm",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Sui_2024_Confabulation",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Nahar_2024_LLM",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Errico_2026_AI",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          }
+        ],
+        "pass_rate": 0.0,
+        "passed": false,
+        "iteration": 1,
+        "verified_at": "2026-03-01T17:42:07.323345"
+      },
+      "background": {
+        "section_key": "background",
+        "total_citations": 7,
+        "supported": 0,
+        "partially_supported": 0,
+        "not_supported": 0,
+        "source_not_found": 7,
+        "details": [
+          {
+            "citation_key": "Rossi_2024_Early",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Hung_2024_LLMs",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Chaudhari_2025_Cascading",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Yang_2024_Adversarial",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Chowdhury_2024_Breaking",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Zhan_2025_LLM",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Jia_2025_Adversarial",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          }
+        ],
+        "pass_rate": 0.0,
+        "passed": false,
+        "iteration": 1,
+        "verified_at": "2026-03-01T17:42:07.501498"
+      },
+      "prompt_injection_attacks": {
+        "section_key": "prompt_injection_attacks",
+        "total_citations": 4,
+        "supported": 0,
+        "partially_supported": 0,
+        "not_supported": 0,
+        "source_not_found": 4,
+        "details": [
+          {
+            "citation_key": "Rossi_2024_Early",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Zhan_2025_LLM",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Hung_2024_LLMs",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Liu_2025_Aegis",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          }
+        ],
+        "pass_rate": 0.0,
+        "passed": false,
+        "iteration": 1,
+        "verified_at": "2026-03-01T17:42:07.679308"
+      },
+      "data_and_model_poisoning": {
+        "section_key": "data_and_model_poisoning",
+        "total_citations": 5,
+        "supported": 0,
+        "partially_supported": 0,
+        "not_supported": 0,
+        "source_not_found": 5,
+        "details": [
+          {
+            "citation_key": "Li_2024_Backdoorllm",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Yang_2022_Data",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Li_2024_Badedit",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Chaudhari_2025_Cascading",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Chowdhury_2024_Breaking",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          }
+        ],
+        "pass_rate": 0.0,
+        "passed": false,
+        "iteration": 1,
+        "verified_at": "2026-03-01T17:42:07.859304"
+      },
+      "adversarial_attacks": {
+        "section_key": "adversarial_attacks",
+        "total_citations": 8,
+        "supported": 0,
+        "partially_supported": 0,
+        "not_supported": 0,
+        "source_not_found": 8,
+        "details": [
+          {
+            "citation_key": "Wang_2024_Advqdet",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Chowdhury_2024_Breaking",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Zhan_2025_LLM",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Wu_2024_Dissecting",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Jia_2025_Adversarial",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Li_2024_Badedit",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Yang_2024_Adversarial",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Liu_2025_Aegis",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          }
+        ],
+        "pass_rate": 0.0,
+        "passed": false,
+        "iteration": 1,
+        "verified_at": "2026-03-01T17:42:08.038498"
+      },
+      "hallucinations_and_factual_accuracy": {
+        "section_key": "hallucinations_and_factual_accuracy",
+        "total_citations": 5,
+        "supported": 0,
+        "partially_supported": 0,
+        "not_supported": 0,
+        "source_not_found": 5,
+        "details": [
+          {
+            "citation_key": "Sui_2024_Confabulation",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Nahar_2024_LLM",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Simhi_2024_LLM",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Friel_2023_LLM",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Gu_2024_Anah",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          }
+        ],
+        "pass_rate": 0.0,
+        "passed": false,
+        "iteration": 1,
+        "verified_at": "2026-03-01T17:42:08.218051"
+      },
+      "defenses_and_mitigation_strategies": {
+        "section_key": "defenses_and_mitigation_strategies",
+        "total_citations": 6,
+        "supported": 0,
+        "partially_supported": 0,
+        "not_supported": 0,
+        "source_not_found": 6,
+        "details": [
+          {
+            "citation_key": "Chowdhury_2024_Breaking",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Zhan_2025_LLM",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Li_2024_Backdoorllm",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Rossi_2024_Early",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Liu_2025_Aegis",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Rajagopalan_2026_AI",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          }
+        ],
+        "pass_rate": 0.0,
+        "passed": false,
+        "iteration": 1,
+        "verified_at": "2026-03-01T17:42:08.397614"
+      },
+      "testing_methodologies": {
+        "section_key": "testing_methodologies",
+        "total_citations": 6,
+        "supported": 0,
+        "partially_supported": 0,
+        "not_supported": 0,
+        "source_not_found": 6,
+        "details": [
+          {
+            "citation_key": "Li_2024_Backdoorllm",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Yang_2024_Adversarial",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Zhan_2025_LLM",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Liu_2025_Aegis",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Chowdhury_2024_Breaking",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Wu_2024_Dissecting",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          }
+        ],
+        "pass_rate": 0.0,
+        "passed": false,
+        "iteration": 1,
+        "verified_at": "2026-03-01T17:42:08.577909"
+      },
+      "discussion_and_open_challenges": {
+        "section_key": "discussion_and_open_challenges",
+        "total_citations": 10,
+        "supported": 0,
+        "partially_supported": 0,
+        "not_supported": 0,
+        "source_not_found": 10,
+        "details": [
+          {
+            "citation_key": "Rajagopalan_2026_AI",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Errico_2026_AI",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Li_2024_Backdoorllm",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Chowdhury_2024_Breaking",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Zhan_2025_LLM",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Yang_2024_Adversarial",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Simhi_2024_LLM",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Nahar_2024_LLM",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Chaudhari_2025_Cascading",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Liu_2025_Aegis",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          }
+        ],
+        "pass_rate": 0.0,
+        "passed": false,
+        "iteration": 1,
+        "verified_at": "2026-03-01T17:42:08.763945"
+      },
+      "conclusion": {
+        "section_key": "conclusion",
+        "total_citations": 6,
+        "supported": 0,
+        "partially_supported": 0,
+        "not_supported": 0,
+        "source_not_found": 6,
+        "details": [
+          {
+            "citation_key": "Chowdhury_2024_Breaking",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Yang_2024_Adversarial",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Wu_2024_Dissecting",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Zhan_2025_LLM",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Li_2024_Backdoorllm",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Rajagopalan_2026_AI",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          }
+        ],
+        "pass_rate": 0.0,
+        "passed": false,
+        "iteration": 1,
+        "verified_at": "2026-03-01T17:42:08.948643"
+      }
+    },
+    "bibliography": [],
+    "provenance": [],
+    "final_paper": "",
+    "version_info": {
+      "version_number": "1.0",
+      "timestamp": "2026-03-01T16:56:32.867101",
+      "paper_count": 0,
+      "categories": [],
+      "changelog": "",
+      "l1_count": 0,
+      "l2_count": 0,
+      "sections_count": 0,
+      "total_citations": 0,
+      "verified_citations": 0
+    },
+    "current_phase": "verifying",
+    "current_section_key": "",
+    "iteration_count": 1,
+    "errors": [
+      "QdrantStore init failed: Storage folder qdrant_db is already accessed by another instance of Qdrant client. If you require concurrent access, use Qdrant server instead.",
+      "Impossibile inizializzare QdrantStore: Storage folder qdrant_db is already accessed by another instance of Qdrant client. If you require concurrent access, use Qdrant server instead.",
+      "Impossibile inizializzare QdrantStore: Storage folder qdrant_db is already accessed by another instance of Qdrant client. If you require concurrent access, use Qdrant server instead.",
+      "Impossibile inizializzare QdrantStore: Storage folder qdrant_db is already accessed by another instance of Qdrant client. If you require concurrent access, use Qdrant server instead.",
+      "Impossibile inizializzare QdrantStore: Storage folder qdrant_db is already accessed by another instance of Qdrant client. If you require concurrent access, use Qdrant server instead.",
+      "Impossibile inizializzare QdrantStore: Storage folder qdrant_db is already accessed by another instance of Qdrant client. If you require concurrent access, use Qdrant server instead.",
+      "Impossibile inizializzare QdrantStore: Storage folder qdrant_db is already accessed by another instance of Qdrant client. If you require concurrent access, use Qdrant server instead.",
+      "Impossibile inizializzare QdrantStore: Storage folder qdrant_db is already accessed by another instance of Qdrant client. If you require concurrent access, use Qdrant server instead.",
+      "Impossibile inizializzare QdrantStore: Storage folder qdrant_db is already accessed by another instance of Qdrant client. If you require concurrent access, use Qdrant server instead.",
+      "Impossibile inizializzare QdrantStore: Storage folder qdrant_db is already accessed by another instance of Qdrant client. If you require concurrent access, use Qdrant server instead.",
+      "Impossibile inizializzare QdrantStore: Storage folder qdrant_db is already accessed by another instance of Qdrant client. If you require concurrent access, use Qdrant server instead."
+    ],
+    "metadata": {
+      "outline_file": "sample_outline.json",
+      "pipeline_start": "2026-03-01T16:56:32.867090",
+      "max_iterations": 3,
+      "planner_source": "file:sample_outline.json",
+      "planner_sections": 11,
+      "writer_sections_written": 10,
+      "writer_sections_failed": 0,
+      "writer_total_time": 2732.9,
+      "writer_model": "pro",
+      "critic_verified_count": 0,
+      "critic_needs_revision_count": 10,
+      "critic_failed_count": 0,
+      "critic_total_time": 1.8,
+      "critic_model": "flash"
+    }
+  }
+}

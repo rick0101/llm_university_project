@@ -1,0 +1,50 @@
+{
+  "paperId": "78fa00a8cdd113e63ed18285fcd1bb6e8b042785",
+  "externalIds": {
+    "ArXiv": "2402.00898",
+    "DBLP": "journals/corr/abs-2402-00898",
+    "DOI": "10.48550/arXiv.2402.00898",
+    "CorpusId": 267406189
+  },
+  "title": "An Early Categorization of Prompt Injection Attacks on Large Language Models",
+  "venue": "arXiv.org",
+  "year": 2024,
+  "citationCount": 42,
+  "influentialCitationCount": 3,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2402.00898, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2024-01-31",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2402.00898"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Rossi2024AnEC,\n author = {Sippo Rossi and Alisia Marianne Michel and R. Mukkamala and J. Thatcher},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {An Early Categorization of Prompt Injection Attacks on Large Language Models},\n volume = {abs/2402.00898},\n year = {2024}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "153664099",
+      "name": "Sippo Rossi"
+    },
+    {
+      "authorId": "2282467962",
+      "name": "Alisia Marianne Michel"
+    },
+    {
+      "authorId": "1750589",
+      "name": "R. Mukkamala"
+    },
+    {
+      "authorId": "2243076577",
+      "name": "J. Thatcher"
+    }
+  ],
+  "abstract": "Large language models and AI chatbots have been at the forefront of democratizing artificial intelligence. However, the releases of ChatGPT and other similar tools have been followed by growing concerns regarding the difficulty of controlling large language models and their outputs. Currently, we are witnessing a cat-and-mouse game where users attempt to misuse the models with a novel attack called prompt injections. In contrast, the developers attempt to discover the vulnerabilities and block the attacks simultaneously. In this paper, we provide an overview of these emergent threats and present a categorization of prompt injections, which can guide future research on prompt injections and act as a checklist of vulnerabilities in the development of LLM interfaces. Moreover, based on previous literature and our own empirical research, we discuss the implications of prompt injections to LLM end users, developers, and researchers."
+}

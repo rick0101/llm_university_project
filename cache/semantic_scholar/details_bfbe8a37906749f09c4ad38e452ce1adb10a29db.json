@@ -1,0 +1,49 @@
+{
+  "paperId": "bfbe8a37906749f09c4ad38e452ce1adb10a29db",
+  "externalIds": {
+    "DBLP": "conf/acl/SuiDWS24",
+    "ArXiv": "2406.04175",
+    "DOI": "10.48550/arXiv.2406.04175",
+    "CorpusId": 270285964
+  },
+  "title": "Confabulation: The Surprising Value of Large Language Model Hallucinations",
+  "venue": "Annual Meeting of the Association for Computational Linguistics",
+  "year": 2024,
+  "citationCount": 45,
+  "influentialCitationCount": 1,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2406.04175, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2024-06-06",
+  "journal": {
+    "pages": "14274-14284"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Sui2024ConfabulationTS,\n author = {Peiqi Sui and Eamon Duede and Sophie Wu and R. So},\n booktitle = {Annual Meeting of the Association for Computational Linguistics},\n pages = {14274-14284},\n title = {Confabulation: The Surprising Value of Large Language Model Hallucinations},\n year = {2024}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2304952629",
+      "name": "Peiqi Sui"
+    },
+    {
+      "authorId": "2193109",
+      "name": "Eamon Duede"
+    },
+    {
+      "authorId": "2346049129",
+      "name": "Sophie Wu"
+    },
+    {
+      "authorId": "2304954202",
+      "name": "R. So"
+    }
+  ],
+  "abstract": "This paper presents a systematic defense of large language model (LLM) hallucinations or 'confabulations' as a potential resource instead of a categorically negative pitfall. The standard view is that confabulations are inherently problematic and AI research should eliminate this flaw. In this paper, we argue and empirically demonstrate that measurable semantic characteristics of LLM confabulations mirror a human propensity to utilize increased narrativity as a cognitive resource for sense-making and communication. In other words, it has potential value. Specifically, we analyze popular hallucination benchmarks and reveal that hallucinated outputs display increased levels of narrativity and semantic coherence relative to veridical outputs. This finding reveals a tension in our usually dismissive understandings of confabulation. It suggests, counter-intuitively, that the tendency for LLMs to confabulate may be intimately associated with a positive capacity for coherent narrative-text generation."
+}

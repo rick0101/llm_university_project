@@ -1,0 +1,42 @@
+{
+  "paperId": "28f7d474e9c532c38fbea3610d31437c32dafc08",
+  "externalIds": {
+    "ArXiv": "2509.00088",
+    "DBLP": "journals/corr/abs-2509-00088",
+    "DOI": "10.48550/arXiv.2509.00088",
+    "CorpusId": 281081420
+  },
+  "title": "AEGIS : Automated Co-Evolutionary Framework for Guarding Prompt Injections Schema",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 1,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2509.00088, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2330156957",
+      "name": "Ting-Chun Liu"
+    },
+    {
+      "authorId": "2331016835",
+      "name": "C. Hsu"
+    },
+    {
+      "authorId": "2354402185",
+      "name": "Kuan-Yi Lee"
+    },
+    {
+      "authorId": "2330163785",
+      "name": "C. Fu"
+    },
+    {
+      "authorId": "2378721616",
+      "name": "Hung-yi Lee"
+    }
+  ],
+  "abstract": "Prompt injection attacks pose a significant challenge to the safe deployment of Large Language Models (LLMs) in real-world applications. While prompt-based detection offers a lightweight and interpretable defense strategy, its effectiveness has been hindered by the need for manual prompt engineering. To address this issue, we propose AEGIS , an Automated co-Evolutionary framework for Guarding prompt Injections Schema. Both attack and defense prompts are iteratively optimized against each other using a gradient-like natural language prompt optimization technique. This framework enables both attackers and defenders to autonomously evolve via a Textual Gradient Optimization (TGO) module, leveraging feedback from an LLM-guided evaluation loop. We evaluate our system on a real-world assignment grading dataset of prompt injection attacks and demonstrate that our method consistently outperforms existing baselines, achieving superior robustness in both attack success and detection. Specifically, the attack success rate (ASR) reaches 1.0, representing an improvement of 0.26 over the baseline. For detection, the true positive rate (TPR) improves by 0.23 compared to the previous best work, reaching 0.84, and the true negative rate (TNR) remains comparable at 0.89. Ablation studies confirm the importance of co-evolution, gradient buffering, and multi-objective optimization. We also confirm that this framework is effective in different LLMs. Our results highlight the promise of adversarial training as a scalable and effective approach for guarding prompt injections."
+}

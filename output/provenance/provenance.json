@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0",
+  "survey_version": "1.1",
+  "generated_at": "2026-03-01T17:48:53.786216",
+  "created_at": "2026-03-01T17:48:53.785605",
+  "total_claims": 0,
+  "verified_claims": 0,
+  "unverified_claims": 0,
+  "coverage_rate": 0.0,
+  "statistics": {
+    "total_claims": 0,
+    "verified_claims": 0,
+    "unverified_claims": 0,
+    "supported": 0,
+    "partially_supported": 0,
+    "not_supported": 0,
+    "source_not_found": 0,
+    "coverage_rate": 0.0,
+    "support_rate": 0.0,
+    "avg_confidence": 0.0,
+    "unique_citation_keys": 0,
+    "unique_sections": 0,
+    "sections": [],
+    "top_cited_papers": []
+  },
+  "sections": []
+}

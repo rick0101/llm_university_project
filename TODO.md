@@ -1123,7 +1123,7 @@ paperhunter/
 >   - merge_bib_files: 2 casi (2 file con dedup 3 uniche, empty) ✓
 >   - Package imports: 2 casi (from module, from package) ✓
 
-#### [ ] Task 5.3: Creare postprocessing/latex_exporter.py — Export LaTeX
+#### [x] Task 5.3: Creare postprocessing/latex_exporter.py — Export LaTeX
 **Obiettivo:** Convertire il paper Markdown in formato LaTeX (template IEEEtran o ACL).  
 **Dettagli:**
 - Funzione `markdown_to_latex(md_content, template) → str`
@@ -1132,6 +1132,58 @@ paperhunter/
 - Supporto per figure placeholder e tabelle
 - Output: file `.tex` compilabile  
 **Test:** Convertire un Markdown di test e verificare che compili con pdflatex.
+
+> **Completato 01/03/2026.** File: `paperhunter/postprocessing/latex_exporter.py` (~620 righe)
+> - Template LaTeX: `_TEMPLATE_ACL` (natbib, microtype, cleveref), `_TEMPLATE_IEEETRAN` (IEEEtran conference), `_TEMPLATE_PLAIN` (article 12pt). Tutti con graphicx, booktabs, amsmath, hyperref, inputenc UTF-8
+> - Pipeline di conversione `_convert_body()` in 12 step ordinati:
+>   - `_convert_code_blocks()`: fenced code → `\begin{verbatim}`
+>   - `_convert_images()`: `![alt](path)` → `\begin{figure}` con `\includegraphics`, `\caption`, `\label{fig:}`
+>   - `_convert_urls()`: `[text](url)` → `\href{url}{text}`
+>   - `_convert_tables()`: tabelle Markdown → `\begin{table}[htbp]` con `\toprule/\midrule/\bottomrule`
+>   - `_convert_citations()`: `[bibtex_key]` → `\cite{bibtex_key}`, multiple `[k1, k2]` → `\cite{k1, k2}`. Ignora: Figure/Table/Section refs, numeri, link Markdown, placement specifier LaTeX (`[htbp]`)
+>   - `_convert_headings()`: `#` → `\section{}`, `##` → `\subsection{}`, `###` → `\subsubsection{}`, `####` → `\paragraph{}`
+>   - `_convert_bold_italic()`: `**bold**` → `\textbf{}`, `*italic*` → `\textit{}`, `***both***` → `\textbf{\textit{}}`, `` `code` `` → `\texttt{}`
+>   - `_convert_lists()`: bullet list → `\begin{itemize}`, numbered → `\begin{enumerate}`
+>   - `_convert_blockquotes()`: `> text` → `\begin{quote}`
+>   - `_convert_footnotes()`: `[^1]` + `[^1]: text` → `\footnote{text}`
+>   - `_convert_horizontal_rules()`: `---` → `\noindent\rule{\textwidth}{0.4pt}`
+>   - `_clean_double_blank_lines()`: normalizza righe vuote
+> - `_strip_title_and_shift_headings()`: rimuove il primo `#` (titolo, già in `\title{}`), promuove i livelli (`##` → `#`, `###` → `##`, ecc.)
+> - `_escape_latex()`: escape caratteri speciali LaTeX (`&`, `%`, `$`, `#`, `_`, `{`, `}`, `~`, `^`)
+> - `_extract_title_from_md()`: estrae titolo dal primo heading `#` o fallback prima riga
+> - `_extract_abstract_from_md()`: estrae sezione Abstract (case-insensitive) per inserirla come `\begin{abstract}`
+> - `_markdown_table_to_latex()`: parser tabella con header detection, separatore skip, padding righe corte, col_spec `l`×N
+> - `markdown_to_latex(md_content, *, template, bib_file, title, author, date) → str`: API principale. Strip title, shift headings, converti body, estrai abstract → `\begin{abstract}`, applica template. Rimuove sezione Abstract duplicata dal body
+> - `export_latex(md_content, output_path, *, bib_file, template, title, author, date, copy_bib, bib_source_path) → Path`: export su file con creazione directory, copia .bib opzionale, logging Rich
+> - `export_latex_from_state(state, output_dir, *, template, bib_file, author, copy_bib, master_bib_path) → Path | None`: export da `SurveyState.final_paper`. Rileva output_dir da version_info. Cerca .bib in directory versione o fallback master
+> - `get_export_stats(latex_content) → dict`: 15 statistiche (chars, lines, sections, subsections, citations, unique_cite_keys, tables, figures, equations, itemize, enumerate, verbatim, has_abstract, has_bibliography)
+> - `print_export_summary(latex_content, output_path?)`: riepilogo Rich formattato
+> - `paperhunter/postprocessing/__init__.py` aggiornato con export di `markdown_to_latex`, `export_latex`, `export_latex_from_state`, `get_export_stats`, `print_export_summary`
+> - Test 93/93 passati:
+>   - _escape_latex: 6 casi (special chars, hash/underscore, braces, tilde/caret, nessuno, vuoto) ✓
+>   - _convert_headings: 7 casi (4 livelli, multipli, spazi, nessuno) ✓
+>   - _convert_citations: 9 casi (singola, multipla, ignore link/Figure/Table/Section/numeri, chiave complessa, nessuna) ✓
+>   - _convert_bold_italic: 6 casi (bold, italic, bold+italic, code, mixed, nessuno) ✓
+>   - _convert_urls: 3 casi (basic, multipli, nessuno) ✓
+>   - _convert_lists: 5 casi (bullet, numerato, asterisco, fine con blank, nessuno) ✓
+>   - _convert_tables: 3 casi (basic, 3 colonne, nessuna) ✓
+>   - _markdown_table_to_latex: 2 casi (solo header, righe diseguali) ✓
+>   - _convert_code_blocks: 3 casi (python, senza linguaggio, nessuno) ✓
+>   - _convert_images: 2 casi (immagine, nessuna) ✓
+>   - _convert_horizontal_rules: 3 casi ✓
+>   - _convert_footnotes: 2 casi ✓
+>   - _convert_blockquotes: 2 casi ✓
+>   - _clean_double_blank_lines: 2 casi ✓
+>   - _extract_title: 4 casi (heading, fallback, vuoto, blank lines) ✓
+>   - _extract_abstract: 3 casi (presente, assente, case-insensitive) ✓
+>   - _convert_body: 2 casi (mixed content, vuoto) ✓
+>   - markdown_to_latex: 11 casi (3 template, invalid, custom title/author/bib, auto-extraction, abstract, minimal) ✓
+>   - export_latex: 4 casi (file, nested dirs, copy bib, missing bib source) ✓
+>   - export_latex_from_state: 4 casi (basic, empty, no key, version_info) ✓
+>   - get_export_stats: 2 casi (completo, vuoto) ✓
+>   - print_export_summary: 2 smoke test ✓
+>   - Integrazione end-to-end: 4 casi (ACL pipeline completa con tutti gli elementi, IEEEtran, stats, export+verify) ✓
+>   - Package imports: 2 casi (modulo, package) ✓
 
 #### [ ] Task 5.4: Creare postprocessing/versioning.py — Versioning e changelog
 **Obiettivo:** Gestire versioni successive del survey con changelog automatico.  
@@ -1224,6 +1276,6 @@ paperhunter/
 | 2 — Summarization | 2.1–2.3 | 3 | 3 |
 | 3 — Indexing + GraphRAG | 3.1–3.6 | 6 | 6 |
 | 4 — Agentic Writing | 4.1–4.6 | 6 | 6 |
-| 5 — Post-processing | 5.1–5.5 | 2 | 5 |
+| 5 — Post-processing | 5.1–5.5 | 3 | 5 |
 | 6 — Integrazione | 6.1–6.3 | 0 | 3 |
-| **TOTALE** | | **31** | **36** |
+| **TOTALE** | | **32** | **36** |

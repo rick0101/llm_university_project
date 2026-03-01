@@ -3,7 +3,7 @@
 Contiene:
 - ProvenanceTracker: tracking completo claim → fonte con verifica
 - BibliographyGenerator: generazione .bib finale filtrato
-- (futuro) LaTeXExporter: export .tex
+- LaTeXExporter: export Markdown → .tex (ACL / IEEEtran / plain)
 - (futuro) VersionManager: versioning e changelog
 - (futuro) CheckpointManager: resume from checkpoint
 """
@@ -22,6 +22,14 @@ from paperhunter.postprocessing.bibliography_generator import (
     merge_bib_files,
 )
 
+from paperhunter.postprocessing.latex_exporter import (
+    markdown_to_latex,
+    export_latex,
+    export_latex_from_state,
+    get_export_stats,
+    print_export_summary,
+)
+
 __all__ = [
     # Provenance
     "ProvenanceTracker",
@@ -33,4 +41,10 @@ __all__ = [
     "generate_bib_from_state",
     "load_and_filter_bib",
     "merge_bib_files",
+    # LaTeX Export
+    "markdown_to_latex",
+    "export_latex",
+    "export_latex_from_state",
+    "get_export_stats",
+    "print_export_summary",
 ]

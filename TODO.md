@@ -3,7 +3,7 @@
 > **Progetto:** Sistema end-to-end per generare un paper scientifico survey sulla sicurezza dei LLM  
 > **Target:** Stile Nature/ACL, con citazioni verificabili, provenance tracking, architettura modulare  
 > **Data inizio:** 20 Febbraio 2026  
-> **Ultimo aggiornamento:** 26 Febbraio 2026
+> **Ultimo aggiornamento:** 1 Marzo 2026
 
 ---
 
@@ -1074,7 +1074,7 @@ paperhunter/
 >   - print_summary: smoke test (no crash con dati e vuoto) ✓
 >   - edge cases: default status, records property copia, version property, 5 sezioni report ✓
 
-#### [ ] Task 5.2: Creare postprocessing/bibliography_generator.py — Generazione .bib finale
+#### [x] Task 5.2: Creare postprocessing/bibliography_generator.py — Generazione .bib finale
 **Obiettivo:** Generare il file `.bib` finale con solo le entry effettivamente citate nel paper.  
 **Dettagli:**
 - Funzione `generate_final_bib(used_keys: set[str], master_bib: dict) → str`
@@ -1083,6 +1083,45 @@ paperhunter/
 - Ordinare alfabeticamente per chiave
 - Output: file `.bib` formattato  
 **Test:** Da 50 entry master, filtrare per 15 chiavi usate e verificare .bib.
+
+> **Completato 01/03/2026.** File: `paperhunter/postprocessing/bibliography_generator.py` (~580 righe)
+> - Utility interne: `_extract_bib_key()`, `_extract_bib_type()`, `_extract_field()` (regex con supporto `{...}` e bare values), `_extract_year_from_entry()`, `_count_citations_in_text()` (regex `[bibtex_key]` con filtro false positivi Table_/Figure_), `_reformat_entry()` (indentazione consistente a 2 spazi), `_key_similarity()` (Jaccard su token split per `_`)
+> - Classe `BibliographyGenerator`:
+>   - `load_master_bib(bib_path?)`: carica da file .bib (default `output/references.bib`). `load_master_bib_from_dict(entries)`: carica da dict in memoria
+>   - `generate(used_keys, *, validate=True, reformat=True, survey_text?) → dict`: filtra master per chiavi usate, valida entry (campi obbligatori), riformatta, conta citazioni nel testo. Ritorna report completo con statistiche, missing keys, entry details
+>   - `save_bib(output_path?) → Path`: salva .bib filtrato (default `output/references_final.bib`). Raise RuntimeError se `generate()` non chiamato
+>   - `save_report(output_path?) → Path`: salva report JSON (default `output/bib_report.json`)
+>   - `get_stats() → dict`: statistiche (master_bib_total, filtered, missing, invalid, coverage_rate, type_distribution, year_distribution, year_min/max, top_cited, total_citation_occurrences)
+>   - `get_missing_keys_report() → list[dict]`: dettaglio chiavi mancanti con suggerimenti fuzzy (Jaccard ≥ 0.5)
+>   - `get_entry_details(bibtex_key) → dict | None`: dettagli singola entry (tipo, anno, titolo, venue, DOI, validazione)
+>   - `print_summary()`: riepilogo Rich formattato (4 tabelle: generale, tipo, anno, top cited)
+> - Convenience functions:
+>   - `generate_final_bib(used_keys, *, master_bib_path?, output_path?, validate?, reformat?, survey_text?) → (Path | None, dict)`: workflow completo load → generate → save
+>   - `generate_bib_from_state(state, *, master_bib_path?, output_path?, validate?) → (Path | None, dict)`: genera da SurveyState, raccoglie chiavi con `collect_all_citation_keys()`, estrae testo da `final_paper`
+>   - `load_and_filter_bib(master_bib_path, used_keys) → dict`: helper leggero senza validazione
+>   - `merge_bib_files(*bib_paths, output_path?) → (Path, int)`: unisce più .bib con deduplicazione
+> - `paperhunter/postprocessing/__init__.py` aggiornato con export: `BibliographyGenerator`, `generate_final_bib`, `generate_bib_from_state`, `load_and_filter_bib`, `merge_bib_files`
+> - Test 75/75 passati:
+>   - _extract_bib_key: 5 casi (normal, article, misc, empty, no match) ✓
+>   - _extract_bib_type: 4 casi (inproceedings, article, misc, empty) ✓
+>   - _extract_field: 8 casi (title, author, year, booktitle, doi, missing, journal, case-insensitive) ✓
+>   - _extract_year: 4 casi (2023, 2024, no year, empty) ✓
+>   - _count_citations: 4 casi (basic 2+1, no citations, filter Table/Figure, empty) ✓
+>   - _reformat_entry: 3 casi (basic, already formatted, empty) ✓
+>   - _key_similarity: 4 casi (identical=1.0, partial>0.4, no match=0.0, empty=0.0) ✓
+>   - BibliographyGenerator init/repr: 2 casi ✓
+>   - Load: 3 casi (dict, file, nonexistent) ✓
+>   - Generate: 10 casi (filter 2/5, missing keys, all missing, empty keys, filter all 5/5, with/without validation, survey text citation counting, report structure, list input, empty master) ✓
+>   - Save: 4 casi (bib file, no generate→RuntimeError, JSON report, nested dir) ✓
+>   - Stats: 5 casi (basic, type distribution, year distribution, empty, with citations) ✓
+>   - Missing report: 2 casi (with suggestions Jaccard≥0.5, no suggestions) ✓
+>   - Entry details: 3 casi (existing, not filtered but in master, nonexistent) ✓
+>   - Print summary: 2 smoke test (data + empty) ✓
+>   - generate_final_bib: 4 casi (basic, empty master→None, no match→None, survey text) ✓
+>   - generate_bib_from_state: 1 caso (SurveyState con SectionDraft e CitationRecord) ✓
+>   - load_and_filter_bib: 2 casi (basic, empty keys) ✓
+>   - merge_bib_files: 2 casi (2 file con dedup 3 uniche, empty) ✓
+>   - Package imports: 2 casi (from module, from package) ✓
 
 #### [ ] Task 5.3: Creare postprocessing/latex_exporter.py — Export LaTeX
 **Obiettivo:** Convertire il paper Markdown in formato LaTeX (template IEEEtran o ACL).  
@@ -1185,6 +1224,6 @@ paperhunter/
 | 2 — Summarization | 2.1–2.3 | 3 | 3 |
 | 3 — Indexing + GraphRAG | 3.1–3.6 | 6 | 6 |
 | 4 — Agentic Writing | 4.1–4.6 | 6 | 6 |
-| 5 — Post-processing | 5.1–5.5 | 1 | 5 |
+| 5 — Post-processing | 5.1–5.5 | 2 | 5 |
 | 6 — Integrazione | 6.1–6.3 | 0 | 3 |
-| **TOTALE** | | **30** | **36** |
+| **TOTALE** | | **31** | **36** |

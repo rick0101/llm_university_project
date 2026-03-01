@@ -108,3 +108,4 @@ Regole d'oro per le nostre sessioni:
 
 Voglio un task alla volta, codice modulare e perfetto, e poi stop.
 Se ti risulta utile (solo in quel caso), dopo ogni task completato nella todo lista, crea un mini riassunto sotto al task, con le modifiche apportate e le note per il futuro, scrivendo le funzioni che hai aggiunto e come usarle.
+Per output lunghi, con una attesa elevanta, utilizza dei file di testo (es. code.txt) per salvare l'output, invece di incollarlo direttamente nella chat, per evitare problemi di formattazione o perdita di dati.

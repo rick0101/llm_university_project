@@ -1280,21 +1280,30 @@ paperhunter/
 
 ### FASE 6 — Integrazione & CLI
 
-#### [ ] Task 6.1: Aggiornare main.py — Nuovo CLI con subcomandi completi
+#### [x] Task 6.1: Aggiornare main.py — Nuovo CLI con subcomandi completi ✅
 **Obiettivo:** Ristrutturare il CLI per esporre tutte le funzionalità del nuovo sistema.  
 **Dettagli:**
 - Subcomandi:
   - `paperhunter search` — cercare e scaricare nuovi paper (logica esistente)
   - `paperhunter ingest` — eseguire ingestion pipeline incrementale
   - `paperhunter summarize` — generare/rigenerare L1 e L2
-  - `paperhunter index` — costruire/aggiornare indici (Chroma + BM25 + Graph)
+  - `paperhunter index` — costruire/aggiornare indici (BM25 + GraphRAG/Qdrant)
   - `paperhunter write` — eseguire pipeline agentica completa
   - `paperhunter query` — query interattiva contro il KB
   - `paperhunter stats` — statistiche complete del sistema
   - `paperhunter export` — esportare in LaTeX/BibTeX
-- Opzioni globali: `--config`, `--verbose`, `--resume`
+- Opzioni globali: `--config`, `--verbose`, `--version`
 - Rich console output per tutti i comandi  
 **Test:** Eseguire ogni subcomando con `--help` e verificare documentazione.
+**Note completamento:**
+- Vecchio `main.py` (PaperHunter async class) → backuppato in `main_old.py`
+- Nuovo `main.py` (~700 righe) con 8 subcomandi, lazy imports, Rich output
+- `cmd_write()` supporta `--resume` da checkpoint e auto-export post-pipeline
+- `cmd_summarize()` gestisce L1/L2/invalidazione con flag indipendenti
+- `cmd_index()` genera sia BM25 che PropertyGraph (con Neo4j opzionale)
+- `cmd_query()` supporta modalità interattiva e filtri per categoria/anno
+- `cmd_stats()` con output Rich table o plain text fallback
+- Entry point invariato: `paperhunter = "paperhunter.main:run"` (pyproject.toml)
 
 #### [ ] Task 6.2: Integrazione end-to-end — Test pipeline completa
 **Obiettivo:** Eseguire l'intera pipeline su un sottoinsieme di paper e verificare l'output.  
@@ -1344,5 +1353,5 @@ paperhunter/
 | 3 — Indexing + GraphRAG | 3.1–3.6 | 6 | 6 |
 | 4 — Agentic Writing | 4.1–4.6 | 6 | 6 |
 | 5 — Post-processing | 5.1–5.5 | 5 | 5 |
-| 6 — Integrazione | 6.1–6.3 | 0 | 3 |
-| **TOTALE** | | **34** | **36** |
+| 6 — Integrazione | 6.1–6.3 | 1 | 3 |
+| **TOTALE** | | **35** | **36** |

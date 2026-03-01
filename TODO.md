@@ -1185,7 +1185,7 @@ paperhunter/
 >   - Integrazione end-to-end: 4 casi (ACL pipeline completa con tutti gli elementi, IEEEtran, stats, export+verify) ✓
 >   - Package imports: 2 casi (modulo, package) ✓
 
-#### [ ] Task 5.4: Creare postprocessing/versioning.py — Versioning e changelog
+#### [x] Task 5.4: Creare postprocessing/versioning.py — Versioning e changelog
 **Obiettivo:** Gestire versioni successive del survey con changelog automatico.  
 **Dettagli:**
 - Classe `VersionManager`:
@@ -1196,6 +1196,57 @@ paperhunter/
 - Storage: `output/versions/` con sottocartelle per versione
 - Changelog: diff su categorie, numero paper, sezioni aggiunte/modificate  
 **Test:** Creare v1.0, poi v1.1 con 5 paper in più, verificare changelog.
+
+> **Completato 01/03/2026.** File: `paperhunter/postprocessing/versioning.py` (~650 righe)
+> - Classe `VersionManager(versions_dir?)`: gestore centralizzato del ciclo di vita delle versioni del survey
+>   - `get_current_version() → SurveyVersion | None`: carica la versione più recente da disco (scansiona directory con pattern `Survey_vX.Y_MonYYYY/`, carica `version_info.json`)
+>   - `get_version(version_number) → SurveyVersion | None`: carica una versione specifica dato il numero (es. "1.2")
+>   - `list_versions() → list[SurveyVersion]`: elenco ordinato per (major, minor) di tutte le versioni su disco
+>   - `list_version_dirs() → list[dict]`: elenco strutturale con version_number, dir_name, path, has_survey, has_changelog, has_provenance, has_version_info, size_mb
+>   - `create_new_version(*, paper_count, categories, l1_count, l2_count, sections_count, total_citations, verified_citations, auto_changelog) → SurveyVersion`: crea con auto-increment minor, genera changelog automatico se esiste versione precedente
+>   - `create_major_version(*, paper_count, categories, **kwargs) → SurveyVersion`: incrementa major version e resetta minor a 0
+>   - `generate_changelog(old, new, *, use_llm=False) → str`: dispatcher rule-based (default) con fallback LLM opzionale. Prima versione → "Initial release."
+>   - `save_version_metadata(version, *, survey_text?, provenance?, bibliography_keys?) → Path`: salva su disco con struttura `Survey_vX.Y_MonYYYY/` contenente version_info.json, survey.md, provenance.json, changelog.md, citation_keys.json
+>   - `load_version_metadata(version_number) → SurveyVersion | None`: alias di `get_version()` per coerenza API
+>   - `diff_versions(old, new) → dict`: diff strutturato con paper_diff, new/removed_categories, sections_diff, citations_diff, verified_diff, l1_diff, l2_diff, time_delta_days
+>   - `get_version_dir(version) → Path`: calcola path `output/versions/Survey_vX.Y_MonYYYY/`
+>   - `delete_version(version_number) → bool`: elimina versione e directory con shutil.rmtree
+>   - `clean_old_versions(keep_last=3) → int`: elimina versioni vecchie mantenendo le ultime N
+>   - `get_stats() → dict`: statistiche aggregate (total_versions, latest/oldest_version, latest_paper_count, total_size_mb, versions_list)
+>   - `print_summary()`: riepilogo Rich formattato (2 tabelle: generale + dettaglio per versione)
+> - Metodi interni:
+>   - `_compute_next_version_number()`: scansiona directory, incrementa minor dalla più recente
+>   - `_parse_version_number(str) → (major, minor)`: parsing robusto con fallback
+>   - `_load_version_from_dir(path) → SurveyVersion | None`: carica da version_info.json con gestione JSON corrotto, ricostruzione da nome directory se manca il file
+>   - `_serialize_version(version) → dict`: serializzazione JSON-safe (datetime → ISO string)
+>   - `_generate_changelog_rule_based(old, new) → str`: confronta paper_count, categories, sections, citations, verified, L1/L2. Bullet list Markdown
+>   - `_generate_changelog_llm(old, new) → str`: prompt Gemini Flash per changelog dettagliato. Import lazy di llm_factory
+> - Convenience functions:
+>   - `create_version_from_state(state, *, versions_dir?, auto_changelog?) → SurveyVersion`: estrae dati da SurveyState (L2 summaries, outline, sections, verifications) e crea versione
+>   - `load_version_history(versions_dir?) → list[SurveyVersion]`: carica intera history ordinata
+>   - `get_latest_version(versions_dir?) → SurveyVersion | None`: ritorna la più recente
+> - `paperhunter/postprocessing/__init__.py` aggiornato con export: `VersionManager`, `create_version_from_state`, `load_version_history`, `get_latest_version`
+> - Test 90/90 passati:
+>   - _parse_version_number: 7 casi (standard, minor, major, high numbers, no minor, invalid, empty) ✓
+>   - _compute_next_version_number: 6 casi (first=1.0, increment minor, multiple dirs, ignore non-matching, mixed, nonexistent) ✓
+>   - _serialize_version: 3 casi (datetime converted, all fields, JSON serializable) ✓
+>   - _load_version_from_dir: 4 casi (valid, no JSON→reconstruct, corrupted→None, no pattern→None) ✓
+>   - _generate_changelog_rule_based: 12 casi (papers added/removed, new/removed categories, sections added/reduced, citations updated, verified added, L1 added, L2 added, no changes, all combined ≥5 bullet points) ✓
+>   - generate_changelog: 3 casi (first version→"Initial release.", rule-based default, LLM fallback) ✓
+>   - create_new_version: 5 casi (first, second with changelog, no auto_changelog, categories sorted, summary fields) ✓
+>   - create_major_version: 3 casi (first=1.0, increment=2.0, with changelog) ✓
+>   - save_version_metadata: 7 casi (basic, with survey, provenance, changelog, bib keys, all artifacts, idempotent) ✓
+>   - get_version/get_current_version/list_versions: 9 casi (empty, single, latest, specific, not found, ordered, dirs info, dirs empty) ✓
+>   - diff_versions: 4 casi (basic, time delta 36 days, same version, negative diffs) ✓
+>   - delete/clean: 5 casi (delete existing/nonexistent, clean old keep 2, fewer than keep, invalid keep→ValueError) ✓
+>   - get_stats: 2 casi (empty, with versions) ✓
+>   - get_version_dir: 2 casi (Jan2026, Feb2026 format) ✓
+>   - __repr__/__len__: 4 casi (empty, with versions) ✓
+>   - print_summary: 2 smoke test ✓
+>   - load_version_metadata alias: 2 casi ✓
+>   - Convenience functions: 6 casi (load_version_history empty/full, get_latest_version empty/full, create_version_from_state with/without data) ✓
+>   - End-to-end: 2 casi (full workflow v1.0→v1.1→diff→clean, round-trip salva+ricarica) ✓
+>   - Package imports: 2 casi (modulo, package) ✓
 
 #### [ ] Task 5.5: Creare postprocessing/checkpoint_manager.py — Resume from checkpoint
 **Obiettivo:** Salvare checkpoint intermedi per riprendere in caso di interruzione.  
@@ -1276,6 +1327,6 @@ paperhunter/
 | 2 — Summarization | 2.1–2.3 | 3 | 3 |
 | 3 — Indexing + GraphRAG | 3.1–3.6 | 6 | 6 |
 | 4 — Agentic Writing | 4.1–4.6 | 6 | 6 |
-| 5 — Post-processing | 5.1–5.5 | 3 | 5 |
+| 5 — Post-processing | 5.1–5.5 | 4 | 5 |
 | 6 — Integrazione | 6.1–6.3 | 0 | 3 |
-| **TOTALE** | | **32** | **36** |
+| **TOTALE** | | **33** | **36** |

@@ -6,7 +6,3 @@ Migliora la struttura di download dei paper in modo da non scaricare papers già
 
 Se possibile, dai maggiore priorità ai paper più recenti (es. ultimi 3 anni) durante l'ingestion.
 Gli ultimi papers sono i più rilevanti.
-
-Fai in modo che sia possibile chiedere all'ai di scegliere le parole chiave più rilevanti da usare per la ricerca dei paper, in modo da migliorare la qualità dei risultati.
-Per fare ciò usa il modello flash, e fai fare 4 ricerche diverse per lo stesso argomento usando 4 set di parole chiave diverse, e poi unisci i risultati, eliminando i duplicati.
-Ovvero, la parte di ricerca (paperhunter search -k "prompt injection" -c "Papers about prompt injection attacks") sia i parametri -k e -c siano scelti dal llm, una volta che ho scelto io la categoria di ricerca.

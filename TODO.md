@@ -1248,7 +1248,7 @@ paperhunter/
 >   - End-to-end: 2 casi (full workflow v1.0→v1.1→diff→clean, round-trip salva+ricarica) ✓
 >   - Package imports: 2 casi (modulo, package) ✓
 
-#### [ ] Task 5.5: Creare postprocessing/checkpoint_manager.py — Resume from checkpoint
+#### [x] Task 5.5: Creare postprocessing/checkpoint_manager.py — Resume from checkpoint
 **Obiettivo:** Salvare checkpoint intermedi per riprendere in caso di interruzione.  
 **Dettagli:**
 - Classe `CheckpointManager`:
@@ -1259,6 +1259,22 @@ paperhunter/
 - Storage: `output/.checkpoints/` con file JSON per ogni step
 - Integrazione con LangGraph built-in checkpointing  
 **Test:** Salvare 3 checkpoint, simulare crash, ricaricare ultimo.
+
+> **Completato.** File creato: `paperhunter/postprocessing/checkpoint_manager.py` (~700 righe).
+> - Dataclass `CheckpointInfo` con `from_file()`, `to_dict()`
+> - Classe `CheckpointManager` con API complete:
+>   - Pipeline: `save_pipeline_checkpoint()`, `load_pipeline_checkpoint()`, `load_pipeline_state()`
+>   - Ingestion: `save_ingestion_checkpoint()`, `load_ingestion_checkpoint()`, `has_ingestion_checkpoint()`, `clear_ingestion_checkpoint()`
+>   - Listing: `list_checkpoints()`, `get_latest_pipeline_checkpoint()`, `find_checkpoints()`
+>   - Recovery: `get_resume_recommendation()` — analizza checkpoint e raccomanda il punto di ripresa
+>   - Diff: `diff_checkpoints()` — confronta due checkpoint e mostra le differenze
+>   - Cleanup: `clean()` con retention policy (max_age_hours, max_checkpoints, keep_latest), `clear_all()`
+>   - Export/Import: `export_checkpoint()`, `import_checkpoint()` per backup
+>   - Stats: `get_stats()`, `print_summary()`
+> - Convenience functions: `get_checkpoint_manager()`, `get_resume_recommendation()`, `list_all_checkpoints()`
+> - Timestamp con precisione microsecondo per evitare collisioni
+> - Esportato in `postprocessing/__init__.py`
+> - Test: `test_checkpoint_manager.py` — 11 classi, 69 test, tutti passati ✓
 
 ---
 
@@ -1327,6 +1343,6 @@ paperhunter/
 | 2 — Summarization | 2.1–2.3 | 3 | 3 |
 | 3 — Indexing + GraphRAG | 3.1–3.6 | 6 | 6 |
 | 4 — Agentic Writing | 4.1–4.6 | 6 | 6 |
-| 5 — Post-processing | 5.1–5.5 | 4 | 5 |
+| 5 — Post-processing | 5.1–5.5 | 5 | 5 |
 | 6 — Integrazione | 6.1–6.3 | 0 | 3 |
-| **TOTALE** | | **33** | **36** |
+| **TOTALE** | | **34** | **36** |

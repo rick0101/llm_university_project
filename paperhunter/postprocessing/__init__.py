@@ -5,7 +5,7 @@ Contiene:
 - BibliographyGenerator: generazione .bib finale filtrato
 - LaTeXExporter: export Markdown → .tex (ACL / IEEEtran / plain)
 - VersionManager: versioning e changelog automatico
-- (futuro) CheckpointManager: resume from checkpoint
+- CheckpointManager: gestione centralizzata checkpoint per resume from failure
 """
 
 from paperhunter.postprocessing.provenance_tracker import (
@@ -37,6 +37,14 @@ from paperhunter.postprocessing.versioning import (
     get_latest_version,
 )
 
+from paperhunter.postprocessing.checkpoint_manager import (
+    CheckpointManager,
+    CheckpointInfo,
+    get_checkpoint_manager,
+    get_resume_recommendation,
+    list_all_checkpoints,
+)
+
 __all__ = [
     # Provenance
     "ProvenanceTracker",
@@ -59,4 +67,10 @@ __all__ = [
     "create_version_from_state",
     "load_version_history",
     "get_latest_version",
+    # Checkpoint Manager
+    "CheckpointManager",
+    "CheckpointInfo",
+    "get_checkpoint_manager",
+    "get_resume_recommendation",
+    "list_all_checkpoints",
 ]

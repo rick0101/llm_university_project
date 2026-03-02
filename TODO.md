@@ -3,7 +3,7 @@
 > **Progetto:** Sistema end-to-end per generare un paper scientifico survey sulla sicurezza dei LLM  
 > **Target:** Stile Nature/ACL, con citazioni verificabili, provenance tracking, architettura modulare  
 > **Data inizio:** 20 Febbraio 2026  
-> **Ultimo aggiornamento:** 1 Marzo 2026
+> **Ultimo aggiornamento:** 2 Marzo 2026
 
 ---
 
@@ -1340,8 +1340,8 @@ paperhunter/
 > - 9 citazioni mancanti nel master .bib: 5 hallucinate dal LLM (riferimenti non presenti nel corpus), 4 ID interni L2
 > - `pip install -e .` necessario per rendere disponibile l'entry point CLI `paperhunter`
 
-#### [ ] Task 6.3: Aggiornare README.md — Documentazione completa
-**Obiettivo:** Riscrivere il README con architettura, setup, usage completo.  
+#### [x] Task 6.3: Aggiornare README.md — Documentazione completa
+**Obiettivo:** Riscrivere il README con architettura, setup, usage completo (con anche esempi per l'uso).  
 **Dettagli:**
 - Diagramma architettura aggiornato
 - Setup guide: Docker (GROBID, Neo4j), Python deps, config.yaml, .env
@@ -1350,6 +1350,23 @@ paperhunter/
 - API reference per ogni modulo
 - Esempi di output  
 **Test:** Seguire il README da zero su una macchina pulita.
+
+> **Completato 02/03/2026.** File: `README.md` (~580 righe)
+> - Riscritto completamente il README con 14 sezioni:
+>   - **Architecture**: diagramma completo della struttura modulare con tutte le 7 sotto-directory
+>   - **Tech Stack**: tabella con tutte le tecnologie (Gemini, LlamaIndex, Qdrant, BM25, GROBID, S2, LangGraph, Neo4j)
+>   - **Setup**: guida step-by-step (prerequisites, installation con pip/venv, API keys .env, Docker GROBID + Neo4j)
+>   - **Quick Start**: workflow tipico in 6 comandi (`search → ingest → summarize → index → write → export`)
+>   - **CLI Reference**: documentazione completa di tutti gli 8 subcomandi con opzioni, flag e esempi per ciascuno
+>   - **Pipeline Workflow**: descrizione dettagliata delle 5 fasi (Ingestion, Summarization, Indexing+GraphRAG, Agentic Writing, Post-processing)
+>   - **Configuration**: tabella delle sezioni config.yaml + guida al category mapping
+>   - **Module API Reference**: esempi Python per tutti i 6 moduli (ingestion, summarization, indexing, graphrag, agents, postprocessing, utils)
+>   - **Output Examples**: struttura directory output con versioning
+>   - **Testing**: guida ai 20 moduli di test con tabella test count
+>   - **Troubleshooting**: 7 scenari comuni (GROBID, Gemini rate limits, Qdrant, Neo4j, pipeline resume, missing citations, pip install)
+>   - **Project Structure After Setup**: struttura completa post-installazione
+> - Rimosso contenuto legacy v1 (PaperWriter FAISS, vecchia architettura)
+> - Aggiornata versione a v2.0 consistente con pyproject.toml
 
 ---
 
@@ -1373,5 +1390,7 @@ paperhunter/
 | 3 — Indexing + GraphRAG | 3.1–3.6 | 6 | 6 |
 | 4 — Agentic Writing | 4.1–4.6 | 6 | 6 |
 | 5 — Post-processing | 5.1–5.5 | 5 | 5 |
-| 6 — Integrazione | 6.1–6.3 | 2 | 3 |
+| 6 — Integrazione | 6.1–6.3 | 3 | 3 |
 | **TOTALE** | | **36** | **36** |
+
+> **PROGETTO COMPLETATO — 02 Marzo 2026** 🎉

@@ -1,474 +1,880 @@
-# 🔎 PaperHunter
+# PaperHunter v2.0
 
-**Autonomous Scientific Paper Search, Filter, and Download System**
+**End-to-end LLM Security Survey Generator — from PDF ingestion to Nature/ACL-style paper**
 
-PaperHunter is a robust, modular Python system that autonomously searches, filters, and downloads scientific papers focusing on LLMs and AI research. It uses a **Funnel Strategy** to efficiently find relevant papers:
+PaperHunter is a modular, agentic system that autonomously generates a scientific survey paper on LLM security. Starting from ~400 categorized PDF papers, it runs a complete pipeline: structured extraction (GROBID), metadata enrichment (Semantic Scholar), hierarchical summarization, hybrid RAG retrieval, multi-agent writing (LangGraph), and LaTeX export — all with verifiable citations and provenance tracking.
 
-1. **Broad Search** - Aggregates results from multiple sources asynchronously
-2. **Smart Filtering** - Uses an LLM to judge relevance based on abstracts
-3. **Hybrid Downloading** - Prioritizes direct API downloads, falls back to browser automation
+---
 
-## 🏗️ Architecture
+## Table of Contents
+
+- [Architecture](#architecture)
+- [Tech Stack](#tech-stack)
+- [Setup](#setup)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [API Keys](#api-keys)
+  - [Docker Services](#docker-services)
+- [Quick Start](#quick-start)
+- [CLI Reference](#cli-reference)
+  - [paperhunter search](#paperhunter-search)
+  - [paperhunter ingest](#paperhunter-ingest)
+  - [paperhunter summarize](#paperhunter-summarize)
+  - [paperhunter index](#paperhunter-index)
+  - [paperhunter write](#paperhunter-write)
+  - [paperhunter query](#paperhunter-query)
+  - [paperhunter stats](#paperhunter-stats)
+  - [paperhunter export](#paperhunter-export)
+- [Pipeline Workflow](#pipeline-workflow)
+  - [Phase 1 — Incremental Ingestion](#phase-1--incremental-ingestion)
+  - [Phase 2 — Hierarchical Summarization](#phase-2--hierarchical-summarization)
+  - [Phase 3 — Hybrid Indexing + GraphRAG](#phase-3--hybrid-indexing--graphrag)
+  - [Phase 4 — Agentic Writing (LangGraph)](#phase-4--agentic-writing-langgraph)
+  - [Phase 5 — Post-processing & Output](#phase-5--post-processing--output)
+- [Configuration](#configuration)
+- [Module API Reference](#module-api-reference)
+- [Output Examples](#output-examples)
+- [Testing](#testing)
+- [Troubleshooting](#troubleshooting)
+- [License](#license)
+
+---
+
+## Architecture
 
 ```
+scaricati/                            ← Categorized PDFs (~400 papers)
+    ├── Prompt_injections1/
+    ├── Hallucinations1/
+    ├── Data_and_Model_Poisoning1/
+    ├── Adversarial_Code1/
+    └── ... (new categories)
+
+config.yaml                           ← Centralized YAML configuration
+
 paperhunter/
-├── __init__.py          # Package initialization
-├── config.py            # Configuration settings
-├── models.py            # Pydantic data models
-├── search_engine.py     # Multi-source paper aggregator
-├── relevance_filter.py  # LLM-powered relevance filtering
-├── download_manager.py  # Hybrid PDF downloader
-└── main.py              # Main controller and CLI
+├── config.py                         ← YAML + pydantic-settings loader
+├── models.py                         ← Extended Pydantic v2 models
+├── search_engine.py                  ← Multi-source search (ArXiv, S2, HF)
+├── download_manager.py               ← Hybrid PDF downloader
+├── relevance_filter.py               ← LLM relevance filter
+├── main.py                           ← CLI with 8 subcommands
+├── generate_paper.py                 ← Legacy CLI (v1 compatibility)
+│
+├── ingestion/                        ← PDF Processing Pipeline
+│   ├── grobid_client.py              ← GROBID Docker client (TEI-XML → structured)
+│   ├── pdf_hasher.py                 ← SHA-256 hash for incremental upsert
+│   ├── semantic_scholar.py           ← S2 API enrichment (venue, BibTeX, citations)
+│   ├── bibtex_generator.py           ← Automatic BibTeX generation
+│   ├── chunker.py                    ← GROBID-aware section chunking
+│   └── ingestion_pipeline.py         ← End-to-end ingestion orchestrator
+│
+├── summarization/                    ← Hierarchical Summarization
+│   ├── level1_summarizer.py          ← Per-paper summary (with testing_methodology)
+│   ├── level2_summarizer.py          ← Category meta-summary (4-6k tokens)
+│   └── invalidation_manager.py       ← Auto-invalidation of L2 on new papers
+│
+├── indexing/                         ← Hybrid Retrieval
+│   ├── qdrant_store.py               ← Qdrant vector store (local, no server)
+│   ├── bm25_index.py                 ← BM25 keyword index
+│   ├── hybrid_retriever.py           ← Vector + BM25 + RRF fusion
+│   └── reranker.py                   ← Gemini Flash cross-encoder reranking
+│
+├── graphrag/                         ← Knowledge Graph (optional)
+│   ├── entity_extractor.py           ← Entity/relation extraction from L1
+│   ├── neo4j_manager.py              ← Neo4j Community Edition connector
+│   └── property_graph.py             ← LlamaIndex PropertyGraph builder
+│
+├── agents/                           ← Multi-Agent Pipeline (LangGraph)
+│   ├── state.py                      ← Shared LangGraph TypedDict state
+│   ├── planner_agent.py              ← Agent 1: Outline generation from L2
+│   ├── writer_agent.py               ← Agent 2: RAG-powered section writing
+│   ├── critic_agent.py               ← Agent 3: Citation provenance verification
+│   ├── assembler_agent.py            ← Agent 4: Assembly + abstract/intro/conclusion
+│   └── pipeline.py                   ← LangGraph workflow orchestration
+│
+├── postprocessing/                   ← Output Generation
+│   ├── provenance_tracker.py         ← JSON provenance for every claim
+│   ├── bibliography_generator.py     ← Filtered .bib from cited keys
+│   ├── latex_exporter.py             ← Markdown → LaTeX (ACL/IEEEtran/plain)
+│   ├── versioning.py                 ← Survey versioning + changelog
+│   └── checkpoint_manager.py         ← Resume from failure
+│
+└── utils/                            ← Shared Utilities
+    ├── logging_setup.py              ← Rich logging + progress bars
+    ├── llm_factory.py                ← LlamaIndex LLM factory (Flash/Pro)
+    └── rate_limiter.py               ← Token bucket rate limiting
 ```
 
-## ✨ Features
+---
 
-- **Multi-Source Search**: ArXiv, Semantic Scholar, Hugging Face Papers
-- **Async Processing**: Fast parallel searching with `asyncio`
-- **Smart Deduplication**: Normalizes titles and merges duplicate entries
-- **LLM Filtering**: Uses Gemini or Claude to analyze paper relevance
-- **Hybrid Downloads**: Direct HTTP → Playwright fallback
-- **GitHub Detection**: Finds associated code repositories
-- **Rate Limiting**: Respects API limits to avoid bans
+## Tech Stack
 
-## 🚀 Quick Start
+| Component | Technology | Notes |
+|-----------|-----------|-------|
+| LLM | **Gemini 3 Flash/Pro** (via `google-genai` SDK) | Flash for simple tasks, Pro for writing/planning |
+| Embeddings | **Gemini Embedding 001** (3072-dim) | Via `llama-index-embeddings-google-genai` |
+| RAG Framework | **LlamaIndex Core** | Orchestration, PropertyGraph, LLM abstractions |
+| Vector DB | **Qdrant** (local, no server) | Replaces ChromaDB (Python 3.14 compatible) |
+| Keyword Search | **BM25** (`rank-bm25`) | Hybrid retrieval with RRF fusion |
+| PDF Extraction | **GROBID 0.8.2** (Docker) | TEI-XML → structured sections, refs, captions |
+| Metadata | **Semantic Scholar API** (free) | BibTeX, venue, citation count, DOI |
+| Multi-Agent | **LangGraph** | Planner → Writer → Critic → Assembler |
+| Knowledge Graph | **Neo4j Community** (optional) | PropertyGraph with temporal relations |
+| Output | **LaTeX** (ACL/IEEEtran) | + .bib, provenance JSON, versioning |
+
+---
+
+## Setup
+
+### Prerequisites
+
+- **Python 3.10+** (tested up to 3.14)
+- **Docker** (for GROBID; optional but strongly recommended)
+- **Google Gemini API key** (free tier with Gemini Advanced subscription)
 
 ### Installation
 
 ```bash
-# Clone or navigate to the project
-cd vscode_agent_paper
-
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # Linux/Mac
-# or: venv\Scripts\activate  # Windows
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Install Playwright browsers
-playwright install chromium
-```
-
-### Configuration
-
-```bash
-# Copy environment template
-cp .env.example .env
-
-# Edit .env with your API keys
-nano .env
-```
-
-Required API keys:
-- **Google Gemini** OR **Anthropic Claude** API key for LLM filtering
-- **Semantic Scholar** API key (optional, but recommended for higher rate limits)
-
-### Usage
-
-#### Interactive Mode
-
-```bash
-python -m paperhunter.main
-```
-
-#### Command Line
-
-```bash
-# Basic search
-python -m paperhunter.main -k "LLM security" -c "Papers about prompt injection and jailbreaking"
-
-# With options
-python -m paperhunter.main \
-    -k "large language model attacks" \
-    -c "Focus on red teaming and adversarial attacks. Ignore training methods." \
-    -n 30 \
-    -o ./papers \
-    --llm-provider google
-```
-
-#### Command Line Options
-
-| Option | Description |
-|--------|-------------|
-| `-k, --keywords` | Broad search keywords |
-| `-c, --criteria` | Filtering criteria for LLM |
-| `-n, --max-results` | Max results per source (default: 20) |
-| `-o, --output-dir` | Output directory for PDFs |
-| `--no-download` | Only search and filter, don't download |
-| `-i, --interactive` | Prompt for confirmation before downloading |
-| `--llm-provider` | LLM provider: `google` or `anthropic` |
-
-### Python API
-
-```python
-import asyncio
-from paperhunter.main import PaperHunter
-
-async def main():
-    hunter = PaperHunter(
-        max_results_per_source=20,
-        llm_provider="google"
-    )
-    
-    result = await hunter.hunt(
-        keywords="LLM security prompt injection",
-        criteria="""
-        I want papers about:
-        - Prompt injection attacks
-        - Jailbreaking LLMs
-        - Red teaming AI systems
-        
-        Ignore papers about:
-        - General training methods
-        - GDPR compliance
-        """,
-        auto_download=True
-    )
-    
-    print(f"Found {result['papers_relevant']} relevant papers")
-    print(f"Downloaded {result['papers_downloaded']} PDFs")
-
-asyncio.run(main())
-```
-
-## 🔧 Components
-
-### Search Engine (`search_engine.py`)
-
-```python
-from paperhunter.search_engine import PaperAggregator
-
-aggregator = PaperAggregator(max_results_per_source=20)
-result = await aggregator.search("transformer architecture")
-
-for paper in result.papers:
-    print(f"{paper.title} - {paper.source}")
-    if paper.github_url:
-        print(f"  Code: {paper.github_url}")
-```
-
-### Relevance Filter (`relevance_filter.py`)
-
-```python
-from paperhunter.relevance_filter import RelevanceFilter
-
-filter = RelevanceFilter(provider="google")
-filtered = await filter.filter_papers(
-    papers=papers,
-    criteria="Must focus on security vulnerabilities"
-)
-
-relevant = filter.get_relevant_papers(filtered)
-```
-
-### Download Manager (`download_manager.py`)
-
-```python
-from paperhunter.download_manager import Downloader
-
-downloader = Downloader(download_dir="./papers")
-result = await downloader.download_paper(paper)
-
-if result.success:
-    print(f"Saved to: {result.file_path}")
-```
-
-## 📊 Data Models
-
-All data is validated using Pydantic models:
-
-- `Paper` - Scientific paper metadata
-- `RelevanceResult` - LLM relevance judgment
-- `FilteredPaper` - Paper with relevance analysis
-- `DownloadResult` - Download attempt result
-- `SearchQuery` - Search configuration
-- `SearchResult` - Aggregated search results
-
-## ⚠️ Notes
-
-- **Rate Limits**: The system includes delays between requests. Semantic Scholar especially has strict limits without an API key.
-- **Playwright**: Required for downloading from protected sources. Run `playwright install chromium` after installation.
-- **LLM Costs**: Each paper's abstract is analyzed by the LLM, which may incur API costs.
-
----
-
-## �️ Setup completo per chi clona la repository
-
-La repository include già i **PDF** di ricerca (`scaricati/`) e il **database vettoriale FAISS** (`vector_db/`). I file `.faiss` (>100 MB) sono gestiti tramite **Git LFS**. Segui questi passaggi per configurare l'ambiente.
-
-### 1. Clonare la repository
-
-```bash
-# Assicurati di avere Git LFS installato (necessario per i file .faiss >100 MB)
-# Fedora: sudo dnf install git-lfs
-# Ubuntu/Debian: sudo apt install git-lfs
-# macOS: brew install git-lfs
-git lfs install
-
+# Clone the repository
 git clone https://github.com/rick0101/llm_university_project.git
 cd llm_university_project
-```
 
-> **Nota:** Git LFS scarica automaticamente i file `.faiss` durante il clone. Se il clone è lento, puoi usare `GIT_LFS_SKIP_SMUDGE=1 git clone ...` e poi `git lfs pull` in un secondo momento.
+# If the repo includes large files via Git LFS:
+# sudo dnf install git-lfs   # Fedora
+# sudo apt install git-lfs   # Ubuntu/Debian
+# brew install git-lfs        # macOS
+git lfs install && git lfs pull
 
-### 2. Creare l'ambiente virtuale (venv)
-
-```bash
-# Richiede Python 3.10+
+# Create virtual environment
 python3 -m venv venv
-source venv/bin/activate    # Linux / macOS
-# oppure: venv\Scripts\activate   # Windows
+source venv/bin/activate    # Linux/macOS
+# venv\Scripts\activate     # Windows
 
-# Installare le dipendenze
+# Install dependencies + package
 pip install --upgrade pip
-pip install -r requirements.txt
+pip install -e .
 
-# Installare il pacchetto in modalità sviluppo
-pip install -e ".[dev]"
-
-# Installare i browser per Playwright (necessario per il download da fonti protette)
+# Install Playwright browsers (for paper download)
 playwright install chromium
+
+# (Optional) Install GraphRAG dependencies
+pip install -e ".[graphrag]"
+
+# (Optional) Install dev dependencies
+pip install -e ".[dev]"
 ```
 
-### 3. Configurare le API keys
+### API Keys
+
+Create a `.env` file in the project root:
 
 ```bash
 cp .env.example .env
-nano .env   # oppure usa il tuo editor preferito
 ```
 
-Compilare almeno:
-- `GOOGLE_API_KEY` — chiave API Gemini (obbligatoria per embedding e LLM)
-- `SEMANTIC_SCHOLAR_API_KEY` — opzionale, ma consigliata per rate limit più alti
+Edit `.env`:
 
-### 4. Avviare GROBID (parsing PDF strutturato)
+```env
+# Required — Gemini API key (LLM + embeddings)
+GOOGLE_API_KEY=your_gemini_api_key_here
 
-GROBID è usato per estrarre testo strutturato (sezioni, citazioni, metadata) dai PDF. Funziona come container Docker:
+# Optional — higher rate limits for Semantic Scholar
+SEMANTIC_SCHOLAR_API_KEY=your_s2_key_here
+```
+
+### Docker Services
+
+#### GROBID (required for structured PDF extraction)
 
 ```bash
-# Scarica e avvia GROBID (prima volta ci vuole un po')
+# Start GROBID (first pull takes ~2 min)
 docker run --rm -d --name grobid -p 8070:8070 lfoppiano/grobid:0.8.2-full
 
-# Verifica che sia pronto (attendi ~30 secondi dopo l'avvio)
+# Wait ~30 seconds, then verify
 curl -s http://localhost:8070/api/isalive
-# Deve rispondere: true
+# Should return: true
 ```
 
-> **Nota:** Se GROBID non è disponibile, il sistema usa automaticamente PyMuPDF come fallback (configurato in `config.yaml` → `ingestion.fallback_to_pymupdf: true`).
+> If GROBID is unavailable, the system automatically falls back to PyMuPDF (`config.yaml` → `ingestion.fallback_to_pymupdf: true`).
 
-### 5. Ingestion dei PDF e creazione dei database
-
-> **Tutte le directory necessarie** (`qdrant_db/`, `data/`, `output/`, `logs/`, `cache/`) **vengono create automaticamente** dal sistema al primo avvio. Non è necessario crearle manualmente.
-
-I PDF di ricerca sono già inclusi nel repository, organizzati in sottocartelle tematiche dentro `scaricati/`. Il mapping tra nome cartella e categoria è definito in `config.yaml` → `ingestion.category_mapping`:
-
-| Cartella | Categoria |
-|----------|-----------|
-| `Prompt_injections1/` | Prompt Injection |
-| `Adversarial_Code1/` | Adversarial Attacks |
-| `Data_and_Model_Poisoning1/` | Data and Model Poisoning |
-| `Hallucinations1/` | LLM Hallucinations |
-
-Per aggiungere nuove categorie, basta creare una sottocartella e aggiungerla al `category_mapping` in `config.yaml`. Per aggiungere nuovi PDF a una categoria esistente, copiarli nella sottocartella corrispondente: la pipeline di ingestion rileverà automaticamente i file nuovi o modificati (delta update basato su hash SHA-256).
-
-#### 5a. Eseguire la pipeline di ingestion (popola Qdrant + BM25)
+#### Neo4j (optional — for GraphRAG)
 
 ```bash
-# Esegue il parsing dei PDF, chunking, embedding e indicizzazione
-# Crea automaticamente: qdrant_db/, data/hash_registry.json, data/bm25_index.pkl
-python -m paperhunter.generate_paper ingest ./scaricati/
-```
-
-Questo comando:
-1. Crea tutte le directory necessarie (`qdrant_db/`, `data/`, `output/`, `cache/`, ecc.)
-2. Scansiona le sottocartelle di `scaricati/` e rileva i PDF nuovi/modificati
-3. Estrae il testo strutturato con GROBID (o PyMuPDF come fallback)
-4. Arricchisce i metadati con Semantic Scholar API (venue, citazioni, BibTeX)
-5. Genera BibTeX automatico per ogni paper
-6. Divide il testo in chunk di ~1500 caratteri (GROBID-aware, per sezione)
-7. Genera gli embedding con Gemini (`gemini-embedding-001`, 3072 dim)
-8. Salva i chunk in Qdrant (`qdrant_db/`) e l'indice BM25 (`data/bm25_index.pkl`)
-9. Aggiorna il registro hash (`data/hash_registry.json`) e il master `.bib`
-
-> **Riesecuzione incrementale:** una seconda esecuzione processa solo i PDF nuovi o modificati (0 se nulla è cambiato).
-
-#### 5b. Verificare lo stato del database
-
-```bash
-# Statistiche su cosa è stato indicizzato
-python -m paperhunter.generate_paper stats
-```
-
-### 6. Eseguire i test
-
-I test usano mock e non richiedono database reali o API key:
-
-```bash
-# Eseguire tutti i test
-python -m pytest test_*.py -v
-
-# Esegui un singolo test
-python test_bm25_index.py
-python test_hybrid_retriever.py
-python test_pipeline.py
-```
-
-### 7. Neo4j (opzionale — GraphRAG)
-
-Se vuoi usare la componente GraphRAG:
-
-```bash
-# Avvia Neo4j Community Edition
 docker run --rm -d --name neo4j \
     -p 7474:7474 -p 7687:7687 \
     -e NEO4J_AUTH=neo4j/password \
     neo4j:5-community
-
-# Installa le dipendenze aggiuntive
-pip install -e ".[graphrag]"
-
-# Abilita Neo4j in config.yaml
-# neo4j.enabled: true
 ```
 
-### Riepilogo struttura dopo il setup
-
-```
-vscode_agent_paper/
-├── .env                      # ← DA CREARE (cp .env.example .env)
-├── venv/                     # ← DA CREARE (python -m venv venv)
-├── scaricati/                # ✅ GIÀ NEL REPO (PDF di ricerca)
-│   ├── Prompt_injections1/   #    (63 PDF)
-│   ├── Adversarial_Code1/    #    (29 PDF)
-│   ├── Data_and_Model_Poisoning1/ # (17 PDF)
-│   └── Hallucinations1/      #    (35 PDF)
-├── qdrant_db/                # ← CREATO AUTOMATICAMENTE dall'ingestion pipeline
-├── data/
-│   ├── hash_registry.json    # ← CREATO AUTOMATICAMENTE dall'ingestion pipeline
-│   └── bm25_index.pkl        # ← CREATO AUTOMATICAMENTE dall'ingestion pipeline
-├── output/                   # ← CREATO AUTOMATICAMENTE (ensure_output_dirs)
-│   ├── versions/             #    Versioni del survey generato
-│   ├── provenance/           #    Report provenance JSON/Markdown
-│   └── .checkpoints/         #    Checkpoint per resume from crash
-├── logs/                     # ← CREATO AUTOMATICAMENTE
-├── cache/semantic_scholar/   # ✅ GIÀ NEL REPO (cache risposte S2 API)
-├── vector_db/                # ✅ GIÀ NEL REPO (FAISS legacy v1, via Git LFS)
-├── config.yaml               # Configurazione centralizzata
-├── .env.example              # Template per le API keys
-├── requirements.txt          # Dipendenze Python
-└── pyproject.toml            # Metadata progetto
-```
-
-> **Nota:** I file `vector_db/papers_store.faiss` (gestito via Git LFS) e `vector_db/papers_store_meta.json` appartengono alla prima versione (PaperWriter v1 con FAISS) e sono inclusi nel repository. Il sistema attuale (v2) usa **Qdrant** come vector store.
+Then set `neo4j.enabled: true` in `config.yaml`.
 
 ---
 
-## �📝 PaperWriter — RAG-based Paper Generation
+## Quick Start
 
-PaperWriter is the second component of the project: given a collection of downloaded PDFs, it builds a **vector knowledge base** and generates a complete scientific paper with **automatic citations**.
-
-### Architecture
-
-```
-paperhunter/paper_generator/
-├── pdf_processor.py      # PDF text + metadata extraction (PyMuPDF)
-├── chunker.py            # Section-aware text chunking
-├── vector_store.py       # FAISS index + Gemini text-embedding-004
-├── citation_manager.py   # Citation tracking [1], [2], … + bibliography
-├── rag_engine.py         # Retrieval-Augmented Generation with sources
-└── paper_writer.py       # End-to-end pipeline orchestrator
-
-paperhunter/
-└── generate_paper.py     # CLI entry point (5 commands)
-```
-
-### Stack
-
-| Component | Technology | Notes |
-|-----------|-----------|-------|
-| PDF parsing | PyMuPDF | Fast, robust |
-| Embeddings | Gemini `text-embedding-004` | Free tier (1500 RPM) |
-| Vector DB | FAISS (local) | Persistent on disk, zero cost |
-| LLM | Gemini Flash (default) | ~$0.05-0.15 for a full paper |
-
-### Quick Start
+The typical end-to-end workflow is:
 
 ```bash
-# 1. Ingest PDFs into the knowledge base
-python -m paperhunter.generate_paper ingest ./scaricati/
+# 1. (Optional) Search and download new papers
+paperhunter search -k "prompt injection attacks" -c "LLM security vulnerabilities"
 
-# 2. Check what's indexed
-python -m paperhunter.generate_paper stats
+# 2. Ingest PDFs → GROBID extraction + S2 enrichment + Qdrant indexing
+paperhunter ingest
 
-# 3. Ask a question to the knowledge base
-python -m paperhunter.generate_paper query "What are the main prompt injection techniques?"
+# 3. Generate hierarchical summaries (L1 per paper, L2 per category)
+paperhunter summarize
 
-# 4. Generate a full paper from a JSON outline
-python -m paperhunter.generate_paper write \
-  --title "Survey on LLM Security" \
-  --outline sample_outline.json \
-  --output ./output \
-  --language english
+# 4. Build search indices (BM25 + PropertyGraph)
+paperhunter index
 
-# 5. Interactive guided mode
-python -m paperhunter.generate_paper interactive
+# 5. Run the multi-agent writing pipeline
+paperhunter write
+
+# 6. Export to LaTeX
+paperhunter export --template acl
 ```
 
-### Outline Format
+Check system status at any point:
 
-Create a JSON file (see `sample_outline.json`):
-
-```json
-{
-  "title": "A Survey on LLM Security Threats",
-  "sections": {
-    "Introduction": "Overview of LLMs and emerging security concerns.",
-    "Prompt Injection": "Direct/indirect prompt injection, jailbreaking, defenses.",
-    "Conclusion": "Summary of findings and future directions."
-  }
-}
+```bash
+paperhunter stats
 ```
 
-### Global CLI Options
+Query the knowledge base interactively:
 
-| Option | Default | Description |
-|--------|---------|-------------|
-| `--db-dir` | `./vector_db` | Vector DB persistence directory |
-| `--llm-provider` | `google` | `google` or `anthropic` |
-| `--llm-model` | `gemini-3-flash-preview` | LLM model name |
-| `--chunk-size` | `1000` | Chunk size in characters |
-| `--language` | `english` | Output language |
-| `--temperature` | `0.3` | LLM temperature |
+```bash
+paperhunter query "What defenses exist against prompt injection attacks?"
+```
 
-### Python API
+---
+
+## CLI Reference
+
+Global options available for all subcommands:
+
+| Option | Description |
+|--------|-------------|
+| `--config PATH` | Custom config.yaml path |
+| `-v, --verbose` | Enable DEBUG logging |
+| `--version` | Show version |
+
+### paperhunter search
+
+Search and download scientific papers from ArXiv, Semantic Scholar, and HuggingFace Papers.
+
+```bash
+paperhunter search -k "LLM security" -c "Focus on prompt injection and jailbreaking"
+paperhunter search -k "adversarial attacks" -n 30 -o ./papers --no-download
+```
+
+| Option | Description |
+|--------|-------------|
+| `-k, --keywords` | Search keywords |
+| `-c, --criteria` | LLM filtering criteria |
+| `-n, --max-results` | Max results per source |
+| `--no-download` | Search only, skip PDF download |
+| `--llm-provider` | `google` or `anthropic` |
+| `-o, --output-dir` | PDF output directory |
+
+### paperhunter ingest
+
+Run the incremental ingestion pipeline: GROBID extraction → S2 enrichment → BibTeX → chunking → Qdrant.
+
+```bash
+paperhunter ingest
+paperhunter ingest --pdf-dir ./my_papers --batch-size 5 --skip-s2
+```
+
+| Option | Description |
+|--------|-------------|
+| `--pdf-dir` | PDF root directory (default: from config.yaml) |
+| `--batch-size` | PDFs per batch (default: 10) |
+| `--skip-s2` | Skip Semantic Scholar enrichment |
+| `--skip-qdrant` | Skip Qdrant indexing |
+| `--no-checkpoint` | Disable checkpoint for resume |
+
+**Incremental behavior:** Only new or modified PDFs are processed (SHA-256 hash comparison). Re-running produces 0 changes if nothing changed.
+
+### paperhunter summarize
+
+Generate/regenerate L1 (per-paper) and L2 (per-category meta) summaries.
+
+```bash
+paperhunter summarize            # Generate both L1 and L2
+paperhunter summarize --l1       # Only L1
+paperhunter summarize --l2       # Only L2
+paperhunter summarize --l2 --category "Prompt Injection" --force
+paperhunter summarize --invalidate  # Check and regenerate stale L2s
+```
+
+| Option | Description |
+|--------|-------------|
+| `--l1` | Only generate L1 summaries |
+| `--l2` | Only generate L2 summaries |
+| `--invalidate` | Check L2 invalidation and regenerate |
+| `--category` | Limit to a specific category |
+| `--force` | Force regeneration even if existing |
+
+### paperhunter index
+
+Build/update BM25 keyword index and PropertyGraph.
+
+```bash
+paperhunter index               # Build both
+paperhunter index --bm25        # Only BM25
+paperhunter index --graph       # Only PropertyGraph
+```
+
+| Option | Description |
+|--------|-------------|
+| `--bm25` | Only build BM25 index |
+| `--graph` | Only build PropertyGraph |
+| `--skip-neo4j` | Skip Neo4j import |
+| `--clear-graph` | Clear Neo4j before importing |
+
+### paperhunter write
+
+Run the full multi-agent writing pipeline (Planner → Writer → Critic → Assembler).
+
+```bash
+paperhunter write
+paperhunter write --outline sample_outline.json
+paperhunter write --resume                      # Resume from last checkpoint
+paperhunter write --resume --checkpoint-file output/.checkpoints/verify_20260301.json
+```
+
+| Option | Description |
+|--------|-------------|
+| `--outline PATH` | JSON outline file (otherwise auto-generated by Planner) |
+| `--resume` | Resume from checkpoint |
+| `--checkpoint-file PATH` | Specific checkpoint to resume from |
+| `--no-checkpoint` | Disable checkpointing |
+| `--no-export` | Skip auto LaTeX/BibTeX export |
+| `--template` | LaTeX template: `acl`, `ieeetran`, `plain` |
+
+The pipeline automatically exports LaTeX, BibTeX, provenance JSON, and creates a versioned output directory after completion.
+
+### paperhunter query
+
+Query the knowledge base with hybrid retrieval (vector + BM25 + reranking).
+
+```bash
+paperhunter query "How does GCG attack work?"
+paperhunter query --category "Prompt Injection" --year-min 2024
+paperhunter query   # Interactive mode
+```
+
+| Option | Description |
+|--------|-------------|
+| `question` | Query text (omit for interactive mode) |
+| `-n, --n-results` | Number of results (default: 10) |
+| `--category` | Filter by category |
+| `--year-min` | Minimum year |
+| `--year-max` | Maximum year |
+| `--no-rerank` | Disable Gemini reranking |
+
+### paperhunter stats
+
+Show system-wide statistics: ingestion registry, Qdrant collections, BM25 index, PropertyGraph, versions, checkpoints.
+
+```bash
+paperhunter stats
+```
+
+### paperhunter export
+
+Export the generated survey to LaTeX and/or filtered BibTeX.
+
+```bash
+paperhunter export                        # Export latest version
+paperhunter export --template ieeetran    # Use IEEEtran template
+paperhunter export --input output/latest/survey.md -o ./export
+paperhunter export --bib-only             # Only generate filtered .bib
+```
+
+| Option | Description |
+|--------|-------------|
+| `--input PATH` | Markdown source file (default: latest version) |
+| `-o, --output DIR` | Output directory |
+| `--template` | `acl`, `ieeetran`, `plain` |
+| `--title` | Override title |
+| `--author` | Override author |
+| `--bib-file` | BibTeX filename (default: `references.bib`) |
+| `--latex` | Only generate LaTeX |
+| `--bib-only` | Only generate filtered BibTeX |
+
+---
+
+## Pipeline Workflow
+
+### Phase 1 — Incremental Ingestion
+
+```
+PDF files → GROBID (TEI-XML) → S2 Enrichment → BibTeX → GROBID-aware Chunking → Qdrant + BM25
+```
+
+1. **Scan & Delta Detection**: SHA-256 hash registry identifies new/modified PDFs
+2. **GROBID Extraction**: Structured text (sections, references, figure captions) via Docker API
+3. **S2 Enrichment**: Venue, DOI, citation count, BibTeX from Semantic Scholar API
+4. **BibTeX Generation**: Automatic keys in `Author_YYYY_Keyword` format
+5. **Chunking**: GROBID section-aware splitting (~1500 chars, 200 overlap, per-section boundaries)
+6. **Indexing**: Qdrant (3072-dim Gemini embeddings) + hash registry update
+
+Key feature: re-running processes only delta changes (0 operations if nothing changed).
+
+### Phase 2 — Hierarchical Summarization
+
+```
+Chunks → L1 Summary (per paper) → L2 Meta-Summary (per category) → Auto-invalidation
+```
+
+- **L1 Summaries** (Gemini Pro): Structured JSON with `key_contributions`, `methodology`, `testing_methodology` (critical field), `temporal_context`, `results_summary`, `limitations`
+- **L2 Summaries** (Gemini Pro): 4-6k token meta-summaries per category with `temporal_trends`, `taxonomy`, `gaps_filled`, `open_gaps`, `methodological_convergences`, `testing_overview`, `synthesis`
+- **Auto-invalidation**: When new papers are ingested, affected L2 summaries are automatically regenerated (configurable threshold)
+
+### Phase 3 — Hybrid Indexing + GraphRAG
+
+```
+Chunks + L1 + L2 → [Vector Search (Qdrant) + BM25] → RRF Fusion → Gemini Reranking
+                  → PropertyGraph (entities & relations) → Graph traversal
+```
+
+- **Hybrid Retrieval**: Vector search (Qdrant, cosine similarity) + BM25 keyword match → Reciprocal Rank Fusion
+- **Reranking**: Gemini Flash as cross-encoder scores candidates 0.0–1.0
+- **Entity Extraction**: Attacks, Defenses, Models, Datasets, Benchmarks, Metrics with temporal relations (UPDATES, INTRODUCED_IN, EXTENDS)
+- **PropertyGraph**: LlamaIndex `SimplePropertyGraphStore` with optional Neo4j sync
+
+### Phase 4 — Agentic Writing (LangGraph)
+
+```
+START → Planner → Writer → Critic → [loop if needed] → Assembler → END
+```
+
+1. **Planner Agent** (Pro): Generates structured outline from L2 summaries — sections, topics, target word counts
+2. **Writer Agent** (Pro): For each section, generates 3-5 RAG queries → hybrid retrieval → optional reranking → writes with strict citation format `[Author_YYYY_Key]`
+3. **Critic Agent** (Flash): Verifies every citation against source chunks — SUPPORTED / PARTIALLY_SUPPORTED / NOT_SUPPORTED / SOURCE_NOT_FOUND. If <80% pass rate → flags section for rewrite (max 3 iterations)
+4. **Assembler Agent** (Pro): Orders sections, generates abstract/introduction/conclusion, assembles final Markdown + bibliography
+
+Checkpoint saving after every node enables resume from failure.
+
+### Phase 5 — Post-processing & Output
+
+- **Provenance Tracking**: JSON mapping every claim to source chunk + verification status
+- **Bibliography**: Filtered `.bib` with only cited entries (from master .bib)
+- **LaTeX Export**: Markdown → `.tex` with ACL, IEEEtran, or plain template
+- **Versioning**: `Survey_vX.Y_MonYYYY/` directories with automatic changelog between versions
+- **Checkpoint Manager**: Save/load pipeline state for resume from any failure point
+
+---
+
+## Configuration
+
+All settings are in `config.yaml`. API keys go in `.env` (never committed).
+
+### Key Configuration Sections
+
+| Section | Description |
+|---------|-------------|
+| `gemini` | Model names, temperature, timeout, max tokens |
+| `grobid` | GROBID Docker URL, timeout, batch size |
+| `neo4j` | Neo4j connection (optional, `enabled: false` by default) |
+| `qdrant` | Vector DB local path, collections, embedding dimension |
+| `semantic_scholar` | S2 API settings, rate limits, cache directory |
+| `ingestion` | PDF directory, chunk size/overlap, category mapping |
+| `summarization` | L1/L2 token limits, invalidation threshold, model choices |
+| `retrieval` | Vector/BM25 weights, top-k, rerank batch size |
+| `agents` | Writer iterations, verification threshold, model per agent |
+| `output` | Output directories, LaTeX template, export flags |
+| `rate_limiting` | Gemini RPM/daily, S2 RPM, GROBID concurrency |
+| `logging` | Level, Rich enabled, log file path |
+
+### Category Mapping
+
+Map folder names to human-readable categories in `config.yaml`:
+
+```yaml
+ingestion:
+  category_mapping:
+    Prompt_injections1: "Prompt Injection"
+    Hallucinations1: "LLM Hallucinations"
+    Data_and_Model_Poisoning1: "Data and Model Poisoning"
+    Adversarial_Code1: "Adversarial Attacks"
+    My_New_Category: "My New Topic"       # Add new categories here
+```
+
+To add papers to an existing category, simply copy PDFs into the corresponding subfolder under `scaricati/`. The ingestion pipeline will detect them automatically.
+
+---
+
+## Module API Reference
+
+### Ingestion (`paperhunter.ingestion`)
 
 ```python
-from paperhunter.paper_generator import PaperWriter
+from paperhunter.ingestion import IngestionPipeline, IngestionReport
 
-writer = PaperWriter(llm_model="gemini-3-flash-preview")
-
-# Ingest PDFs
-writer.ingest_papers(Path("./my_pdfs"))
-
-# Generate paper
-paper = writer.generate_paper(
-    title="Survey on LLM Security",
-    outline={
-        "Introduction": "Overview of LLMs and security threats.",
-        "Attacks": "Prompt injection, data poisoning, adversarial attacks.",
-        "Conclusion": "Summary and future work.",
-    },
-    output_dir=Path("./output"),
-    language="english",
-)
-
-# Or just ask a question
-result = writer.query("What defenses exist against prompt injection?")
-print(result["answer"])
+# Run full ingestion
+pipeline = IngestionPipeline(pdf_base_dir="./scaricati", batch_size=10)
+report: IngestionReport = pipeline.run()
+print(report.to_dict())  # processed, skipped, errors, total_chunks, ...
 ```
 
-## 📝 License
+Individual components:
+
+```python
+from paperhunter.ingestion.grobid_client import GrobidClient
+from paperhunter.ingestion.pdf_hasher import compute_pdf_hash, get_new_or_modified_pdfs
+from paperhunter.ingestion.semantic_scholar import SemanticScholarEnricher
+from paperhunter.ingestion.bibtex_generator import generate_bibtex_key, generate_bibtex_entry
+from paperhunter.ingestion.chunker import chunk_grobid_output, chunk_raw_text
+```
+
+### Summarization (`paperhunter.summarization`)
+
+```python
+from paperhunter.summarization import (
+    generate_l1_summary, generate_l1_batch,
+    generate_l2_summary, generate_l2_for_all_categories,
+    load_l1_summaries_for_category,
+    InvalidationManager,
+)
+
+# Generate L1 for a single paper
+summary = generate_l1_summary(paper, chunks, save_to_store=True)
+
+# Generate L2 for all categories
+l2_summaries = generate_l2_for_all_categories(save_to_store=True)
+
+# Check and regenerate invalidated L2s
+mgr = InvalidationManager(threshold=1)
+report = mgr.check_and_regenerate()
+```
+
+### Indexing (`paperhunter.indexing`)
+
+```python
+from paperhunter.indexing import (
+    QdrantStore, BM25Index, HybridRetriever, GeminiReranker,
+    RetrievedChunk, reciprocal_rank_fusion,
+)
+
+# Vector search
+store = QdrantStore()
+results = store.query("prompt injection defense", n_results=10,
+                      where_filter={"category": "Prompt Injection"})
+
+# Hybrid retrieval
+retriever = HybridRetriever()
+chunks = retriever.retrieve("GCG attack mechanism",
+                            category_filter="Adversarial Attacks",
+                            year_range=(2023, 2026))
+
+# Multi-collection search (paper_chunks + l1_summaries + l2_summaries)
+chunks = retriever.retrieve_multi_collection("defense overview")
+
+# Reranking
+reranker = GeminiReranker()
+reranked = reranker.rerank("defense mechanisms", chunks, top_k=5)
+```
+
+### GraphRAG (`paperhunter.graphrag`)
+
+```python
+from paperhunter.graphrag import (
+    extract_entities_and_relations, extract_batch,
+    PropertyGraphBuilder, Neo4jManager,
+    Entity, Relation, EntityType, RelationType,
+)
+
+# Extract entities from L1 summaries
+entities, relations = extract_entities_and_relations(l1_summary)
+
+# Build PropertyGraph
+builder = PropertyGraphBuilder()
+report = builder.build_from_summaries(l1_summaries)
+builder.save()
+
+# Query the graph
+result = builder.query_graph("evolution of prompt injection defenses")
+timeline = builder.get_temporal_chain(EntityType.ATTACK)
+
+# Neo4j (optional)
+with Neo4jManager() as mgr:
+    mgr.import_entities_and_relations(entities, relations)
+    neighbors = mgr.query_neighbors("GCG", depth=2)
+```
+
+### Agents (`paperhunter.agents`)
+
+```python
+from paperhunter.agents import (
+    run_pipeline, run_pipeline_from_checkpoint,
+    plan, write, verify, assemble,
+    create_initial_state, get_pipeline_summary,
+    SurveyState, SectionOutline, SectionDraft,
+)
+
+# Run the full pipeline
+state = run_pipeline(outline_file="my_outline.json", save_checkpoints=True)
+summary = get_pipeline_summary(state)
+
+# Resume from checkpoint
+state = run_pipeline_from_checkpoint("output/.checkpoints/verify_latest.json")
+
+# Use individual agents
+state = create_initial_state(l2_summaries=my_l2s)
+state = plan(state)   # Generate outline
+state = write(state)  # Write all sections
+state = verify(state) # Verify citations
+state = assemble(state) # Assemble final paper
+```
+
+### Post-processing (`paperhunter.postprocessing`)
+
+```python
+from paperhunter.postprocessing import (
+    ProvenanceTracker, create_provenance_from_state,
+    BibliographyGenerator, generate_final_bib, generate_bib_from_state,
+    markdown_to_latex, export_latex, export_latex_from_state,
+    VersionManager, create_version_from_state,
+    CheckpointManager, get_resume_recommendation,
+)
+
+# Provenance tracking
+tracker = create_provenance_from_state(state)
+tracker.save_json("output/provenance.json")
+tracker.save_markdown("output/provenance.md")
+
+# Bibliography
+bib_path, report = generate_final_bib(used_keys={"Zou_2023_GCG", "Li_2023_HaluEval"})
+
+# LaTeX export
+tex = markdown_to_latex(md_content, template="acl", bib_file="references.bib")
+export_latex(md_content, output_path="output/survey.tex", template="acl", copy_bib=True)
+
+# Versioning
+vm = VersionManager()
+version = vm.create_new_version(paper_count=20, categories=["PI", "DMP", "LLM_H", "AA"])
+vm.save_version_metadata(version, survey_text=md_content)
+changelog = vm.generate_changelog(old_version, new_version)
+
+# Checkpoint resume
+recommendation = get_resume_recommendation()
+```
+
+### Utilities (`paperhunter.utils`)
+
+```python
+from paperhunter.utils.llm_factory import (
+    get_flash_llm, get_pro_llm, get_embedding_model, llm_call_with_retry,
+)
+from paperhunter.utils.rate_limiter import get_gemini_limiter, get_s2_limiter
+from paperhunter.utils.logging_setup import (
+    setup_logging, get_logger, progress_bar, print_table,
+)
+```
+
+---
+
+## Output Examples
+
+After running the full pipeline, the output directory contains:
+
+```
+output/
+├── references.bib                    # Master BibTeX (all papers)
+├── references_final.bib              # Filtered BibTeX (only cited)
+├── l2_metadata/                      # L2 metadata JSON per category
+│   ├── prompt_injection.json
+│   ├── adversarial_attacks.json
+│   └── ...
+├── versions/
+│   ├── Survey_v1.0_Feb2026/
+│   │   ├── survey.md                 # Final survey in Markdown
+│   │   ├── survey.tex                # LaTeX version
+│   │   ├── references.bib            # Filtered bibliography
+│   │   ├── version_info.json         # Version metadata
+│   │   ├── provenance.json           # Claim → source mapping
+│   │   ├── changelog.md              # Diff from previous version
+│   │   └── citation_keys.json        # List of cited keys
+│   └── Survey_v1.1_Mar2026/
+│       └── ...                       # Auto-generated changelog
+├── provenance/                       # Provenance reports
+└── .checkpoints/                     # Pipeline checkpoints
+    ├── plan_20260301_120000.json
+    ├── write_20260301_121500.json
+    └── ...
+```
+
+---
+
+## Testing
+
+The project includes 20 test files with ~600+ tests covering all modules. Tests use mocks and do not require live APIs or Docker services.
+
+```bash
+# Run all tests
+python -m pytest test_*.py -v
+
+# Run a specific test module
+python -m pytest test_bm25_index.py -v
+python -m pytest test_pipeline.py -v
+python -m pytest test_assembler_agent.py -v
+
+# Run tests matching a pattern
+python -m pytest test_*.py -k "test_rerank"
+```
+
+Test modules:
+
+| Module | Test File | Tests |
+|--------|-----------|-------|
+| BM25 Index | `test_bm25_index.py` | 15 |
+| Hybrid Retriever | `test_hybrid_retriever.py` | 12 |
+| Reranker | `test_reranker.py` | 12 |
+| Entity Extractor | `test_entity_extractor.py` | 12 |
+| Neo4j Manager | `test_neo4j_manager.py` | 13 |
+| PropertyGraph | `test_property_graph.py` | 13 |
+| LangGraph State | `test_state.py` | 11 |
+| Planner Agent | `test_planner_agent.py` | 10 |
+| Writer Agent | `test_writer_agent.py` | 13 |
+| Critic Agent | `test_critic_agent.py` | 19 |
+| Assembler Agent | `test_assembler_agent.py` | 22 |
+| Pipeline | `test_pipeline.py` | 21 |
+| Provenance Tracker | `test_provenance_tracker.py` | 50 |
+| Bib Generator | `test_bibliography_generator.py` | 75 |
+| LaTeX Exporter | `test_latex_exporter.py` | 93 |
+| Versioning | `test_versioning.py` | 90 |
+| Checkpoint Manager | `test_checkpoint_manager.py` | 69 |
+| L1 Summarizer | `test_l1_summarizer.py` | — |
+| L2 Summarizer | `test_l2_summarizer.py` | — |
+| E2E Integration | `test_e2e_integration.py` | — |
+
+---
+
+## Troubleshooting
+
+### GROBID not responding
+
+```bash
+# Check if GROBID is running
+curl -s http://localhost:8070/api/isalive
+
+# Restart GROBID
+docker stop grobid
+docker run --rm -d --name grobid -p 8070:8070 lfoppiano/grobid:0.8.2-full
+# Wait ~30 seconds before using
+```
+
+If GROBID is unavailable, set `ingestion.fallback_to_pymupdf: true` in `config.yaml` (enabled by default).
+
+### Gemini API rate limits / timeouts
+
+- The system uses patient retry (6 retries with exponential backoff up to 120s) for Gemini Pro
+- Timeout is set to 600s by default for thinking models
+- Rate limiter: 15 RPM (free tier). Configurable in `config.yaml` → `rate_limiting.gemini_rpm`
+- If you consistently hit 429 errors, reduce batch sizes or add delay between operations
+
+### Qdrant issues
+
+Qdrant runs locally (no server needed). If the database gets corrupted:
+
+```bash
+# Reset Qdrant (will require re-ingestion)
+rm -rf qdrant_db/
+paperhunter ingest
+```
+
+### Neo4j connection refused
+
+```bash
+# Verify Neo4j is running
+docker ps | grep neo4j
+
+# Check config.yaml
+# neo4j.enabled: true
+# neo4j.uri: "bolt://localhost:7687"
+# neo4j.password: "password"
+```
+
+### Pipeline interrupted mid-run
+
+The pipeline saves checkpoints after every agent node. Resume with:
+
+```bash
+paperhunter write --resume
+```
+
+To list available checkpoints:
+
+```python
+from paperhunter.postprocessing import list_all_checkpoints
+for cp in list_all_checkpoints():
+    print(cp)
+```
+
+### Missing citations in output
+
+Some citations may be missing from the final `.bib` if:
+- The LLM hallucinated a reference not in the corpus
+- The BibTeX key format doesn't match (check `Author_YYYY_Keyword` pattern)
+
+Use the provenance report to identify which claims lack sources:
+
+```python
+from paperhunter.postprocessing import load_provenance
+tracker = load_provenance("output/provenance/provenance.json")
+for claim in tracker.get_unsupported_claims():
+    print(claim)
+```
+
+### `pip install -e .` fails
+
+Ensure you have the latest pip and setuptools:
+
+```bash
+pip install --upgrade pip setuptools wheel
+pip install -e .
+```
+
+---
+
+## Project Structure After Setup
+
+```
+vscode_agent_paper/
+├── .env                          ← Create from .env.example
+├── venv/                         ← Python virtual environment
+├── config.yaml                   ← Centralized configuration
+├── scaricati/                    ← Categorized PDFs (included in repo)
+│   ├── Prompt_injections1/       #    (~53 PDFs)
+│   ├── Adversarial_Code1/        #    (~23 PDFs)
+│   ├── Data_and_Model_Poisoning1/ #   (~13 PDFs)
+│   └── Hallucinations1/          #    (~29 PDFs)
+├── qdrant_db/                    ← Created by ingestion (vector store)
+├── data/
+│   ├── hash_registry.json        ← Created by ingestion (PDF hashes)
+│   ├── bm25_index.pkl            ← Created by index (BM25)
+│   └── property_graph/           ← Created by index (graph store)
+├── output/
+│   ├── references.bib            ← Master BibTeX
+│   ├── references_final.bib      ← Filtered BibTeX
+│   ├── versions/                 ← Versioned survey outputs
+│   ├── provenance/               ← Provenance reports
+│   ├── l2_metadata/              ← L2 summary metadata
+│   └── .checkpoints/             ← Pipeline checkpoints
+├── cache/semantic_scholar/       ← S2 API response cache
+├── logs/                         ← Log files
+├── paperhunter/                  ← Source code
+├── test_*.py                     ← Test files (20 modules)
+├── pyproject.toml                ← Project metadata + dependencies
+├── requirements.txt              ← Pinned dependencies
+└── TODO.md                       ← Development roadmap
+```
+
+---
+
+## License
 
 MIT License

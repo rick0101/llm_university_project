@@ -1,14 +1,20 @@
-# PaperHunter v2.0
+# PaperHunter v2.1
 
 **End-to-end LLM Security Survey Generator — from PDF ingestion to Nature/ACL-style paper**
 
 PaperHunter is a modular, agentic system that autonomously generates a scientific survey paper on LLM security. Starting from ~400 categorized PDF papers, it runs a complete pipeline: structured extraction (GROBID), metadata enrichment (Semantic Scholar), hierarchical summarization, hybrid RAG retrieval, multi-agent writing (LangGraph), and LaTeX export — all with verifiable citations and provenance tracking.
+
+**v2.1 highlights:** Budget-aware scalability (~100 papers/category within 150k token budget), download deduplication, and configurable recency priority across the entire pipeline.
 
 ---
 
 ## Table of Contents
 
 - [Architecture](#architecture)
+- [Key Features (v2.1)](#key-features-v21)
+  - [Budget-Aware Scalability (~100 papers/category)](#budget-aware-scalability-100-paperscategory)
+  - [Download Deduplication](#download-deduplication)
+  - [Recency Priority](#recency-priority)
 - [Tech Stack](#tech-stack)
 - [Setup](#setup)
   - [Prerequisites](#prerequisites)
@@ -103,8 +109,87 @@ paperhunter/
 └── utils/                            ← Shared Utilities
     ├── logging_setup.py              ← Rich logging + progress bars
     ├── llm_factory.py                ← LlamaIndex LLM factory (Flash/Pro)
-    └── rate_limiter.py               ← Token bucket rate limiting
+    ├── rate_limiter.py               ← Token bucket rate limiting
+    └── token_counter.py              ← Budget estimation & token counting
 ```
+
+---
+
+## Key Features (v2.1)
+
+### Budget-Aware Scalability (~100 papers/category)
+
+The system supports up to ~400 papers (N papers × 4 categories) while keeping total LLM context ≤ 150k tokens to prevent context rot and hallucinations. Budget control is automatic and centralized.
+
+**How it works:**
+
+| Phase | Budget Mechanism | Config Key |
+|-------|-----------------|------------|
+| **L1 Summarization** | Adaptive compression tiers based on N papers: *standard* (≤30), *concise* (31–70), *compressed* (>70) | `summarization.l1_target_chars_auto`, `summarization.l1_min_chars` |
+| **L2 Summarization** | Recency-based tier assignment (full/reduced/compressed) + progressive downgrade if over budget | `summarization.max_context_tokens`, `summarization.l2_recency_tiers` |
+| **Writer Agent** | Per-section budget: `total_budget / N_sections` (proportional) or fixed | `agents.writer_max_context_chars`, `agents.writer_budget_mode` |
+| **Pipeline Start** | Budget summary printed before execution with warnings if over budget | Automatic |
+
+**Budget report example:**
+
+```python
+from paperhunter.utils.token_counter import BudgetReport
+
+report = BudgetReport.from_config(n_categories=4, n_sections_estimate=8)
+report.print_report()  # Rich-formatted table with per-phase token estimates
+```
+
+**Key config parameters** (`config.yaml`):
+
+```yaml
+ingestion:
+  papers_per_category: 100          # Target papers per category
+
+summarization:
+  max_context_tokens: 150000        # Global token budget (≤ model context window)
+  l1_target_chars_auto: true        # Auto-compute L1 target size from N papers
+  l1_min_chars: 2000                # Floor: L1 never shorter than this
+  l2_recency_tiers:
+    full: 2                         # Papers ≤2 years old: full L1 text
+    reduced: 4                      # Papers 3-4 years old: ~70% detail
+    compressed: 999                 # Papers >4 years old: key_contributions only
+
+agents:
+  writer_max_context_chars: 60000   # Cap per section
+  writer_budget_mode: "proportional" # "fixed" | "proportional"
+```
+
+### Download Deduplication
+
+Before downloading any PDF, the system checks if a paper with the same title or ArXiv ID already exists in `scaricati/`. This avoids redundant downloads and bandwidth waste.
+
+- **Filename matching**: normalized (lowercase, no special chars) comparison against all existing PDFs
+- **ArXiv ID matching**: extracts `YYMM.NNNNN` patterns from filenames, strips version suffixes (`v1`, `v2`)
+- **In-session tracking**: newly downloaded papers are immediately registered, preventing duplicates within the same batch
+- **Result**: `DownloadResult(success=True, skipped=True, method="dedup")` — no HTTP request made
+
+No configuration needed — deduplication is always active.
+
+### Recency Priority
+
+When enabled (default), the system gives higher priority to more recent papers across the entire pipeline:
+
+| Component | Recency Behavior |
+|-----------|------------------|
+| **Ingestion** | PDFs sorted by estimated publication year (descending) before processing — recent papers processed first |
+| **L2 Summarization** | Recent papers (≤2yr) get full detail; older papers progressively compressed |
+| **Hybrid Retrieval** | Post-RRF boost: `score × (1 + boost × recency_factor)` — recent papers rank higher at equal relevance |
+
+**Global toggle** (`config.yaml`):
+
+```yaml
+recency_priority: true   # Master switch — set to false to treat all papers equally
+
+retrieval:
+  recency_boost: 0.1     # Max +10% score for most recent paper (0.0 = disabled)
+```
+
+When `recency_priority: false`, all recency logic is bypassed: L2 uses uniform detail, retrieval has no temporal boost, ingestion processes in filesystem order.
 
 ---
 
@@ -415,13 +500,16 @@ PDF files → GROBID (TEI-XML) → S2 Enrichment → BibTeX → GROBID-aware Chu
 ```
 
 1. **Scan & Delta Detection**: SHA-256 hash registry identifies new/modified PDFs
-2. **GROBID Extraction**: Structured text (sections, references, figure captions) via Docker API
-3. **S2 Enrichment**: Venue, DOI, citation count, BibTeX from Semantic Scholar API
-4. **BibTeX Generation**: Automatic keys in `Author_YYYY_Keyword` format
-5. **Chunking**: GROBID section-aware splitting (~1500 chars, 200 overlap, per-section boundaries)
-6. **Indexing**: Qdrant (3072-dim Gemini embeddings) + hash registry update
+2. **Recency Sort** *(v2.1)*: PDFs sorted by estimated publication year (descending) — recent papers processed first, so interrupted runs still have the most relevant data
+3. **GROBID Extraction**: Structured text (sections, references, figure captions) via Docker API
+4. **S2 Enrichment**: Venue, DOI, citation count, BibTeX from Semantic Scholar API
+5. **BibTeX Generation**: Automatic keys in `Author_YYYY_Keyword` format
+6. **Chunking**: GROBID section-aware splitting (~1500 chars, 200 overlap, per-section boundaries)
+7. **Indexing**: Qdrant (3072-dim Gemini embeddings) + hash registry update
 
-Key feature: re-running processes only delta changes (0 operations if nothing changed).
+Key features:
+- Re-running processes only delta changes (0 operations if nothing changed)
+- Download deduplication: papers already in `scaricati/` are never re-downloaded
 
 ### Phase 2 — Hierarchical Summarization
 
@@ -430,7 +518,9 @@ Chunks → L1 Summary (per paper) → L2 Meta-Summary (per category) → Auto-in
 ```
 
 - **L1 Summaries** (Gemini Pro): Structured JSON with `key_contributions`, `methodology`, `testing_methodology` (critical field), `temporal_context`, `results_summary`, `limitations`
+  - *Budget-aware (v2.1)*: Compression tier adapts to N papers/category — standard (≤30), concise (31–70), compressed (>70) — keeping total L1 text within token budget
 - **L2 Summaries** (Gemini Pro): 4-6k token meta-summaries per category with `temporal_trends`, `taxonomy`, `gaps_filled`, `open_gaps`, `methodological_convergences`, `testing_overview`, `synthesis`
+  - *Budget-aware (v2.1)*: Recency-tiered formatting — recent papers at full detail, older papers progressively compressed. Multi-phase downgrade if over budget (reduced→compressed→truncation)
 - **Auto-invalidation**: When new papers are ingested, affected L2 summaries are automatically regenerated (configurable threshold)
 
 ### Phase 3 — Hybrid Indexing + GraphRAG
@@ -441,6 +531,7 @@ Chunks + L1 + L2 → [Vector Search (Qdrant) + BM25] → RRF Fusion → Gemini R
 ```
 
 - **Hybrid Retrieval**: Vector search (Qdrant, cosine similarity) + BM25 keyword match → Reciprocal Rank Fusion
+- **Recency Boost** *(v2.1)*: Post-RRF temporal scoring — `score × (1 + boost × recency_factor)` — configurable via `retrieval.recency_boost`
 - **Reranking**: Gemini Flash as cross-encoder scores candidates 0.0–1.0
 - **Entity Extraction**: Attacks, Defenses, Models, Datasets, Benchmarks, Metrics with temporal relations (UPDATES, INTRODUCED_IN, EXTENDS)
 - **PropertyGraph**: LlamaIndex `SimplePropertyGraphStore` with optional Neo4j sync
@@ -452,7 +543,7 @@ START → Planner → Writer → Critic → [loop if needed] → Assembler → E
 ```
 
 1. **Planner Agent** (Pro): Generates structured outline from L2 summaries — sections, topics, target word counts
-2. **Writer Agent** (Pro): For each section, generates 3-5 RAG queries → hybrid retrieval → optional reranking → writes with strict citation format `[Author_YYYY_Key]`
+2. **Writer Agent** (Pro): For each section, generates 3-5 RAG queries → hybrid retrieval → optional reranking → writes with strict citation format `[Author_YYYY_Key]`. Budget-aware *(v2.1)*: per-section context budget computed from `writer_budget_mode` (proportional or fixed); L1/L2 summary chunks prioritized over raw text
 3. **Critic Agent** (Flash): Verifies every citation against source chunks — SUPPORTED / PARTIALLY_SUPPORTED / NOT_SUPPORTED / SOURCE_NOT_FOUND. If <80% pass rate → flags section for rewrite (max 3 iterations)
 4. **Assembler Agent** (Pro): Orders sections, generates abstract/introduction/conclusion, assembles final Markdown + bibliography
 
@@ -476,15 +567,16 @@ All settings are in `config.yaml`. API keys go in `.env` (never committed).
 
 | Section | Description |
 |---------|-------------|
+| `recency_priority` | Global toggle for recency weighting across all modules |
 | `gemini` | Model names, temperature, timeout, max tokens |
 | `grobid` | GROBID Docker URL, timeout, batch size |
 | `neo4j` | Neo4j connection (optional, `enabled: false` by default) |
 | `qdrant` | Vector DB local path, collections, embedding dimension |
 | `semantic_scholar` | S2 API settings, rate limits, cache directory |
-| `ingestion` | PDF directory, chunk size/overlap, category mapping |
-| `summarization` | L1/L2 token limits, invalidation threshold, model choices |
-| `retrieval` | Vector/BM25 weights, top-k, rerank batch size |
-| `agents` | Writer iterations, verification threshold, model per agent |
+| `ingestion` | PDF directory, chunk size/overlap, category mapping, `papers_per_category` |
+| `summarization` | L1/L2 token limits, invalidation, `max_context_tokens`, `l1_target_chars_auto`, `l2_recency_tiers` |
+| `retrieval` | Vector/BM25 weights, top-k, rerank batch size, `recency_boost` |
+| `agents` | Writer iterations, verification threshold, model per agent, `writer_max_context_chars`, `writer_budget_mode` |
 | `output` | Output directories, LaTeX template, export flags |
 | `rate_limiting` | Gemini RPM/daily, S2 RPM, GROBID concurrency |
 | `logging` | Level, Rich enabled, log file path |
@@ -673,6 +765,22 @@ from paperhunter.utils.rate_limiter import get_gemini_limiter, get_s2_limiter
 from paperhunter.utils.logging_setup import (
     setup_logging, get_logger, progress_bar, print_table,
 )
+
+# Token counting & budget management (v2.1)
+from paperhunter.utils.token_counter import (
+    estimate_tokens,                 # ~4 chars/token approximation
+    compute_l1_target_chars,         # Target chars per L1 based on N papers
+    compute_l2_budget,               # Available chars for L2 prompt
+    compute_writer_budget,           # Per-section budget (proportional/fixed)
+    get_l1_compression_tier,         # "standard" / "concise" / "compressed"
+    chars_budget_for_n_papers,       # Total chars budget for N papers
+    BudgetReport,                    # Full budget summary with Rich output
+)
+
+# Budget report before pipeline run
+report = BudgetReport.from_config(n_categories=4, n_sections_estimate=8)
+report.print_report()   # Rich table: phase → tokens/call → % budget → notes
+print(report.within_budget)  # True if all phases fit in max_context_tokens
 ```
 
 ---
@@ -711,7 +819,7 @@ output/
 
 ## Testing
 
-The project includes 20 test files with ~600+ tests covering all modules. Tests use mocks and do not require live APIs or Docker services.
+The project includes 26 test files with ~700+ tests covering all modules. Tests use mocks and do not require live APIs or Docker services.
 
 ```bash
 # Run all tests
@@ -731,7 +839,7 @@ Test modules:
 | Module | Test File | Tests |
 |--------|-----------|-------|
 | BM25 Index | `test_bm25_index.py` | 15 |
-| Hybrid Retriever | `test_hybrid_retriever.py` | 12 |
+| Hybrid Retriever | `test_hybrid_retriever.py` | 17 |
 | Reranker | `test_reranker.py` | 12 |
 | Entity Extractor | `test_entity_extractor.py` | 12 |
 | Neo4j Manager | `test_neo4j_manager.py` | 13 |
@@ -750,6 +858,12 @@ Test modules:
 | L1 Summarizer | `test_l1_summarizer.py` | — |
 | L2 Summarizer | `test_l2_summarizer.py` | — |
 | E2E Integration | `test_e2e_integration.py` | — |
+| Budget-Aware L1 | `test_l1_budget_aware.py` | 6 |
+| Budget-Aware L2 | `test_l2_budget_aware.py` | 9 |
+| Budget-Aware Writer | `test_l1_budget_aware_writer.py` | 8 |
+| Budget Summary | `test_budget_summary.py` | 10 |
+| Download Dedup | `test_dedup_download.py` | 22 |
+| Recency Sort | `test_recency_sort.py` | 48 |
 
 ---
 
@@ -867,10 +981,11 @@ vscode_agent_paper/
 ├── cache/semantic_scholar/       ← S2 API response cache
 ├── logs/                         ← Log files
 ├── paperhunter/                  ← Source code
-├── test_*.py                     ← Test files (20 modules)
+├── test_*.py                     ← Test files (26 modules)
 ├── pyproject.toml                ← Project metadata + dependencies
 ├── requirements.txt              ← Pinned dependencies
-└── TODO.md                       ← Development roadmap
+├── TODO.md                       ← Development roadmap (v2.0)
+└── TODO3.md                      ← Scalability improvements roadmap (v2.1)
 ```
 
 ---

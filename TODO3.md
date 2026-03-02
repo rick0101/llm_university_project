@@ -472,7 +472,26 @@ Il sistema attuale è stato testato con ~20 paper totali. Scalare a ~400 paper (
 
 ---
 
-#### [  ] Task FINALE: Aggiornare README.md con le nuove funzionalità, con esempi e brevi descrizioni — Documentazione completa
+#### [x] Task FINALE: Aggiornare README.md con le nuove funzionalità, con esempi e brevi descrizioni — Documentazione completa
+
+> **Completato 2/03/2026.** Modifiche:
+> - **`README.md`:** Aggiornato da v2.0 a v2.1 con le nuove funzionalità:
+>   - **Nuova sezione "Key Features (v2.1)"** con 3 sotto-sezioni:
+>     - *Budget-Aware Scalability*: Tabella riassuntiva meccanismi budget per fase (L1/L2/Writer/Pipeline), esempio `BudgetReport`, configurazione `config.yaml`
+>     - *Download Deduplication*: Descrizione filename matching + ArXiv ID matching + in-session tracking, nessuna configurazione necessaria
+>     - *Recency Priority*: Tabella comportamento per componente (Ingestion/L2/Retrieval), toggle globale `recency_priority`, configurazione `recency_boost`
+>   - **Table of Contents**: Aggiunta sezione "Key Features (v2.1)" con 3 sotto-link
+>   - **Architecture tree**: Aggiunto `token_counter.py` sotto `utils/`
+>   - **Pipeline Workflow aggiornato**:
+>     - Phase 1: Aggiunto step "Recency Sort" + nota download deduplication
+>     - Phase 2: Note budget-aware per L1 (compression tiers) e L2 (recency-tiered formatting + progressive downgrade)
+>     - Phase 3: Aggiunto "Recency Boost" post-RRF con formula
+>     - Phase 4: Writer agent con budget-aware context e prioritizzazione L1/L2 chunks
+>   - **Configuration table**: Aggiunta riga `recency_priority`, aggiornate descrizioni `ingestion`, `summarization`, `retrieval`, `agents` con nuovi parametri
+>   - **Module API Reference**: Sezione `Utilities` ampliata con import e uso di `token_counter` (estimate_tokens, compute_l1_target_chars, BudgetReport, ecc.)
+>   - **Testing table**: Aggiornata da 20 a 26 moduli, aggiornato conteggio test hybrid_retriever (12→17), aggiunti 6 nuovi test file: `test_l1_budget_aware.py` (6), `test_l2_budget_aware.py` (9), `test_l1_budget_aware_writer.py` (8), `test_budget_summary.py` (10), `test_dedup_download.py` (22), `test_recency_sort.py` (48)
+>   - **Project Structure**: Aggiunto `TODO3.md`, aggiornato conteggio test files
+>   - **Header**: Aggiornato a "PaperHunter v2.1" con highlights v2.1 nel sottotitolo
 
 ---
 

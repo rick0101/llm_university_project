@@ -321,7 +321,7 @@ Il sistema attuale è stato testato con ~20 paper totali. Scalare a ~400 paper (
 
 ## Requisito 2 — Non scaricare paper già presenti in "scaricati"
 
-### [  ] Task B.1: Deduplicazione pre-download
+### [x] Task B.1: Deduplicazione pre-download
 
 **File:** `paperhunter/download_manager.py` (modifica)  
 **Stato attuale:** `download_paper()` e `batch_download()` non controllano se il PDF esiste già nella cartella `scaricati/`. L'unico check di dedup è nella fase di *ingestion* (`pdf_hasher.py`), non nella fase di *download*.  
@@ -332,6 +332,31 @@ Il sistema attuale è stato testato con ~20 paper totali. Scalare a ~400 paper (
 - Aggiungere campo `skipped: bool = False` a `DownloadResult` in `models.py`
 - In `batch_download()`: loggare il conteggio paper skippati vs scaricati
 - Opzionale: check anche per ArXiv ID nel filename (es. `2305.12345.pdf`)
+
+> **Completato 2/03/2026.** Modifiche:
+> - **`paperhunter/models.py`:** Aggiunto campo `skipped: bool = Field(default=False)` a `DownloadResult` — indica se il download è stato saltato perché il paper esiste già localmente
+> - **`paperhunter/download_manager.py`:** Modifiche principali:
+>   - **`_normalize_filename(name) → str`:** Funzione module-level per normalizzare filename per confronto dedup. Rimuove estensione, lowercase, sostituisce spazi/underscore multipli con singolo underscore, rimuove caratteri non alfanumerici, collassa underscore residui
+>   - **`Downloader.__init__()`:** Aggiunta scansione ricorsiva di `download_dir` al momento dell'inizializzazione. Costruisce due set:
+>     - `_existing_files: set[str]` — filename normalizzati di tutti i PDF esistenti
+>     - `_existing_arxiv_ids: set[str]` — ArXiv ID estratti dai filename (regex `\d{4}\.\d{4,5}`)
+>   - **`_scan_existing_pdfs()`:** Scansione ricorsiva con `rglob('*.pdf')`. Per ogni PDF: normalizza il filename stem e aggiunge al set; estrae ArXiv ID se presente. Logga il conteggio totale
+>   - **`_is_duplicate(paper, custom_filename) → tuple[bool, str | None]`:** Verifica se il paper esiste già. Strategia a 2 livelli:
+>     1. Check per ArXiv ID (stripping del suffisso versione `v\d+`) — più affidabile
+>     2. Check per filename normalizzato — fallback per paper senza ArXiv ID
+>   - **`register_downloaded(paper, file_path)`:** Aggiorna l'indice dedup in-session dopo un download riuscito, così che download successivi nella stessa sessione batch rilevano il duplicato
+>   - **`download_paper()`:** Aggiunto check `_is_duplicate()` all'inizio. Se duplicato → `DownloadResult(success=True, skipped=True, method="dedup")` senza alcuna richiesta HTTP. Dopo download riuscito → `register_downloaded()` per aggiornare l'indice
+>   - **`batch_download()`:** Logging arricchito con conteggio separato: `"X downloaded, Y skipped (already exist), Z failed — N total"`
+> - **Indice dedup su `scaricati/` reale:** 118 PDF → 115 nomi unici normalizzati, 0 ArXiv IDs (i file attuali non hanno ArXiv ID nel nome)
+> - **Test:** 22/22 passati:
+>   - `_normalize_filename`: 8 casi (basic, spaces, special chars, underscores, empty, case, arxiv, strips)
+>   - `DownloadResult.skipped`: default False, esplicito True, JSON roundtrip
+>   - `_scan_existing_pdfs`: directory vuota (0), popolata (3 file, 1 ArXiv), ignora non-PDF
+>   - `_is_duplicate`: match per titolo, per ArXiv ID, con suffisso versione, no match
+>   - `register_downloaded`: aggiorna indice in-session, successivo `_is_duplicate` → True
+>   - `download_paper()`: skip su duplicato (success=True, skipped=True, method="dedup")
+>   - `batch_download()`: 2 paper esistenti → 0 downloaded, 2 skipped, 0 failed
+>   - `scaricati/` reale: 115 nomi unici indicizzati correttamente
 
 ---
 

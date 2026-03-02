@@ -10,6 +10,10 @@ Componenti:
 - ``ingestion_pipeline.IngestionPipeline`` — Orchestratore ingestion completo
 """
 
-from paperhunter.ingestion.ingestion_pipeline import IngestionPipeline, IngestionReport
+from paperhunter.ingestion.ingestion_pipeline import (
+    IngestionPipeline,
+    IngestionReport,
+    sort_pdfs_by_recency,
+)
 
-__all__ = ["IngestionPipeline", "IngestionReport"]
+__all__ = ["IngestionPipeline", "IngestionReport", "sort_pdfs_by_recency"]

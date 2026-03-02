@@ -399,7 +399,7 @@ Il sistema attuale è stato testato con ~20 paper totali. Scalare a ~400 paper (
 
 ---
 
-#### [  ] Task FINALE: Aggiornare README.md — Documentazione completa
+#### [  ] Task FINALE: Aggiornare README.md con le nuove funzionalità, con esempi e brevi descrizioni — Documentazione completa
 
 ---
 

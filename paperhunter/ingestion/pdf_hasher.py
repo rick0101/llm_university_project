@@ -217,6 +217,7 @@ def scan_pdf_directory(
                 "category": "LLM Hallucinations",
                 "hash": "abc123...",
                 "size_bytes": 1234567,
+                "mtime": 1708416000.0,
             }
         ]
     """
@@ -243,6 +244,8 @@ def scan_pdf_directory(
 
             pdf_hash = compute_pdf_hash(pdf_path)
 
+            stat = pdf_path.stat()
+
             pdf_info = {
                 "absolute_path": pdf_path,
                 "relative_path": str(relative),
@@ -250,7 +253,8 @@ def scan_pdf_directory(
                 "category_folder": category_folder,
                 "category": _get_category_from_path(pdf_path, base_dir),
                 "hash": pdf_hash,
-                "size_bytes": pdf_path.stat().st_size,
+                "size_bytes": stat.st_size,
+                "mtime": stat.st_mtime,
             }
             pdf_files.append(pdf_info)
 

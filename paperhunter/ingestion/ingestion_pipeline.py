@@ -29,6 +29,8 @@ Uso::
 from __future__ import annotations
 
 import json
+import os
+import re
 import time
 import traceback
 from dataclasses import dataclass, field
@@ -61,6 +63,136 @@ from paperhunter.utils.logging_setup import (
 )
 
 logger = get_logger(__name__)
+
+
+# =============================================================================
+# Recency sorting helpers
+# =============================================================================
+
+# Matches a 4-digit year (2000–2099) in isolation (not part of a larger number)
+_YEAR_RE = re.compile(r"(?<!\d)(20[0-2]\d)(?!\d)")
+
+
+def _extract_year_from_filename(filename: str) -> int | None:
+    """Prova ad estrarre un anno (2000-2029) dal nome del file PDF.
+
+    Cerca sequenze tipo ``2024``, ``_2023_``, ecc.
+    Se ci sono più match plausibili restituisce il **più recente**
+    (euristica: più probabilmente è l'anno di pubblicazione).
+
+    Args:
+        filename: Nome del file (con o senza estensione).
+
+    Returns:
+        Anno come int, o None se non trovato.
+    """
+    matches = _YEAR_RE.findall(filename)
+    if not matches:
+        return None
+    # Restituisci il più recente tra i match trovati
+    return max(int(m) for m in matches)
+
+
+def _get_pdf_sort_key(pdf_info: dict[str, Any]) -> tuple[int, int, float]:
+    """Calcola una chiave di ordinamento per un PDF basata sulla recency.
+
+    Strategia a 3 livelli (priorità decrescente):
+    1. Anno estratto dal filename (se presente)
+    2. Anno derivato dalla data di modifica del file
+    3. Timestamp di modifica raw (per disambiguare a parità di anno)
+
+    La tupla è costruita in modo che ``sorted(..., reverse=True)``
+    metta i paper più recenti in cima.
+
+    Args:
+        pdf_info: Dizionario con le informazioni del PDF (da pdf_hasher).
+
+    Returns:
+        Tupla ``(year, month, mtime)`` per ordinamento decrescente.
+    """
+    filename = pdf_info.get("filename", "")
+    abs_path = pdf_info.get("absolute_path")
+
+    # 1. Anno dal filename
+    year_from_name = _extract_year_from_filename(filename)
+
+    # 2. Anno e mese dalla data di modifica del file
+    mtime = pdf_info.get("mtime")
+    if mtime is None and abs_path is not None:
+        try:
+            mtime = os.path.getmtime(abs_path)
+        except OSError:
+            mtime = 0.0
+    mtime = mtime or 0.0
+
+    dt = datetime.fromtimestamp(mtime) if mtime > 0 else datetime(2000, 1, 1)
+    year_from_mtime = dt.year
+    month_from_mtime = dt.month
+
+    # L'anno dal filename vince, ma usiamo il mese da mtime come approssimazione
+    final_year = year_from_name if year_from_name is not None else year_from_mtime
+    final_month = month_from_mtime  # fallback, non estraibile dal filename
+
+    return (final_year, final_month, mtime)
+
+
+def sort_pdfs_by_recency(
+    pdfs: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Ordina una lista di PDF per data di pubblicazione stimata (più recenti prima).
+
+    L'ordinamento è **decrescente**: i paper più recenti vengono restituiti
+    per primi, così che il processing della pipeline li elabori con priorità.
+
+    Fonti di informazione temporale (in ordine di affidabilità):
+    1. Anno estratto dal nome del file (regex ``20[0-2]\\d``)
+    2. Data di modifica del file PDF (``os.path.getmtime``)
+
+    Ogni PDF viene annotato con i campi:
+    - ``sort_year``: anno usato per l'ordinamento
+    - ``sort_source``: fonte dell'anno (``"filename"`` | ``"mtime"``)
+
+    Args:
+        pdfs: Lista di dict PDF (da ``get_new_or_modified_pdfs``).
+
+    Returns:
+        Lista ordinata (copia), non modifica l'originale.
+    """
+    if not pdfs:
+        return []
+
+    annotated = []
+    for pdf_info in pdfs:
+        key = _get_pdf_sort_key(pdf_info)
+        year_from_name = _extract_year_from_filename(pdf_info.get("filename", ""))
+
+        # Annotazione per tracking
+        info_copy = dict(pdf_info)
+        info_copy["sort_year"] = key[0]
+        info_copy["sort_source"] = "filename" if year_from_name is not None else "mtime"
+        annotated.append((key, info_copy))
+
+    # Ordinamento decrescente (più recenti prima)
+    annotated.sort(key=lambda x: x[0], reverse=True)
+
+    sorted_pdfs = [item[1] for item in annotated]
+
+    # Log statistiche
+    years = [p["sort_year"] for p in sorted_pdfs]
+    if years:
+        from_filename = sum(1 for p in sorted_pdfs if p["sort_source"] == "filename")
+        from_mtime = sum(1 for p in sorted_pdfs if p["sort_source"] == "mtime")
+        logger.info(
+            "Ordinamento per recency: %d PDF ordinati (range: %d-%d). "
+            "Fonte anno: %d da filename, %d da mtime",
+            len(sorted_pdfs),
+            min(years),
+            max(years),
+            from_filename,
+            from_mtime,
+        )
+
+    return sorted_pdfs
 
 
 # =============================================================================
@@ -382,6 +514,15 @@ class IngestionPipeline:
             print_success("Tutti i PDF del checkpoint sono già completati.")
             self._checkpoint.clear()
             return report
+
+        # ═══════════════════════════════════════════════════════════════
+        # STEP 1c: Ordinamento per recency (paper recenti prima)
+        # ═══════════════════════════════════════════════════════════════
+        logger.info("=" * 60)
+        logger.info("STEP 1c: Ordinamento per recency (più recenti prima)")
+        logger.info("=" * 60)
+
+        new_pdfs = sort_pdfs_by_recency(new_pdfs)
 
         # Inizializza checkpoint per questa esecuzione
         self._checkpoint._started_at = datetime.now().isoformat()

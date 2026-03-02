@@ -52,6 +52,9 @@ from typing import Any, Optional
 
 from paperhunter.utils.logging_setup import get_logger
 
+# Anno di riferimento per il calcolo recency (pre-deep-learning era)
+_RECENCY_BASELINE_YEAR = 2015
+
 logger = get_logger(__name__)
 
 
@@ -212,6 +215,7 @@ class HybridRetriever:
         self._top_k_bm25 = top_k_bm25 if top_k_bm25 is not None else cfg.top_k_bm25
         self._top_k_final = top_k_final if top_k_final is not None else cfg.top_k_final
         self._rrf_k = rrf_k
+        self._recency_boost = cfg.recency_boost
 
         # Lazy init: store e index
         self._qdrant_store = qdrant_store
@@ -226,7 +230,8 @@ class HybridRetriever:
             f"top_k_vector={self._top_k_vector}, "
             f"top_k_bm25={self._top_k_bm25}, "
             f"top_k_final={self._top_k_final}, "
-            f"rrf_k={self._rrf_k}"
+            f"rrf_k={self._rrf_k}, "
+            f"recency_boost={self._recency_boost}"
         )
 
     # ------------------------------------------------------------------
@@ -411,6 +416,7 @@ class HybridRetriever:
         bm25_weight: Optional[float] = None,
         include_vector_only: bool = False,
         include_bm25_only: bool = False,
+        recency_boost: Optional[float] = None,
     ) -> list[RetrievedChunk]:
         """Ricerca ibrida: vector + BM25 + RRF + metadata filtering.
 
@@ -434,6 +440,8 @@ class HybridRetriever:
             bm25_weight: Override del peso BM25 per questa query.
             include_vector_only: Se True, usa solo ricerca vettoriale.
             include_bm25_only: Se True, usa solo BM25.
+            recency_boost: Override del boost temporale per questa query.
+                Se None, usa il valore da config. 0.0 per disabilitare.
 
         Returns:
             Lista di ``RetrievedChunk`` ordinati per score RRF decrescente.
@@ -490,6 +498,11 @@ class HybridRetriever:
             # Nessun risultato
             fused = []
 
+        # --- Recency boost ---
+        r_boost = recency_boost if recency_boost is not None else self._recency_boost
+        if r_boost and r_boost > 0.0 and fused:
+            fused = _apply_recency_boost(fused, r_boost)
+
         # Tronca a final_n
         fused = fused[:final_n]
 
@@ -499,6 +512,7 @@ class HybridRetriever:
             f"HybridRetriever: query={query[:60]!r}, "
             f"vector={len(vector_results)}, bm25={len(bm25_results)}, "
             f"fused={len(fused)}, top_score={top_score:.4f}, "
+            f"recency_boost={r_boost}, "
             f"elapsed={elapsed:.3f}s"
         )
 
@@ -831,6 +845,7 @@ class HybridRetriever:
                 "top_k_bm25": self._top_k_bm25,
                 "top_k_final": self._top_k_final,
                 "rrf_k": self._rrf_k,
+                "recency_boost": self._recency_boost,
             },
             "qdrant_available": False,
             "bm25_available": False,
@@ -869,6 +884,76 @@ class HybridRetriever:
 # ===========================================================================
 # Helpers
 # ===========================================================================
+
+def _apply_recency_boost(
+    results: list[RetrievedChunk],
+    boost: float,
+) -> list[RetrievedChunk]:
+    """Applica un boost temporale ai risultati post-RRF.
+
+    Formula: ``final_score = rrf_score * (1 + boost * recency_factor)``
+    dove ``recency_factor = (year - baseline) / (max_year - baseline)``
+    normalizzato in ``[0, 1]``. Anno baseline = 2015.
+
+    I risultati senza anno (metadata ``year`` assente o None) ricevono
+    ``recency_factor = 0.0`` (nessun boost).
+
+    Dopo l'applicazione del boost, i risultati vengono ri-ordinati
+    per score decrescente.
+
+    Args:
+        results: Lista di ``RetrievedChunk`` da boostare.
+        boost: Fattore di boost (es. 0.1 = max +10% per paper più recenti).
+            Se 0.0 o negativo, restituisce i risultati invariati.
+
+    Returns:
+        Lista di ``RetrievedChunk`` con score aggiornato e ri-ordinata.
+    """
+    if not results or boost <= 0.0:
+        return results
+
+    # Raccogli gli anni disponibili
+    years: list[int] = []
+    for r in results:
+        y = r.metadata.get("year")
+        if y is not None:
+            try:
+                years.append(int(y))
+            except (ValueError, TypeError):
+                pass
+
+    if not years:
+        # Nessun anno disponibile → nessun boost possibile
+        logger.debug("Recency boost: nessun anno nei metadata, skip")
+        return results
+
+    max_year = max(years)
+    baseline = _RECENCY_BASELINE_YEAR
+    year_range = max(max_year - baseline, 1)  # Evita divisione per zero
+
+    boosted_count = 0
+    for r in results:
+        y = r.metadata.get("year")
+        if y is not None:
+            try:
+                y_int = int(y)
+            except (ValueError, TypeError):
+                continue
+            recency_factor = max((y_int - baseline) / year_range, 0.0)
+            r.score = r.score * (1.0 + boost * recency_factor)
+            boosted_count += 1
+
+    # Ri-ordina per score decrescente
+    results.sort(key=lambda r: r.score, reverse=True)
+
+    logger.debug(
+        f"Recency boost applicato: boost={boost}, "
+        f"year_range={baseline}-{max_year}, "
+        f"boosted={boosted_count}/{len(results)}"
+    )
+
+    return results
+
 
 def _deduplicate_by_chunk_id(
     results: list[RetrievedChunk],

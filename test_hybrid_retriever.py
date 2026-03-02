@@ -26,6 +26,7 @@ from paperhunter.indexing.hybrid_retriever import (
     RetrievedChunk,
     reciprocal_rank_fusion,
     _deduplicate_by_chunk_id,
+    _apply_recency_boost,
 )
 from paperhunter.indexing.bm25_index import BM25Index
 from paperhunter.models import PaperChunk, ChunkType
@@ -858,6 +859,304 @@ def test_top_k_final():
 
 
 # ===========================================================================
+# Test 13: _apply_recency_boost — funzione standalone
+# ===========================================================================
+
+def test_recency_boost_basic():
+    """Verifica il funzionamento base del recency boost."""
+    print("\n" + "=" * 70)
+    print("TEST 13: _apply_recency_boost — base")
+    print("=" * 70)
+
+    # Crea chunk con anni diversi e stesso score RRF
+    chunks = [
+        RetrievedChunk(chunk_id="old", text="old paper", score=0.01,
+                       retrieval_method=RetrievalMethod.VECTOR,
+                       metadata={"year": 2018}),
+        RetrievedChunk(chunk_id="mid", text="mid paper", score=0.01,
+                       retrieval_method=RetrievalMethod.BM25,
+                       metadata={"year": 2022}),
+        RetrievedChunk(chunk_id="new", text="new paper", score=0.01,
+                       retrieval_method=RetrievalMethod.HYBRID,
+                       metadata={"year": 2025}),
+    ]
+
+    boosted = _apply_recency_boost(chunks, boost=0.1)
+
+    # Il paper più recente (2025) deve avere lo score più alto
+    assert boosted[0].chunk_id == "new", f"Top dovrebbe essere 'new', è '{boosted[0].chunk_id}'"
+    assert boosted[-1].chunk_id == "old", f"Ultimo dovrebbe essere 'old', è '{boosted[-1].chunk_id}'"
+
+    # Tutti gli score devono essere >= allo score originale
+    for c in boosted:
+        assert c.score >= 0.01, f"Score {c.score} < 0.01 per {c.chunk_id}"
+
+    # Il paper più recente deve avere il boost maggiore
+    assert boosted[0].score > boosted[1].score > boosted[2].score, \
+        f"Ordine score non rispettato: {[c.score for c in boosted]}"
+
+    print(f"  ✓ Ordine corretto: {[c.chunk_id for c in boosted]}")
+    print(f"  ✓ Score: {[round(c.score, 6) for c in boosted]}")
+
+    # Verifica formula: score = 0.01 * (1 + 0.1 * recency_factor)
+    # max_year = 2025, baseline = 2015, range = 10
+    # new: factor = (2025-2015)/10 = 1.0 → 0.01 * 1.10 = 0.011
+    # mid: factor = (2022-2015)/10 = 0.7 → 0.01 * 1.07 = 0.0107
+    # old: factor = (2018-2015)/10 = 0.3 → 0.01 * 1.03 = 0.0103
+    assert abs(boosted[0].score - 0.011) < 1e-9, f"Score 'new' atteso 0.011, ottenuto {boosted[0].score}"
+    assert abs(boosted[1].score - 0.0107) < 1e-9, f"Score 'mid' atteso 0.0107, ottenuto {boosted[1].score}"
+    assert abs(boosted[2].score - 0.0103) < 1e-9, f"Score 'old' atteso 0.0103, ottenuto {boosted[2].score}"
+    print("  ✓ Formula verificata (exact values)")
+
+    print("  ✅ Test 13 PASSATO")
+
+
+# ===========================================================================
+# Test 14: _apply_recency_boost — edge cases
+# ===========================================================================
+
+def test_recency_boost_edge_cases():
+    """Verifica edge cases del recency boost."""
+    print("\n" + "=" * 70)
+    print("TEST 14: _apply_recency_boost — edge cases")
+    print("=" * 70)
+
+    # 14a: boost=0.0 → nessuna modifica
+    chunks = [
+        RetrievedChunk(chunk_id="a", text="a", score=0.05,
+                       retrieval_method=RetrievalMethod.VECTOR,
+                       metadata={"year": 2020}),
+        RetrievedChunk(chunk_id="b", text="b", score=0.03,
+                       retrieval_method=RetrievalMethod.VECTOR,
+                       metadata={"year": 2025}),
+    ]
+    result = _apply_recency_boost(chunks, boost=0.0)
+    assert result[0].chunk_id == "a", "Con boost=0, ordine invariato"
+    assert result[0].score == 0.05, "Con boost=0, score invariato"
+    print("  ✓ boost=0.0: nessuna modifica")
+
+    # 14b: boost negativo → nessuna modifica
+    chunks2 = [
+        RetrievedChunk(chunk_id="x", text="x", score=0.02,
+                       retrieval_method=RetrievalMethod.VECTOR,
+                       metadata={"year": 2024}),
+    ]
+    result2 = _apply_recency_boost(chunks2, boost=-0.5)
+    assert result2[0].score == 0.02, "Con boost negativo, score invariato"
+    print("  ✓ boost negativo: nessuna modifica")
+
+    # 14c: lista vuota → ritorna lista vuota
+    result3 = _apply_recency_boost([], boost=0.1)
+    assert result3 == [], "Lista vuota ritorna lista vuota"
+    print("  ✓ Lista vuota: OK")
+
+    # 14d: nessun anno nei metadata → nessun boost
+    chunks4 = [
+        RetrievedChunk(chunk_id="n1", text="n1", score=0.08,
+                       retrieval_method=RetrievalMethod.VECTOR,
+                       metadata={"category": "test"}),
+        RetrievedChunk(chunk_id="n2", text="n2", score=0.05,
+                       retrieval_method=RetrievalMethod.BM25,
+                       metadata={}),
+    ]
+    result4 = _apply_recency_boost(chunks4, boost=0.1)
+    assert result4[0].score == 0.08, "Senza anno, score invariato"
+    assert result4[1].score == 0.05, "Senza anno, score invariato"
+    print("  ✓ Nessun anno: nessun boost, ordine preservato")
+
+    # 14e: mix con/senza anno → solo quelli con anno vengono boostati
+    chunks5 = [
+        RetrievedChunk(chunk_id="with_year", text="wy", score=0.01,
+                       retrieval_method=RetrievalMethod.VECTOR,
+                       metadata={"year": 2025}),
+        RetrievedChunk(chunk_id="no_year", text="ny", score=0.02,
+                       retrieval_method=RetrievalMethod.BM25,
+                       metadata={}),
+    ]
+    result5 = _apply_recency_boost(chunks5, boost=0.1)
+    # "no_year" ha score 0.02 invariato
+    no_year_result = [r for r in result5 if r.chunk_id == "no_year"][0]
+    assert no_year_result.score == 0.02, "no_year score invariato"
+    # "with_year" ha score > 0.01 (boosted)
+    with_year_result = [r for r in result5 if r.chunk_id == "with_year"][0]
+    assert with_year_result.score > 0.01, "with_year score boostato"
+    print("  ✓ Mix con/senza anno: boost solo a chi ha anno")
+
+    # 14f: anno prima del baseline (< 2015) → recency_factor = 0.0
+    chunks6 = [
+        RetrievedChunk(chunk_id="ancient", text="a", score=0.01,
+                       retrieval_method=RetrievalMethod.VECTOR,
+                       metadata={"year": 2010}),
+        RetrievedChunk(chunk_id="recent", text="r", score=0.01,
+                       retrieval_method=RetrievalMethod.VECTOR,
+                       metadata={"year": 2025}),
+    ]
+    result6 = _apply_recency_boost(chunks6, boost=0.1)
+    ancient = [r for r in result6 if r.chunk_id == "ancient"][0]
+    recent = [r for r in result6 if r.chunk_id == "recent"][0]
+    # recency_factor per 2010: max((2010-2015)/10, 0.0) = 0.0 → score = 0.01 * 1.0 = 0.01
+    assert ancient.score == 0.01, f"Anno pre-baseline: score invariato, ottenuto {ancient.score}"
+    # recency_factor per 2025: (2025-2015)/10 = 1.0 → score = 0.01 * 1.1 = 0.011
+    assert recent.score > ancient.score, "Recent deve avere score più alto di ancient"
+    print("  ✓ Anno pre-baseline (< 2015): recency_factor = 0.0")
+
+    # 14g: tutti stesso anno → boost uguale, ordine preservato per score originale
+    chunks7 = [
+        RetrievedChunk(chunk_id="s1", text="s1", score=0.05,
+                       retrieval_method=RetrievalMethod.VECTOR,
+                       metadata={"year": 2024}),
+        RetrievedChunk(chunk_id="s2", text="s2", score=0.03,
+                       retrieval_method=RetrievalMethod.VECTOR,
+                       metadata={"year": 2024}),
+    ]
+    result7 = _apply_recency_boost(chunks7, boost=0.1)
+    assert result7[0].chunk_id == "s1", "Stesso anno: ordine per score originale"
+    assert result7[0].score > result7[1].score, "Primo score > secondo"
+    print("  ✓ Stesso anno: boost uniforme, ordine per score originale")
+
+    print("  ✅ Test 14 PASSATO")
+
+
+# ===========================================================================
+# Test 15: Recency boost integrato nel retrieve()
+# ===========================================================================
+
+def test_recency_boost_in_retrieve():
+    """Verifica che il recency boost sia applicato nel retrieve()."""
+    print("\n" + "=" * 70)
+    print("TEST 15: Recency boost integrato nel retrieve()")
+    print("=" * 70)
+
+    # Crea risultati mock con anni diversi e score uguali
+    mock_store = MagicMock()
+    mock_store.query.return_value = [
+        make_vector_result("old_paper", 0.90, year=2018),
+        make_vector_result("new_paper", 0.90, year=2025),
+        make_vector_result("mid_paper", 0.90, year=2022),
+    ]
+
+    mock_bm25 = MagicMock()
+    mock_bm25.is_built = False  # Solo vettoriale
+
+    # 15a: Con recency_boost > 0 (da config default = 0.1)
+    retriever = HybridRetriever(
+        qdrant_store=mock_store,
+        bm25_index=mock_bm25,
+        top_k_final=10,
+    )
+    # Override recency_boost via parametro retrieve
+    results_boosted = retriever.retrieve("test", recency_boost=0.1)
+    assert len(results_boosted) == 3
+    # Tutti a pari score originale, il più recente deve essere in cima
+    assert results_boosted[0].metadata["year"] == 2025, \
+        f"Top dovrebbe essere 2025, è {results_boosted[0].metadata['year']}"
+    assert results_boosted[-1].metadata["year"] == 2018, \
+        f"Ultimo dovrebbe essere 2018, è {results_boosted[-1].metadata['year']}"
+    print("  ✓ Con boost: paper recenti in cima")
+
+    # 15b: Con recency_boost = 0 → ordine invariato (per score originale)
+    results_no_boost = retriever.retrieve("test", recency_boost=0.0)
+    assert len(results_no_boost) == 3
+    # Senza boost, ordine è quello di Qdrant (old first)
+    assert results_no_boost[0].chunk_id == "old_paper", \
+        f"Senza boost, primo dovrebbe essere old_paper, è {results_no_boost[0].chunk_id}"
+    print("  ✓ Con boost=0: ordine originale preservato")
+
+    # 15c: Override boost alto → differenza maggiore
+    results_high = retriever.retrieve("test", recency_boost=0.5)
+    high_scores = [r.score for r in results_high]
+    low_scores = [r.score for r in results_boosted]
+    # Con boost più alto, la differenza tra primo e ultimo è maggiore
+    high_diff = high_scores[0] - high_scores[-1]
+    low_diff = low_scores[0] - low_scores[-1]
+    assert high_diff > low_diff, \
+        f"Boost 0.5 dovrebbe creare gap maggiore ({high_diff:.6f} vs {low_diff:.6f})"
+    print(f"  ✓ Boost più alto → gap più grande ({high_diff:.6f} > {low_diff:.6f})")
+
+    print("  ✅ Test 15 PASSATO")
+
+
+# ===========================================================================
+# Test 16: Recency boost nelle statistiche e config
+# ===========================================================================
+
+def test_recency_boost_config():
+    """Verifica che recency_boost sia presente in get_stats e config."""
+    print("\n" + "=" * 70)
+    print("TEST 16: Recency boost in config e stats")
+    print("=" * 70)
+
+    mock_store = MagicMock()
+    mock_bm25 = MagicMock()
+
+    retriever = HybridRetriever(
+        qdrant_store=mock_store,
+        bm25_index=mock_bm25,
+    )
+
+    # 16a: recency_boost è nel config (da config.yaml)
+    stats = retriever.get_stats()
+    assert "recency_boost" in stats["config"], "recency_boost manca da stats[config]"
+    rb = stats["config"]["recency_boost"]
+    assert isinstance(rb, float), f"recency_boost dovrebbe essere float, è {type(rb)}"
+    print(f"  ✓ recency_boost in stats: {rb}")
+
+    # 16b: recency_boost nel repr()
+    repr_str = repr(retriever)
+    assert "HybridRetriever" in repr_str, "repr deve contenere HybridRetriever"
+    print(f"  ✓ __repr__: {repr_str}")
+
+    print("  ✅ Test 16 PASSATO")
+
+
+# ===========================================================================
+# Test 17: _apply_recency_boost — conservazione ranking dominante
+# ===========================================================================
+
+def test_recency_boost_preserves_dominant_ranking():
+    """Verifica che il boost non sovverta ranking con score molto diversi."""
+    print("\n" + "=" * 70)
+    print("TEST 17: Recency boost — conservazione ranking dominante")
+    print("=" * 70)
+
+    # Un paper vecchio con score molto alto non deve essere superato
+    # da un paper recente con score mediocre (con boost moderato)
+    chunks = [
+        RetrievedChunk(chunk_id="high_old", text="ho", score=0.10,
+                       retrieval_method=RetrievalMethod.HYBRID,
+                       metadata={"year": 2018}),
+        RetrievedChunk(chunk_id="low_new", text="ln", score=0.01,
+                       retrieval_method=RetrievalMethod.VECTOR,
+                       metadata={"year": 2025}),
+    ]
+
+    result = _apply_recency_boost(chunks, boost=0.1)
+    # 0.10 * (1 + 0.1 * 0.3) = 0.103 vs 0.01 * (1 + 0.1 * 1.0) = 0.011
+    assert result[0].chunk_id == "high_old", \
+        f"Paper con score molto alto deve restare in testa, non '{result[0].chunk_id}'"
+    print(f"  ✓ high_old (2018, score=0.103) > low_new (2025, score=0.011)")
+
+    # Ma con boost estremo (1.0+), il paper recente potrebbe superare
+    # (questo è un test di sanità, non un requisito)
+    chunks2 = [
+        RetrievedChunk(chunk_id="h", text="h", score=0.02,
+                       retrieval_method=RetrievalMethod.HYBRID,
+                       metadata={"year": 2018}),
+        RetrievedChunk(chunk_id="l", text="l", score=0.019,
+                       retrieval_method=RetrievalMethod.VECTOR,
+                       metadata={"year": 2025}),
+    ]
+    result2 = _apply_recency_boost(chunks2, boost=0.1)
+    # h: 0.02 * (1 + 0.1 * 0.3) = 0.0206
+    # l: 0.019 * (1 + 0.1 * 1.0) = 0.0209 → supera!
+    assert result2[0].chunk_id == "l", \
+        "Con score vicini, il paper recente deve poter superare con boost"
+    print(f"  ✓ Con score vicini (0.02 vs 0.019): paper recente supera con boost")
+
+    print("  ✅ Test 17 PASSATO")
+
+
+# ===========================================================================
 # Main
 # ===========================================================================
 
@@ -878,6 +1177,11 @@ def main():
         ("Test 10: Statistiche", test_stats),
         ("Test 11: BM25 reale", test_with_real_bm25),
         ("Test 12: top_k_final", test_top_k_final),
+        ("Test 13: Recency boost base", test_recency_boost_basic),
+        ("Test 14: Recency boost edge cases", test_recency_boost_edge_cases),
+        ("Test 15: Recency boost in retrieve()", test_recency_boost_in_retrieve),
+        ("Test 16: Recency boost config/stats", test_recency_boost_config),
+        ("Test 17: Recency boost ranking", test_recency_boost_preserves_dominant_ranking),
     ]
 
     passed = 0

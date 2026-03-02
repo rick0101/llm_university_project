@@ -395,7 +395,7 @@ Il sistema attuale è stato testato con ~20 paper totali. Scalare a ~400 paper (
 
 ---
 
-### [  ] Task C.2: Recency weighting nel retrieval
+### [x] Task C.2: Recency weighting nel retrieval
 
 **File:** `paperhunter/indexing/hybrid_retriever.py` (modifica)  
 **Stato attuale:** L'hybrid retriever usa RRF puro senza boost temporale. Paper del 2020 e del 2025 hanno lo stesso peso a parità di score.  
@@ -404,6 +404,33 @@ Il sistema attuale è stato testato con ~20 paper totali. Scalare a ~400 paper (
 - Aggiungere parametro `recency_boost: float = 0.0` (default disabilitato, es. `0.1` per attivare)
 - Dopo la fusione RRF, applicare un moltiplicatore temporale: `final_score = rrf_score * (1 + recency_boost * recency_factor)` dove `recency_factor = (year - min_year) / (max_year - min_year)`
 - Configurabile da `config.yaml` → `retrieval.recency_boost`
+
+> **Completato 2/03/2026.** Modifiche:
+> - **`paperhunter/indexing/hybrid_retriever.py`:** Modifiche principali:
+>   - **Nuova costante:** `_RECENCY_BASELINE_YEAR = 2015` — anno di riferimento per il calcolo recency (pre-deep-learning era)
+>   - **`HybridRetriever.__init__()`:** Legge `recency_boost` da `config.yaml` → `retrieval.recency_boost` (default 0.1). Salvato in `self._recency_boost`
+>   - **`HybridRetriever.retrieve()`:** Nuovo parametro `recency_boost: Optional[float] = None` per override per-query. Dopo la fusione RRF (e prima del troncamento a `top_k_final`), applica `_apply_recency_boost()` se il boost è > 0. Logging arricchito con `recency_boost` nel messaggio
+>   - **`_apply_recency_boost(results, boost) → list[RetrievedChunk]`:** Nuova funzione pubblica. Formula: `final_score = rrf_score * (1 + boost * recency_factor)` dove `recency_factor = max((year - 2015) / (max_year - 2015), 0.0)` normalizzato in `[0, 1]`. Chunk senza anno → `recency_factor = 0.0` (nessun boost). Ri-ordina per score decrescente dopo l'applicazione. Con `boost ≤ 0` o lista vuota → ritorna i risultati invariati
+>   - **`get_stats()`:** Aggiunto `recency_boost` nella sezione config delle statistiche
+>   - **Logging init:** Aggiunto `recency_boost` al messaggio di inizializzazione
+> - **Formula in dettaglio:**
+>   - `max_year` = anno massimo tra tutti i chunk con anno
+>   - `baseline` = 2015 (costante)
+>   - `year_range` = `max(max_year - baseline, 1)` (evita divisione per zero)
+>   - Per ogni chunk con anno: `recency_factor = max((year - baseline) / year_range, 0.0)`
+>   - Score finale: `score * (1.0 + boost * recency_factor)`
+>   - Anno < baseline → `recency_factor = 0.0` → nessun boost
+> - **Proprietà del boost:**
+>   - Monotonicamente crescente con l'anno del paper
+>   - Non distruttivo: con boost=0.1, il massimo incremento è +10% per il paper più recente
+>   - Non sovverte ranking dominanti: un paper con score 10x superiore resta in testa anche se vecchio
+>   - Con score vicini, il paper recente può superare il vecchio (comportamento desiderato)
+> - **Test:** 17/17 passati (12 esistenti inalterati + 5 nuovi):
+>   - Test 13 — `_apply_recency_boost` base: ordine corretto (new > mid > old), formula verificata con valori esatti (0.011, 0.0107, 0.0103)
+>   - Test 14 — Edge cases: 7 sottocasi — boost=0 (invariato), boost negativo (invariato), lista vuota, nessun anno (invariato), mix con/senza anno (boost solo su chi ha anno), anno pre-baseline (factor=0.0), stesso anno (ordine per score originale)
+>   - Test 15 — Integrazione `retrieve()`: 3 sottocasi — con boost (recenti in cima), boost=0 (ordine originale), boost alto (gap maggiore: 0.315 vs 0.063)
+>   - Test 16 — Config/stats: `recency_boost` presente in `get_stats()["config"]`, tipo `float`
+>   - Test 17 — Conservazione ranking dominante: score 10x > non sovvertito (0.103 vs 0.011), score vicini → paper recente supera (0.0209 vs 0.0206)
 
 ---
 

@@ -108,9 +108,9 @@ Il sistema attuale è stato testato con ~20 paper totali. Scalare a ~400 paper (
 
 ---
 
-### [  ] Task A.2: Budget-aware L1 summarization
+### [x] Task A.2: Budget-aware L1 summarization
 
-**File:** `paperhunter/summarization/level1_summarizer.py` (modifica)  
+**File:** `paperhunter/summarization/level1_summarizer.py` (modifica), `paperhunter/models.py` (modifica)  
 **Stato attuale:** `_prepare_chunks_text()` tronca a `max_chunk_chars=50_000` per singolo paper → funziona per L1 singoli. Non è un problema a livello L1 perché ogni L1 processa un solo paper alla volta.  
 **Obiettivo:** Quando `l1_target_chars_auto=true`, rendere gli L1 più compatti nelle categorie con molti paper, così che la fase L2 non sfori il budget.  
 **Dettagli:**
@@ -120,6 +120,49 @@ Il sistema attuale è stato testato con ~20 paper totali. Scalare a ~400 paper (
 - Se N > 70: prompt "compressed" (~1k chars/L1, solo campi essenziali)
 - Le soglie sono derivate da `papers_per_category` e `max_context_tokens` automaticamente
 - Aggiungere campo `l1_char_count` al `L1Summary` per tracking
+
+> **Completato 2/03/2026.** Modifiche:
+> - **`paperhunter/models.py`:** Aggiunti 2 nuovi campi a `L1Summary`:
+>   - `l1_char_count: Optional[int]` — numero totale di caratteri dei campi testuali del summary (per tracking budget)
+>   - `compression_tier: Optional[str]` — tier di compressione usato (`"standard"`, `"concise"`, `"compressed"`)
+> - **`paperhunter/summarization/level1_summarizer.py`:** Modifiche principali:
+>   - **Nuovi import:** `compute_l1_target_chars`, `get_l1_compression_tier`, `get_papers_per_category` da `utils.token_counter`
+>   - **Nuovi prompt template:**
+>     - `_L1_PROMPT_CONCISE`: prompt per tier "concise" (31-70 paper), output target ~1.5k chars, max 3 key_contributions, campi più sintetici
+>     - `_L1_PROMPT_COMPRESSED`: prompt per tier "compressed" (>70 paper), output target ~1k chars, max 2 key_contributions, solo campi essenziali, `temporal_context` opzionalmente vuoto
+>   - **`_get_l1_prompt_template(tier) → str`:** selettore prompt template in base al tier
+>   - **`_compute_l1_char_count(summary) → int`:** calcola il totale chars dei campi testuali (key_contributions, methodology, testing_methodology, temporal_context, results_summary, limitations)
+>   - **`generate_l1_summary()`:** nuovi parametri:
+>     - `compression_tier: str | None` — override tier forzato
+>     - `n_papers_in_category: int | None` — per calcolo automatico del tier
+>     - Quando `l1_target_chars_auto=true` in config: calcola automaticamente il tier da N paper
+>     - Seleziona il prompt template adatto al tier
+>     - Limita `key_contributions` in base al tier (5/3/2)
+>     - Popola `summary.l1_char_count` e `summary.compression_tier`
+>     - Logging arricchito con info su compression tier e char count
+>   - **`generate_l1_batch()`:** nuovi parametri:
+>     - `compression_tier: str | None` — override tier per tutto il batch
+>     - `n_papers_in_category: int | None` — per calcolo automatico
+>     - Propaga il tier a tutte le chiamate `generate_l1_summary()`
+>     - Traccia `total_chars` aggregato e `avg_chars` per il report
+>   - **`_print_batch_report()`:** nuovi parametri per statistiche budget:
+>     - `compression_tier`, `avg_l1_chars`, `total_l1_chars`, `target_chars`
+>     - Mostra rapporto avg/target con status "✅ OK" o "⚠️ sopra target"
+> - **Logica tier automatica:**
+>   - N ≤ 30 → `"standard"` (prompt completo, ~2-3k chars/L1)
+>   - 30 < N ≤ 70 → `"concise"` (prompt ridotto, ~1.5k chars/L1)
+>   - N > 70 → `"compressed"` (prompt minimale, ~1k chars/L1)
+>   - Soglie lette da `token_counter.L1_TIER_STANDARD_MAX` e `L1_TIER_CONCISE_MAX`
+> - **Budget scaling verificato:**
+>   - 10 paper → 59,200 chars/L1, 100 paper → 5,920 chars/L1, 500 paper → 2,000 chars/L1 (floor)
+>   - Monotonicamente decrescente con N, floor garantito da `l1_min_chars`
+> - **Test:** 6/6 test passati:
+>   - Tier selection: 9 casi N=10..200 → tutti corretti
+>   - Prompt templates: standard/concise/compressed/unknown → tutti corretti
+>   - L1 char count computation: 350 chars calcolati = 350 attesi
+>   - L1Summary new fields: default None, set values, JSON serialization → tutti OK
+>   - Budget scaling: 9 valori monotonicamente decrescenti + floor a 2,000
+>   - Batch tier propagation: liste vuote con parametri nuovi → nessun crash
 
 ---
 

@@ -203,6 +203,14 @@ class L1Summary(BaseModel):
     results_summary: str = Field("", description="Risultati quantitativi principali")
     limitations: str = Field("", description="Limiti dichiarati o impliciti")
 
+    l1_char_count: Optional[int] = Field(
+        None,
+        description="Numero totale di caratteri del summary (per tracking budget)"
+    )
+    compression_tier: Optional[str] = Field(
+        None,
+        description="Tier di compressione usato (standard/concise/compressed)"
+    )
     generated_at: Optional[datetime] = Field(None, description="Timestamp di generazione")
     model_used: Optional[str] = Field(None, description="Modello Gemini usato (flash/pro)")
 

@@ -58,6 +58,11 @@ from paperhunter.utils.logging_setup import (
     progress_bar,
 )
 from paperhunter.utils.rate_limiter import get_gemini_limiter
+from paperhunter.utils.token_counter import (
+    compute_l1_target_chars,
+    get_l1_compression_tier,
+    get_papers_per_category,
+)
 
 logger = get_logger(__name__)
 
@@ -112,10 +117,142 @@ IMPORTANT:
 - If the paper content is insufficient to fill a field, explicitly state so.
 """
 
+# --- Prompt «concise»: per categorie con 31-70 paper ---
+# Output target: ~1.5k chars. Campi ridotti, meno dettaglio narrativo.
+_L1_PROMPT_CONCISE = """\
+You are an expert academic researcher specializing in LLM security. \
+Analyze the following paper and produce a **concise structured summary** in JSON format.
+
+## Paper Metadata
+- **Title:** {title}
+- **Authors:** {authors}
+- **Year:** {year}
+- **Venue:** {venue}
+- **Category:** {category}
+- **Citations:** {citations}
+
+## Paper Content (chunks)
+{chunks_text}
+
+---
+
+## Instructions
+
+Based ONLY on the paper content above, extract the following fields. \
+Be concise but precise. Target total output length: ~1500 characters.
+
+Respond with a valid JSON object (no markdown fences, no comments):
+
+{{
+  "key_contributions": [
+    "Contribution 1 (one short sentence)",
+    "Contribution 2"
+  ],
+  "methodology": "Brief description of the technical approach (2-3 sentences max).",
+  "testing_methodology": "CRITICAL — Concisely list: benchmark datasets, evaluation metrics (ASR, F1, etc.), models tested on, key baselines compared. Use bullet-style within the string.",
+  "temporal_context": "One sentence positioning this work in the timeline of the field.",
+  "results_summary": "Key quantitative results only (numbers and comparisons). Be terse.",
+  "limitations": "Main limitations in 1-2 sentences."
+}}
+
+IMPORTANT:
+- key_contributions: max 3 entries.
+- testing_methodology is the MOST IMPORTANT field. Be thorough but compact.
+- Do NOT hallucinate data not present in the source chunks.
+- Keep total JSON output under ~1500 characters.
+"""
+
+# --- Prompt «compressed»: per categorie con >70 paper ---
+# Output target: ~1k chars. Solo campi essenziali.
+_L1_PROMPT_COMPRESSED = """\
+You are an expert academic researcher specializing in LLM security. \
+Analyze the following paper and produce a **highly compressed summary** in JSON format.
+
+## Paper Metadata
+- **Title:** {title}
+- **Authors:** {authors}
+- **Year:** {year}
+- **Venue:** {venue}
+- **Category:** {category}
+- **Citations:** {citations}
+
+## Paper Content (chunks)
+{chunks_text}
+
+---
+
+## Instructions
+
+Extract ONLY the most essential information. Target total output: ~1000 characters.
+
+Respond with a valid JSON object (no markdown fences, no comments):
+
+{{
+  "key_contributions": [
+    "Main contribution in one sentence"
+  ],
+  "methodology": "Core technique in 1-2 sentences.",
+  "testing_methodology": "Datasets, metrics, and models tested — bullet list format within the string.",
+  "temporal_context": "",
+  "results_summary": "Top result numbers only.",
+  "limitations": "Primary limitation."
+}}
+
+IMPORTANT:
+- key_contributions: max 2 entries.
+- testing_methodology remains the MOST IMPORTANT field.
+- temporal_context can be left empty to save space.
+- Do NOT hallucinate.
+- Keep total JSON output under ~1000 characters.
+"""
+
 
 # ============================================================================
 # Core function
 # ============================================================================
+
+# ---------------------------------------------------------------------------
+# Selezione prompt per tier di compressione
+# ---------------------------------------------------------------------------
+
+def _get_l1_prompt_template(tier: str) -> str:
+    """Restituisce il prompt template L1 adatto al tier di compressione.
+
+    Args:
+        tier: ``"standard"``, ``"concise"`` o ``"compressed"``.
+
+    Returns:
+        Template string con placeholder per ``.format()``.
+    """
+    if tier == "concise":
+        return _L1_PROMPT_CONCISE
+    elif tier == "compressed":
+        return _L1_PROMPT_COMPRESSED
+    else:
+        return _L1_PROMPT_TEMPLATE
+
+
+def _compute_l1_char_count(summary: L1Summary) -> int:
+    """Calcola il numero totale di caratteri dei campi testuali di un L1Summary.
+
+    Conta solo i campi che verranno inclusi nel prompt L2.
+
+    Args:
+        summary: L1Summary da misurare.
+
+    Returns:
+        Numero totale di caratteri.
+    """
+    parts = [
+        "; ".join(summary.key_contributions),
+        summary.methodology,
+        summary.testing_methodology,
+        summary.temporal_context,
+        summary.results_summary,
+        summary.limitations,
+    ]
+    return sum(len(p) for p in parts if p)
+
 
 def generate_l1_summary(
     paper: Paper,
@@ -125,8 +262,20 @@ def generate_l1_summary(
     max_chunk_chars: int = 50_000,
     save_to_store: bool = False,
     store: Any = None,
+    compression_tier: str | None = None,
+    n_papers_in_category: int | None = None,
 ) -> L1Summary:
     """Genera un summary L1 strutturato per un singolo paper.
+
+    Quando ``l1_target_chars_auto`` è abilitato in config, il prompt 
+    viene adattato automaticamente in base al numero di paper nella
+    categoria, per garantire che la fase L2 a valle resti entro il
+    budget token.
+
+    Tier di compressione:
+    - ``"standard"`` (N ≤ 30): prompt completo, ~2-3k chars/L1
+    - ``"concise"`` (30 < N ≤ 70): prompt ridotto, ~1.5k chars/L1
+    - ``"compressed"`` (N > 70): prompt minimale, ~1k chars/L1
 
     Args:
         paper: Oggetto ``Paper`` con metadata completi.
@@ -139,9 +288,14 @@ def generate_l1_summary(
             collection ``l1_summaries`` del QdrantStore.
         store: Istanza ``QdrantStore`` opzionale. Se ``save_to_store=True``
             e ``store`` è None, ne crea una nuova.
+        compression_tier: Override tier di compressione 
+            (``"standard"``, ``"concise"``, ``"compressed"``).
+            Se None, viene calcolato automaticamente da config.
+        n_papers_in_category: Numero di paper nella categoria.
+            Se None, usa ``papers_per_category`` da config.
 
     Returns:
-        Istanza ``L1Summary`` con tutti i campi popolati.
+        Istanza ``L1Summary`` con tutti i campi popolati + ``l1_char_count``.
 
     Raises:
         ValueError: Se non ci sono chunk da processare.
@@ -153,20 +307,36 @@ def generate_l1_summary(
             f"Esegui prima l'ingestion pipeline."
         )
 
+    # --- Determinazione tier di compressione budget-aware ---
+    sum_cfg = settings.summarization
+    if compression_tier is not None:
+        c_tier = compression_tier
+    elif sum_cfg.l1_target_chars_auto:
+        n_papers = n_papers_in_category or get_papers_per_category()
+        c_tier = get_l1_compression_tier(n_papers)
+        target_chars = compute_l1_target_chars(n_papers)
+        logger.debug(
+            f"Budget-aware L1: n_papers={n_papers}, tier={c_tier}, "
+            f"target_chars={target_chars}"
+        )
+    else:
+        c_tier = "standard"
+
     # --- Selezione modello ---
     pro_tracker = get_pro_tracker()
     if force_model:
         tier = force_model
     else:
-        tier = "pro" if settings.summarization.use_pro_for_l1 else "flash"
+        tier = "pro" if sum_cfg.use_pro_for_l1 else "flash"
 
     llm = get_pro_llm() if tier == "pro" else get_flash_llm()
 
     # --- Preparazione testo chunk ---
     chunks_text = _prepare_chunks_text(chunks, max_chars=max_chunk_chars)
 
-    # --- Costruzione prompt ---
-    prompt = _L1_PROMPT_TEMPLATE.format(
+    # --- Costruzione prompt con template adatto al tier ---
+    prompt_template = _get_l1_prompt_template(c_tier)
+    prompt = prompt_template.format(
         title=paper.title or "Unknown",
         authors=", ".join(paper.authors[:10]) if paper.authors else "Unknown",
         year=paper.year or "Unknown",
@@ -179,7 +349,8 @@ def generate_l1_summary(
     # --- Chiamata LLM con rate limiting ---
     logger.info(
         f"Generazione L1 summary per '{paper.title[:60]}...' "
-        f"(tier={tier}, {len(chunks)} chunk, {len(chunks_text)} chars)"
+        f"(model={tier}, compression={c_tier}, {len(chunks)} chunk, "
+        f"{len(chunks_text)} chars)"
     )
 
     limiter = get_gemini_limiter()
@@ -188,7 +359,6 @@ def generate_l1_summary(
     # --- Retry strategy basata su config ---
     # Pro: retry pazienti con delay lunghi (15s base, cap 120s, 6 retry)
     # Flash: retry standard (3s base, cap 60s, 3 retry)
-    sum_cfg = settings.summarization
     pro_retries = sum_cfg.pro_max_retries
     pro_base_delay = sum_cfg.pro_base_delay
 
@@ -243,20 +413,27 @@ def generate_l1_summary(
     # --- Costruzione L1Summary ---
     paper_id = paper.bibtex_key or paper.pdf_hash or paper.title[:30]
 
+    # Max key_contributions basato sul tier di compressione
+    max_contribs = {"standard": 5, "concise": 3, "compressed": 2}.get(c_tier, 5)
+
     summary = L1Summary(
         paper_id=paper_id,
         bibtex_key=paper.bibtex_key,
         category=paper.category,
         year=paper.year,
-        key_contributions=parsed.get("key_contributions", [])[:5],
+        key_contributions=parsed.get("key_contributions", [])[:max_contribs],
         methodology=parsed.get("methodology", ""),
         testing_methodology=parsed.get("testing_methodology", ""),
         temporal_context=parsed.get("temporal_context", ""),
         results_summary=parsed.get("results_summary", ""),
         limitations=parsed.get("limitations", ""),
+        compression_tier=c_tier,
         generated_at=datetime.now(),
         model_used=tier,
     )
+
+    # --- Calcolo e tracking l1_char_count ---
+    summary.l1_char_count = _compute_l1_char_count(summary)
 
     # --- Validazione qualità ---
     _validate_l1_summary(summary, paper.title)
@@ -267,7 +444,8 @@ def generate_l1_summary(
 
     logger.info(
         f"L1 summary generato per '{paper.title[:50]}...' "
-        f"({elapsed:.1f}s, model={tier})"
+        f"({elapsed:.1f}s, model={tier}, compression={c_tier}, "
+        f"{summary.l1_char_count} chars)"
     )
 
     return summary
@@ -284,8 +462,14 @@ def generate_l1_batch(
     save_to_store: bool = False,
     store: Any = None,
     skip_existing: bool = True,
+    compression_tier: str | None = None,
+    n_papers_in_category: int | None = None,
 ) -> list[L1Summary]:
     """Genera summary L1 per un batch di paper.
+
+    Il tier di compressione viene determinato automaticamente dal numero
+    di paper nel batch (se ``l1_target_chars_auto=true`` in config),
+    oppure può essere forzato con ``compression_tier``.
 
     Args:
         papers_with_chunks: Lista di tuple ``(Paper, list[PaperChunk])``.
@@ -294,6 +478,11 @@ def generate_l1_batch(
         store: Istanza ``QdrantStore``.
         skip_existing: Se True e ``store`` fornito, salta paper
             che hanno già un L1 nel vector store.
+        compression_tier: Override tier di compressione per tutto il batch
+            (``"standard"``, ``"concise"``, ``"compressed"``).
+        n_papers_in_category: Numero totale di paper nella categoria.
+            Se None e ``compression_tier`` è None, usa ``len(papers_with_chunks)``
+            o ``papers_per_category`` da config (il maggiore dei due).
 
     Returns:
         Lista di ``L1Summary`` generati con successo.
@@ -301,6 +490,27 @@ def generate_l1_batch(
     if not papers_with_chunks:
         logger.warning("generate_l1_batch: lista vuota")
         return []
+
+    # --- Determina tier di compressione per il batch ---
+    if compression_tier is None and n_papers_in_category is None:
+        # Stima: usa il massimo tra la dimensione del batch e papers_per_category
+        n_papers_in_category = max(
+            len(papers_with_chunks),
+            get_papers_per_category(),
+        )
+
+    if compression_tier is None:
+        batch_tier = get_l1_compression_tier(n_papers_in_category)
+    else:
+        batch_tier = compression_tier
+
+    batch_target_chars = compute_l1_target_chars(
+        n_papers=n_papers_in_category or len(papers_with_chunks)
+    )
+    logger.info(
+        f"L1 batch: {len(papers_with_chunks)} paper, "
+        f"compression_tier={batch_tier}, target_chars={batch_target_chars}"
+    )
 
     # --- Inizializzazione store se necessario ---
     if save_to_store and store is None:
@@ -310,6 +520,7 @@ def generate_l1_batch(
     summaries: list[L1Summary] = []
     errors: dict[str, str] = {}
     skipped = 0
+    total_chars = 0
 
     logger.info(f"Generazione L1 batch per {len(papers_with_chunks)} paper...")
 
@@ -333,19 +544,27 @@ def generate_l1_batch(
                 force_model=force_model,
                 save_to_store=save_to_store,
                 store=store,
+                compression_tier=batch_tier,
+                n_papers_in_category=n_papers_in_category,
             )
             summaries.append(summary)
+            total_chars += summary.l1_char_count or 0
         except Exception as e:
             logger.error(f"Errore L1 per '{paper.title[:50]}...': {e}")
             errors[paper_id] = str(e)
 
-    # --- Report ---
+    # --- Report con statistiche budget ---
+    avg_chars = total_chars // len(summaries) if summaries else 0
     _print_batch_report(
         total=len(papers_with_chunks),
         generated=len(summaries),
         skipped=skipped,
         errors=len(errors),
         error_details=errors,
+        compression_tier=batch_tier,
+        avg_l1_chars=avg_chars,
+        total_l1_chars=total_chars,
+        target_chars=batch_target_chars,
     )
 
     return summaries
@@ -740,8 +959,12 @@ def _print_batch_report(
     skipped: int,
     errors: int,
     error_details: dict[str, str],
+    compression_tier: str = "standard",
+    avg_l1_chars: int = 0,
+    total_l1_chars: int = 0,
+    target_chars: int = 0,
 ) -> None:
-    """Stampa report riassuntivo del batch L1.
+    """Stampa report riassuntivo del batch L1 con statistiche budget.
 
     Args:
         total: Numero totale di paper nel batch.
@@ -749,13 +972,28 @@ def _print_batch_report(
         skipped: Paper saltati (già esistenti).
         errors: Numero di errori.
         error_details: Dict paper_id → messaggio errore.
+        compression_tier: Tier di compressione usato.
+        avg_l1_chars: Media caratteri per L1.
+        total_l1_chars: Totale caratteri di tutti gli L1.
+        target_chars: Target caratteri per L1 (da budget).
     """
-    print_table("L1 Summary Batch Report", {
+    report_data = {
         "Totale paper": total,
         "Generati": generated,
         "Saltati (già esistenti)": skipped,
         "Errori": errors,
-    })
+        "Compression tier": compression_tier,
+    }
+    if generated > 0:
+        report_data["Avg chars/L1"] = f"{avg_l1_chars:,}"
+        report_data["Target chars/L1"] = f"{target_chars:,}"
+        report_data["Totale chars L1"] = f"{total_l1_chars:,}"
+        if target_chars > 0 and avg_l1_chars > 0:
+            ratio = avg_l1_chars / target_chars
+            status = "✅ OK" if ratio <= 1.2 else "⚠️ sopra target"
+            report_data["Budget status"] = f"{ratio:.1%} del target ({status})"
+
+    print_table("L1 Summary Batch Report", report_data)
 
     if error_details:
         print_warning("Errori durante la generazione:")
@@ -764,7 +1002,8 @@ def _print_batch_report(
 
     if generated > 0:
         print_success(
-            f"L1 batch completato: {generated}/{total} summary generati"
+            f"L1 batch completato: {generated}/{total} summary generati "
+            f"(tier={compression_tier}, avg={avg_l1_chars} chars)"
         )
 
 

@@ -279,15 +279,43 @@ Il sistema attuale è stato testato con ~20 paper totali. Scalare a ~400 paper (
 
 ---
 
-### [  ] Task A.5: Sommario di budget per la pipeline
+### [x] Task A.5: Sommario di budget per la pipeline
 
-**File:** `paperhunter/agents/pipeline.py` (modifica), `paperhunter/utils/token_counter.py`  
+**File:** `paperhunter/agents/pipeline.py` (modifica), `paperhunter/utils/token_counter.py` (modifica)  
 **Obiettivo:** Prima di avviare la pipeline agentica, calcolare e stampare un budget stimato in base alla configurazione corrente.  
 **Dettagli:**
 - All'inizio della pipeline, stimare: token totali L2 summaries, token per sezione writer, token per verifica critic
 - Leggere `papers_per_category` e `max_context_tokens` da config per il calcolo
 - Se il budget stimato > `max_context_tokens`, avvisare e suggerire azioni (ridurre `papers_per_category`, abilitare compressione, ecc.)
 - Stampare il report con `rich` (tabella: fase → token stimati → % del budget)
+
+> **Completato 2/03/2026.** Modifiche:
+> - **`paperhunter/utils/token_counter.py`:** Modifiche a `BudgetReport`:
+>   - **`_pct(tokens_per_call) → str`:** Calcola la percentuale del budget usata da una singola chiamata. Gestisce edge case `max_context_tokens=0` → `"N/A"`
+>   - **`print_report()`:** *Riscritta* — aggiunta colonna `"% Budget"` alla tabella Rich. Colonne: Fase, Token/call, % Budget, Note. Aggiunto messaggio di successo (`print_success`) quando entro budget. Aggiunta stampa suggerimenti con Rich quando fuori budget
+>   - **`_get_suggestions() → list[str]`:** Genera suggerimenti specifici per rientrare nel budget. Se L2 sfora: suggerisce ridurre `papers_per_category` (con stima del max consigliato) e abilitare compressione L1. Se Writer sfora: suggerisce ridurre `writer_max_context_chars`
+> - **`paperhunter/agents/pipeline.py`:** Modifiche principali:
+>   - **Nuovo import:** `BudgetReport` da `utils.token_counter`
+>   - **`print_budget_summary(n_categories, n_sections_estimate) → BudgetReport`:** Nuova funzione pubblica. Calcola e stampa il report budget prima di avviare la pipeline. Logga warning se fuori budget, info se OK. Restituisce l'istanza `BudgetReport` per uso programmatico
+>   - **`run_pipeline()`:** Integrato `print_budget_summary()` subito dopo il panel iniziale, prima di costruire il grafo. `n_sections_est` calcolato da outline se fornito, altrimenti default 8. Il `budget_report.to_dict()` viene salvato nei metadata della run (`run_metadata["budget_report"]`)
+>   - **`run_pipeline_from_checkpoint()`:** Integrato `print_budget_summary()` anche al resume, dopo il panel "Resume Pipeline"
+> - **Output esempio (config default: 100 paper/cat, 150k token):**
+>   - L1 Summarization: 14,500 token/call (9.7%)
+>   - L2 Summarization: 150,000 token/call (100.0%)
+>   - Writer (per sezione): 17,000 token/call (11.3%) — 8 sezioni
+>   - Critic (per sezione): 17,000 token/call (11.3%)
+>   - Stato: ✅ ENTRO BUDGET
+> - **Test:** 10/10 passati:
+>   - `_pct`: percentuali corrette (100%, 50%, 10%, 0%), edge case N/A
+>   - Suggestions within budget: 0 suggerimenti
+>   - Suggestions over budget: suggerimenti L2 + Writer presenti
+>   - `print_report` con colonna % Budget: eseguito senza errori
+>   - `print_budget_summary`: ritorna `BudgetReport` valido con tutti i campi
+>   - Custom sections: budget per sezione decresce con 20 sezioni vs 8
+>   - `to_dict`: 14/14 campi presenti
+>   - `run_pipeline` integration: budget_report nei metadata, nessun errore
+>   - `from_config` default: within_budget=True, 0 warnings
+>   - Forced over budget: rilevato correttamente con warning e suggerimenti
 
 ---
 

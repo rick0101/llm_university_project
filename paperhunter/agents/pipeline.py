@@ -70,6 +70,7 @@ from paperhunter.utils.logging_setup import (
     print_table,
     print_warning,
 )
+from paperhunter.utils.token_counter import BudgetReport
 
 logger = get_logger(__name__)
 
@@ -218,6 +219,51 @@ def clean_checkpoints(keep_latest: bool = True) -> int:
     if removed:
         logger.info(f"Rimossi {removed} checkpoint vecchi.")
     return removed
+
+
+# ============================================================================
+# Budget summary
+# ============================================================================
+
+def print_budget_summary(
+    n_categories: int = 4,
+    n_sections_estimate: int = 8,
+) -> BudgetReport:
+    """Calcola e stampa un sommario di budget prima di avviare la pipeline.
+
+    Stima i token necessari per ciascuna fase (L1, L2, Writer, Critic)
+    rispetto al budget token massimo configurato. Se il budget stimato
+    supera il limite, avvisa e suggerisce azioni correttive.
+
+    Args:
+        n_categories: Numero di categorie di paper (default: 4).
+        n_sections_estimate: Stima del numero di sezioni nell'outline
+            finale. Se un outline concreto è disponibile, passare
+            ``len(outline)``.
+
+    Returns:
+        L'istanza BudgetReport con tutte le stime calcolate.
+    """
+    logger.info(
+        f"Calcolo budget stimato: {n_categories} categorie, "
+        f"~{n_sections_estimate} sezioni"
+    )
+    report = BudgetReport.from_config(
+        n_categories=n_categories,
+        n_sections_estimate=n_sections_estimate,
+    )
+    report.print_report()
+
+    if not report.within_budget:
+        logger.warning(
+            f"Budget stimato FUORI LIMITE — "
+            f"{len(report.warnings)} warning(s). "
+            f"La pipeline proseguirà ma potrebbe generare output degradato."
+        )
+    else:
+        logger.info("Budget stimato OK — tutte le fasi entro il limite.")
+
+    return report
 
 
 # ============================================================================
@@ -465,8 +511,16 @@ def run_pipeline(
         "Plan → Write → Verify ↔ Revise → Assemble",
     )
 
+    # --- Budget summary prima di avviare la pipeline ---
+    n_sections_est = len(outline) if outline else 8
+    budget_report = print_budget_summary(
+        n_categories=4,
+        n_sections_estimate=n_sections_est,
+    )
+
     # Prepara metadata
     run_metadata = metadata or {}
+    run_metadata["budget_report"] = budget_report.to_dict()
     if outline_file:
         run_metadata["outline_file"] = outline_file
     run_metadata["pipeline_start"] = datetime.now().isoformat()
@@ -542,6 +596,9 @@ def run_pipeline_from_checkpoint(
         f"Ultimo nodo completato: {node_name}\n"
         f"Ripresa dall'ultimo stato salvato",
     )
+
+    # Budget summary anche al resume
+    print_budget_summary()
 
     # Determina il nodo da cui ripartire
     node_sequence = [NODE_PLAN, NODE_WRITE, NODE_VERIFY, NODE_ASSEMBLE]

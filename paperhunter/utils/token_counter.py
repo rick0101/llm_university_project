@@ -483,32 +483,45 @@ class BudgetReport:
             "warnings": self.warnings,
         }
 
+    def _pct(self, tokens_per_call: int) -> str:
+        """Calcola la percentuale del budget usata da una singola chiamata."""
+        if self.max_context_tokens <= 0:
+            return "N/A"
+        pct = tokens_per_call / self.max_context_tokens * 100
+        return f"{pct:.1f}%"
+
     def print_report(self) -> None:
         """Stampa il report formattato con rich."""
-        from paperhunter.utils.logging_setup import print_table, print_panel, print_warning
+        from paperhunter.utils.logging_setup import (
+            print_table, print_panel, print_success, print_warning,
+        )
 
-        # Tabella principale
+        # Tabella principale con colonna % Budget
         rows = [
             {
                 "Fase": "L1 Summarization",
-                "Per-call tokens": f"{self.l1_tokens_per_call:,}",
+                "Token/call": f"{self.l1_tokens_per_call:,}",
+                "% Budget": self._pct(self.l1_tokens_per_call),
                 "Note": f"~{self.l1_chars_per_paper:,} chars/L1 target",
             },
             {
                 "Fase": "L2 Summarization",
-                "Per-call tokens": f"{self.l2_tokens_per_call:,}",
+                "Token/call": f"{self.l2_tokens_per_call:,}",
+                "% Budget": self._pct(self.l2_tokens_per_call),
                 "Note": f"{self.papers_per_category} L1 × "
                         f"{self.l1_chars_per_paper:,} chars",
             },
             {
                 "Fase": "Writer (per sezione)",
-                "Per-call tokens": f"{self.writer_tokens_per_call:,}",
+                "Token/call": f"{self.writer_tokens_per_call:,}",
+                "% Budget": self._pct(self.writer_tokens_per_call),
                 "Note": f"{self.writer_chars_per_section:,} chars/section, "
                         f"{self.n_sections_estimate} sezioni",
             },
             {
                 "Fase": "Critic (per sezione)",
-                "Per-call tokens": f"{self.critic_tokens_per_call:,}",
+                "Token/call": f"{self.critic_tokens_per_call:,}",
+                "% Budget": self._pct(self.critic_tokens_per_call),
                 "Note": "~= Writer budget",
             },
         ]
@@ -522,5 +535,40 @@ class BudgetReport:
         )
         print_table("Stima Token per Fase", rows)
 
+        if self.within_budget and not self.warnings:
+            print_success(
+                "Tutte le fasi rientrano nel budget token. "
+                "La pipeline può procedere."
+            )
+
         for w in self.warnings:
             print_warning(w)
+
+        # Suggerimenti se fuori budget
+        if not self.within_budget:
+            suggestions = self._get_suggestions()
+            if suggestions:
+                from paperhunter.utils.logging_setup import console
+                console.print("\n[bold yellow]Suggerimenti:[/bold yellow]")
+                for i, s in enumerate(suggestions, 1):
+                    console.print(f"  {i}. {s}")
+
+    def _get_suggestions(self) -> list[str]:
+        """Genera suggerimenti per rientrare nel budget."""
+        suggestions: list[str] = []
+        if self.l2_tokens_per_call > self.max_context_tokens:
+            suggestions.append(
+                f"Ridurre papers_per_category (attuale: {self.papers_per_category}) "
+                f"— con {self.max_context_tokens:,} token, il massimo consigliato è "
+                f"~{(self.max_context_tokens - PROMPT_OVERHEAD_TOKENS) * int(CHARS_PER_TOKEN) // max(self.l1_chars_per_paper, 1)}"
+            )
+            suggestions.append(
+                "Abilitare compressione L1 più aggressiva "
+                "(l1_target_chars_auto: true in config.yaml)"
+            )
+        if self.writer_tokens_per_call > self.max_context_tokens:
+            suggestions.append(
+                f"Ridurre writer_max_context_chars (attuale: dalle config) "
+                f"o aumentare il numero di sezioni"
+            )
+        return suggestions

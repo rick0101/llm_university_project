@@ -61,7 +61,7 @@ agents:
 
 Il sistema attuale è stato testato con ~20 paper totali. Scalare a ~400 paper (N×4 categorie, N configurabile) richiede un controllo esplicito del budget token per evitare context rot e hallucination.
 
-### [  ] Task A.1: Token counter utility
+### [x] Task A.1: Token counter utility
 
 **File:** `paperhunter/utils/token_counter.py` (nuovo)  
 **Obiettivo:** Utility centralizzata per conteggio token (Gemini usa ~4 char/token come approssimazione, oppure `tiktoken`/tokenizer nativo).  
@@ -70,6 +70,41 @@ Il sistema attuale è stato testato con ~20 paper totali. Scalare a ~400 paper (
 - `estimate_tokens_for_messages(messages) → int`: stima per prompt LLM completo
 - `get_max_context_tokens() → int`: legge `summarization.max_context_tokens` da config
 - `chars_budget_for_n_papers(n_papers: int) → int`: calcola il budget in chars per L1/L2 in funzione di N
+
+> **Completato 2/03/2026.** File: `paperhunter/utils/token_counter.py`
+> - Costanti: `CHARS_PER_TOKEN = 4.0`, `PROMPT_OVERHEAD_TOKENS = 2_000`, `L1_TIER_STANDARD_MAX = 30`, `L1_TIER_CONCISE_MAX = 70`
+> - **Funzioni base:**
+>   - `estimate_tokens(text, chars_per_token=4.0) → int`: stima token da testo (ceil(len/4))
+>   - `estimate_tokens_for_messages(messages, chars_per_token, per_message_overhead=4) → int`: stima per lista di messaggi LLM con overhead per-messaggio
+>   - `tokens_to_chars(tokens) → int`: conversione token → chars
+>   - `chars_to_tokens(chars) → int`: conversione chars → token
+> - **Getters config (lazy import):**
+>   - `get_max_context_tokens() → int`: legge `summarization.max_context_tokens`
+>   - `get_papers_per_category() → int`: legge `ingestion.papers_per_category`
+>   - `get_writer_max_context_chars() → int`: legge `agents.writer_max_context_chars`
+>   - `get_writer_budget_mode() → str`: legge `agents.writer_budget_mode`
+> - **Budget L1:**
+>   - `compute_l1_target_chars(n_papers, max_context_tokens, l1_min_chars) → int`: calcola target chars per singolo L1 in funzione di N (con floor). Per 100 paper → 5,920 chars; per 500 → 2,000 (floor)
+>   - `get_l1_compression_tier(n_papers) → str`: restituisce `"standard"` (≤30), `"concise"` (31-70), `"compressed"` (>70)
+> - **Budget L2:**
+>   - `compute_l2_budget(max_context_tokens, prompt_overhead_tokens) → dict`: budget totale disponibile per il prompt L2 (150k token → 592k chars disponibili)
+> - **Budget Writer:**
+>   - `compute_writer_budget(n_sections, writer_max_context_chars, writer_budget_mode, max_context_tokens) → dict`: calcola budget per sezione. Modalità `"proportional"`: divide budget globale per N sezioni (cap a `writer_max_context_chars`). Modalità `"fixed"`: usa il valore fisso per ogni sezione
+> - **Utility generica:**
+>   - `chars_budget_for_n_papers(n_papers, max_context_tokens, prompt_overhead_tokens) → int`: budget totale aggregato in chars per N paper
+> - **`BudgetReport` (dataclass):**
+>   - `BudgetReport.from_config(n_categories=4, n_sections_estimate=8)`: costruisce report completo dalla configurazione corrente
+>   - `to_dict() → dict`: serializzazione
+>   - `print_report()`: stampa formattata con Rich (panel + tabella per fase + warnings)
+>   - Verifica automatica: se `l2_tokens_per_call > max_context_tokens` → warning + `within_budget = False`
+> - **Test:** Tutti i test passati:
+>   - `estimate_tokens("51 chars")` = 13, `estimate_tokens("")` = 0, `estimate_tokens("4000 chars")` = 1000
+>   - Config: `max_context_tokens = 150,000`, `papers_per_category = 100`
+>   - L1: 100 papers → 5,920 chars, 20 papers → 29,600 chars, 500 papers → 2,000 (floor)
+>   - Tier: 20→standard, 50→concise, 100→compressed
+>   - L2: 592,000 chars disponibili
+>   - Writer proportional (8 sezioni): 60,000 chars/section
+>   - BudgetReport: 400 paper totali, within_budget=True, 0 warnings
 
 ---
 
@@ -182,6 +217,10 @@ Il sistema attuale è stato testato con ~20 paper totali. Scalare a ~400 paper (
 - Paper 2-4 anni fa: testo ridotto (~70%)
 - Paper > 4 anni fa: solo key_contributions + testing_methodology (~40%)
 - Queste soglie devono essere configurabili da `config.yaml`
+
+---
+
+#### [x] Task FINALE: Aggiornare README.md — Documentazione completa
 
 ---
 

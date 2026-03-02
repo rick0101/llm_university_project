@@ -79,6 +79,18 @@ You are synthesizing research for the **{category}** sub-field.
 Below are structured summaries (Level 1) of {paper_count} individual papers in this category, \
 ordered chronologically by publication year.
 
+**NOTE ON DETAIL LEVELS:** Summaries are formatted at different detail levels \
+based on recency-weighted importance:
+- Papers from the last {recency_full_years} years appear with **FULL** detail (all fields).
+- Papers from {recency_full_years}-{recency_reduced_years} years ago appear with **REDUCED** detail \
+(~70%, marked [REDUCED]) — limitations removed, some fields truncated.
+- Papers older than {recency_reduced_years} years appear **COMPRESSED** to key contributions \
+and testing methodology only (marked [COMPRESSED]).
+
+Give analytical priority to recent papers with full details, as they represent the \
+most current state of the field. However, still cover older compressed papers to \
+provide historical context and trace the evolution of ideas.
+
 {l1_texts}
 
 ---
@@ -116,6 +128,8 @@ IMPORTANT:
 - If information is insufficient for a field, explicitly state so.
 - The response must be valid JSON with all 7 fields.
 - Aim for 4000-6000 total tokens across all fields combined.
+- Papers marked [COMPRESSED] have less detail — do not penalize them, but give \
+more analytical depth to recent papers with full details when building the narrative.
 """
 
 
@@ -202,14 +216,37 @@ def generate_l2_summary(
 
     llm = get_pro_llm() if tier == "pro" else get_flash_llm()
 
-    # --- Preparazione testo L1 ---
+    # --- Preparazione testo L1 con recency weighting ---
     l1_texts = _format_l1_summaries_for_prompt(l1_summaries)
+
+    # --- Computa statistiche recency tier ---
+    recency_stats = _compute_recency_tier_stats(l1_summaries)
+    import paperhunter.config as _cfg
+    recency_enabled = _cfg.settings.recency_priority
+
+    if recency_enabled:
+        logger.info(
+            f"Recency tiers per '{category}': "
+            f"full={recency_stats['full']} ({recency_stats['full_pct']:.0f}%), "
+            f"reduced={recency_stats['reduced']} ({recency_stats['reduced_pct']:.0f}%), "
+            f"compressed={recency_stats['compressed']} ({recency_stats['compressed_pct']:.0f}%)"
+        )
+    else:
+        logger.info(
+            f"Recency priority DISABILITATA per '{category}': "
+            f"tutti i {paper_count} paper trattati a dettaglio completo"
+        )
+
+    # --- Leggi soglie recency per il prompt ---
+    tiers_cfg = settings.summarization.l2_recency_tiers
 
     # --- Costruzione prompt ---
     prompt = _L2_PROMPT_TEMPLATE.format(
         category=category,
         paper_count=paper_count,
         l1_texts=l1_texts,
+        recency_full_years=tiers_cfg.full,
+        recency_reduced_years=tiers_cfg.reduced,
     )
 
     logger.info(
@@ -304,6 +341,9 @@ def generate_l2_summary(
         f"L2 summary generato per '{category}' v{version} "
         f"({elapsed:.1f}s, model={tier}, {paper_count} paper)"
     )
+
+    # --- Salva metadata con recency stats ---
+    _save_l2_metadata_to_disk(summary, recency_tier_stats=recency_stats)
 
     return summary
 
@@ -618,8 +658,6 @@ def _save_l2_to_store(
         n = store.add_chunks([chunk], collection_name=collection, show_progress=False)
 
         if n > 0:
-            # Salva anche i metadata estesi come JSON su disco per recovery
-            _save_l2_metadata_to_disk(summary)
             logger.debug(
                 f"L2 salvato in Qdrant per '{summary.category}' v{summary.version}"
             )
@@ -692,6 +730,63 @@ def _l2_exists_and_valid(category: str, store: Any) -> bool:
 
     except Exception:
         return False
+
+
+# ============================================================================
+# Helpers: recency tier stats
+# ============================================================================
+
+
+def _compute_recency_tier_stats(
+    l1_summaries: list[L1Summary],
+    current_year: int | None = None,
+) -> dict:
+    """Computa le statistiche di distribuzione per recency tier.
+
+    Classifica ogni paper in full/reduced/compressed in base all'anno
+    e restituisce conteggi e percentuali.
+
+    Args:
+        l1_summaries: Lista di L1Summary.
+        current_year: Anno corrente. Se None, usa ``datetime.now().year``.
+
+    Returns:
+        Dict con chiavi: ``full``, ``reduced``, ``compressed`` (conteggi),
+        ``full_pct``, ``reduced_pct``, ``compressed_pct`` (percentuali),
+        ``total``, ``year_range`` (min-max anno).
+    """
+    if current_year is None:
+        current_year = datetime.now().year
+
+    n = len(l1_summaries)
+    if n == 0:
+        return {
+            "full": 0, "reduced": 0, "compressed": 0,
+            "full_pct": 0.0, "reduced_pct": 0.0, "compressed_pct": 0.0,
+            "total": 0, "year_range": None,
+        }
+
+    counts = {"full": 0, "reduced": 0, "compressed": 0}
+    years = []
+
+    for s in l1_summaries:
+        tier = _get_paper_recency_tier(s.year, current_year)
+        counts[tier] += 1
+        if s.year is not None:
+            years.append(s.year)
+
+    year_range = f"{min(years)}-{max(years)}" if years else None
+
+    return {
+        "full": counts["full"],
+        "reduced": counts["reduced"],
+        "compressed": counts["compressed"],
+        "full_pct": counts["full"] * 100 / n,
+        "reduced_pct": counts["reduced"] * 100 / n,
+        "compressed_pct": counts["compressed"] * 100 / n,
+        "total": n,
+        "year_range": year_range,
+    }
 
 
 # ============================================================================
@@ -984,9 +1079,15 @@ def _format_l1_summaries_for_prompt(l1_summaries: list[L1Summary]) -> str:
     # ------------------------------------------------------------------
     # 2) Assegna recency tier e importanza a ogni paper
     # ------------------------------------------------------------------
+    import paperhunter.config as _cfg
+    recency_enabled = _cfg.settings.recency_priority
+
     paper_entries: list[dict] = []
     for i, s in enumerate(l1_summaries):
-        tier = _get_paper_recency_tier(s.year, current_year)
+        if recency_enabled:
+            tier = _get_paper_recency_tier(s.year, current_year)
+        else:
+            tier = "full"  # Nessuna compressione per recency
         importance = _compute_paper_importance(s, current_year)
         paper_entries.append({
             "summary": s,
@@ -1001,11 +1102,28 @@ def _format_l1_summaries_for_prompt(l1_summaries: list[L1Summary]) -> str:
         tier_counts[entry["tier"]] += 1
 
     logger.info(
-        f"L2 budget: {available_chars:,} chars per {n} paper. "
+        f"L2 recency weighting: {n} paper (recency_priority={'ON' if recency_enabled else 'OFF'}). "
         f"Tier: full={tier_counts['full']}, "
         f"reduced={tier_counts['reduced']}, "
-        f"compressed={tier_counts['compressed']}"
+        f"compressed={tier_counts['compressed']}. "
+        f"Budget: {available_chars:,} chars"
     )
+
+    # ------------------------------------------------------------------
+    # 2b) Costruisci preamble con statistiche recency
+    # ------------------------------------------------------------------
+    if recency_enabled:
+        tiers_cfg = _cfg.settings.summarization.l2_recency_tiers
+        preamble_lines = [
+            f"=== Recency-Weighted Paper Summaries ({n} papers) ===",
+            f"Detail levels: FULL ({tier_counts['full']} papers, ≤{tiers_cfg.full}y) | "
+            f"REDUCED ({tier_counts['reduced']} papers, {tiers_cfg.full+1}-{tiers_cfg.reduced}y) | "
+            f"COMPRESSED ({tier_counts['compressed']} papers, >{tiers_cfg.reduced}y or unknown year)",
+            "",
+        ]
+        preamble = "\n".join(preamble_lines)
+    else:
+        preamble = f"=== Paper Summaries ({n} papers, uniform detail) ===\n\n"
 
     # ------------------------------------------------------------------
     # 3) Fase 1: Formatta al tier assegnato (recency-based)
@@ -1019,7 +1137,7 @@ def _format_l1_summaries_for_prompt(l1_summaries: list[L1Summary]) -> str:
             f"L2 budget OK: {total_chars:,}/{available_chars:,} chars "
             f"({pct}%)"
         )
-        return "\n".join(parts)
+        return preamble + "\n".join(parts)
 
     # ------------------------------------------------------------------
     # 4) Fase 2: Downgrade reduced → compressed (meno importanti prima)
@@ -1049,7 +1167,7 @@ def _format_l1_summaries_for_prompt(l1_summaries: list[L1Summary]) -> str:
             f"L2 budget OK dopo downgrade reduced→compressed: "
             f"{total_chars:,}/{available_chars:,} ({downgraded} downgraded)"
         )
-        return "\n".join(parts)
+        return preamble + "\n".join(parts)
 
     # ------------------------------------------------------------------
     # 5) Fase 3: Downgrade full → reduced (meno importanti prima)
@@ -1079,7 +1197,7 @@ def _format_l1_summaries_for_prompt(l1_summaries: list[L1Summary]) -> str:
             f"L2 budget OK dopo downgrade full→reduced: "
             f"{total_chars:,}/{available_chars:,} ({downgraded} downgraded)"
         )
-        return "\n".join(parts)
+        return preamble + "\n".join(parts)
 
     # ------------------------------------------------------------------
     # 6) Fase 4: All-compressed
@@ -1100,7 +1218,7 @@ def _format_l1_summaries_for_prompt(l1_summaries: list[L1Summary]) -> str:
             f"L2 budget OK a all-compressed: "
             f"{total_chars:,}/{available_chars:,}"
         )
-        return "\n".join(parts)
+        return preamble + "\n".join(parts)
 
     # ------------------------------------------------------------------
     # 7) Fase 5: Hard truncation proporzionale (ultima risorsa)
@@ -1122,7 +1240,7 @@ def _format_l1_summaries_for_prompt(l1_summaries: list[L1Summary]) -> str:
         else:
             truncated_parts.append(p)
 
-    result = "\n".join(truncated_parts)
+    result = preamble + "\n".join(truncated_parts)
     logger.info(
         f"L2 hard truncation: {len(result):,}/{available_chars:,} chars "
         f"(ratio={ratio:.2f})"
@@ -1385,13 +1503,20 @@ def _discover_categories_from_store(store: Any) -> list[str]:
 _L2_METADATA_DIR = Path(settings.output.base_dir) / "l2_metadata"
 
 
-def _save_l2_metadata_to_disk(summary: L2Summary) -> None:
+def _save_l2_metadata_to_disk(
+    summary: L2Summary,
+    *,
+    recency_tier_stats: dict | None = None,
+) -> None:
     """Salva i metadata di un L2 summary su disco come JSON.
 
     Usato per recovery, tracking versioni, e check invalidazione.
 
     Args:
         summary: L2Summary da salvare.
+        recency_tier_stats: Statistiche distribuzione recency tier
+            (da ``_compute_recency_tier_stats``). Se fornite, vengono
+            incluse nel file di metadata.
     """
     try:
         _L2_METADATA_DIR.mkdir(parents=True, exist_ok=True)
@@ -1409,6 +1534,9 @@ def _save_l2_metadata_to_disk(summary: L2Summary) -> None:
             "generated_at": summary.generated_at.isoformat() if summary.generated_at else None,
             "model_used": summary.model_used,
         }
+
+        if recency_tier_stats is not None:
+            metadata["recency_tier_stats"] = recency_tier_stats
 
         filepath.write_text(json.dumps(metadata, indent=2, ensure_ascii=False))
         logger.debug(f"L2 metadata salvati: {filepath}")

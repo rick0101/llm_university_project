@@ -5,6 +5,11 @@
 # Tutto il resto è configurabile qui.
 # ============================================================================
 
+# --- Priorità Recency (globale) ---
+# Se true, i paper più recenti ricevono priorità durante ingestion, retrieval e L2 summarization.
+# Se false, tutti i paper vengono trattati allo stesso modo indipendentemente dall'anno.
+recency_priority: true
+
 # --- Modelli LLM (Gemini Advanced) ---
 gemini:
   flash_model: "gemini-3-flash-preview"      # Task semplici: classificazione, reranking, estrazione entità

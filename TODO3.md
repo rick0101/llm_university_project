@@ -434,16 +434,41 @@ Il sistema attuale è stato testato con ~20 paper totali. Scalare a ~400 paper (
 
 ---
 
-### [  ] Task C.3: Recency weighting nell'L2 summarizer
+### [x] Task C.3: Recency weighting nell'L2 summarizer
 
-**File:** `paperhunter/summarization/level2_summarizer.py` (modifica)  
+**File:** `paperhunter/summarization/level2_summarizer.py` (modifica), `paperhunter/config.py` (modifica), `config.yaml` (modifica), `paperhunter/indexing/hybrid_retriever.py` (modifica), `paperhunter/ingestion/ingestion_pipeline.py` (modifica)  
 **Stato attuale:** `_format_l1_summaries_for_prompt()` formatta tutti gli L1 con lo stesso livello di dettaglio, ordinati cronologicamente.  
-**Obiettivo:** Dedicare più spazio ai paper recenti nel prompt L2.  
+**Obiettivo:** Dedicare più spazio ai paper recenti nel prompt L2, con toggle globale configurabile.  
 **Dettagli:**
 - Paper degli ultimi 2 anni: testo completo dell'L1
 - Paper 2-4 anni fa: testo ridotto (~70%)
 - Paper > 4 anni fa: solo key_contributions + testing_methodology (~40%)
 - Queste soglie devono essere configurabili da `config.yaml`
+
+> **Completato 2/03/2026.** Modifiche:
+> - **`config.yaml`:** Aggiunto parametro globale `recency_priority: true` — toggle master per tutta la logica di priorità recency (L2 summarizer, hybrid retriever, ingestion pipeline). Se `false`, tutti i paper vengono trattati allo stesso modo indipendentemente dall'anno
+> - **`paperhunter/config.py`:** Aggiunto campo `recency_priority: bool = True` alla classe `Settings` — accessibile come `settings.recency_priority`
+> - **`paperhunter/summarization/level2_summarizer.py`:** Modifiche principali:
+>   - **Prompt template `_L2_PROMPT_TEMPLATE`:** Aggiunto blocco `**NOTE ON DETAIL LEVELS**` che informa il LLM sui livelli di dettaglio per recency (FULL, REDUCED, COMPRESSED), con soglie `{recency_full_years}` e `{recency_reduced_years}` parametriche da config. Istruzione esplicita: "Give analytical priority to recent papers with full details"
+>   - **Nuovi placeholder prompt:** `{recency_full_years}` e `{recency_reduced_years}` — riempiti dalle soglie configurate in `l2_recency_tiers`
+>   - **Istruzione IMPORTANT aggiornata:** Aggiunta nota "Papers marked [COMPRESSED] have less detail — do not penalize them, but give more analytical depth to recent papers"
+>   - **`_format_l1_summaries_for_prompt()`:** Legge `settings.recency_priority` dinamicamente (via `import paperhunter.config as _cfg`). Se `recency_priority=False`: assegna tier `"full"` a tutti i paper (nessuna compressione per recency); preamble con "uniform detail". Se `recency_priority=True`: comportamento recency-aware come prima (tier based su anno + preamble con statistiche FULL/REDUCED/COMPRESSED)
+>   - **`generate_l2_summary()`:** Legge `recency_priority` dinamicamente. Logga messaggi differenziati: se ON, mostra distribuzione tier; se OFF, messaggio "tutti i paper trattati a dettaglio completo"
+>   - **Preamble recency:** Aggiunto header `=== Recency-Weighted Paper Summaries (N papers) ===` con statistiche di distribuzione tier (FULL/REDUCED/COMPRESSED). Quando OFF: `=== Paper Summaries (N papers, uniform detail) ===`
+>   - **`_save_l2_metadata_to_disk()`:** Nuovo parametro `recency_tier_stats: dict | None` — include statistiche distribuzione tier nel file JSON di metadata. Chiamata aggiornata in `generate_l2_summary()` per passare le stats
+>   - **Rimosso `_save_l2_metadata_to_disk` duplicato** in `_save_l2_to_store()` — ora la persistenza metadata avviene solo in `generate_l2_summary()`
+> - **`paperhunter/indexing/hybrid_retriever.py`:** `HybridRetriever.__init__()` ora rispetta `settings.recency_priority`: se `False`, imposta `self._recency_boost = 0.0` indipendentemente dal valore configurato in `retrieval.recency_boost`
+> - **`paperhunter/ingestion/ingestion_pipeline.py`:** Step 1c (ordinamento per recency) ora condizionato da `settings.recency_priority`: se `False`, skip dell'ordinamento con messaggio "Ordinamento per recency DISABILITATO"
+> - **Test:** 7/7 passati + 9/9 test budget-aware L2 esistenti + 17/17 test hybrid retriever:
+>   - T1: Default `recency_priority = True` da config.yaml
+>   - T2: recency ON → header "Recency-Weighted", [COMPRESSED] per paper vecchi
+>   - T3: `_compute_recency_tier_stats()`: distribuzione corretta (full=2, reduced=1, compressed=2)
+>   - T4: recency OFF → header "uniform detail", nessun [COMPRESSED]/[REDUCED], tutti i paper a dettaglio completo (5/5 Limitations presenti)
+>   - T5: Output OFF più lungo di output ON (1227 vs 1129 chars — tutti i paper espansi)
+>   - T6: Hybrid retriever: recency OFF → boost=0.0, recency ON → boost=0.1 (da config)
+>   - T7: config.yaml contiene `recency_priority: true`
+>   - Regressione L2 budget-aware: 9/9 test passati (0.2s)
+>   - Regressione hybrid retriever: 17/17 test passati
 
 ---
 

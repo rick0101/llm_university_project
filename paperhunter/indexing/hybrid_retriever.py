@@ -215,7 +215,7 @@ class HybridRetriever:
         self._top_k_bm25 = top_k_bm25 if top_k_bm25 is not None else cfg.top_k_bm25
         self._top_k_final = top_k_final if top_k_final is not None else cfg.top_k_final
         self._rrf_k = rrf_k
-        self._recency_boost = cfg.recency_boost
+        self._recency_boost = cfg.recency_boost if settings.recency_priority else 0.0
 
         # Lazy init: store e index
         self._qdrant_store = qdrant_store

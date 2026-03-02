@@ -289,6 +289,9 @@ class Settings(BaseSettings):
         settings.llm_model                 # → alias per gemini.flash_model
     """
     
+    # --- Priorità Recency (globale) ---
+    recency_priority: bool = True  # Se True, paper recenti hanno priorità in ingestion, retrieval, L2
+
     # --- API Keys (da .env) ---
     google_api_key: str = ""
     anthropic_api_key: str = ""

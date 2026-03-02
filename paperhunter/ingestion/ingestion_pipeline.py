@@ -518,11 +518,15 @@ class IngestionPipeline:
         # ═══════════════════════════════════════════════════════════════
         # STEP 1c: Ordinamento per recency (paper recenti prima)
         # ═══════════════════════════════════════════════════════════════
-        logger.info("=" * 60)
-        logger.info("STEP 1c: Ordinamento per recency (più recenti prima)")
-        logger.info("=" * 60)
-
-        new_pdfs = sort_pdfs_by_recency(new_pdfs)
+        if settings.recency_priority:
+            logger.info("=" * 60)
+            logger.info("STEP 1c: Ordinamento per recency (più recenti prima)")
+            logger.info("=" * 60)
+            new_pdfs = sort_pdfs_by_recency(new_pdfs)
+        else:
+            logger.info("=" * 60)
+            logger.info("STEP 1c: Ordinamento per recency DISABILITATO (recency_priority=false)")
+            logger.info("=" * 60)
 
         # Inizializza checkpoint per questa esecuzione
         self._checkpoint._started_at = datetime.now().isoformat()

@@ -362,7 +362,7 @@ Il sistema attuale è stato testato con ~20 paper totali. Scalare a ~400 paper (
 
 ## Requisito 3 — Priorità ai paper più recenti durante l'ingestion
 
-### [  ] Task C.1: Ordinamento per data nella ingestion pipeline
+### [x] Task C.1: Ordinamento per data nella ingestion pipeline
 
 **File:** `paperhunter/ingestion/ingestion_pipeline.py` (modifica)  
 **Stato attuale:** I PDF vengono processati nell'ordine restituito da `get_new_or_modified_pdfs()`, che è l'ordine di scansione del filesystem (non deterministico, non cronologico).  
@@ -371,6 +371,27 @@ Il sistema attuale è stato testato con ~20 paper totali. Scalare a ~400 paper (
 - Dopo lo step 3 (S2 enrichment), ordinare i paper per `year` (desc) e `month` (desc) prima di procedere con chunking e indicizzazione
 - Se `year` non è disponibile (es. S2 non ha trovato il paper), usare la data di modifica del PDF come fallback
 - In alternativa: durante lo step 1, se possibile estrarre l'anno dal filename o dal titolo GROBID, usarlo per un pre-ordinamento
+
+> **Completato 2/03/2026.** Modifiche:
+> - **`paperhunter/ingestion/pdf_hasher.py`:** Aggiunto campo `mtime` (float, secondi epoch) all'output di `scan_pdf_directory()` — timestamp di modifica del file, ottenuto via `stat().st_mtime`. Disponibile in ogni `pdf_info` per l'ordinamento
+> - **`paperhunter/ingestion/ingestion_pipeline.py`:** Modifiche principali:
+>   - **Nuovi import:** `os`, `re` per supporto regex e filesystem
+>   - **`_YEAR_RE`:** Pattern regex compilato `(?<!\d)(20[0-2]\d)(?!\d)` — matcha anni 2000-2029 non adiacenti ad altre cifre (evita falsi positivi su date YYYYMMDD o numeri lunghi)
+>   - **`_extract_year_from_filename(filename) → int | None`:** Estrae anno dal nome del file. Se più match, restituisce il più recente (euristica: probabilmente è l'anno di pubblicazione). Supporta separatori vari: `_2024_`, `2024.pdf`, `(2023)`, `v2024`, ecc.
+>   - **`_get_pdf_sort_key(pdf_info) → tuple[int, int, float]`:** Calcola chiave di ordinamento composita a 3 livelli: (year, month, mtime). Anno dal filename ha priorità su anno da mtime. La tupla è costruita per ordinamento `reverse=True` → i paper più recenti vengono prima
+>   - **`sort_pdfs_by_recency(pdfs) → list[dict]`:** Funzione pubblica che ordina i PDF per data stimata decrescente. Annota ogni PDF con `sort_year` (int) e `sort_source` (`"filename"` | `"mtime"`). Non modifica la lista originale (restituisce una copia). Logga statistiche: range anni, N da filename vs mtime
+>   - **`run()`:** Aggiunto **STEP 1c** tra il checkpoint filtering e il batch processing. Chiama `sort_pdfs_by_recency(new_pdfs)` per riordinare i PDF prima dell'elaborazione. I paper più recenti vengono processati prima, garantendo che se la pipeline viene interrotta, i paper più importanti sono già completati
+> - **`paperhunter/ingestion/__init__.py`:** Esportata `sort_pdfs_by_recency` nel modulo pubblico
+> - **Test su `scaricati/` reale:** 118 PDF ordinati, range 2026-2026 (tutti mtime recenti, nessun anno nei filename attuali). Fonte: 0 da filename, 118 da mtime
+> - **Test:** 8/8 gruppi passati (48/48 test individuali):
+>   - `_extract_year_from_filename`: 16 casi (anni validi, fuori range, nessun anno, stringa vuota, numeri embedded)
+>   - `_get_pdf_sort_key`: 4 casi (filename > mtime, fallback mtime, no info, ordinamento corretto)
+>   - `sort_pdfs_by_recency` base: 5 casi (lista mista, ordinamento decrescente, primo/ultimo corretto, originale immutata)
+>   - Annotazioni: 3 casi (sort_source filename, sort_source mtime, campi preservati)
+>   - Edge cases: 5 casi (lista vuota, singolo, stesso anno, mesi decrescenti, nessuna info)
+>   - `scan_pdf_directory` mtime: 4 casi (trovati, campo presente, float positivo, ordine mtime)
+>   - Real PDFs sort: 5 casi (stesso numero, annotazioni, range 2000-2030, decrescente, paths preservati)
+>   - Year regex boundaries: 6 casi (YYYYMMDD non matchato, numeri lunghi, separatori)
 
 ---
 

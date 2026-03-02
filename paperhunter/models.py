@@ -317,6 +317,7 @@ class DownloadResult(BaseModel):
     file_path: Optional[str] = Field(None, description="Path to the downloaded file")
     method: Optional[str] = Field(None, description="Method used for download (direct/playwright)")
     error_message: Optional[str] = Field(None, description="Error message if download failed")
+    skipped: bool = Field(default=False, description="Whether the download was skipped because the paper already exists locally")
 
 
 class SearchQuery(BaseModel):

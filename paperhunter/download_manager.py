@@ -17,6 +17,27 @@ import httpx
 from .config import ensure_download_dir, settings
 from .models import DownloadResult, Paper
 
+
+def _normalize_filename(name: str) -> str:
+    """Normalize a filename for dedup comparison.
+
+    Strips extension, lowercases, collapses whitespace/underscores,
+    removes non-alphanumeric chars (except underscores).
+    """
+    # Remove extension
+    stem = Path(name).stem if "." in name else name
+    # Lowercase
+    stem = stem.lower()
+    # Replace spaces and multiple underscores with single underscore
+    stem = re.sub(r'[\s_]+', '_', stem)
+    # Remove non-alphanumeric (keep underscores)
+    stem = re.sub(r'[^a-z0-9_]', '', stem)
+    # Collapse any underscores left by removal of special chars
+    stem = re.sub(r'_+', '_', stem)
+    # Strip leading/trailing underscores
+    stem = stem.strip('_')
+    return stem
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -63,6 +84,73 @@ class Downloader:
         self.download_dir = download_dir or ensure_download_dir()
         self.timeout = timeout or settings.download_timeout
         self.headless = headless if headless is not None else settings.headless
+
+        # Build dedup index: scan all existing PDFs in download_dir (recursively)
+        self._existing_files: set[str] = set()
+        self._existing_arxiv_ids: set[str] = set()
+        self._scan_existing_pdfs()
+
+    # ------------------------------------------------------------------
+    # Deduplication helpers
+    # ------------------------------------------------------------------
+
+    def _scan_existing_pdfs(self) -> None:
+        """Scan download_dir recursively and build dedup sets.
+
+        Populates:
+        - ``_existing_files``: normalized filename stems (no extension).
+        - ``_existing_arxiv_ids``: ArXiv IDs found in filenames (e.g. ``2305.12345``).
+        """
+        arxiv_re = re.compile(r'(\d{4}\.\d{4,5})')
+        count = 0
+        for pdf in self.download_dir.rglob('*.pdf'):
+            normalized = _normalize_filename(pdf.stem)
+            if normalized:
+                self._existing_files.add(normalized)
+            # Try to extract ArXiv ID from filename
+            m = arxiv_re.search(pdf.stem)
+            if m:
+                self._existing_arxiv_ids.add(m.group(1))
+            count += 1
+        logger.info(
+            f"Dedup index built: {count} existing PDFs, "
+            f"{len(self._existing_files)} unique names, "
+            f"{len(self._existing_arxiv_ids)} ArXiv IDs"
+        )
+
+    def _is_duplicate(self, paper: Paper, custom_filename: str | None = None) -> tuple[bool, str | None]:
+        """Check whether *paper* already exists locally.
+
+        Returns ``(is_dup, existing_path_hint)``.
+        ``existing_path_hint`` is a human-readable string indicating why the
+        paper was considered a duplicate (for logging).
+        """
+        # 1. Check by ArXiv ID (most reliable)
+        if paper.arxiv_id:
+            # arxiv_id may look like '2305.12345' or '2305.12345v2'
+            bare_id = re.sub(r'v\d+$', '', paper.arxiv_id)
+            if bare_id in self._existing_arxiv_ids:
+                return True, f"ArXiv ID {bare_id}"
+
+        # 2. Check by normalized filename
+        candidate = custom_filename or self._sanitize_filename(paper.title)
+        norm = _normalize_filename(candidate)
+        if norm and norm in self._existing_files:
+            return True, f"filename '{candidate}'"
+
+        return False, None
+
+    def register_downloaded(self, paper: Paper, file_path: str) -> None:
+        """Register a newly downloaded file in the dedup index so that
+        subsequent calls to ``_is_duplicate`` within the same session
+        will detect it."""
+        p = Path(file_path)
+        norm = _normalize_filename(p.stem)
+        if norm:
+            self._existing_files.add(norm)
+        if paper.arxiv_id:
+            bare_id = re.sub(r'v\d+$', '', paper.arxiv_id)
+            self._existing_arxiv_ids.add(bare_id)
     
     def _sanitize_filename(self, title: str) -> str:
         """
@@ -91,6 +179,11 @@ class Downloader:
     ) -> DownloadResult:
         """
         Download a paper PDF using hybrid strategy.
+
+        Before attempting any network request the method checks whether
+        a file with the same normalised title (or ArXiv ID) already
+        exists under ``download_dir``.  If so, the download is skipped
+        and a ``DownloadResult(success=True, skipped=True)`` is returned.
         
         Args:
             paper: Paper object with URL and title
@@ -100,7 +193,17 @@ class Downloader:
             DownloadResult indicating success/failure
         """
         title = custom_filename or self._sanitize_filename(paper.title)
-        
+
+        # --- Deduplication check ---
+        is_dup, reason = self._is_duplicate(paper, custom_filename)
+        if is_dup:
+            logger.info(f"SKIP (already exists — {reason}): {paper.title[:60]}")
+            return DownloadResult(
+                success=True,
+                skipped=True,
+                method="dedup",
+            )
+
         logger.info(f"Attempting to download: {paper.title[:50]}...")
         
         # Build list of URLs to try, prioritizing ArXiv
@@ -123,6 +226,9 @@ class Downloader:
         for url in urls_to_try:
             result = await self._direct_download(url, title)
             if result.success:
+                # Register in dedup index for same-session awareness
+                if result.file_path:
+                    self.register_downloaded(paper, result.file_path)
                 return result
         
         logger.info(f"Direct downloads failed, trying Playwright...")
@@ -130,6 +236,8 @@ class Downloader:
         # Attempt Playwright as last resort
         primary_url = urls_to_try[0] if urls_to_try else paper.url
         result = await self._playwright_download(primary_url, paper.url, title)
+        if result.success and result.file_path:
+            self.register_downloaded(paper, result.file_path)
         return result
     
     async def _direct_download(self, url: str, filename: str) -> DownloadResult:
@@ -373,8 +481,14 @@ class Downloader:
             else:
                 final_results.append(result)
         
-        successful = sum(1 for r in final_results if r.success)
-        logger.info(f"Batch download complete: {successful}/{len(papers)} successful")
+        successful = sum(1 for r in final_results if r.success and not r.skipped)
+        skipped = sum(1 for r in final_results if r.skipped)
+        failed = sum(1 for r in final_results if not r.success)
+        logger.info(
+            f"Batch download complete: {successful} downloaded, "
+            f"{skipped} skipped (already exist), "
+            f"{failed} failed — {len(papers)} total"
+        )
         
         return final_results
 

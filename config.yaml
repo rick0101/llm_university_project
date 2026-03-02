@@ -64,6 +64,7 @@ ingestion:
   chunk_overlap: 200                           # Overlap tra chunk consecutivi
   batch_size: 10                               # PDF per batch durante ingestion
   fallback_to_pymupdf: true                    # Fallback a PyMuPDF se GROBID fallisce
+  papers_per_category: 100                     # Numero target di paper per categoria (usato per budget)
   # Mapping nome cartella → nome categoria human-readable
   category_mapping:
     Prompt_injections1: "Prompt Injection"
@@ -81,6 +82,13 @@ summarization:
   allow_flash_fallback: false                   # Se false, insisti con Pro senza degradare a Flash
   pro_max_retries: 6                           # Retry pazienti per Pro (delay lunghi)
   pro_base_delay: 15                           # Delay base (sec) tra retry Pro
+  max_context_tokens: 150000                   # Budget token massimo per singola chiamata LLM
+  l1_target_chars_auto: true                   # Se true, calcola target L1 chars in base a papers_per_category
+  l1_min_chars: 2000                           # Floor: un L1 non sarà mai più corto di così
+  l2_recency_tiers:                            # Soglie di compressione per recency (anni fa)
+    full: 2                                    # Paper ≤2 anni: testo L1 completo
+    reduced: 4                                 # Paper 2-4 anni: ~70%
+    compressed: 999                            # Paper >4 anni: solo key_contributions + testing
 
 # --- Hybrid Retrieval ---
 retrieval:
@@ -92,6 +100,7 @@ retrieval:
   top_k_final: 10                              # Risultati finali dopo reranking
   rerank_batch_size: 20                        # Max candidati per batch di reranking
   bm25_index_path: "./data/bm25_index.pkl"
+  recency_boost: 0.1                           # Boost temporale post-RRF (0.0=disabilitato)
 
 # --- Agentic Writing Pipeline ---
 agents:
@@ -103,6 +112,8 @@ agents:
   writer_model: "pro"                          # Modello per il Writer
   critic_model: "flash"                        # Modello per il Critic (flash sufficiente)
   assembler_model: "pro"                       # Modello per l'Assembler
+  writer_max_context_chars: 60000              # Max chars contesto per singola sezione writer
+  writer_budget_mode: "proportional"           # "fixed" | "proportional" (divide budget per N sezioni)
 
 # --- Output & Post-processing ---
 output:

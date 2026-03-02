@@ -97,12 +97,20 @@ class IngestionConfig(BaseModel):
     chunk_overlap: int = 200
     batch_size: int = 10
     fallback_to_pymupdf: bool = True
+    papers_per_category: int = 100  # Numero target di paper per categoria (usato per budget)
     category_mapping: dict[str, str] = Field(default_factory=lambda: {
         "Prompt_injections1": "Prompt Injection",
         "Hallucinations1": "LLM Hallucinations",
         "Data_and_Model_Poisoning1": "Data and Model Poisoning",
         "Adversarial_Code1": "Adversarial Attacks",
     })
+
+
+class L2RecencyTiersConfig(BaseModel):
+    """Soglie di compressione per recency nei summary L2 (anni fa)."""
+    full: int = 2       # Paper ≤ full anni: testo L1 completo
+    reduced: int = 4    # Paper full+1 → reduced anni: ~70% del testo
+    compressed: int = 999  # Paper > reduced anni: solo key_contributions + testing
 
 
 class SummarizationConfig(BaseModel):
@@ -115,6 +123,10 @@ class SummarizationConfig(BaseModel):
     allow_flash_fallback: bool = False  # Se False, non degrada mai a Flash per task complessi
     pro_max_retries: int = 6           # Retry pazienti per Pro (con delay lunghi)
     pro_base_delay: float = 15.0       # Delay base tra retry Pro (secondi)
+    max_context_tokens: int = 150_000  # Budget token massimo per singola chiamata LLM
+    l1_target_chars_auto: bool = True  # Se True, calcola target L1 chars in base a papers_per_category
+    l1_min_chars: int = 2000           # Floor: un L1 non sarà mai più corto di così
+    l2_recency_tiers: L2RecencyTiersConfig = Field(default_factory=L2RecencyTiersConfig)
 
 
 class RetrievalConfig(BaseModel):
@@ -127,6 +139,7 @@ class RetrievalConfig(BaseModel):
     top_k_final: int = 10
     rerank_batch_size: int = 20
     bm25_index_path: str = "./data/bm25_index.pkl"
+    recency_boost: float = 0.1  # Boost temporale post-RRF (0.0 = disabilitato)
 
 
 class AgentsConfig(BaseModel):
@@ -139,6 +152,8 @@ class AgentsConfig(BaseModel):
     writer_model: str = "pro"
     critic_model: str = "flash"
     assembler_model: str = "pro"
+    writer_max_context_chars: int = 60_000  # Max chars contesto per singola sezione writer
+    writer_budget_mode: str = "proportional"  # "fixed" | "proportional"
 
     @field_validator("planner_model", "writer_model", "critic_model", "assembler_model")
     @classmethod
@@ -146,6 +161,14 @@ class AgentsConfig(BaseModel):
         allowed = {"flash", "pro"}
         if v not in allowed:
             raise ValueError(f"Modello deve essere 'flash' o 'pro', ricevuto: {v}")
+        return v
+
+    @field_validator("writer_budget_mode")
+    @classmethod
+    def validate_writer_budget_mode(cls, v: str) -> str:
+        allowed = {"fixed", "proportional"}
+        if v not in allowed:
+            raise ValueError(f"writer_budget_mode deve essere uno di {allowed}, ricevuto: {v}")
         return v
 
 

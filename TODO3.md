@@ -10,7 +10,7 @@
 
 Il sistema deve essere **modulabile**: il numero di paper per categoria è scelto dall'utente in `config.yaml`, e tutti i componenti a valle (L1, L2, retrieval, writer) si adattano automaticamente.
 
-### [  ] Task 0.1: Nuovi parametri in config.yaml e config.py
+### [x] Task 0.1: Nuovi parametri in config.yaml e config.py
 
 **File:** `config.yaml` (modifica), `paperhunter/config.py` (modifica)  
 **Stato attuale:** Non esiste un parametro `papers_per_category` né un budget token globale. I limiti sono hardcoded nei singoli moduli (`max_chunk_chars=50_000`, `max_chars=60_000`, `l1_max_tokens=2000`, ecc.).  
@@ -35,6 +35,25 @@ agents:
 ```
 - In `config.py`: aggiungere i campi Pydantic corrispondenti con validazione
 - I moduli a valle leggono **sempre** da config; nessun hardcode residuo
+
+> **Completato 2/03/2026.** Modifiche:
+> - **`config.yaml`:** Aggiunti 8 nuovi parametri:
+>   - `ingestion.papers_per_category: 100` — numero target di paper per categoria
+>   - `summarization.max_context_tokens: 150000` — budget token massimo per chiamata LLM
+>   - `summarization.l1_target_chars_auto: true` — calcolo automatico target L1 chars
+>   - `summarization.l1_min_chars: 2000` — floor per L1 summary length
+>   - `summarization.l2_recency_tiers` — oggetto con `full: 2`, `reduced: 4`, `compressed: 999`
+>   - `retrieval.recency_boost: 0.1` — boost temporale post-RRF
+>   - `agents.writer_max_context_chars: 60000` — max chars contesto writer
+>   - `agents.writer_budget_mode: "proportional"` — modalità budget writer
+> - **`paperhunter/config.py`:** Aggiunti modelli Pydantic corrispondenti:
+>   - `L2RecencyTiersConfig(BaseModel)` — nuovo sotto-modello con `full`, `reduced`, `compressed`
+>   - `IngestionConfig.papers_per_category: int = 100`
+>   - `SummarizationConfig` → +4 campi: `max_context_tokens`, `l1_target_chars_auto`, `l1_min_chars`, `l2_recency_tiers`
+>   - `RetrievalConfig.recency_boost: float = 0.1`
+>   - `AgentsConfig` → +2 campi: `writer_max_context_chars`, `writer_budget_mode` con `@field_validator`
+> - **Accesso dai moduli:** `settings.ingestion.papers_per_category`, `settings.summarization.max_context_tokens`, `settings.summarization.l2_recency_tiers.full`, `settings.agents.writer_max_context_chars`, `settings.agents.writer_budget_mode`, `settings.retrieval.recency_boost`
+> - **Test:** Tutti i nuovi parametri caricati correttamente da YAML, validazione Pydantic funzionante (es. `writer_budget_mode='invalid'` → `ValueError`)
 
 ---
 

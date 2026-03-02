@@ -1,8 +1,30 @@
 verifica che il programma funzioni bene in modo da supportare circa 100 papers in input per categoria, 
-mantenendo un contesto di input totale minore o uguale a 150k token.
+mantenendo un contesto di input totale minore o uguale a 150k token (Per evitare context rot e Hallucinations).
 Gestisci quindi i riassunti L1 e L2 in modo da rimanere entro questo limite, eventualmente usando tecniche di compressione o selezione dei chunk più rilevanti.
 
 Migliora la struttura di download dei paper in modo da non scaricare papers già presenti nella cartella "scaricati".
 
-Se possibile, dai maggiore priorità ai paper più recenti (es. ultimi 3 anni) durante l'ingestion.
-Gli ultimi papers sono i più rilevanti.
+Se possibile, dai maggiore priorità ai paper più recenti durante l'ingestion (si presume che gli studi più recenti siano più rilevanti).
+
+ATTENZIONE: STRATEGIA DI ESECUZIONE E GESTIONE DEL CONTESTO
+
+Poiché voglio evitare di saturare la tua finestra di contesto o perdere qualità nel codice, lavoreremo a step rigidamente separati.
+
+Come PRIMA E UNICA azione iniziale, devi analizzare l'intera architettura richiesta e generare un file TODO.md estremamente dettagliato, granulare e sequenziale.
+Usa il formato markdown con le checkbox [ ].
+
+Regole d'oro per le nostre sessioni:
+
+    Nelle nostre interazioni future (o appena ti darò il via), io ti fornirò questo master prompt + il TODO3.md aggiornato.
+
+    Tu dovrai leggere il TODO.md, individuare il primo task NON spuntato ([ ]), e scrivere tutto il codice necessario ESCLUSIVAMENTE per completare quel singolo task.
+
+    Una volta scritto il codice per quel task, mostrami come aggiornare il TODO3.md mettendo la spunta ([x]) a quel task, e poi FERMATI COMPLETAMENTE. Non anticipare il codice del task successivo.
+
+    Alla fine di ogni tuo output, chiudi sempre con questo messaggio esatto: "Task completato con successo. Per favore, apri una nuova chat, incolla il master prompt e il nuovo TODO3.md aggiornato, e chiedimi di eseguire il prossimo task. Questo manterrà la mia memoria fresca e il codice pulito."
+
+    Ricordati di eseguire git add -A && git commit -m "descrizione della modifica" dopo ogni task completato, per mantenere una cronologia chiara e dettagliata delle modifiche.
+
+Voglio un task alla volta, codice modulare e perfetto, e poi stop.
+Dopo ogni task completato nella todo lista, crea un mini riassunto sotto al task, con le modifiche apportate e le note per il futuro, scrivendo le funzioni che hai aggiunto e come usarle.
+Per output lunghi, con una attesa elevanta, utilizza dei file di testo (es. code.txt) per salvare l'output, invece di incollarlo direttamente nella chat, per evitare problemi di formattazione o perdita di dati.

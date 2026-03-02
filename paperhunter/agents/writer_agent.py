@@ -63,6 +63,11 @@ from paperhunter.utils.logging_setup import (
     print_table,
     print_warning,
 )
+from paperhunter.utils.token_counter import (
+    compute_writer_budget,
+    get_writer_max_context_chars,
+    get_writer_budget_mode,
+)
 
 logger = get_logger(__name__)
 
@@ -441,19 +446,118 @@ def _retrieve_context_for_section(
     return all_results, chunk_ids
 
 
-def _format_context_for_prompt(chunks: list[dict], max_chars: int = 60000) -> str:
+# Priorità chunk per tipo: L2 > L1 > original/graph
+_CHUNK_TYPE_PRIORITY: dict[str, int] = {
+    "L2_SUMMARY": 0,
+    "l2_summary": 0,
+    "L1_SUMMARY": 1,
+    "l1_summary": 1,
+    "original": 2,
+    "graph": 3,
+}
+
+
+def _compute_section_budget(
+    n_total_sections: int | None = None,
+    max_chars_override: int | None = None,
+) -> int:
+    """Calcola il budget in caratteri per una singola sezione del writer.
+
+    Se ``max_chars_override`` è fornito, lo usa direttamente.
+    Altrimenti legge la modalità da config:
+
+    - ``"proportional"``: ``min(writer_max_context_chars, global_budget / N_sezioni)``
+    - ``"fixed"``: ``writer_max_context_chars``
+
+    Args:
+        n_total_sections: Numero totale di sezioni nel paper. Necessario
+            solo per la modalità proportional.
+        max_chars_override: Override diretto del budget in chars.
+
+    Returns:
+        Budget in caratteri per questa sezione.
+    """
+    if max_chars_override is not None:
+        return max_chars_override
+
+    if n_total_sections is None or n_total_sections <= 0:
+        n_total_sections = 1
+
+    budget_info = compute_writer_budget(n_sections=n_total_sections)
+    budget = budget_info["per_section_chars"]
+    logger.debug(
+        f"Writer budget: mode={budget_info['mode']}, "
+        f"per_section={budget:,} chars, "
+        f"n_sections={n_total_sections}"
+    )
+    return budget
+
+
+def _sort_chunks_by_priority(chunks: list[dict]) -> list[dict]:
+    """Ordina i chunk dando priorità a L1/L2 summary rispetto a original.
+
+    L'ordinamento è stabile: a parità di tipo, l'ordine originale
+    (basato sullo score del retrieval/reranker) è preservato.
+
+    Priorità: L2_SUMMARY > L1_SUMMARY > original > graph.
+
+    Args:
+        chunks: Lista di chunk dict con metadata.
+
+    Returns:
+        Nuova lista ordinata per priorità di tipo (più informativi prima).
+    """
+    def _priority_key(chunk: dict) -> int:
+        chunk_type = chunk.get("metadata", {}).get("chunk_type", "original")
+        return _CHUNK_TYPE_PRIORITY.get(chunk_type, 2)
+
+    return sorted(chunks, key=_priority_key)
+
+
+def _format_context_for_prompt(
+    chunks: list[dict],
+    max_chars: int | None = None,
+    *,
+    n_total_sections: int | None = None,
+    prefer_summaries: bool = True,
+) -> str:
     """Formatta i chunk recuperati per il prompt del Writer.
 
-    Ogni chunk include metadata chiave (paper, categoria, anno, sezione)
-    e il testo troncato se necessario.
+    Il budget è determinato in quest'ordine:
+
+    1. Se *max_chars* è fornito esplicitamente, lo usa.
+    2. Altrimenti calcola il budget dalla config (``writer_budget_mode``
+       + ``writer_max_context_chars``).
+
+    Quando *prefer_summaries* è True (default), i chunk di tipo
+    L1_SUMMARY e L2_SUMMARY vengono posizionati prima dei chunk
+    di tipo original, a parità di score.
+
+    Args:
+        chunks: Chunk recuperati dal retrieval.
+        max_chars: Budget diretto (legacy). Se None, calcolato da config.
+        n_total_sections: Numero totale di sezioni (per modalità proportional).
+        prefer_summaries: Se True, riordina dando priorità a summary chunks.
+
+    Returns:
+        Testo formattato pronto per il prompt del Writer.
     """
     if not chunks:
         return "(No relevant context retrieved. Write based on general knowledge.)"
 
+    # --- Calcola budget ---
+    effective_max = _compute_section_budget(
+        n_total_sections=n_total_sections,
+        max_chars_override=max_chars,
+    )
+
+    # --- Riordina per priorità di tipo se richiesto ---
+    ordered_chunks = _sort_chunks_by_priority(chunks) if prefer_summaries else chunks
+
     parts: list[str] = []
     total_chars = 0
 
-    for i, chunk in enumerate(chunks):
+    for i, chunk in enumerate(ordered_chunks):
         meta = chunk.get("metadata", {})
         bibtex_key = meta.get("bibtex_key", "Unknown")
         category = meta.get("category", "N/A")
@@ -474,12 +578,22 @@ def _format_context_for_prompt(chunks: list[dict], max_chars: int = 60000) -> st
         )
         entry = f"{header}\n{text}\n"
 
-        if total_chars + len(entry) > max_chars:
-            parts.append(f"\n[... {len(chunks) - i} more chunks truncated for prompt length ...]")
+        if total_chars + len(entry) > effective_max:
+            remaining = len(ordered_chunks) - i
+            parts.append(
+                f"\n[... {remaining} more chunks truncated for prompt length "
+                f"(budget: {effective_max:,} chars) ...]"
+            )
             break
 
         parts.append(entry)
         total_chars += len(entry)
+
+    logger.info(
+        f"Context formattato: {len(parts)} chunk inclusi, "
+        f"{total_chars:,}/{effective_max:,} chars usati "
+        f"({total_chars * 100 // effective_max if effective_max else 0}%)"
+    )
 
     return "\n".join(parts)
 
@@ -620,6 +734,8 @@ def write_section(
     use_graph: bool = False,
     top_k_retrieval: int = 25,
     n_rag_queries: int = 5,
+    n_total_sections: int | None = None,
+    max_context_chars: int | None = None,
 ) -> dict[str, Any]:
     """Scrive una singola sezione del survey.
 
@@ -637,6 +753,8 @@ def write_section(
         use_graph: Se usare il PropertyGraph per contesto aggiuntivo.
         top_k_retrieval: Numero massimo di chunk da recuperare.
         n_rag_queries: Numero di query RAG da generare.
+        n_total_sections: Numero totale di sezioni nel paper (per budget proportional).
+        max_context_chars: Override diretto del budget chars per questa sezione.
 
     Returns:
         Dict parziale per aggiornamento dello stato LangGraph con
@@ -712,8 +830,16 @@ def write_section(
         logger.warning(err)
         errors.append(err)
 
-    # --- Step 3: Formatta contesto e prompt ---
-    context_text = _format_context_for_prompt(chunks)
+    # --- Step 3: Formatta contesto e prompt (budget-aware) ---
+    # Se n_total_sections non fornito, calcolalo dall'outline
+    if n_total_sections is None:
+        n_total_sections = len(outline_list)
+    context_text = _format_context_for_prompt(
+        chunks,
+        max_chars=max_context_chars,
+        n_total_sections=n_total_sections,
+        prefer_summaries=True,
+    )
     special_instructions = _get_special_instructions(target_outline.section_type)
 
     # Se c'è feedback del Critic, aggiungilo al prompt
@@ -854,6 +980,7 @@ def write_all_sections(
     use_reranker: bool = True,
     use_graph: bool = False,
     skip_types: set[str] | None = None,
+    max_context_chars: int | None = None,
 ) -> dict[str, Any]:
     """Scrive tutte le sezioni dell'outline che non sono ancora drafted.
 
@@ -869,6 +996,7 @@ def write_all_sections(
         use_reranker: Se usare il reranker.
         use_graph: Se usare il PropertyGraph.
         skip_types: Tipi di sezione da saltare (default: {"abstract"}).
+        max_context_chars: Override diretto del budget chars per sezione.
 
     Returns:
         Dict parziale con tutte le sezioni scritte e eventuali errori.
@@ -892,7 +1020,18 @@ def write_all_sections(
         logger.info("Nessuna nuova sezione da scrivere.")
         return {"current_phase": PipelinePhase.WRITING.value}
 
-    logger.info(f"Sezioni da scrivere: {len(sections_to_write)}/{len(outline)}")
+    # Calcola numero totale sezioni per budget proportional
+    n_total_sections = len(outline)
+
+    # Log budget per sezione
+    section_budget = _compute_section_budget(
+        n_total_sections=n_total_sections,
+        max_chars_override=max_context_chars,
+    )
+    logger.info(
+        f"Sezioni da scrivere: {len(sections_to_write)}/{n_total_sections}, "
+        f"budget contesto per sezione: {section_budget:,} chars"
+    )
 
     # Log tabella sezioni
     data = [
@@ -925,6 +1064,8 @@ def write_all_sections(
                 force_model=force_model,
                 use_reranker=use_reranker,
                 use_graph=use_graph,
+                n_total_sections=n_total_sections,
+                max_context_chars=max_context_chars,
             )
 
             if "sections" in result:
@@ -1044,6 +1185,16 @@ def write(state: SurveyState) -> dict[str, Any]:
             logger.warning(f"Impossibile inizializzare PropertyGraphBuilder: {e}")
             use_graph = False
 
+    # --- Calcola budget per sezione ---
+    n_total_sections = len(outline)
+    section_budget = _compute_section_budget(n_total_sections=n_total_sections)
+    budget_mode = get_writer_budget_mode()
+    logger.info(
+        f"Writer budget: mode={budget_mode}, "
+        f"per_section={section_budget:,} chars, "
+        f"n_total_sections={n_total_sections}"
+    )
+
     # --- Scrivi sezioni che necessitano revisione ---
     all_sections: dict[str, dict] = {}
     errors: list[str] = []
@@ -1058,6 +1209,7 @@ def write(state: SurveyState) -> dict[str, Any]:
                 reranker=reranker,
                 graph_builder=graph_builder,
                 use_graph=use_graph,
+                n_total_sections=n_total_sections,
             )
             if "sections" in result:
                 all_sections.update(result["sections"])

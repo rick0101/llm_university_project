@@ -220,7 +220,7 @@ Il sistema attuale è stato testato con ~20 paper totali. Scalare a ~400 paper (
 
 ---
 
-### [  ] Task A.4: Budget-aware Writer Agent context
+### [x] Task A.4: Budget-aware Writer Agent context
 
 **File:** `paperhunter/agents/writer_agent.py` (modifica)  
 **Stato attuale:** `_format_context_for_prompt()` tronca a `max_chars=60_000` (hardcoded). Per ~400 paper il retrieval potrebbe dover essere più selettivo.  
@@ -230,6 +230,52 @@ Il sistema attuale è stato testato con ~20 paper totali. Scalare a ~400 paper (
 - Se `writer_budget_mode = "proportional"`: `budget_per_section = (max_context_tokens * 4) / N_sezioni`
 - Se `writer_budget_mode = "fixed"`: usa `writer_max_context_chars` fisso per ogni sezione
 - Preferire chunk di tipo L1/L2 summary rispetto a chunk originali, per densità informativa
+
+> **Completato 2/03/2026.** Modifiche:
+> - **`paperhunter/agents/writer_agent.py`:** Modifiche principali:
+>   - **Nuovi import:** `compute_writer_budget`, `get_writer_max_context_chars`, `get_writer_budget_mode` da `utils.token_counter`
+>   - **`_CHUNK_TYPE_PRIORITY`:** Dizionario di priorità per tipo chunk: `L2_SUMMARY(0) > L1_SUMMARY(1) > original(2) > graph(3)`. Supporta varianti case-sensitive e lowercase
+>   - **`_compute_section_budget(n_total_sections, max_chars_override) → int`:** Calcola il budget in chars per una singola sezione. Se `max_chars_override` fornito, lo usa direttamente. Altrimenti delega a `compute_writer_budget()` rispettando la modalità da config (`"proportional"` o `"fixed"`). Con `n_total_sections ≤ 0` → trattato come 1
+>   - **`_sort_chunks_by_priority(chunks) → list[dict]`:** Ordina i chunk dando priorità a L1/L2 summary rispetto a original/graph. Ordinamento stabile: a parità di tipo, l'ordine originale (score del retrieval) è preservato. Chunk senza `chunk_type` → trattati come original (priority 2)
+>   - **`_format_context_for_prompt()`:** *Riscritta completamente* con logica budget-aware:
+>     - Nuova firma: `_format_context_for_prompt(chunks, max_chars=None, *, n_total_sections=None, prefer_summaries=True)`
+>     - `max_chars=None` → budget calcolato automaticamente da config (non più hardcoded 60,000)
+>     - `n_total_sections` → passato a `_compute_section_budget()` per modalità proportional
+>     - `prefer_summaries=True` → riordina chunk con `_sort_chunks_by_priority()` (L2 > L1 > original)
+>     - `prefer_summaries=False` → preserva ordine originale
+>     - Messaggio di truncation include budget: `[... N more chunks truncated for prompt length (budget: X chars) ...]`
+>     - Logging info: `"Context formattato: N chunk inclusi, X/Y chars usati (Z%)"`
+>     - Backward compatible: `max_chars=5000` funziona come override diretto
+>   - **`write_section()`:** Nuovi parametri:
+>     - `n_total_sections: int | None = None` — numero totale sezioni (calcolato da outline se None)
+>     - `max_context_chars: int | None = None` — override diretto budget
+>     - Passa entrambi a `_format_context_for_prompt()`
+>   - **`write_all_sections()`:** Nuovo parametro:
+>     - `max_context_chars: int | None = None` — propagato a ogni `write_section()`
+>     - Calcola `n_total_sections = len(outline)` e lo propaga
+>     - Logga budget per sezione all'inizio: `"budget contesto per sezione: X chars"`
+>   - **`write()` (nodo LangGraph):** Calcola e logga budget prima della scrittura:
+>     - `n_total_sections = len(outline)`, `section_budget` calcolato
+>     - Propaga `n_total_sections` a `write_section()` per le revisioni
+> - **Budget scaling verificato:**
+>   - 1 sezione → 60,000 chars (cappato a `writer_max_context_chars`)
+>   - 4 sezioni → 60,000 chars (cap)
+>   - 8 sezioni → 60,000 chars (cap: 592k/8 = 74k > 60k)
+>   - 12 sezioni → 49,333 chars (592k/12 = 49.3k < 60k)
+>   - 20 sezioni → 29,600 chars (592k/20 = 29.6k)
+>   - Monotonicamente decrescente, cap superiore garantito
+> - **Prioritizzazione chunk verificata:**
+>   - L2_SUMMARY appare prima di L1_SUMMARY nel prompt, L1 prima di original, original prima di graph
+>   - Ordinamento stabile: ordine relativo intra-tipo preservato
+> - **Test:** 8/8 passati + 13/13 test esistenti inalterati:
+>   - `_compute_section_budget`: override, proportional, cap, zero/negativo → tutti corretti
+>   - `_sort_chunks_by_priority`: ordinamento L2>L1>orig>graph, stabilità, chunk senza tipo → OK
+>   - `_format_context_for_prompt`: empty, override, config-based, prefer_summaries on/off → OK
+>   - `_CHUNK_TYPE_PRIORITY`: tutti i valori corretti
+>   - Budget consistency: N sezioni = 1..20, monotonicamente decrescente, ≤ max_chars
+>   - `write_section`, `write_all_sections` signature: nuovi params con default None
+>   - Large context (200 chunk, budget 20k): L2 all'inizio, truncation corretta
+>   - Backward compatibility: `max_chars=5000` funziona come prima
 
 ---
 

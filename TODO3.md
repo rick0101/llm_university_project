@@ -166,7 +166,7 @@ Il sistema attuale è stato testato con ~20 paper totali. Scalare a ~400 paper (
 
 ---
 
-### [  ] Task A.3: Budget-aware L2 summarization con selezione chunk
+### [x] Task A.3: Budget-aware L2 summarization con selezione chunk
 
 **File:** `paperhunter/summarization/level2_summarizer.py` (modifica)  
 **Stato attuale:** `_format_l1_summaries_for_prompt()` concatena TUTTI gli L1 senza limite di dimensione. Con 100 paper/categoria e L1 di ~2-3k chars ciascuno, si arriverebbe a ~200-300k chars → troppi token per il context window.  
@@ -180,6 +180,43 @@ Il sistema attuale è stato testato con ~20 paper totali. Scalare a ~400 paper (
   4. **Citation-weighted:** paper con più citazioni sono meno comprimibili (a parità di tier)
 - Se dopo la compressione per tier si sfora ancora, truncation progressiva: troncare campi meno critici (limitations, temporal_context) prima di methodology
 - Logging del budget consumato vs disponibile
+
+> **Completato 2/03/2026.** Modifiche:
+> - **`paperhunter/models.py`:** Aggiunto campo `citation_count: Optional[int] = None` a `L1Summary` per supportare citation-weighted budget L2
+> - **`paperhunter/summarization/level2_summarizer.py`:** Modifiche principali:
+>   - **Nuovo import:** `import math`, `compute_l2_budget` da `utils.token_counter`
+>   - **`_get_paper_recency_tier(year, current_year)`:** Classifica ogni paper in tier di recency (`"full"`, `"reduced"`, `"compressed"`) in base alle soglie configurate in `config.yaml` → `summarization.l2_recency_tiers` (default: full ≤2 anni, reduced ≤4 anni, compressed >4 anni). Paper senza anno → compressed
+>   - **`_compute_paper_importance(s, current_year)`:** Score di importanza `[0,1]` basato su `0.7 × recency_factor + 0.3 × citation_factor`. Recency: `(year-2015)/(current_year-2015)`. Citation: `log₁₀(1+citations)/5`, cappato a 1.0. Usato per decidere l'ordine di downgrade (paper meno importanti compressi per primi)
+>   - **`_truncate_text(text, max_chars, suffix)`:** Tronca testo preservando parole intere
+>   - **`_format_l1_at_tier(s, tier, index, total)`:** Dispatcher che delega a full/reduced/compressed
+>   - **`_format_l1_full()`:** Formato completo con tutti i campi (identico all'originale pre-budget-aware)
+>   - **`_format_l1_reduced()`:** ~70% del dettaglio — mantiene key_contributions, methodology, testing_methodology, temporal_context troncato a 200 chars, results troncati a 300 chars. Rimuove limitations
+>   - **`_format_l1_compressed()`:** Minimale — solo key_contributions (max 3) + testing_methodology. Tag `[COMPRESSED]` nel header
+>   - **`_format_all_at_tiers(paper_entries, total)`:** Formatta tutti i paper ai tier assegnati preservando ordine originale
+>   - **`_format_l1_summaries_for_prompt()`:** *Riscritta completamente* con logica budget-aware multi-fase:
+>     - Fase 1: Calcola budget da `compute_l2_budget()` (588,500 chars con config default 150k token)
+>     - Fase 2: Assegna recency tier e score di importanza a ogni paper
+>     - Fase 3: Formatta al tier assegnato — se entro budget, terminato
+>     - Fase 4: Downgrade reduced→compressed (meno importanti prima, citation-weighted)
+>     - Fase 5: Downgrade full→reduced (meno importanti prima)
+>     - Fase 6: All-compressed come fallback
+>     - Fase 7: Hard truncation proporzionale come ultima risorsa
+>     - Logging dettagliato a ogni fase (chars consumati/disponibili, % utilizzo, N paper downgraded)
+>   - **`_reconstruct_l1_from_payload()`:** Aggiunto `citation_count=payload.get("citation_count")` per ricostruire il campo dal vector store
+> - **Compressione verificata:**
+>   - 20 paper con long_fields: full tiers = 27,203 chars → all-compressed = 11,031 chars (40.55% del totale, 59% riduzione)
+>   - 100 paper: full/reduced/compressed mix → 127,664 chars, 21% del budget (ampiamente entro i 588,500 chars disponibili)
+>   - 5 paper: 2,470 chars, 0% del budget (nessuna compressione necessaria)
+> - **Test:** 9/9 passati (0.2s):
+>   - Recency tiers: 8/8 casi corretti (boundary full=2, reduced=4, None=compressed)
+>   - Paper importance: 4/4 vincoli di ordinamento rispettati (recent+cited > recent > old+cited > old > no_year)
+>   - Tier formatting: full > reduced > compressed in size, campi corretti per ogni tier
+>   - Budget small (5 papers): 2,474 chars, tutti i paper presenti, tier recency applicati
+>   - Budget large (100 papers): 127,763 chars ≤ 588,500 budget, [COMPRESSED] e [REDUCED] presenti
+>   - Progressive downgrade: 59% riduzione con all-compressed, importance range 0.47-0.87
+>   - Truncate text: 4/4 casi (short, long, empty, None)
+>   - citation_count field: default None, set, serialization, JSON round-trip
+>   - Backward compat: 2 paper → output identico al comportamento originale, empty → ""
 
 ---
 

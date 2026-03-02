@@ -40,6 +40,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import re
 import time
 from datetime import datetime
@@ -501,6 +502,7 @@ def _reconstruct_l1_from_payload(payload: dict) -> L1Summary | None:
         temporal_context=sections.get("temporal_context", ""),
         results_summary=sections.get("results_summary", ""),
         limitations=sections.get("limitations", ""),
+        citation_count=payload.get("citation_count"),
     )
 
 
@@ -693,28 +695,144 @@ def _l2_exists_and_valid(category: str, store: Any) -> bool:
 
 
 # ============================================================================
-# Helpers: formatting
+# Helpers: formatting — recency tiers & budget
 # ============================================================================
 
-def _format_l1_summaries_for_prompt(l1_summaries: list[L1Summary]) -> str:
-    """Formatta i summary L1 in testo per il prompt L2.
 
-    Ogni L1 viene formattato con le informazioni chiave,
-    ordinato cronologicamente.
+def _get_paper_recency_tier(
+    year: int | None,
+    current_year: int | None = None,
+) -> str:
+    """Determina il tier di recency per un paper in base al suo anno.
+
+    Usa le soglie configurate in ``config.yaml`` →
+    ``summarization.l2_recency_tiers``:
+
+    - ``full`` (≤N anni): testo L1 completo
+    - ``reduced`` (≤M anni): ~70% del testo
+    - ``compressed`` (>M anni): solo key_contributions + testing
 
     Args:
-        l1_summaries: Lista di L1Summary (già ordinati).
+        year: Anno di pubblicazione. Se None, trattato come
+            "molto vecchio" → compressed.
+        current_year: Anno corrente. Se None, usa
+            ``datetime.now().year``.
 
     Returns:
-        Testo formattato per il prompt.
+        ``"full"``, ``"reduced"`` o ``"compressed"``.
     """
-    parts: list[str] = []
+    if current_year is None:
+        current_year = datetime.now().year
 
-    for i, s in enumerate(l1_summaries, 1):
-        bibtex = s.bibtex_key or s.paper_id
-        year_str = str(s.year) if s.year else "Unknown"
+    tiers = settings.summarization.l2_recency_tiers
 
-        section = f"""--- Paper {i}/{len(l1_summaries)}: [{bibtex}] (Year: {year_str}) ---
+    if year is None:
+        return "compressed"
+
+    years_ago = current_year - year
+
+    if years_ago <= tiers.full:
+        return "full"
+    elif years_ago <= tiers.reduced:
+        return "reduced"
+    else:
+        return "compressed"
+
+
+def _compute_paper_importance(
+    s: L1Summary,
+    current_year: int | None = None,
+) -> float:
+    """Calcola un punteggio di importanza per un paper.
+
+    Combina recency e citation count per determinare la
+    "protezione" dalla compressione (paper più importanti
+    vengono compressi per ultimi durante il downgrade).
+
+    ``score = 0.7 × recency_factor + 0.3 × citation_factor``
+
+    - recency_factor: ``(year − 2015) / (current_year − 2015)``,
+      normalizzato in [0, 1]
+    - citation_factor: ``log₁₀(1 + citation_count) / 5``,
+      cappato a 1.0
+
+    Args:
+        s: L1Summary del paper.
+        current_year: Anno corrente.
+
+    Returns:
+        Score float ≥ 0. Più alto = meno comprimibile.
+    """
+    if current_year is None:
+        current_year = datetime.now().year
+
+    base_year = 2015
+    year = s.year or base_year
+    recency_factor = max(
+        0.0, (year - base_year) / max(1, current_year - base_year)
+    )
+
+    citation_count = getattr(s, "citation_count", None) or 0
+    citation_factor = math.log10(1 + citation_count) / 5.0
+
+    return 0.7 * recency_factor + 0.3 * min(citation_factor, 1.0)
+
+
+def _truncate_text(
+    text: str, max_chars: int, suffix: str = "...",
+) -> str:
+    """Tronca un testo a ``max_chars`` preservando parole intere.
+
+    Args:
+        text: Testo da troncare.
+        max_chars: Lunghezza massima (incluso suffix).
+        suffix: Suffisso da aggiungere se troncato.
+
+    Returns:
+        Testo eventualmente troncato.
+    """
+    if not text or len(text) <= max_chars:
+        return text
+    cutoff = max_chars - len(suffix)
+    if cutoff <= 0:
+        return suffix
+    space_pos = text.rfind(" ", 0, cutoff)
+    if space_pos > cutoff // 2:
+        cutoff = space_pos
+    return text[:cutoff] + suffix
+
+
+def _format_l1_at_tier(
+    s: L1Summary, tier: str, index: int, total: int,
+) -> str:
+    """Formatta un singolo L1 summary al livello di dettaglio del tier.
+
+    Args:
+        s: L1Summary da formattare.
+        tier: ``"full"``, ``"reduced"`` o ``"compressed"``.
+        index: Indice 1-based del paper nella lista.
+        total: Numero totale di paper.
+
+    Returns:
+        Testo formattato.
+    """
+    if tier == "full":
+        return _format_l1_full(s, index, total)
+    elif tier == "reduced":
+        return _format_l1_reduced(s, index, total)
+    else:
+        return _format_l1_compressed(s, index, total)
+
+
+def _format_l1_full(s: L1Summary, index: int, total: int) -> str:
+    """Formatta L1 a dettaglio completo (tutti i campi).
+
+    Equivalente al formato originale pre-budget-aware.
+    """
+    bibtex = s.bibtex_key or s.paper_id
+    year_str = str(s.year) if s.year else "Unknown"
+
+    return f"""--- Paper {index}/{total}: [{bibtex}] (Year: {year_str}) ---
 
 Key Contributions:
 {_format_contributions(s.key_contributions)}
@@ -734,9 +852,282 @@ Results:
 Limitations:
 {s.limitations or "Not available."}
 """
-        parts.append(section)
 
-    return "\n".join(parts)
+
+def _format_l1_reduced(s: L1Summary, index: int, total: int) -> str:
+    """Formatta L1 a ~70% di dettaglio.
+
+    Mantiene: key_contributions, methodology, testing_methodology,
+    temporal_context (troncato a 200 chars), results (troncati a 300 chars).
+    Rimuove: limitations.
+    """
+    bibtex = s.bibtex_key or s.paper_id
+    year_str = str(s.year) if s.year else "Unknown"
+
+    temporal = _truncate_text(s.temporal_context or "", 200)
+    results = _truncate_text(s.results_summary or "", 300)
+
+    return f"""--- Paper {index}/{total}: [{bibtex}] (Year: {year_str}) [REDUCED] ---
+
+Key Contributions:
+{_format_contributions(s.key_contributions)}
+
+Methodology:
+{s.methodology or "Not available."}
+
+Testing Methodology:
+{s.testing_methodology or "Not available."}
+
+Temporal Context:
+{temporal or "Not available."}
+
+Results:
+{results or "Not available."}
+"""
+
+
+def _format_l1_compressed(s: L1Summary, index: int, total: int) -> str:
+    """Formatta L1 al livello minimale.
+
+    Mantiene solo: key_contributions (max 3) + testing_methodology.
+    """
+    bibtex = s.bibtex_key or s.paper_id
+    year_str = str(s.year) if s.year else "Unknown"
+
+    contribs = s.key_contributions[:3] if s.key_contributions else []
+
+    return f"""--- Paper {index}/{total}: [{bibtex}] (Year: {year_str}) [COMPRESSED] ---
+
+Key Contributions:
+{_format_contributions(contribs)}
+
+Testing Methodology:
+{s.testing_methodology or "Not available."}
+"""
+
+
+def _format_all_at_tiers(
+    paper_entries: list[dict], total: int,
+) -> list[str]:
+    """Formatta tutti i paper ai tier attualmente assegnati.
+
+    Args:
+        paper_entries: Lista di dict con ``summary``, ``tier``, ``index``.
+        total: Numero totale di paper.
+
+    Returns:
+        Lista di stringhe formattate (nell'ordine originale).
+    """
+    return [
+        _format_l1_at_tier(
+            entry["summary"],
+            entry["tier"],
+            entry["index"] + 1,
+            total,
+        )
+        for entry in paper_entries
+    ]
+
+
+# ============================================================================
+# Helpers: formatting — main budget-aware entry point
+# ============================================================================
+
+
+def _format_l1_summaries_for_prompt(l1_summaries: list[L1Summary]) -> str:
+    """Formatta i summary L1 per il prompt L2 rispettando il budget token.
+
+    Applica compressione progressiva multi-fase basata su:
+
+    1. **Recency tiers** (da ``config.yaml`` →
+       ``summarization.l2_recency_tiers``): paper recenti ricevono
+       più spazio, paper vecchi vengono compressi automaticamente.
+    2. **Citation weighting**: a parità di tier, paper con più
+       citazioni sono meno comprimibili (downgraded per ultimi).
+    3. **Progressive downgrade**: se il totale supera il budget,
+       i paper vengono progressivamente downgraded
+       (reduced→compressed, poi full→reduced, poi all-compressed)
+       partendo dai meno importanti.
+    4. **Hard truncation**: ultima risorsa se all-compressed
+       ancora sfora.
+
+    Il budget è derivato da ``summarization.max_context_tokens``
+    sottraendo l'overhead del prompt template L2.
+
+    Args:
+        l1_summaries: Lista di L1Summary (già ordinati
+            cronologicamente).
+
+    Returns:
+        Testo formattato entro il budget token configurato.
+    """
+    from paperhunter.utils.token_counter import compute_l2_budget
+
+    n = len(l1_summaries)
+    if n == 0:
+        return ""
+
+    # ------------------------------------------------------------------
+    # 1) Calcolo budget disponibile
+    # ------------------------------------------------------------------
+    budget_info = compute_l2_budget()
+    available_chars = budget_info["available_chars"]
+
+    # Sottrai overhead stimato del prompt template L2 (istruzioni,
+    # formattazione JSON, separatori, ecc.)
+    _TEMPLATE_OVERHEAD_CHARS = 3500
+    available_chars -= _TEMPLATE_OVERHEAD_CHARS
+    available_chars = max(available_chars, 10_000)  # Floor di sicurezza
+
+    current_year = datetime.now().year
+
+    # ------------------------------------------------------------------
+    # 2) Assegna recency tier e importanza a ogni paper
+    # ------------------------------------------------------------------
+    paper_entries: list[dict] = []
+    for i, s in enumerate(l1_summaries):
+        tier = _get_paper_recency_tier(s.year, current_year)
+        importance = _compute_paper_importance(s, current_year)
+        paper_entries.append({
+            "summary": s,
+            "tier": tier,
+            "original_tier": tier,
+            "importance": importance,
+            "index": i,
+        })
+
+    tier_counts = {"full": 0, "reduced": 0, "compressed": 0}
+    for entry in paper_entries:
+        tier_counts[entry["tier"]] += 1
+
+    logger.info(
+        f"L2 budget: {available_chars:,} chars per {n} paper. "
+        f"Tier: full={tier_counts['full']}, "
+        f"reduced={tier_counts['reduced']}, "
+        f"compressed={tier_counts['compressed']}"
+    )
+
+    # ------------------------------------------------------------------
+    # 3) Fase 1: Formatta al tier assegnato (recency-based)
+    # ------------------------------------------------------------------
+    parts = _format_all_at_tiers(paper_entries, n)
+    total_chars = sum(len(p) for p in parts)
+
+    if total_chars <= available_chars:
+        pct = total_chars * 100 // available_chars if available_chars else 0
+        logger.info(
+            f"L2 budget OK: {total_chars:,}/{available_chars:,} chars "
+            f"({pct}%)"
+        )
+        return "\n".join(parts)
+
+    # ------------------------------------------------------------------
+    # 4) Fase 2: Downgrade reduced → compressed (meno importanti prima)
+    # ------------------------------------------------------------------
+    logger.info(
+        f"L2 over budget: {total_chars:,}/{available_chars:,}. "
+        f"Downgrading reduced→compressed..."
+    )
+
+    reduced_indices = sorted(
+        (i for i, e in enumerate(paper_entries) if e["tier"] == "reduced"),
+        key=lambda i: paper_entries[i]["importance"],
+    )
+
+    for idx in reduced_indices:
+        paper_entries[idx]["tier"] = "compressed"
+        parts = _format_all_at_tiers(paper_entries, n)
+        total_chars = sum(len(p) for p in parts)
+        if total_chars <= available_chars:
+            break
+
+    if total_chars <= available_chars:
+        downgraded = sum(
+            1 for e in paper_entries if e["tier"] != e["original_tier"]
+        )
+        logger.info(
+            f"L2 budget OK dopo downgrade reduced→compressed: "
+            f"{total_chars:,}/{available_chars:,} ({downgraded} downgraded)"
+        )
+        return "\n".join(parts)
+
+    # ------------------------------------------------------------------
+    # 5) Fase 3: Downgrade full → reduced (meno importanti prima)
+    # ------------------------------------------------------------------
+    logger.info(
+        f"L2 ancora over: {total_chars:,}/{available_chars:,}. "
+        f"Downgrading full→reduced..."
+    )
+
+    full_indices = sorted(
+        (i for i, e in enumerate(paper_entries) if e["tier"] == "full"),
+        key=lambda i: paper_entries[i]["importance"],
+    )
+
+    for idx in full_indices:
+        paper_entries[idx]["tier"] = "reduced"
+        parts = _format_all_at_tiers(paper_entries, n)
+        total_chars = sum(len(p) for p in parts)
+        if total_chars <= available_chars:
+            break
+
+    if total_chars <= available_chars:
+        downgraded = sum(
+            1 for e in paper_entries if e["tier"] != e["original_tier"]
+        )
+        logger.info(
+            f"L2 budget OK dopo downgrade full→reduced: "
+            f"{total_chars:,}/{available_chars:,} ({downgraded} downgraded)"
+        )
+        return "\n".join(parts)
+
+    # ------------------------------------------------------------------
+    # 6) Fase 4: All-compressed
+    # ------------------------------------------------------------------
+    logger.warning(
+        f"L2 ancora over: {total_chars:,}/{available_chars:,}. "
+        f"Forzando tutti i paper a tier compressed."
+    )
+
+    for entry in paper_entries:
+        entry["tier"] = "compressed"
+
+    parts = _format_all_at_tiers(paper_entries, n)
+    total_chars = sum(len(p) for p in parts)
+
+    if total_chars <= available_chars:
+        logger.info(
+            f"L2 budget OK a all-compressed: "
+            f"{total_chars:,}/{available_chars:,}"
+        )
+        return "\n".join(parts)
+
+    # ------------------------------------------------------------------
+    # 7) Fase 5: Hard truncation proporzionale (ultima risorsa)
+    # ------------------------------------------------------------------
+    logger.warning(
+        f"L2 ANCORA over a all-compressed: "
+        f"{total_chars:,}/{available_chars:,}. "
+        f"Applicando truncation proporzionale."
+    )
+
+    ratio = available_chars / max(total_chars, 1)
+    truncated_parts: list[str] = []
+    for p in parts:
+        max_len = max(100, int(len(p) * ratio))
+        if len(p) > max_len:
+            truncated_parts.append(
+                p[:max_len] + "\n[...truncated for budget...]"
+            )
+        else:
+            truncated_parts.append(p)
+
+    result = "\n".join(truncated_parts)
+    logger.info(
+        f"L2 hard truncation: {len(result):,}/{available_chars:,} chars "
+        f"(ratio={ratio:.2f})"
+    )
+    return result
 
 
 def _format_contributions(contributions: list[str]) -> str:

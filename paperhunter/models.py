@@ -211,6 +211,10 @@ class L1Summary(BaseModel):
         None,
         description="Tier di compressione usato (standard/concise/compressed)"
     )
+    citation_count: Optional[int] = Field(
+        None,
+        description="Conteggio citazioni (da S2) per citation-weighted budget L2"
+    )
     generated_at: Optional[datetime] = Field(None, description="Timestamp di generazione")
     model_used: Optional[str] = Field(None, description="Modello Gemini usato (flash/pro)")
 

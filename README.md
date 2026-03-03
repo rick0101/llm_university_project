@@ -302,7 +302,7 @@ The typical end-to-end workflow is:
 
 ```bash
 # 1. (Optional) Search and download new papers
-paperhunter search -k "prompt injection attacks" -c "LLM security vulnerabilities"
+paperhunter search -k "prompt injection attacks" -c "LLM security vulnerabilities" -o ./scaricati/Prompt_injections1 -n 35
 
 # 2. Ingest PDFs → GROBID extraction + S2 enrichment + Qdrant indexing
 paperhunter ingest

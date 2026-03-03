@@ -1,5 +1,5 @@
 """
-PaperHunter — CLI Principale v2.0
+PaperHunter — CLI Principale v2.1
 
 Subcommands:
   search      Cerca e scarica nuovi paper (logica legacy PaperHunter)
@@ -10,9 +10,11 @@ Subcommands:
   query       Query interattiva contro la knowledge base
   stats       Statistiche complete del sistema
   export      Esporta il survey in LaTeX / BibTeX
+  cleanup     Elimina paper scaricati per intervallo di date
 
 Esempi:
-  paperhunter search -k "prompt injection" -c "Papers about prompt injection attacks"
+  paperhunter search -k "prompt injection" -c "Papers about prompt injection attacks" -o ./scaricati/Prompt_injections1
+  paperhunter search -k "LLM security" --date-from 2025-10 --date-to 2026-03
   paperhunter ingest
   paperhunter ingest --pdf-dir ./scaricati --batch-size 5
   paperhunter summarize --l1 --l2
@@ -22,6 +24,7 @@ Esempi:
   paperhunter query "What defenses exist against prompt injection?"
   paperhunter stats
   paperhunter export --template acl
+  paperhunter cleanup --date-from 2023-01 --date-to 2023-12 --dry-run
 """
 
 import argparse
@@ -107,9 +110,15 @@ def cmd_search(args: argparse.Namespace) -> int:
     relevance_filter = RelevanceFilter(provider=args.llm_provider)
     downloader = Downloader(download_dir=download_dir)
 
+    # Date range filter (YYYY-MM or YYYY-MM-DD)
+    date_from = getattr(args, "date_from", None)
+    date_to = getattr(args, "date_to", None)
+
     async def _run():
         logger.info(f"Ricerca con keyword: '{keywords}'")
-        search_result = await aggregator.search(keywords)
+        if date_from or date_to:
+            logger.info(f"Filtro date: {date_from or '*'} → {date_to or '*'}")
+        search_result = await aggregator.search(keywords, date_from=date_from, date_to=date_to)
         logger.info(f"Trovati {search_result.total_found} paper da {len(search_result.sources_queried)} fonti")
 
         if not search_result.papers:
@@ -1021,6 +1030,320 @@ def cmd_export(args: argparse.Namespace) -> int:
 
 
 # ═══════════════════════════════════════════════════════════════════════════
+# Subcommand: cleanup
+# ═══════════════════════════════════════════════════════════════════════════
+
+def _estimate_paper_date(
+    pdf_path: Path,
+    registry_entry: dict | None = None,
+    s2_index: dict[str, tuple[int, int | None]] | None = None,
+) -> tuple[int | None, int | None]:
+    """Stima anno e mese di un paper dal percorso, bibtex_key, DOI, ArXiv ID o cache S2.
+
+    Restituisce (year, month). month può essere None se non determinabile.
+    """
+    import unicodedata
+
+    stem = pdf_path.stem
+
+    # 1. Prova a estrarre ArXiv ID dal filename (YYMM.NNNNN)
+    m = re.search(r'(\d{2})(\d{2})\.\d{4,5}', stem)
+    if m:
+        yr = 2000 + int(m.group(1))
+        mo = int(m.group(2))
+        if 1 <= mo <= 12 and 2000 <= yr <= 2100:
+            return yr, mo
+
+    # 2. Da DOI arXiv (10.48550/arXiv.YYMM.NNNNN)
+    if registry_entry:
+        doi = registry_entry.get("doi", "") or ""
+        m = re.search(r'arXiv\.(\d{2})(\d{2})\.\d{4,5}', doi)
+        if m:
+            yr = 2000 + int(m.group(1))
+            mo = int(m.group(2))
+            if 1 <= mo <= 12:
+                return yr, mo
+
+        # 3. Da bibtex_key (Author_YYYY_Keyword)
+        bk = registry_entry.get("bibtex_key", "") or ""
+        m = re.search(r'_(\d{4})_', bk)
+        if m:
+            yr = int(m.group(1))
+            if 1990 <= yr <= 2100:
+                return yr, None
+
+    # 4. Da cache Semantic Scholar (match per titolo normalizzato)
+    if s2_index:
+        norm = unicodedata.normalize("NFKD", stem).lower()
+        norm = re.sub(r'[^\w\s]', '', norm)
+        norm = re.sub(r'_+', ' ', norm)
+        norm = ' '.join(norm.split())
+        if norm in s2_index:
+            return s2_index[norm]
+        # Prova partial match (il titolo nel filename potrebbe essere troncato)
+        for s2_title, date_tuple in s2_index.items():
+            if len(norm) > 20 and norm[:30] in s2_title:
+                return date_tuple
+
+    # 5. Fallback: anno dal filename (cerco un 4-digit che sembri un anno)
+    for m2 in re.finditer(r'(\d{4})', stem):
+        yr = int(m2.group(1))
+        if 2015 <= yr <= 2100:
+            return yr, None
+
+    return None, None
+
+
+def _build_s2_year_index() -> dict[str, tuple[int, int | None]]:
+    """Costruisce un indice titolo_normalizzato → (year, month) dalla cache S2.
+
+    Scansiona ``cache/semantic_scholar/*.json`` e restituisce un dict
+    di titoli normalizzati con anno e mese (se disponibile).
+    """
+    import json
+    import unicodedata
+
+    cache_dir = Path("cache/semantic_scholar")
+    if not cache_dir.is_dir():
+        return {}
+
+    index: dict[str, tuple[int, int | None]] = {}
+    for fp in cache_dir.glob("*.json"):
+        try:
+            data = json.loads(fp.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        title = data.get("title", "")
+        year = data.get("year")
+        if not title or not year:
+            continue
+        # Normalize title
+        norm = unicodedata.normalize("NFKD", title).lower()
+        norm = re.sub(r'[^\w\s]', '', norm)
+        norm = ' '.join(norm.split())
+        # Parse month from publicationDate if available
+        month = None
+        pd = data.get("publicationDate")
+        if pd and len(pd) >= 7:
+            try:
+                month = int(pd[5:7])
+            except ValueError:
+                pass
+        # Also try to infer from ArXiv ID (YYMM.NNNNN)
+        ext = data.get("externalIds", {}) or {}
+        arxiv_id = ext.get("ArXiv", "")
+        if not month and arxiv_id:
+            m = re.match(r'(\d{2})(\d{2})', arxiv_id)
+            if m:
+                try:
+                    mo = int(m.group(2))
+                    if 1 <= mo <= 12:
+                        month = mo
+                except ValueError:
+                    pass
+        index[norm] = (year, month)
+    return index
+
+
+def _date_in_range(
+    year: int | None,
+    month: int | None,
+    date_from: str | None,
+    date_to: str | None,
+) -> bool | None:
+    """Verifica se (year, month) cade nell'intervallo [date_from, date_to].
+
+    Restituisce None se year è None (impossibile determinare).
+    date_from/date_to sono in formato YYYY-MM.
+    """
+    if year is None:
+        return None  # indeterminato
+
+    def _parse_ym(s: str) -> tuple[int, int]:
+        parts = s.split("-")
+        return int(parts[0]), int(parts[1])
+
+    paper_ym = (year, month or 1)  # se mese ignoto, usa gennaio (conservativo per range)
+
+    if date_from:
+        from_y, from_m = _parse_ym(date_from)
+        if paper_ym < (from_y, from_m):
+            return False
+
+    if date_to:
+        to_y, to_m = _parse_ym(date_to)
+        # mese ignoto → conservativo: potrebbe essere qualsiasi mese dell'anno
+        if month is None:
+            # Se l'anno è fuori range sicuro, filtra
+            if year < (int(date_from.split("-")[0]) if date_from else 0):
+                return False
+            if year > int(date_to.split("-")[0]) if date_to else 9999:
+                return False
+            # Se anno uguale a to_y, lo includiamo perché non sappiamo il mese
+            return True
+        if paper_ym > (to_y, to_m):
+            return False
+
+    return True
+
+
+def cmd_cleanup(args: argparse.Namespace) -> int:
+    """Elimina paper scaricati in base a un intervallo di date."""
+    import json
+
+    logger = _get_logger("paperhunter.cleanup")
+    console = _get_console()
+
+    pdf_dir = Path(args.pdf_dir) if args.pdf_dir else Path("scaricati")
+    date_from = args.date_from
+    date_to = args.date_to
+    dry_run = args.dry_run
+    include_unknown = args.include_unknown
+
+    if not date_from and not date_to:
+        logger.error("Specifica almeno --date-from o --date-to.")
+        return 1
+
+    if not pdf_dir.is_dir():
+        logger.error(f"Directory non trovata: {pdf_dir}")
+        return 1
+
+    # Carica il registry (se esiste)
+    registry_path = Path("data/hash_registry.json")
+    registry: dict = {}
+    if registry_path.exists():
+        registry = json.loads(registry_path.read_text(encoding="utf-8"))
+
+    # Costruisci indice S2 per match titoli → date
+    s2_index = _build_s2_year_index()
+    if s2_index:
+        logger.info(f"Cache Semantic Scholar: {len(s2_index)} paper con data")
+
+    # Scansiona tutti i PDF
+    category_filter = getattr(args, "category", None)
+    if category_filter:
+        # Cerca sottocartella
+        cat_dir = pdf_dir / category_filter
+        if cat_dir.is_dir():
+            all_pdfs = sorted(cat_dir.rglob("*.pdf"))
+        else:
+            # Cerca partial match
+            candidates = [d for d in pdf_dir.iterdir() if d.is_dir() and category_filter.lower() in d.name.lower()]
+            if candidates:
+                all_pdfs = []
+                for c in candidates:
+                    all_pdfs.extend(c.rglob("*.pdf"))
+                all_pdfs = sorted(all_pdfs)
+            else:
+                logger.error(f"Categoria non trovata: {category_filter}")
+                return 1
+    else:
+        all_pdfs = sorted(pdf_dir.rglob("*.pdf"))
+    logger.info(f"Trovati {len(all_pdfs)} PDF in {pdf_dir}")
+
+    to_delete: list[tuple[Path, int | None, int | None, str]] = []
+    unknown: list[Path] = []
+
+    for pdf in all_pdfs:
+        # Cerca nel registry usando path relativo
+        rel_key = None
+        for k in registry:
+            if pdf.name == Path(k).name or str(pdf).endswith(k):
+                rel_key = k
+                break
+
+        entry = registry.get(rel_key) if rel_key else None
+        year, month = _estimate_paper_date(pdf, entry, s2_index=s2_index)
+
+        if year is None:
+            unknown.append(pdf)
+            if include_unknown:
+                to_delete.append((pdf, None, None, "data sconosciuta"))
+            continue
+
+        in_range = _date_in_range(year, month, date_from, date_to)
+        if in_range is True:
+            month_str = f"-{month:02d}" if month else ""
+            to_delete.append((pdf, year, month, f"{year}{month_str}"))
+        elif in_range is None:
+            unknown.append(pdf)
+            if include_unknown:
+                to_delete.append((pdf, None, None, "data sconosciuta"))
+
+    # Report
+    range_str = f"{date_from or '*'} → {date_to or '*'}"
+    logger.info(f"Intervallo richiesto: {range_str}")
+    logger.info(f"Paper nel range: {len(to_delete)}")
+    logger.info(f"Paper con data sconosciuta: {len(unknown)}")
+
+    if not to_delete:
+        logger.info("Nessun paper da eliminare.")
+        return 0
+
+    # Mostra tabella
+    if console:
+        try:
+            from rich.table import Table
+            t = Table(title=f"Paper da eliminare ({range_str})", show_lines=False)
+            t.add_column("#", width=4)
+            t.add_column("File", max_width=60)
+            t.add_column("Data stimata", width=12)
+            t.add_column("Categoria", width=20)
+
+            for i, (pdf, yr, mo, date_label) in enumerate(to_delete, 1):
+                cat = pdf.parent.name if pdf.parent != pdf_dir else "-"
+                t.add_row(str(i), pdf.name[:60], date_label, cat)
+            console.print(t)
+        except Exception:
+            for i, (pdf, yr, mo, date_label) in enumerate(to_delete, 1):
+                print(f"  {i:3d}. [{date_label}] {pdf.name}")
+    else:
+        for i, (pdf, yr, mo, date_label) in enumerate(to_delete, 1):
+            print(f"  {i:3d}. [{date_label}] {pdf.name}")
+
+    if dry_run:
+        logger.info(f"[DRY RUN] {len(to_delete)} file verrebbero eliminati. Nessuna modifica effettuata.")
+        return 0
+
+    # Conferma interattiva (se non --yes)
+    if not args.yes:
+        answer = input(f"\nEliminare {len(to_delete)} file? [y/N] ").strip().lower()
+        if answer not in ("y", "yes", "sì", "si"):
+            logger.info("Operazione annullata.")
+            return 0
+
+    # Eliminazione
+    deleted = 0
+    errors = 0
+    registry_modified = False
+
+    for pdf, yr, mo, date_label in to_delete:
+        try:
+            pdf.unlink()
+            deleted += 1
+            logger.debug(f"Eliminato: {pdf}")
+
+            # Rimuovi dal hash_registry
+            for k in list(registry.keys()):
+                if pdf.name == Path(k).name or str(pdf).endswith(k):
+                    del registry[k]
+                    registry_modified = True
+                    break
+
+        except OSError as e:
+            logger.error(f"Errore eliminando {pdf}: {e}")
+            errors += 1
+
+    # Salva registry aggiornato
+    if registry_modified:
+        registry_path.write_text(json.dumps(registry, indent=2, ensure_ascii=False), encoding="utf-8")
+        logger.info(f"Hash registry aggiornato ({len(registry)} entry rimanenti)")
+
+    logger.info(f"Cleanup completato: {deleted} eliminati, {errors} errori")
+    return 0 if errors == 0 else 1
+
+
+# ═══════════════════════════════════════════════════════════════════════════
 # Parser principale
 # ═══════════════════════════════════════════════════════════════════════════
 
@@ -1070,6 +1393,10 @@ def build_parser() -> argparse.ArgumentParser:
                           help="Provider LLM per filtro (default: google)")
     p_search.add_argument("-o", "--output-dir", type=str,
                           help="Directory output PDF")
+    p_search.add_argument("--date-from", type=str, metavar="YYYY-MM",
+                          help="Data minima pubblicazione (es. 2025-10)")
+    p_search.add_argument("--date-to", type=str, metavar="YYYY-MM",
+                          help="Data massima pubblicazione (es. 2026-03)")
 
     # ── ingest ──
     p_ingest = sub.add_parser(
@@ -1168,6 +1495,34 @@ def build_parser() -> argparse.ArgumentParser:
     p_export.add_argument("--latex", action="store_true", help="Solo LaTeX")
     p_export.add_argument("--bib-only", action="store_true", help="Solo BibTeX filtrato")
 
+    # ── cleanup ──
+    p_cleanup = sub.add_parser(
+        "cleanup", help="Elimina paper scaricati per intervallo di date",
+        description=(
+            "Elimina PDF scaricati in base alla data di pubblicazione stimata.\n"
+            "La data viene estratta dall'ArXiv ID, DOI, bibtex_key o filename.\n\n"
+            "Esempi:\n"
+            "  paperhunter cleanup --date-from 2023-01 --date-to 2023-12   # Paper del 2023\n"
+            "  paperhunter cleanup --date-to 2024-06 --dry-run             # Preview pre-Lug 2024\n"
+            "  paperhunter cleanup --date-from 2025-10 --date-to 2026-03 --yes  # Senza conferma\n"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    p_cleanup.add_argument("--date-from", type=str, metavar="YYYY-MM",
+                           help="Data minima (inclusa), es. 2025-10")
+    p_cleanup.add_argument("--date-to", type=str, metavar="YYYY-MM",
+                           help="Data massima (inclusa), es. 2026-03")
+    p_cleanup.add_argument("--pdf-dir", type=str,
+                           help="Directory PDF (default: scaricati/)")
+    p_cleanup.add_argument("--dry-run", action="store_true",
+                           help="Mostra cosa verrebbe eliminato senza cancellare")
+    p_cleanup.add_argument("--yes", "-y", action="store_true",
+                           help="Salta conferma interattiva")
+    p_cleanup.add_argument("--include-unknown", action="store_true",
+                           help="Includi paper con data non determinabile")
+    p_cleanup.add_argument("--category", type=str,
+                           help="Limita a una sotto-cartella/categoria")
+
     return parser
 
 
@@ -1202,6 +1557,7 @@ def run() -> None:
         "query": cmd_query,
         "stats": cmd_stats,
         "export": cmd_export,
+        "cleanup": cmd_cleanup,
     }
 
     handler = handlers.get(args.command)

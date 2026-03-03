@@ -58,6 +58,48 @@ async def retry_with_backoff(func, max_retries: int = 3, base_delay: float = 2.0
     raise last_exception
 
 
+def _parse_date_bound(date_str: str | None) -> datetime | None:
+    """Parse a YYYY-MM or YYYY-MM-DD string into a datetime.
+
+    Returns ``None`` when *date_str* is ``None`` or empty.
+    """
+    if not date_str:
+        return None
+    try:
+        if len(date_str) == 7:  # YYYY-MM
+            return datetime.strptime(date_str, "%Y-%m")
+        return datetime.fromisoformat(date_str)
+    except ValueError:
+        logger.warning(f"Invalid date bound '{date_str}' — ignoring")
+        return None
+
+
+def _paper_in_date_range(
+    paper: Paper,
+    date_from: datetime | None,
+    date_to: datetime | None,
+) -> bool:
+    """Return True if *paper.published_date* falls within [date_from, date_to].
+
+    Papers without a ``published_date`` are kept (conservative approach).
+    ``date_to`` is treated as *inclusive* of the entire month
+    (i.e. ``2026-03`` means "up to end of March 2026").
+    """
+    if paper.published_date is None:
+        return True  # keep papers without a date
+    pd = paper.published_date
+    if date_from and pd < date_from:
+        return False
+    if date_to:
+        # inclusive: if date_to is 2026-03-01 00:00, we want papers up to end of March
+        import calendar
+        last_day = calendar.monthrange(date_to.year, date_to.month)[1]
+        end = date_to.replace(day=last_day, hour=23, minute=59, second=59)
+        if pd > end:
+            return False
+    return True
+
+
 class ArxivStrategy:
     """Search strategy for ArXiv papers."""
     
@@ -65,12 +107,14 @@ class ArxivStrategy:
         self.max_results = max_results
         self.categories = categories or ["cs.CL", "cs.AI"]
     
-    async def search(self, query: str) -> list[Paper]:
+    async def search(self, query: str, date_from: str | None = None, date_to: str | None = None) -> list[Paper]:
         """
         Search ArXiv for papers matching the query.
         
         Args:
             query: Search keywords
+            date_from: Optional start date (YYYY-MM or YYYY-MM-DD)
+            date_to: Optional end date (YYYY-MM or YYYY-MM-DD)
             
         Returns:
             List of Paper objects from ArXiv
@@ -111,6 +155,14 @@ class ArxivStrategy:
                 )
                 papers.append(paper)
             
+            # --- Date filtering ---
+            df = _parse_date_bound(date_from)
+            dt = _parse_date_bound(date_to)
+            if df or dt:
+                before = len(papers)
+                papers = [p for p in papers if _paper_in_date_range(p, df, dt)]
+                logger.info(f"ArXiv date filter: {before} → {len(papers)} papers")
+
             logger.info(f"Found {len(papers)} papers from ArXiv")
             return papers
             
@@ -150,12 +202,14 @@ class SemanticScholarStrategy:
         self.max_results = max_results
         self.api_key = settings.semantic_scholar_api_key
     
-    async def search(self, query: str) -> list[Paper]:
+    async def search(self, query: str, date_from: str | None = None, date_to: str | None = None) -> list[Paper]:
         """
         Search Semantic Scholar for papers matching the query.
         
         Args:
             query: Search keywords
+            date_from: Optional start date (YYYY-MM or YYYY-MM-DD)
+            date_to: Optional end date (YYYY-MM or YYYY-MM-DD)
             
         Returns:
             List of Paper objects from Semantic Scholar
@@ -179,6 +233,17 @@ class SemanticScholarStrategy:
                 "limit": min(self.max_results, 10),  # Conservative limit
                 "fields": "title,authors,abstract,url,externalIds,publicationDate,citationCount,openAccessPdf"
             }
+
+            # Semantic Scholar supports publicationDateOrYear filter (YYYY-MM-DD:YYYY-MM-DD)
+            if date_from or date_to:
+                s2_from = date_from + "-01" if date_from and len(date_from) == 7 else (date_from or "")
+                s2_to_raw = date_to or ""
+                if s2_to_raw and len(s2_to_raw) == 7:
+                    import calendar
+                    y, m = int(s2_to_raw[:4]), int(s2_to_raw[5:7])
+                    last_day = calendar.monthrange(y, m)[1]
+                    s2_to_raw = f"{s2_to_raw}-{last_day:02d}"
+                params["publicationDateOrYear"] = f"{s2_from}:{s2_to_raw}"
             
             async def make_request():
                 async with httpx.AsyncClient(timeout=30) as client:
@@ -239,6 +304,14 @@ class SemanticScholarStrategy:
             # Rate limiting
             await asyncio.sleep(settings.request_delay)
             
+            # --- Date filtering (post-filter for safety) ---
+            df = _parse_date_bound(date_from)
+            dt = _parse_date_bound(date_to)
+            if df or dt:
+                before = len(papers)
+                papers = [p for p in papers if _paper_in_date_range(p, df, dt)]
+                logger.info(f"S2 date filter: {before} → {len(papers)} papers")
+
             logger.info(f"Found {len(papers)} papers from Semantic Scholar")
             return papers
             
@@ -255,12 +328,14 @@ class HuggingFaceStrategy:
     def __init__(self, max_results: int = 20):
         self.max_results = max_results
     
-    async def search(self, query: str) -> list[Paper]:
+    async def search(self, query: str, date_from: str | None = None, date_to: str | None = None) -> list[Paper]:
         """
         Search Hugging Face papers using search query.
         
         Args:
             query: Search keywords
+            date_from: Optional start date (YYYY-MM or YYYY-MM-DD) — used for post-filtering
+            date_to: Optional end date (YYYY-MM or YYYY-MM-DD) — used for post-filtering
             
         Returns:
             List of Paper objects from Hugging Face
@@ -331,6 +406,24 @@ class HuggingFaceStrategy:
             # Rate limiting
             await asyncio.sleep(settings.request_delay)
             
+            # HuggingFace papers come from ArXiv → try to infer date from ArXiv ID
+            for p in papers:
+                if p.arxiv_id and not p.published_date:
+                    m = re.match(r'(\d{2})(\d{2})', p.arxiv_id)
+                    if m:
+                        yr = 2000 + int(m.group(1))
+                        mo = int(m.group(2))
+                        if 1 <= mo <= 12:
+                            p.published_date = datetime(yr, mo, 1)
+
+            # --- Date filtering ---
+            df = _parse_date_bound(date_from)
+            dt = _parse_date_bound(date_to)
+            if df or dt:
+                before = len(papers)
+                papers = [p for p in papers if _paper_in_date_range(p, df, dt)]
+                logger.info(f"HuggingFace date filter: {before} → {len(papers)} papers")
+
             logger.info(f"Found {len(papers)} papers from Hugging Face")
             return papers
             
@@ -367,23 +460,32 @@ class PaperAggregator:
         self.semantic_scholar = SemanticScholarStrategy(max_results_per_source)
         self.huggingface = HuggingFaceStrategy(max_results_per_source)
     
-    async def search(self, query: str) -> SearchResult:
+    async def search(
+        self,
+        query: str,
+        date_from: str | None = None,
+        date_to: str | None = None,
+    ) -> SearchResult:
         """
         Search all sources in parallel and aggregate results.
         
         Args:
             query: Search keywords
+            date_from: Optional lower bound (YYYY-MM or YYYY-MM-DD)
+            date_to: Optional upper bound (YYYY-MM or YYYY-MM-DD)
             
         Returns:
             SearchResult with deduplicated papers
         """
         logger.info(f"Starting aggregated search for: {query}")
+        if date_from or date_to:
+            logger.info(f"Date range filter: {date_from or '*'} → {date_to or '*'}")
         
         # Run all searches in parallel with exception handling
         results = await asyncio.gather(
-            self.arxiv.search(query),
-            self.semantic_scholar.search(query),
-            self.huggingface.search(query),
+            self.arxiv.search(query, date_from=date_from, date_to=date_to),
+            self.semantic_scholar.search(query, date_from=date_from, date_to=date_to),
+            self.huggingface.search(query, date_from=date_from, date_to=date_to),
             return_exceptions=True
         )
         

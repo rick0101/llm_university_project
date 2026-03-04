@@ -125,6 +125,37 @@ def cmd_search(args: argparse.Namespace) -> int:
             logger.warning("Nessun paper trovato. Prova keyword diversi.")
             return 1
 
+        # ── Riepilogo per fonte e conferma interattiva ──
+        from collections import Counter
+        source_counts = Counter(
+            p.source.value if hasattr(p.source, 'value') else str(p.source)
+            for p in search_result.papers
+        )
+        source_labels = {
+            "arxiv": "ArXiv",
+            "semantic_scholar": "Semantic Scholar",
+            "huggingface": "HuggingFace",
+        }
+
+        print("\n" + "═" * 60)
+        print(f"  📄 Trovati {search_result.total_found} paper unici")
+        print("─" * 60)
+        for src, count in source_counts.most_common():
+            label = source_labels.get(src, src)
+            print(f"    • {label:<22s} {count:>4d} paper")
+        if search_result.errors:
+            print("─" * 60)
+            for err in search_result.errors:
+                print(f"    ⚠  {err}")
+        print("═" * 60)
+
+        if not getattr(args, "yes", False):
+            answer = input("\n  Proseguire con l'analisi LLM e il download? [S/n] ").strip().lower()
+            if answer in ("n", "no"):
+                logger.info("Operazione annullata dall'utente.")
+                return 0
+        print()
+
         logger.info(f"Filtro con criteri: {criteria[:100]}...")
         filtered = await relevance_filter.filter_papers(search_result.papers, criteria)
         relevant = relevance_filter.get_relevant_papers(filtered)
@@ -1382,7 +1413,8 @@ def build_parser() -> argparse.ArgumentParser:
         description="Cerca paper su ArXiv, Semantic Scholar e altre fonti, filtra con LLM e scarica i PDF.",
     )
     p_search.add_argument("-k", "--keywords", type=str,
-                          help="Keyword di ricerca (es. 'prompt injection')")
+                          help="Keyword di ricerca. Supporta OR per query multiple "
+                               "(es. '\"prompt injection\" OR \"jailbreak\" OR \"adversarial attack\"')")
     p_search.add_argument("-c", "--criteria", type=str,
                           help="Criteri di filtro per LLM")
     p_search.add_argument("-n", "--max-results", type=int,
@@ -1397,6 +1429,8 @@ def build_parser() -> argparse.ArgumentParser:
                           help="Data minima pubblicazione (es. 2025-10)")
     p_search.add_argument("--date-to", type=str, metavar="YYYY-MM",
                           help="Data massima pubblicazione (es. 2026-03)")
+    p_search.add_argument("-y", "--yes", action="store_true",
+                          help="Salta conferma interattiva, procedi direttamente")
 
     # ── ingest ──
     p_ingest = sub.add_parser(

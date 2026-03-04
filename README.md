@@ -302,7 +302,18 @@ The typical end-to-end workflow is:
 
 ```bash
 # 1. (Optional) Search and download new papers
-paperhunter search -k "prompt injection attacks" -c "LLM security vulnerabilities" -o ./scaricati/Prompt_injections1 -n 35
+paperhunter search -k '"jailbreak prompt" LLM OR "LLM jailbreaking" OR "adversarial prompt" LLM OR "LLM injection attack"' -c "Papers about prompt injection or jailbreaking attacks" -o ./scaricati/Prompt_injections1 -n 20 --date-from 2025-01 --date-to 2026-03
+
+paperhunter search -k '"hallucination detection" OR "factuality evaluation" OR "grounding" OR "hallucination benchmark"' -c "Papers about detecting or evaluating hallucinations in large language models" -o ./scaricati/Hallucinations1 -n 20 --date-from 2025-01 --date-to 2026-03
+
+paperhunter search -k '"instruction tuning poisoning" OR "RLHF poisoning" OR "alignment compromise" OR "sleeper agent"' -c "Papers about Data poisoning LLM instruction tuning, RLHF, or sleeper agent attacks" -o ./scaricati/Data_and_Model_Poisoning1 -n 20 --date-from 2025-01 --date-to 2026-03
+
+paperhunter search -k '"adversarial attack on code models" OR "code model evasion" OR "code manipulation attack" OR "adversarial perturbations in code"' -c "Papers about adversarial attacks against code generation models" -o ./scaricati/AdvCode_Attacks -n 20 --date-from 2025-01 --date-to 2026-03
+```
+
+Then run the full pipeline:
+
+```bash
 
 # 2. Ingest PDFs → GROBID extraction + S2 enrichment + Qdrant indexing
 paperhunter ingest

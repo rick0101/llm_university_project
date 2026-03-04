@@ -12,7 +12,7 @@ import logging
 import random
 import re
 import unicodedata
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 import arxiv
@@ -59,16 +59,23 @@ async def retry_with_backoff(func, max_retries: int = 3, base_delay: float = 2.0
 
 
 def _parse_date_bound(date_str: str | None) -> datetime | None:
-    """Parse a YYYY-MM or YYYY-MM-DD string into a datetime.
+    """Parse a YYYY-MM or YYYY-MM-DD string into a UTC-aware datetime.
 
     Returns ``None`` when *date_str* is ``None`` or empty.
+    The returned datetime is always timezone-aware (UTC) so it can
+    be safely compared with ArXiv's offset-aware published dates.
     """
     if not date_str:
         return None
     try:
         if len(date_str) == 7:  # YYYY-MM
-            return datetime.strptime(date_str, "%Y-%m")
-        return datetime.fromisoformat(date_str)
+            dt = datetime.strptime(date_str, "%Y-%m")
+        else:
+            dt = datetime.fromisoformat(date_str)
+        # Ensure the result is timezone-aware (UTC)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt
     except ValueError:
         logger.warning(f"Invalid date bound '{date_str}' — ignoring")
         return None
@@ -88,6 +95,9 @@ def _paper_in_date_range(
     if paper.published_date is None:
         return True  # keep papers without a date
     pd = paper.published_date
+    # Normalize to UTC-aware so comparisons never fail
+    if pd.tzinfo is None:
+        pd = pd.replace(tzinfo=timezone.utc)
     if date_from and pd < date_from:
         return False
     if date_to:
@@ -98,6 +108,23 @@ def _paper_in_date_range(
         if pd > end:
             return False
     return True
+
+
+def _split_or_query(query: str) -> list[str]:
+    """Split a query string on top-level ``OR`` operators.
+
+    Preserves quoted phrases.  A query without ``OR`` returns a
+    single-element list with the original query unchanged.
+
+    Examples::
+
+        >>> _split_or_query('"jailbreak prompt" LLM OR "adversarial prompt"')
+        ['"jailbreak prompt" LLM', '"adversarial prompt"']
+        >>> _split_or_query('simple query')
+        ['simple query']
+    """
+    parts = re.split(r'\s+OR\s+', query)
+    return [p.strip() for p in parts if p.strip()]
 
 
 class ArxivStrategy:
@@ -219,7 +246,28 @@ class SemanticScholarStrategy:
             logger.warning("Semantic Scholar: No API key configured. Skipping to avoid rate limits. "
                           "Get a free key at https://www.semanticscholar.org/product/api")
             return []
-        
+
+        # --- Handle OR queries (S2 API doesn't support boolean OR) ---
+        sub_queries = _split_or_query(query)
+        if len(sub_queries) > 1:
+            logger.info(f"Semantic Scholar: OR query → {len(sub_queries)} sub-queries")
+            all_papers: list[Paper] = []
+            seen_titles: set[str] = set()
+            for i, sq in enumerate(sub_queries):
+                try:
+                    papers = await self.search(sq, date_from, date_to)
+                    for p in papers:
+                        norm = unicodedata.normalize("NFKD", p.title).lower().strip()
+                        if norm not in seen_titles:
+                            seen_titles.add(norm)
+                            all_papers.append(p)
+                except Exception as e:
+                    logger.warning(f"S2 sub-query '{sq}' failed: {e}")
+                if i < len(sub_queries) - 1:
+                    await asyncio.sleep(1.0)
+            logger.info(f"Found {len(all_papers)} unique papers from Semantic Scholar ({len(sub_queries)} sub-queries)")
+            return all_papers
+
         try:
             logger.info(f"Searching Semantic Scholar with query: {query}")
             
@@ -340,6 +388,27 @@ class HuggingFaceStrategy:
         Returns:
             List of Paper objects from Hugging Face
         """
+        # --- Handle OR queries (HF search doesn't support boolean OR) ---
+        sub_queries = _split_or_query(query)
+        if len(sub_queries) > 1:
+            logger.info(f"HuggingFace: OR query → {len(sub_queries)} sub-queries")
+            all_papers: list[Paper] = []
+            seen_titles: set[str] = set()
+            for i, sq in enumerate(sub_queries):
+                try:
+                    papers = await self.search(sq, date_from, date_to)
+                    for p in papers:
+                        norm = unicodedata.normalize("NFKD", p.title).lower().strip()
+                        if norm not in seen_titles:
+                            seen_titles.add(norm)
+                            all_papers.append(p)
+                except Exception as e:
+                    logger.warning(f"HF sub-query '{sq}' failed: {e}")
+                if i < len(sub_queries) - 1:
+                    await asyncio.sleep(1.0)
+            logger.info(f"Found {len(all_papers)} unique papers from HuggingFace ({len(sub_queries)} sub-queries)")
+            return all_papers
+
         try:
             # Use search URL with query parameter
             search_url = f"{self.BASE_URL}?q={query.replace(' ', '+')}"
@@ -478,6 +547,9 @@ class PaperAggregator:
             SearchResult with deduplicated papers
         """
         logger.info(f"Starting aggregated search for: {query}")
+        sub_queries = _split_or_query(query)
+        if len(sub_queries) > 1:
+            logger.info(f"OR query detected: {len(sub_queries)} sub-queries → {sub_queries}")
         if date_from or date_to:
             logger.info(f"Date range filter: {date_from or '*'} → {date_to or '*'}")
         

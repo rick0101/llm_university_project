@@ -1,0 +1,62 @@
+Progetto: Sistema end-to-end per generare un paper scientifico survey sulla sicurezza dei LLM.
+Prerequisito: Tutti i 36 task del TODO.md originale e tutti i 10 task del TODO3.md sono completati.
+Riferimento roadmap: TODO4_Scalability.md
+
+Obiettivo di questa fase: Scalare il sistema per gestire 1.000+ paper per categoria senza context rot.
+Il sistema attualmente funziona bene con ~100 paper per categoria, ma con 1.000+ paper:
+  - Gli L1 Summary non entrano tutti nel prompt L2 neanche con compressione massima
+  - Il writer agent riceve un contesto statico pre-calcolato che non può coprire 1.000+ paper
+  - Il grafo delle entità non ha struttura ad alto livello (comunità tematiche)
+
+Tre miglioramenti principali da implementare:
+
+1. RAPTOR — Summarization gerarchica L1 → L1.5 → L2:
+   - Clustering semantico degli L1 Summary via Agglomerative Clustering (scikit-learn)
+   - Livello intermedio L1.5: un meta-summary per ogni cluster (~20 paper ciascuno)
+   - L2 ora si basa su ~50 cluster L1.5 invece di 1.000 singoli L1
+   - Risultato: rientra nel budget di 150k token anche con 1.000+ paper
+
+2. Graph Communities — Community Detection e Summarization:
+   - Algoritmo Louvain/Leiden sul grafo Neo4j (plugin GDS) per identificare macro-temi
+   - Community Summaries: testo narrativo per ogni comunità, salvato in Qdrant
+   - Utilizzabile come fonte aggiuntiva per il writer agent
+
+3. Agentic RAG — Writer ReAct Agent multi-step:
+   - I retriever (vector, BM25, graph) diventano tool invocabili dall'agente
+   - Il writer non riceve più un contesto fisso: cerca autonomamente ciò che serve
+   - Loop ReAct: Thought → Action (tool call) → Observation → ... → Final Answer
+   - Scratchpad nello stato LangGraph per tracciare le fonti consultate
+
+ATTENZIONE: STRATEGIA DI ESECUZIONE E GESTIONE DEL CONTESTO
+
+Poiché questo progetto è immenso e voglio evitare di saturare la tua finestra di contesto o perdere qualità nel codice, lavoreremo a step rigidamente separati.
+
+Il file TODO4_Scalability.md contiene la roadmap dettagliata con tutti i task.
+
+Regole d'oro per le nostre sessioni:
+
+    1. Nelle nostre interazioni future, io ti fornirò questo master prompt + il TODO4_Scalability.md aggiornato.
+
+    2. Tu dovrai leggere il TODO4_Scalability.md, individuare il primo task NON spuntato ([ ]), e scrivere tutto il codice necessario ESCLUSIVAMENTE per completare quel singolo task.
+
+    3. Una volta scritto il codice per quel task, aggiorna il TODO4_Scalability.md mettendo la spunta ([x]) a quel task, e poi FERMATI COMPLETAMENTE. Non anticipare il codice del task successivo.
+
+    4. Alla fine di ogni tuo output, chiudi sempre con questo messaggio esatto: "Task completato con successo. Per favore, apri una nuova chat, incolla il master prompt e il nuovo TODO.md aggiornato, e chiedimi di eseguire il prossimo task. Questo manterrà la mia memoria fresca e il codice pulito."
+
+    5. Ricordati di eseguire git add -A && git commit -m "descrizione della modifica" dopo ogni task completato, per mantenere una cronologia chiara e dettagliata delle modifiche.
+
+Voglio un task alla volta, codice modulare e perfetto, e poi stop.
+Dopo ogni task completato nella todo lista, crea un mini riassunto sotto al task nel TODO4_Scalability.md (come fatto in TODO.md e TODO3.md), con le modifiche apportate e le note per il futuro, scrivendo le funzioni che hai aggiunto e come usarle.
+Per output lunghi, con una attesa elevata, utilizza dei file di testo (es. code.txt) per salvare l'output, invece di incollarlo direttamente nella chat, per evitare problemi di formattazione o perdita di dati.
+
+File di contesto utili (se necessario rileggere l'architettura):
+  - config.yaml — configurazione centralizzata
+  - paperhunter/config.py — modelli Pydantic per la configurazione
+  - paperhunter/models.py — modelli dati (Paper, L1Summary, L2Summary, PaperChunk, ecc.)
+  - paperhunter/summarization/level1_summarizer.py — summarization L1 (budget-aware)
+  - paperhunter/summarization/level2_summarizer.py — summarization L2 (recency-tier)
+  - paperhunter/indexing/qdrant_store.py — vector store Qdrant
+  - paperhunter/indexing/bm25_index.py — indice BM25
+  - paperhunter/graphrag/neo4j_manager.py — connessione e query Neo4j
+  - paperhunter/agents/writer_agent.py — writer agent attuale (RAG statico)
+  - paperhunter/agents/state.py — stato LangGraph condiviso

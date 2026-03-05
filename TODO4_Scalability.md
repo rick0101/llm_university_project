@@ -394,7 +394,7 @@ paperhunter/
 
 ### FASE 3 — Agentic Multi-Step Writer (ReAct Loop)
 
-#### [ ] Task 3.1: Trasformare i Retriever in Tool invocabili
+#### [x] Task 3.1: Trasformare i Retriever in Tool invocabili
 
 **File:** `paperhunter/agents/tools/retrieval_tools.py` (nuovo), `paperhunter/agents/tools/__init__.py` (nuovo)  
 **Stato attuale:** Il writer agent riceve un contesto pre-calcolato (iniettato tramite `_format_context_for_prompt()` con fino a 60.000 chars). Non ha alcuna capacità di cercare autonomamente informazioni aggiuntive durante la scrittura.  
@@ -418,6 +418,54 @@ paperhunter/
   - Loggare la chiamata (query, n_risultati, tempo)
 - Funzione helper `get_all_retrieval_tools() -> list[FunctionTool]`: restituisce tutti i tool pronti per l'agente  
 **Test:** Chiamare ogni tool manualmente con una query string di esempio e verificare il formato dell'output (testo con citazioni). Verificare che gli errori vengano gestiti correttamente (es. Qdrant non disponibile).
+
+> **Completato:** 5 Marzo 2026  
+> **Modifiche apportate:**
+> - `paperhunter/agents/tools/__init__.py` (nuovo): Package init che esporta `search_vector_database`, `search_keyword_index`, `search_graph_communities`, `get_all_retrieval_tools`
+> - `paperhunter/agents/tools/retrieval_tools.py` (nuovo): Modulo completo con 3 tool di retrieval e helper di costruzione
+> - `test_retrieval_tools.py` (nuovo): 34 test unitari (tutti passati)
+> **Tool implementati:**
+> - `search_vector_database(query, category?, year_min?, top_k?) -> str` — Ricerca vettoriale su Qdrant (collection `paper_chunks`). Supporta filtri per categoria e anno minimo. Restituisce top-k chunk formattati con `[bibtex_key]`, score e metadata. Max ~2000 chars output.
+> - `search_keyword_index(query, top_k?, category?) -> str` — Ricerca BM25 keyword-based. Carica l'indice BM25 da disco (lazy singleton). Formatta risultati con `[bibtex_key]` e BM25 score. Gestisce gracefully il caso indice non costruito.
+> - `search_graph_communities(topic, top_k?) -> str` — Ricerca nei community summary del knowledge graph (collection `graph_communities` in Qdrant). Verifica l'esistenza della collection prima della query. Formatta risultati con community_id e relevance score.
+> **Funzione helper:**
+> - `get_all_retrieval_tools() -> list[FunctionTool]` — Restituisce i 3 tool come `FunctionTool` di LlamaIndex (`llama_index.core.tools.FunctionTool`), pronti per essere registrati in un `ReActAgent` o `AgentRunner`
+> **Funzioni interne:**
+> - `_get_qdrant_store()` — Singleton lazy del `QdrantStore` (condiviso tra tool)
+> - `_get_bm25_index()` — Singleton lazy del `BM25Index` (caricato da disco)
+> - `reset_singletons()` — Reset dei singleton (per test)
+> - `_truncate_text(text, max_chars)` — Troncamento testo con `...`
+> - `_format_qdrant_results(results, max_total_chars)` — Formatta risultati Qdrant con `[bibtex_key]`
+> - `_format_bm25_results(results, max_total_chars)` — Formatta risultati BM25 con `[bibtex_key]` e BM25 score
+> - `_format_community_results(results, max_total_chars)` — Formatta community summary con community_id
+> **Uso:**
+> ```python
+> # Standalone (per test)
+> from paperhunter.agents.tools.retrieval_tools import (
+>     search_vector_database,
+>     search_keyword_index,
+>     search_graph_communities,
+> )
+>
+> result = search_vector_database("prompt injection attacks", category="Prompt Injection")
+> result = search_keyword_index("GCG adversarial suffix")
+> result = search_graph_communities("adversarial robustness testing")
+>
+> # Come FunctionTool per il ReAct Agent
+> from paperhunter.agents.tools import get_all_retrieval_tools
+> from llama_index.core.agent import ReActAgent
+>
+> tools = get_all_retrieval_tools()
+> agent = ReActAgent.from_tools(tools, llm=llm, verbose=True)
+> ```
+> **Design choices:**
+> - Ogni tool restituisce una stringa (non dict/JSON) per interfacciarsi direttamente con il LLM nel ReAct loop
+> - I backend (QdrantStore, BM25Index) sono inizializzati come lazy singleton per evitare overhead ad ogni tool call
+> - Il `top_k` è clampato a range sicuri (1-10 per vector/BM25, 1-5 per community) per evitare output troppo grandi
+> - Ogni output singolo chunk è troncato a 350 chars; l'output totale è limitato a ~2000 chars
+> - Errori gestiti gracefully: ogni tool restituisce un messaggio di errore informativo invece di lanciare eccezioni
+> - Il logging `[tool]` prefix permette di distinguere le chiamate del ReAct Agent nei log
+> **Note:** I tool sono progettati per il Task 3.2 (ReAct Agent). La funzione `get_all_retrieval_tools()` sarà usata dal writer agent in modalità `"agentic"` per registrare i tool nel `ReActAgent`.
 
 ---
 

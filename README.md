@@ -1,8 +1,10 @@
-# PaperHunter v2.1
+# PaperHunter v3.0
 
 **End-to-end LLM Security Survey Generator — from PDF ingestion to Nature/ACL-style paper**
 
-PaperHunter is a modular, agentic system that autonomously generates a scientific survey paper on LLM security. Starting from ~400 categorized PDF papers, it runs a complete pipeline: structured extraction (GROBID), metadata enrichment (Semantic Scholar), hierarchical summarization, hybrid RAG retrieval, multi-agent writing (LangGraph), and LaTeX export — all with verifiable citations and provenance tracking.
+PaperHunter is a modular, agentic system that autonomously generates a scientific survey paper on LLM security. Starting from 1.000+ categorized PDF papers, it runs a complete pipeline: structured extraction (GROBID), metadata enrichment (Semantic Scholar), RAPTOR hierarchical summarization with semantic clustering, community-driven GraphRAG, agentic multi-step RAG retrieval, multi-agent writing (LangGraph ReAct), and LaTeX export — all with verifiable citations and provenance tracking.
+
+**v3.0 highlights:** Scalability to 1.000+ papers/category without context rot via RAPTOR clustering (L1 → L1.5 → L2), Graph Community detection and summarization (Louvain/Leiden via Neo4j GDS), and Agentic RAG writer with ReAct loop and on-demand retrieval tools.
 
 **v2.1 highlights:** Budget-aware scalability (~100 papers/category within 150k token budget), download deduplication, and configurable recency priority across the entire pipeline.
 
@@ -11,6 +13,10 @@ PaperHunter is a modular, agentic system that autonomously generates a scientifi
 ## Table of Contents
 
 - [Architecture](#architecture)
+- [Key Features (v3.0)](#key-features-v30)
+  - [RAPTOR Hierarchical Clustering (1.000+ papers)](#raptor-hierarchical-clustering-1000-papers)
+  - [Community-Driven GraphRAG](#community-driven-graphrag)
+  - [Agentic Multi-Step Writer (ReAct)](#agentic-multi-step-writer-react)
 - [Key Features (v2.1)](#key-features-v21)
   - [Budget-Aware Scalability (~100 papers/category)](#budget-aware-scalability-100-paperscategory)
   - [Download Deduplication](#download-deduplication)
@@ -60,7 +66,7 @@ config.yaml                           ← Centralized YAML configuration
 
 paperhunter/
 ├── config.py                         ← YAML + pydantic-settings loader
-├── models.py                         ← Extended Pydantic v2 models
+├── models.py                         ← Extended Pydantic v2 models (+ L1_5Summary)
 ├── search_engine.py                  ← Multi-source search (ArXiv, S2, HF)
 ├── download_manager.py               ← Hybrid PDF downloader
 ├── relevance_filter.py               ← LLM relevance filter
@@ -75,29 +81,36 @@ paperhunter/
 │   ├── chunker.py                    ← GROBID-aware section chunking
 │   └── ingestion_pipeline.py         ← End-to-end ingestion orchestrator
 │
-├── summarization/                    ← Hierarchical Summarization
+├── summarization/                    ← Hierarchical Summarization (RAPTOR)
+│   ├── clustering_utils.py           ← [v3.0] Semantic clustering (Agglomerative)
 │   ├── level1_summarizer.py          ← Per-paper summary (with testing_methodology)
-│   ├── level2_summarizer.py          ← Category meta-summary (4-6k tokens)
+│   ├── level1_5_summarizer.py        ← [v3.0] Cluster meta-summary (L1.5 RAPTOR)
+│   ├── level2_summarizer.py          ← Category meta-summary (L1.5-aware + legacy fallback)
 │   └── invalidation_manager.py       ← Auto-invalidation of L2 on new papers
 │
 ├── indexing/                         ← Hybrid Retrieval
-│   ├── qdrant_store.py               ← Qdrant vector store (local, no server)
+│   ├── qdrant_store.py               ← Qdrant vector store (+ l1_5, graph_communities)
 │   ├── bm25_index.py                 ← BM25 keyword index
 │   ├── hybrid_retriever.py           ← Vector + BM25 + RRF fusion
 │   └── reranker.py                   ← Gemini Flash cross-encoder reranking
 │
-├── graphrag/                         ← Knowledge Graph (optional)
+├── graphrag/                         ← Knowledge Graph + Community Detection
 │   ├── entity_extractor.py           ← Entity/relation extraction from L1
-│   ├── neo4j_manager.py              ← Neo4j Community Edition connector
-│   └── property_graph.py             ← LlamaIndex PropertyGraph builder
+│   ├── neo4j_manager.py              ← Neo4j connector (+ GDS graph projection)
+│   ├── property_graph.py             ← LlamaIndex PropertyGraph builder
+│   ├── community_detector.py         ← [v3.0] Louvain/Leiden community detection
+│   └── community_summarizer.py       ← [v3.0] Narrative summaries per community
 │
-├── agents/                           ← Multi-Agent Pipeline (LangGraph)
-│   ├── state.py                      ← Shared LangGraph TypedDict state
+├── agents/                           ← Multi-Agent Pipeline (LangGraph + ReAct)
+│   ├── state.py                      ← Shared state (+ scratchpad, retrieved_facts)
 │   ├── planner_agent.py              ← Agent 1: Outline generation from L2
-│   ├── writer_agent.py               ← Agent 2: RAG-powered section writing
+│   ├── writer_agent.py               ← Agent 2: Static RAG or ReAct agentic writer
 │   ├── critic_agent.py               ← Agent 3: Citation provenance verification
 │   ├── assembler_agent.py            ← Agent 4: Assembly + abstract/intro/conclusion
-│   └── pipeline.py                   ← LangGraph workflow orchestration
+│   ├── pipeline.py                   ← LangGraph workflow orchestration
+│   └── tools/                        ← [v3.0] Retrieval tools for ReAct agent
+│       ├── __init__.py
+│       └── retrieval_tools.py        ← Vector, BM25, graph community search
 │
 ├── postprocessing/                   ← Output Generation
 │   ├── provenance_tracker.py         ← JSON provenance for every claim
@@ -112,6 +125,109 @@ paperhunter/
     ├── rate_limiter.py               ← Token bucket rate limiting
     └── token_counter.py              ← Budget estimation & token counting
 ```
+
+---
+
+## Key Features (v3.0)
+
+### RAPTOR Hierarchical Clustering (1.000+ papers)
+
+The system scales to 1.000+ papers per category without context rot by introducing a RAPTOR-inspired hierarchical summarization layer between L1 (per-paper) and L2 (per-category) summaries.
+
+**How it works:**
+
+```
+L1 Summaries (1.000+) → Semantic Clustering → L1.5 Cluster Summaries (~50) → L2 Meta-Summary
+```
+
+1. **Semantic Clustering** (`clustering_utils.py`): Groups L1 summaries using AgglomerativeClustering on their Qdrant embeddings (cosine similarity). Clusters exceeding `max_cluster_size` are recursively split.
+2. **L1.5 Summarization** (`level1_5_summarizer.py`): For each cluster, generates a meta-summary capturing the common theme, shared methodologies, key findings, and temporal span — with all `[bibtex_key]` citations preserved.
+3. **L2 Auto-Routing** (`level2_summarizer.py`): Automatically detects L1.5 summaries and uses them instead of raw L1s. Falls back to legacy recency-tier compression if L1.5 is unavailable.
+
+**Key config parameters** (`config.yaml`):
+
+```yaml
+clustering:
+  max_cluster_size: 20            # Max papers per L1.5 cluster
+  similarity_threshold: 0.75      # Cosine similarity threshold
+```
+
+**Usage:**
+
+```python
+from paperhunter.summarization.clustering_utils import cluster_summaries, fetch_l1_embeddings_from_qdrant
+from paperhunter.summarization.level1_5_summarizer import generate_all_cluster_summaries
+
+embeddings = fetch_l1_embeddings_from_qdrant(l1_summaries)
+clusters = cluster_summaries(l1_summaries, embeddings)  # → {0: [...], 1: [...], ...}
+l1_5 = generate_all_cluster_summaries(clusters, category="Prompt Injection")
+```
+
+### Community-Driven GraphRAG
+
+The knowledge graph now supports automatic community detection and narrative summarization, enabling macro-theme discovery across entities.
+
+**How it works:**
+
+1. **Community Detection** (`community_detector.py`): Runs Louvain or Leiden algorithm via Neo4j GDS plugin. Tags each entity node with a `community_id`. Filters out communities below a configurable minimum size.
+2. **Community Summarization** (`community_summarizer.py`): Transforms each community's sub-graph (entities + relations) into a 200-500 word narrative summary via Gemini Pro. Summaries are stored in Qdrant (`graph_communities` collection) for retrieval.
+
+**Prerequisites:** Neo4j with GDS plugin:
+
+```bash
+docker run --rm -d --name neo4j \
+    -p 7474:7474 -p 7687:7687 \
+    -e NEO4J_AUTH=neo4j/password \
+    -e NEO4J_PLUGINS='["graph-data-science"]' \
+    neo4j:5-community
+```
+
+**Usage:**
+
+```python
+from paperhunter.graphrag.community_detector import CommunityDetector
+from paperhunter.graphrag.community_summarizer import CommunitySummarizer
+from paperhunter.graphrag.neo4j_manager import Neo4jManager
+from paperhunter.indexing.qdrant_store import QdrantStore
+
+with Neo4jManager() as mgr:
+    detector = CommunityDetector(mgr)
+    communities = detector.detect_communities(algorithm="louvain", min_size=3)
+
+    store = QdrantStore()
+    summarizer = CommunitySummarizer(detector, store)
+    results = summarizer.summarize_all_communities(communities)
+    summarizer.save_to_qdrant(results)
+```
+
+### Agentic Multi-Step Writer (ReAct)
+
+The writer agent can now operate in two modes, controlled by `agents.writer_mode` in `config.yaml`:
+
+| Mode | Behavior |
+|------|----------|
+| `"static"` (default) | Legacy: pre-computed RAG context injected into a single prompt. Works well for ≤100 papers. |
+| `"agentic"` | ReAct loop: the agent autonomously searches for information on-demand via retrieval tools. Scales to 1.000+ papers. |
+
+**Retrieval tools available to the agentic writer:**
+
+- `search_vector_database(query, category?, year_min?)` — Qdrant semantic search with filters
+- `search_keyword_index(query, top_k?)` — BM25 keyword-based search
+- `search_graph_communities(topic, top_k?)` — Community summary search
+
+The agent follows a `Thought → Action → Observation → ... → Final Answer` loop (max 7 iterations). If the ReAct agent fails, it automatically falls back to `"static"` mode.
+
+**Config:**
+
+```yaml
+agents:
+  writer_mode: "agentic"          # "static" or "agentic"
+```
+
+**State tracking** (`state.py`):
+- `current_scratchpad`: Agent notes during ReAct iterations (reset per section)
+- `retrieved_facts`: Full log of tool calls per section (query, tool, results, timestamp)
+- `agentic_stats`: Aggregate stats (total tool calls, iterations, time per section)
 
 ---
 
@@ -199,13 +315,14 @@ When `recency_priority: false`, all recency logic is bypassed: L2 uses uniform d
 |-----------|-----------|-------|
 | LLM | **Gemini 3 Flash/Pro** (via `google-genai` SDK) | Flash for simple tasks, Pro for writing/planning |
 | Embeddings | **Gemini Embedding 001** (3072-dim) | Via `llama-index-embeddings-google-genai` |
-| RAG Framework | **LlamaIndex Core** | Orchestration, PropertyGraph, LLM abstractions |
-| Vector DB | **Qdrant** (local, no server) | Replaces ChromaDB (Python 3.14 compatible) |
+| RAG Framework | **LlamaIndex Core** | Orchestration, PropertyGraph, ReAct Agent |
+| Vector DB | **Qdrant** (local, no server) | 5 collections: chunks, L1, L2, L1.5, communities |
 | Keyword Search | **BM25** (`rank-bm25`) | Hybrid retrieval with RRF fusion |
+| Clustering | **scikit-learn** + **NumPy** | AgglomerativeClustering for RAPTOR L1.5 |
 | PDF Extraction | **GROBID 0.8.2** (Docker) | TEI-XML → structured sections, refs, captions |
 | Metadata | **Semantic Scholar API** (free) | BibTeX, venue, citation count, DOI |
-| Multi-Agent | **LangGraph** | Planner → Writer → Critic → Assembler |
-| Knowledge Graph | **Neo4j Community** (optional) | PropertyGraph with temporal relations |
+| Multi-Agent | **LangGraph** + **ReAct** | Planner → Writer (static/agentic) → Critic → Assembler |
+| Knowledge Graph | **Neo4j Community + GDS** | PropertyGraph + Louvain/Leiden community detection |
 | Output | **LaTeX** (ACL/IEEEtran) | + .bib, provenance JSON, versioning |
 
 ---
@@ -283,12 +400,20 @@ curl -s http://localhost:8070/api/isalive
 
 > If GROBID is unavailable, the system automatically falls back to PyMuPDF (`config.yaml` → `ingestion.fallback_to_pymupdf: true`).
 
-#### Neo4j (optional — for GraphRAG)
+#### Neo4j (optional — for GraphRAG + Community Detection)
 
 ```bash
+# Without GDS (basic GraphRAG only)
 docker run --rm -d --name neo4j \
     -p 7474:7474 -p 7687:7687 \
     -e NEO4J_AUTH=neo4j/password \
+    neo4j:5-community
+
+# With GDS plugin (required for community detection — v3.0)
+docker run --rm -d --name neo4j \
+    -p 7474:7474 -p 7687:7687 \
+    -e NEO4J_AUTH=neo4j/password \
+    -e NEO4J_PLUGINS='["graph-data-science"]' \
     neo4j:5-community
 ```
 
@@ -522,23 +647,27 @@ Key features:
 - Re-running processes only delta changes (0 operations if nothing changed)
 - Download deduplication: papers already in `scaricati/` are never re-downloaded
 
-### Phase 2 — Hierarchical Summarization
+### Phase 2 — Hierarchical Summarization (RAPTOR)
 
 ```
-Chunks → L1 Summary (per paper) → L2 Meta-Summary (per category) → Auto-invalidation
+Chunks → L1 Summary (per paper) → [Clustering → L1.5 (per cluster)] → L2 Meta-Summary → Auto-invalidation
 ```
 
 - **L1 Summaries** (Gemini Pro): Structured JSON with `key_contributions`, `methodology`, `testing_methodology` (critical field), `temporal_context`, `results_summary`, `limitations`
   - *Budget-aware (v2.1)*: Compression tier adapts to N papers/category — standard (≤30), concise (31–70), compressed (>70) — keeping total L1 text within token budget
+- **Semantic Clustering** *(v3.0)*: AgglomerativeClustering groups L1 summaries by cosine similarity of their Qdrant embeddings. Oversized clusters are recursively split. Produces ~50 clusters from 1.000+ papers.
+- **L1.5 Cluster Summaries** *(v3.0)* (Gemini Pro): Per-cluster meta-summary with `common_theme`, `shared_methodologies`, `key_findings`, `testing_overview`, `temporal_span`. Stored in Qdrant `l1_5_summaries` collection.
 - **L2 Summaries** (Gemini Pro): 4-6k token meta-summaries per category with `temporal_trends`, `taxonomy`, `gaps_filled`, `open_gaps`, `methodological_convergences`, `testing_overview`, `synthesis`
-  - *Budget-aware (v2.1)*: Recency-tiered formatting — recent papers at full detail, older papers progressively compressed. Multi-phase downgrade if over budget (reduced→compressed→truncation)
+  - *RAPTOR path (v3.0)*: Auto-detects L1.5 summaries and uses them as input (cross-cluster pattern detection). Falls back to legacy path if L1.5 unavailable.
+  - *Legacy path (v2.1)*: Recency-tiered formatting — recent papers at full detail, older papers progressively compressed. Multi-phase downgrade if over budget (reduced→compressed→truncation)
 - **Auto-invalidation**: When new papers are ingested, affected L2 summaries are automatically regenerated (configurable threshold)
 
-### Phase 3 — Hybrid Indexing + GraphRAG
+### Phase 3 — Hybrid Indexing + GraphRAG + Community Detection
 
 ```
 Chunks + L1 + L2 → [Vector Search (Qdrant) + BM25] → RRF Fusion → Gemini Reranking
                   → PropertyGraph (entities & relations) → Graph traversal
+                  → Community Detection (Louvain/Leiden) → Community Summaries → Qdrant
 ```
 
 - **Hybrid Retrieval**: Vector search (Qdrant, cosine similarity) + BM25 keyword match → Reciprocal Rank Fusion
@@ -546,15 +675,18 @@ Chunks + L1 + L2 → [Vector Search (Qdrant) + BM25] → RRF Fusion → Gemini R
 - **Reranking**: Gemini Flash as cross-encoder scores candidates 0.0–1.0
 - **Entity Extraction**: Attacks, Defenses, Models, Datasets, Benchmarks, Metrics with temporal relations (UPDATES, INTRODUCED_IN, EXTENDS)
 - **PropertyGraph**: LlamaIndex `SimplePropertyGraphStore` with optional Neo4j sync
+- **Community Detection** *(v3.0)*: Louvain/Leiden algorithm via Neo4j GDS identifies macro-theme communities. Each community's sub-graph is summarized into a 200-500 word narrative stored in Qdrant (`graph_communities` collection), searchable by the agentic writer.
 
-### Phase 4 — Agentic Writing (LangGraph)
+### Phase 4 — Agentic Writing (LangGraph + ReAct)
 
 ```
-START → Planner → Writer → Critic → [loop if needed] → Assembler → END
+START → Planner → Writer (static or agentic) → Critic → [loop if needed] → Assembler → END
 ```
 
 1. **Planner Agent** (Pro): Generates structured outline from L2 summaries — sections, topics, target word counts
-2. **Writer Agent** (Pro): For each section, generates 3-5 RAG queries → hybrid retrieval → optional reranking → writes with strict citation format `[Author_YYYY_Key]`. Budget-aware *(v2.1)*: per-section context budget computed from `writer_budget_mode` (proportional or fixed); L1/L2 summary chunks prioritized over raw text
+2. **Writer Agent** (Pro) — dual mode *(v3.0)*:
+   - **Static mode** (`writer_mode: "static"`): Legacy behavior — generates 3-5 RAG queries → hybrid retrieval → optional reranking → writes with pre-computed context. Budget-aware *(v2.1)*: per-section context budget computed from `writer_budget_mode`
+   - **Agentic mode** (`writer_mode: "agentic"`): ReAct loop — the agent autonomously searches vector DB, BM25 index, and graph communities on-demand via `FunctionTool`. Max 7 iterations per section. Falls back to static on failure. State tracks all tool calls in `retrieved_facts` and `agentic_stats`.
 3. **Critic Agent** (Flash): Verifies every citation against source chunks — SUPPORTED / PARTIALLY_SUPPORTED / NOT_SUPPORTED / SOURCE_NOT_FOUND. If <80% pass rate → flags section for rewrite (max 3 iterations)
 4. **Assembler Agent** (Pro): Orders sections, generates abstract/introduction/conclusion, assembles final Markdown + bibliography
 
@@ -582,12 +714,13 @@ All settings are in `config.yaml`. API keys go in `.env` (never committed).
 | `gemini` | Model names, temperature, timeout, max tokens |
 | `grobid` | GROBID Docker URL, timeout, batch size |
 | `neo4j` | Neo4j connection (optional, `enabled: false` by default) |
-| `qdrant` | Vector DB local path, collections, embedding dimension |
+| `clustering` | *(v3.0)* RAPTOR clustering: `max_cluster_size`, `similarity_threshold` |
+| `qdrant` | Vector DB local path, collections (+ `l1_5_summaries`, `graph_communities`), embedding dimension |
 | `semantic_scholar` | S2 API settings, rate limits, cache directory |
 | `ingestion` | PDF directory, chunk size/overlap, category mapping, `papers_per_category` |
 | `summarization` | L1/L2 token limits, invalidation, `max_context_tokens`, `l1_target_chars_auto`, `l2_recency_tiers` |
 | `retrieval` | Vector/BM25 weights, top-k, rerank batch size, `recency_boost` |
-| `agents` | Writer iterations, verification threshold, model per agent, `writer_max_context_chars`, `writer_budget_mode` |
+| `agents` | Writer iterations, verification threshold, model per agent, `writer_max_context_chars`, `writer_budget_mode`, `writer_mode` |
 | `output` | Output directories, LaTeX template, export flags |
 | `rate_limiting` | Gemini RPM/daily, S2 RPM, GROBID concurrency |
 | `logging` | Level, Rich enabled, log file path |
@@ -641,12 +774,24 @@ from paperhunter.summarization import (
     generate_l2_summary, generate_l2_for_all_categories,
     load_l1_summaries_for_category,
     InvalidationManager,
+    # v3.0 — RAPTOR clustering + L1.5
+    generate_cluster_summary, generate_all_cluster_summaries,
+    load_l1_5_summaries_for_category, count_l1_5_for_category,
 )
 
 # Generate L1 for a single paper
 summary = generate_l1_summary(paper, chunks, save_to_store=True)
 
-# Generate L2 for all categories
+# v3.0 — RAPTOR: Cluster L1s and generate L1.5 summaries
+from paperhunter.summarization.clustering_utils import (
+    cluster_summaries, fetch_l1_embeddings_from_qdrant,
+)
+
+embeddings = fetch_l1_embeddings_from_qdrant(l1_summaries)
+clusters = cluster_summaries(l1_summaries, embeddings)
+l1_5 = generate_all_cluster_summaries(clusters, category="Prompt Injection")
+
+# Generate L2 (auto-detects L1.5 if available, otherwise falls back to L1)
 l2_summaries = generate_l2_for_all_categories(save_to_store=True)
 
 # Check and regenerate invalidated L2s
@@ -688,6 +833,10 @@ from paperhunter.graphrag import (
     extract_entities_and_relations, extract_batch,
     PropertyGraphBuilder, Neo4jManager,
     Entity, Relation, EntityType, RelationType,
+    # v3.0 — Community Detection + Summarization
+    CommunityDetector, CommunitySummarizer,
+    detect_graph_communities, summarize_graph_communities,
+    load_community_summaries, count_community_summaries,
 )
 
 # Extract entities from L1 summaries
@@ -706,6 +855,21 @@ timeline = builder.get_temporal_chain(EntityType.ATTACK)
 with Neo4jManager() as mgr:
     mgr.import_entities_and_relations(entities, relations)
     neighbors = mgr.query_neighbors("GCG", depth=2)
+
+# v3.0 — Community Detection + Summarization (requires Neo4j + GDS)
+with Neo4jManager() as mgr:
+    detector = CommunityDetector(mgr)
+    communities = detector.detect_communities(algorithm="louvain", min_size=3)
+    stats = detector.get_community_stats()
+
+    store = QdrantStore()
+    summarizer = CommunitySummarizer(detector, store)
+    results = summarizer.summarize_all_communities(communities)
+    summarizer.save_to_qdrant(results)
+
+# Or one-shot:
+results = summarize_graph_communities(algorithm="louvain", min_size=3)
+loaded = load_community_summaries()
 ```
 
 ### Agents (`paperhunter.agents`)
@@ -715,6 +879,7 @@ from paperhunter.agents import (
     run_pipeline, run_pipeline_from_checkpoint,
     plan, write, verify, assemble,
     create_initial_state, get_pipeline_summary,
+    reset_scratchpad,  # v3.0
     SurveyState, SectionOutline, SectionDraft,
 )
 
@@ -728,9 +893,23 @@ state = run_pipeline_from_checkpoint("output/.checkpoints/verify_latest.json")
 # Use individual agents
 state = create_initial_state(l2_summaries=my_l2s)
 state = plan(state)   # Generate outline
-state = write(state)  # Write all sections
+state = write(state)  # Write all sections (static or agentic based on config)
 state = verify(state) # Verify citations
 state = assemble(state) # Assemble final paper
+
+# v3.0 — Retrieval Tools (for standalone use or ReAct agent)
+from paperhunter.agents.tools import (
+    search_vector_database, search_keyword_index,
+    search_graph_communities, get_all_retrieval_tools,
+)
+
+# Standalone tool calls
+result = search_vector_database("prompt injection attacks", category="Prompt Injection")
+result = search_keyword_index("GCG adversarial suffix")
+result = search_graph_communities("adversarial robustness testing")
+
+# Get all tools as LlamaIndex FunctionTool (for ReActAgent)
+tools = get_all_retrieval_tools()
 ```
 
 ### Post-processing (`paperhunter.postprocessing`)
@@ -830,7 +1009,7 @@ output/
 
 ## Testing
 
-The project includes 26 test files with ~700+ tests covering all modules. Tests use mocks and do not require live APIs or Docker services.
+The project includes 35 test files with ~1000+ tests covering all modules. Tests use mocks and do not require live APIs or Docker services.
 
 ```bash
 # Run all tests
@@ -875,6 +1054,13 @@ Test modules:
 | Budget Summary | `test_budget_summary.py` | 10 |
 | Download Dedup | `test_dedup_download.py` | 22 |
 | Recency Sort | `test_recency_sort.py` | 48 |
+| Clustering Utils | `test_clustering_utils.py` | 16 |
+| L1.5 Summarizer | `test_l1_5_summarizer.py` | 28 |
+| L2 with L1.5 | `test_l2_with_l1_5.py` | 10 |
+| Community Detector | `test_community_detector.py` | 41 |
+| Community Summarizer | `test_community_summarizer.py` | 63 |
+| Retrieval Tools | `test_retrieval_tools.py` | 34 |
+| Writer Agent Agentic | `test_writer_agent_agentic.py` | 28 |
 
 ---
 
@@ -992,11 +1178,12 @@ vscode_agent_paper/
 ├── cache/semantic_scholar/       ← S2 API response cache
 ├── logs/                         ← Log files
 ├── paperhunter/                  ← Source code
-├── test_*.py                     ← Test files (26 modules)
+├── test_*.py                     ← Test files (35 modules)
 ├── pyproject.toml                ← Project metadata + dependencies
 ├── requirements.txt              ← Pinned dependencies
 ├── TODO.md                       ← Development roadmap (v2.0)
-└── TODO3.md                      ← Scalability improvements roadmap (v2.1)
+├── TODO3.md                      ← Scalability improvements roadmap (v2.1)
+└── TODO4_Scalability.md          ← 1.000+ paper scalability roadmap (v3.0)
 ```
 
 ---

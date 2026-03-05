@@ -80,16 +80,17 @@ def _get_console():
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# Subcommand: search  (logica legacy PaperHunter — asincrona)
+# Subcommand: search  (logica legacy PaperHunter — asincrona, con checkpoint)
 # ═══════════════════════════════════════════════════════════════════════════
 
 def cmd_search(args: argparse.Namespace) -> int:
-    """Cerca e scarica paper (logica legacy PaperHunter)."""
+    """Cerca e scarica paper con checkpoint per ripresa automatica."""
     from paperhunter.config import settings, ensure_download_dir
     from paperhunter.search_engine import PaperAggregator
     from paperhunter.relevance_filter import RelevanceFilter
     from paperhunter.download_manager import Downloader
     from paperhunter.report_generator import generate_report
+    from paperhunter.search_checkpoint import SearchCheckpointManager
 
     logger = _get_logger("paperhunter.search")
 
@@ -114,64 +115,250 @@ def cmd_search(args: argparse.Namespace) -> int:
     date_from = getattr(args, "date_from", None)
     date_to = getattr(args, "date_to", None)
 
+    # ── Checkpoint setup ──
+    ckpt = SearchCheckpointManager()
+    search_id = ckpt.compute_search_id(
+        keywords, criteria, max_results, str(download_dir), date_from, date_to,
+    )
+
     async def _run():
-        logger.info(f"Ricerca con keyword: '{keywords}'")
-        if date_from or date_to:
-            logger.info(f"Filtro date: {date_from or '*'} → {date_to or '*'}")
-        search_result = await aggregator.search(keywords, date_from=date_from, date_to=date_to)
-        logger.info(f"Trovati {search_result.total_found} paper da {len(search_result.sources_queried)} fonti")
+        data = ckpt.find_checkpoint(search_id)
 
-        if not search_result.papers:
-            logger.warning("Nessun paper trovato. Prova keyword diversi.")
-            return 1
-
-        # ── Riepilogo per fonte e conferma interattiva ──
-        from collections import Counter
-        source_counts = Counter(
-            p.source.value if hasattr(p.source, 'value') else str(p.source)
-            for p in search_result.papers
-        )
-        source_labels = {
-            "arxiv": "ArXiv",
-            "semantic_scholar": "Semantic Scholar",
-            "huggingface": "HuggingFace",
-        }
-
-        print("\n" + "═" * 60)
-        print(f"  📄 Trovati {search_result.total_found} paper unici")
-        print("─" * 60)
-        for src, count in source_counts.most_common():
-            label = source_labels.get(src, src)
-            print(f"    • {label:<22s} {count:>4d} paper")
-        if search_result.errors:
-            print("─" * 60)
-            for err in search_result.errors:
-                print(f"    ⚠  {err}")
-        print("═" * 60)
-
-        if not getattr(args, "yes", False):
-            answer = input("\n  Proseguire con l'analisi LLM e il download? [S/n] ").strip().lower()
-            if answer in ("n", "no"):
-                logger.info("Operazione annullata dall'utente.")
+        # ════════════════════════════════════════════════════════════════
+        # Already completed?  Check if there are pending downloads first.
+        # ════════════════════════════════════════════════════════════════
+        if data and data["phase"] == "complete":
+            n_still_relevant = sum(
+                1 for p in data["papers"] if p["status"] == "relevant"
+            )
+            # If there are relevant-but-not-downloaded papers and user
+            # did NOT pass --no-download, offer to resume downloads.
+            if n_still_relevant > 0 and not args.no_download:
+                md_path = ckpt.get_md_path(search_id)
+                print("\n" + "═" * 60)
+                print(f"  ♻️  Checkpoint trovato (ID: {search_id})")
+                print(f"     {n_still_relevant} paper rilevanti non ancora scaricati")
+                print(f"     Dettagli: {md_path}")
+                print("═" * 60)
+                answer = input("\n  Proseguire con il download? [S/n] ").strip().lower()
+                if answer in ("n", "no"):
+                    return 0
+                data["phase"] = "filter_complete"  # reset to allow download
+            else:
+                n_dl = sum(1 for p in data["papers"] if p["status"] == "downloaded")
+                n_dup = sum(1 for p in data["papers"] if p["status"] == "dedup_skipped")
+                n_nr = sum(1 for p in data["papers"] if p["status"] == "not_relevant")
+                md_path = ckpt.get_md_path(search_id)
+                print("\n" + "═" * 60)
+                print(f"  ✅ Ricerca già completata (checkpoint: {search_id})")
+                print("─" * 60)
+                print(f"    Scaricati: {n_dl}  |  Dedup: {n_dup}  |  Non rilevanti: {n_nr}")
+                print(f"    Dettagli: {md_path}")
+                print("═" * 60)
+                print("\n  Per ripetere, elimina il checkpoint e rilancia.")
                 return 0
-        print()
 
-        logger.info(f"Filtro con criteri: {criteria[:100]}...")
-        filtered = await relevance_filter.filter_papers(search_result.papers, criteria)
-        relevant = relevance_filter.get_relevant_papers(filtered)
-        logger.info(f"{len(relevant)} paper rilevanti trovati")
+        # ════════════════════════════════════════════════════════════════
+        # Resume from existing (incomplete) checkpoint
+        # ════════════════════════════════════════════════════════════════
+        if data:
+            phase = data["phase"]
+            md_path = ckpt.get_md_path(search_id)
+            n_total = len(data["papers"])
 
-        if not relevant:
+            print("\n" + "═" * 60)
+            print(f"  ♻️  Checkpoint trovato per questa ricerca!")
+            print(f"     ID: {search_id}  |  {n_total} paper trovati")
+            print(f"     File: {md_path}")
+            print("═" * 60)
+
+            if phase == "search_complete":
+                # Show summary and ask for confirmation (same as fresh)
+                _print_source_summary(data)
+                if not getattr(args, "yes", False):
+                    answer = input("\n  Proseguire con l'analisi LLM e il download? [S/n] ").strip().lower()
+                    if answer in ("n", "no"):
+                        logger.info("Operazione annullata dall'utente.")
+                        return 0
+                print()
+
+            elif phase == "filtering":
+                done = n_total - len(ckpt.get_pending_filter(data))
+                print(f"\n  Ripresa filtro LLM: {done}/{n_total} già analizzati\n")
+
+            elif phase in ("filter_complete", "downloading"):
+                pending = ckpt.get_pending_download(data)
+                n_rel = sum(1 for p in data["papers"] if p["status"] in (
+                    "relevant", "downloaded", "download_failed", "dedup_skipped"))
+                done_dl = n_rel - len(pending)
+                print(f"\n  Ripresa download: {done_dl}/{n_rel} già completati\n")
+
+        # ════════════════════════════════════════════════════════════════
+        # PHASE 1 — Fresh search (only when no checkpoint exists)
+        # ════════════════════════════════════════════════════════════════
+        else:
+            logger.info(f"Ricerca con keyword: '{keywords}'")
+            if date_from or date_to:
+                logger.info(f"Filtro date: {date_from or '*'} → {date_to or '*'}")
+            search_result = await aggregator.search(
+                keywords, date_from=date_from, date_to=date_to,
+            )
+            logger.info(
+                f"Trovati {search_result.total_found} paper "
+                f"da {len(search_result.sources_queried)} fonti"
+            )
+
+            if not search_result.papers:
+                logger.warning("Nessun paper trovato. Prova keyword diversi.")
+                return 1
+
+            # Build source counts for checkpoint
+            from collections import Counter
+            source_counts = Counter(
+                p.source.value if hasattr(p.source, "value") else str(p.source)
+                for p in search_result.papers
+            )
+            params = {
+                "keywords": keywords,
+                "criteria": criteria,
+                "max_results": max_results,
+                "output_dir": str(download_dir),
+                "date_from": date_from,
+                "date_to": date_to,
+            }
+            search_meta = {
+                "total_found": search_result.total_found,
+                "sources_queried": search_result.sources_queried,
+                "errors": search_result.errors,
+                "source_counts": dict(source_counts),
+            }
+            data = ckpt.create_from_search(
+                search_id, params, search_result.papers, search_meta,
+            )
+            md_path = ckpt.get_md_path(search_id)
+            logger.info(f"💾 Checkpoint salvato: {md_path}")
+
+            # Show source summary and confirm
+            _print_source_summary(data)
+
+            if not getattr(args, "yes", False):
+                answer = input("\n  Proseguire con l'analisi LLM e il download? [S/n] ").strip().lower()
+                if answer in ("n", "no"):
+                    logger.info("Operazione annullata dall'utente.")
+                    return 0
+            print()
+
+        # ════════════════════════════════════════════════════════════════
+        # PHASE 2 — LLM Relevance Filtering (per-paper checkpoint)
+        # ════════════════════════════════════════════════════════════════
+        if data["phase"] in ("search_complete", "filtering"):
+            ckpt.set_phase(data, "filtering")
+            pending = ckpt.get_pending_filter(data)
+            n_total = len(data["papers"])
+
+            if pending:
+                done = n_total - len(pending)
+                if done > 0:
+                    logger.info(f"Filtro LLM: ripresa da {done}/{n_total}")
+                logger.info(f"Filtro con criteri: {criteria[:100]}...")
+
+                for i, idx in enumerate(pending):
+                    paper = ckpt.reconstruct_paper(data["papers"][idx])
+                    result = await relevance_filter.analyze_paper(paper, criteria)
+
+                    if result.relevance.reasoning.startswith("Analysis failed"):
+                        status = "filter_error"
+                    elif result.relevance.is_relevant:
+                        status = "relevant"
+                    else:
+                        status = "not_relevant"
+
+                    ckpt.update_paper(
+                        data, idx, status,
+                        relevance_reasoning=result.relevance.reasoning,
+                        relevance_confidence=result.relevance.confidence,
+                    )
+                    tag = (
+                        "✓ RILEVANTE" if status == "relevant"
+                        else ("✗ non rilevante" if status == "not_relevant"
+                              else "⚠ ERRORE")
+                    )
+                    logger.info(
+                        f"  [{done + i + 1}/{n_total}] {tag} — {paper.title[:60]}"
+                    )
+
+                    # Rate limiting between LLM calls
+                    if i < len(pending) - 1:
+                        await asyncio.sleep(1.5)
+
+            ckpt.set_phase(data, "filter_complete")
+
+        # ── Count relevant papers ──
+        n_relevant = sum(
+            1 for p in data["papers"]
+            if p["status"] in ("relevant", "downloaded", "download_failed", "dedup_skipped")
+        )
+        logger.info(f"{n_relevant} paper rilevanti trovati")
+
+        if n_relevant == 0:
             logger.warning("Nessun paper rilevante. Prova ad aggiustare i criteri.")
+            ckpt.set_phase(data, "complete")
             return 1
 
-        download_results = []
-        if not args.no_download:
-            logger.info(f"Download di {len(relevant)} paper...")
-            download_results = await downloader.batch_download(relevant)
-            ok = sum(1 for r in download_results if r.success)
-            logger.info(f"Scaricati {ok}/{len(relevant)} paper")
+        # ════════════════════════════════════════════════════════════════
+        # PHASE 3 — Download (sequential, per-paper checkpoint)
+        # ════════════════════════════════════════════════════════════════
+        if not args.no_download and data["phase"] in ("filter_complete", "downloading"):
+            ckpt.set_phase(data, "downloading")
+            pending_dl = ckpt.get_pending_download(data)
 
+            if pending_dl:
+                already_done = n_relevant - len(pending_dl)
+                if already_done > 0:
+                    logger.info(f"Download: ripresa da {already_done}/{n_relevant}")
+                logger.info(f"Download di {len(pending_dl)} paper rilevanti...")
+
+                for i, idx in enumerate(pending_dl):
+                    paper = ckpt.reconstruct_paper(data["papers"][idx])
+                    result = await downloader.download_paper(paper)
+
+                    if result.success:
+                        if result.skipped:
+                            new_status = "dedup_skipped"
+                        else:
+                            new_status = "downloaded"
+                        ckpt.update_paper(
+                            data, idx, new_status,
+                            download_path=result.file_path,
+                        )
+                    else:
+                        ckpt.update_paper(
+                            data, idx, "download_failed",
+                            download_error=result.error_message,
+                        )
+
+                    logger.info(
+                        f"  [{already_done + i + 1}/{n_relevant}] "
+                        f"{data['papers'][idx]['status'].upper()} — "
+                        f"{paper.title[:50]}"
+                    )
+                    await asyncio.sleep(0.5)
+
+                ok = sum(
+                    1 for p in data["papers"]
+                    if p["status"] in ("downloaded", "dedup_skipped")
+                )
+                logger.info(f"Scaricati {ok}/{n_relevant} paper rilevanti")
+
+        # ════════════════════════════════════════════════════════════════
+        # PHASE 4 — Report + finalise
+        # ════════════════════════════════════════════════════════════════
+        ckpt.set_phase(data, "complete")
+
+        # Reconstruct data for standard report
+        search_result, filtered, download_results, relevant = (
+            ckpt.reconstruct_for_report(data)
+        )
         report_path = generate_report(
             keywords=keywords, criteria=criteria,
             search_result=search_result, filtered_results=filtered,
@@ -181,6 +368,9 @@ def cmd_search(args: argparse.Namespace) -> int:
             llm_provider=args.llm_provider, llm_model=None,
         )
         logger.info(f"Report salvato: {report_path}")
+
+        md_path = ckpt.get_md_path(search_id)
+        logger.info(f"📋 Checkpoint finale: {md_path}")
         return 0
 
     return asyncio.run(_run())
@@ -198,6 +388,31 @@ def _get_search_input() -> tuple[str, str]:
     if not criteria:
         criteria = f"I want papers related to: {keywords}."
     return keywords, criteria
+
+
+def _print_source_summary(data: dict) -> None:
+    """Print per-source paper counts from checkpoint data."""
+    source_counts = data.get("search_meta", {}).get("source_counts", {})
+    errors = data.get("search_meta", {}).get("errors", [])
+    total = len(data["papers"])
+
+    source_labels = {
+        "arxiv": "ArXiv",
+        "semantic_scholar": "Semantic Scholar",
+        "huggingface": "HuggingFace",
+    }
+
+    print("\n" + "═" * 60)
+    print(f"  📄 Trovati {total} paper unici")
+    print("─" * 60)
+    for src, count in sorted(source_counts.items(), key=lambda x: -x[1]):
+        label = source_labels.get(src, src)
+        print(f"    • {label:<22s} {count:>4d} paper")
+    if errors:
+        print("─" * 60)
+        for err in errors:
+            print(f"    ⚠  {err}")
+    print("═" * 60)
 
 
 # ═══════════════════════════════════════════════════════════════════════════

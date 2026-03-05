@@ -519,6 +519,331 @@ print(f"  SectionStatus values: {[s.value for s in SectionStatus]}")
 print(f"  PipelinePhase values: {[p.value for p in PipelinePhase]}")
 print("  ✓ All enum values correct")
 
+
+# ====================================================================== #
+#  NEW TESTS — Task 3.3: Scratchpad, retrieved_facts, agentic_stats      #
+# ====================================================================== #
+
+print("\n" + "=" * 70)
+print("TEST 12: New state fields — defaults in create_initial_state")
+print("=" * 70)
+
+state = create_initial_state()
+assert state["current_scratchpad"] == [], "current_scratchpad should default to []"
+assert state["retrieved_facts"] == {}, "retrieved_facts should default to {}"
+assert state["agentic_stats"] == {}, "agentic_stats should default to {}"
+print("  ✓ New fields present with correct defaults")
+
+print("\n" + "=" * 70)
+print("TEST 13: Populate scratchpad and retrieved_facts")
+print("=" * 70)
+
+state["current_scratchpad"] = [
+    "Looking for prompt injection taxonomy papers",
+    "Found 5 relevant chunks via vector search",
+    "Switching to BM25 for specific defense mechanism",
+]
+state["retrieved_facts"] = {
+    "prompt_injection_attacks": [
+        {
+            "query": "prompt injection attacks taxonomy",
+            "tool": "search_vector_database",
+            "results": "Found 5 chunks about GCG, AutoDAN...",
+            "timestamp": "2026-03-05T10:30:00",
+        },
+        {
+            "query": "prompt injection defense mechanisms",
+            "tool": "search_keyword_index",
+            "results": "Found 3 chunks about SmoothLLM, PPL filtering...",
+            "timestamp": "2026-03-05T10:30:15",
+        },
+    ],
+    "adversarial_robustness": [
+        {
+            "query": "adversarial robustness testing LLM",
+            "tool": "search_graph_communities",
+            "results": "Community 3: adversarial attacks and defenses...",
+            "timestamp": "2026-03-05T10:31:00",
+        },
+    ],
+}
+state["agentic_stats"] = {
+    "total_tool_calls": 3,
+    "total_iterations": 8,
+    "per_section": {
+        "prompt_injection_attacks": {"tool_calls": 2, "iterations": 5, "elapsed_s": 12.3},
+        "adversarial_robustness": {"tool_calls": 1, "iterations": 3, "elapsed_s": 8.7},
+    },
+}
+
+assert len(state["current_scratchpad"]) == 3
+assert len(state["retrieved_facts"]["prompt_injection_attacks"]) == 2
+assert state["agentic_stats"]["total_tool_calls"] == 3
+print("  ✓ Fields populated correctly")
+
+print("\n" + "=" * 70)
+print("TEST 14: JSON serialization round-trip with new fields")
+print("=" * 70)
+
+serialized = state_to_dict(state)
+json_str = json.dumps(serialized, indent=2, default=str)
+restored = state_from_dict(json.loads(json_str))
+
+assert restored["current_scratchpad"] == state["current_scratchpad"], \
+    "Scratchpad mismatch after round-trip"
+assert restored["retrieved_facts"] == state["retrieved_facts"], \
+    "retrieved_facts mismatch after round-trip"
+assert restored["agentic_stats"] == state["agentic_stats"], \
+    "agentic_stats mismatch after round-trip"
+print(f"  JSON length: {len(json_str)} chars")
+print("  ✓ Full round-trip (state_to_dict → JSON → state_from_dict) OK")
+
+print("\n" + "=" * 70)
+print("TEST 15: state_from_dict fills missing new fields with defaults")
+print("=" * 70)
+
+# Simulate loading a checkpoint saved BEFORE Task 3.3
+old_checkpoint = {
+    "current_phase": "writing",
+    "iteration_count": 2,
+    "sections": {},
+    # No current_scratchpad, retrieved_facts, agentic_stats
+}
+restored_old = state_from_dict(old_checkpoint)
+assert restored_old["current_scratchpad"] == [], "Missing scratchpad should default to []"
+assert restored_old["retrieved_facts"] == {}, "Missing retrieved_facts should default to {}"
+assert restored_old["agentic_stats"] == {}, "Missing agentic_stats should default to {}"
+print("  ✓ Backward-compatible: old checkpoints load correctly")
+
+print("\n" + "=" * 70)
+print("TEST 16: reset_scratchpad helper")
+print("=" * 70)
+
+from paperhunter.agents.state import reset_scratchpad
+
+# Reset with section key
+update = reset_scratchpad(state, section_key="new_section")
+assert update["current_scratchpad"] == [], "Scratchpad should be cleared"
+assert update["retrieved_facts"] == {"new_section": []}, "Should prepare empty list for new section"
+print("  ✓ reset_scratchpad with section_key OK")
+
+# Reset without section key
+update_no_key = reset_scratchpad(state)
+assert update_no_key["current_scratchpad"] == []
+assert "retrieved_facts" not in update_no_key, "No retrieved_facts key when section_key is empty"
+print("  ✓ reset_scratchpad without section_key OK")
+
+print("\n" + "=" * 70)
+print("TEST 17: New reducers — _merge_retrieved_facts")
+print("=" * 70)
+
+from paperhunter.agents.state import _merge_retrieved_facts, _merge_agentic_stats
+
+# Disjoint merge
+existing = {"sec_a": [{"query": "q1", "tool": "t1", "results": "r1", "timestamp": "ts1"}]}
+updates = {"sec_b": [{"query": "q2", "tool": "t2", "results": "r2", "timestamp": "ts2"}]}
+merged = _merge_retrieved_facts(existing, updates)
+assert "sec_a" in merged and "sec_b" in merged
+assert len(merged["sec_a"]) == 1 and len(merged["sec_b"]) == 1
+print("  ✓ Disjoint merge OK")
+
+# Append to existing section
+updates2 = {"sec_a": [{"query": "q3", "tool": "t3", "results": "r3", "timestamp": "ts3"}]}
+merged2 = _merge_retrieved_facts(merged, updates2)
+assert len(merged2["sec_a"]) == 2, "Should append, not replace"
+assert merged2["sec_a"][0]["query"] == "q1"
+assert merged2["sec_a"][1]["query"] == "q3"
+print("  ✓ Append to existing section OK")
+
+# Edge cases
+assert _merge_retrieved_facts({}, {"x": []}) == {"x": []}
+assert _merge_retrieved_facts(None, {"x": [{"a": 1}]}) == {"x": [{"a": 1}]}
+assert _merge_retrieved_facts({"x": [{"a": 1}]}, None) == {"x": [{"a": 1}]}
+print("  ✓ Edge cases (empty, None) OK")
+
+print("\n" + "=" * 70)
+print("TEST 18: New reducer — _merge_agentic_stats")
+print("=" * 70)
+
+s1 = {"total_tool_calls": 5, "total_iterations": 10}
+s2 = {"total_tool_calls": 7, "per_section": {"intro": {"calls": 2}}}
+sm = _merge_agentic_stats(s1, s2)
+assert sm["total_tool_calls"] == 7, "Should overwrite"
+assert sm["total_iterations"] == 10, "Should preserve"
+assert sm["per_section"] == {"intro": {"calls": 2}}, "Should add new key"
+print("  ✓ _merge_agentic_stats shallow merge OK")
+
+assert _merge_agentic_stats({}, {"a": 1}) == {"a": 1}
+assert _merge_agentic_stats(None, {"a": 1}) == {"a": 1}
+assert _merge_agentic_stats({"a": 1}, None) == {"a": 1}
+print("  ✓ Edge cases OK")
+
+print("\n" + "=" * 70)
+print("TEST 19: get_pipeline_summary includes agentic info")
+print("=" * 70)
+
+summary = get_pipeline_summary(state)
+assert "agentic_tool_calls" in summary, "Summary should include agentic_tool_calls"
+assert summary["agentic_tool_calls"] == 3, f"Expected 3 tool calls, got {summary['agentic_tool_calls']}"
+assert "agentic_stats" in summary, "Summary should include agentic_stats"
+assert summary["agentic_stats"]["total_iterations"] == 8
+print(f"  agentic_tool_calls: {summary['agentic_tool_calls']}")
+print(f"  agentic_stats keys: {list(summary['agentic_stats'].keys())}")
+print("  ✓ Pipeline summary includes agentic data")
+
+# Empty state summary should also work
+empty_summary = get_pipeline_summary(create_initial_state())
+assert empty_summary["agentic_tool_calls"] == 0
+assert empty_summary["agentic_stats"] == {}
+print("  ✓ Empty state summary OK")
+
+print("\n" + "=" * 70)
+print("TEST 20: LangGraph compatibility with new fields")
+print("=" * 70)
+
+from langgraph.graph import StateGraph
+
+def agentic_writer(state: SurveyState) -> dict:
+    """Simulates an agentic writer that logs tool calls."""
+    return {
+        "current_phase": PipelinePhase.WRITING.value,
+        "current_scratchpad": [
+            "Searching for prompt injection taxonomy",
+            "Found 3 chunks via vector search",
+        ],
+        "retrieved_facts": {
+            "intro": [
+                {
+                    "query": "LLM security overview",
+                    "tool": "search_vector_database",
+                    "results": "Overview of LLM threats...",
+                    "timestamp": "2026-03-05T12:00:00",
+                },
+            ],
+        },
+        "agentic_stats": {
+            "total_tool_calls": 1,
+            "total_iterations": 3,
+        },
+        "sections": {
+            "intro": SectionDraft(
+                section_key="intro",
+                title="Introduction",
+                text="LLMs face security threats...",
+                status=SectionStatus.DRAFTED,
+            ).to_dict(),
+        },
+    }
+
+def second_writer(state: SurveyState) -> dict:
+    """Simulates writing a second section — reducers should merge."""
+    return {
+        "current_scratchpad": ["New section search started"],
+        "retrieved_facts": {
+            "methods": [
+                {
+                    "query": "adversarial testing methods",
+                    "tool": "search_keyword_index",
+                    "results": "BM25 results...",
+                    "timestamp": "2026-03-05T12:05:00",
+                },
+            ],
+            # Also add something to existing section
+            "intro": [
+                {
+                    "query": "intro additional search",
+                    "tool": "search_graph_communities",
+                    "results": "Community about LLM security...",
+                    "timestamp": "2026-03-05T12:06:00",
+                },
+            ],
+        },
+        "agentic_stats": {
+            "total_tool_calls": 3,  # Updated total
+        },
+        "sections": {
+            "methods": SectionDraft(
+                section_key="methods",
+                title="Methods",
+                text="Attack methods include...",
+                status=SectionStatus.DRAFTED,
+            ).to_dict(),
+        },
+    }
+
+g = StateGraph(SurveyState)
+g.add_node("writer1", agentic_writer)
+g.add_node("writer2", second_writer)
+g.add_edge("writer1", "writer2")
+g.set_entry_point("writer1")
+g.set_finish_point("writer2")
+compiled = g.compile()
+result = compiled.invoke(create_initial_state())
+
+# Scratchpad should be fully replaced (not appended)
+assert result["current_scratchpad"] == ["New section search started"], \
+    "Scratchpad should be replaced by second node"
+print("  ✓ current_scratchpad replaced correctly")
+
+# retrieved_facts should be merged
+assert "intro" in result["retrieved_facts"], "intro facts should be preserved"
+assert "methods" in result["retrieved_facts"], "methods facts should be added"
+assert len(result["retrieved_facts"]["intro"]) == 2, \
+    "intro should have 2 entries (merged from both nodes)"
+assert len(result["retrieved_facts"]["methods"]) == 1
+print("  ✓ retrieved_facts merged correctly")
+
+# agentic_stats should be merged (overwrite)
+assert result["agentic_stats"]["total_tool_calls"] == 3, "Should be updated to 3"
+assert result["agentic_stats"]["total_iterations"] == 3, "Should be preserved from first node"
+print("  ✓ agentic_stats merged correctly")
+
+# Sections should still merge
+assert "intro" in result["sections"] and "methods" in result["sections"]
+print("  ✓ sections merge still works")
+
+print("\n" + "=" * 70)
+print("TEST 21: CheckpointManager round-trip with new fields")
+print("=" * 70)
+
+import tempfile
+import os
+
+# Build a state with all new fields populated
+cp_state = create_initial_state()
+cp_state["current_scratchpad"] = ["note1", "note2", "note3"]
+cp_state["retrieved_facts"] = {
+    "sec_a": [
+        {"query": "test query", "tool": "search_vector_database",
+         "results": "some results", "timestamp": "2026-03-05T14:00:00"},
+    ]
+}
+cp_state["agentic_stats"] = {"total_tool_calls": 5, "elapsed_s": 42.1}
+
+# Serialize → JSON → deserialize
+serialized_cp = state_to_dict(cp_state)
+json_cp = json.dumps(serialized_cp, indent=2, default=str)
+deserialized_cp = state_from_dict(json.loads(json_cp))
+
+assert deserialized_cp["current_scratchpad"] == ["note1", "note2", "note3"]
+assert deserialized_cp["retrieved_facts"]["sec_a"][0]["tool"] == "search_vector_database"
+assert deserialized_cp["agentic_stats"]["elapsed_s"] == 42.1
+
+# Also test through CheckpointManager (actual file I/O)
+from paperhunter.postprocessing.checkpoint_manager import CheckpointManager
+
+with tempfile.TemporaryDirectory() as tmpdir:
+    mgr = CheckpointManager(checkpoint_dir=tmpdir)
+    info = mgr.save_pipeline_checkpoint(cp_state, "write")
+    print(f"  Checkpoint saved: {info.filename}")
+
+    node, loaded_state = mgr.load_pipeline_checkpoint(info.path)
+    assert node == "write"
+    assert loaded_state["current_scratchpad"] == ["note1", "note2", "note3"]
+    assert loaded_state["retrieved_facts"]["sec_a"][0]["query"] == "test query"
+    assert loaded_state["agentic_stats"]["total_tool_calls"] == 5
+    print("  ✓ CheckpointManager save → load preserves new fields")
+
 print("\n" + "=" * 70)
 print("TUTTI I TEST PASSATI ✓")
 print("=" * 70)

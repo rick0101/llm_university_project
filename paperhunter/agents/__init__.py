@@ -61,6 +61,7 @@ from paperhunter.agents.state import (
     get_sections_from_state,
     get_verifications_from_state,
     get_version_from_state,
+    reset_scratchpad,
     state_from_dict,
     state_to_dict,
 )

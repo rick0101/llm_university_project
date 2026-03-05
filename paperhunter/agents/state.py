@@ -344,6 +344,34 @@ def _append_unique_errors(existing: list[str], new: list[str]) -> list[str]:
     return combined
 
 
+def _merge_retrieved_facts(
+    existing: dict[str, list[dict]],
+    updates: dict[str, list[dict]],
+) -> dict[str, list[dict]]:
+    """Reducer that merges retrieved_facts by section key.
+
+    For each section, appends new fact entries to the existing list
+    (no deduplication — each tool call is logged individually).
+    """
+    merged = dict(existing) if existing else {}
+    for key, entries in (updates or {}).items():
+        if key in merged:
+            merged[key] = merged[key] + entries
+        else:
+            merged[key] = list(entries)
+    return merged
+
+
+def _merge_agentic_stats(
+    existing: dict,
+    updates: dict,
+) -> dict:
+    """Reducer that merges agentic_stats (shallow merge, updates overwrite)."""
+    merged = dict(existing) if existing else {}
+    merged.update(updates or {})
+    return merged
+
+
 # ============================================================================
 # LangGraph State — TypedDict with Annotated reducers
 # ============================================================================
@@ -399,6 +427,11 @@ class SurveyState(TypedDict):
 
     # --- Error tracking (append-only) ---
     errors: Annotated[list[str], _append_unique_errors]
+
+    # --- Agentic scratchpad & tool log ---
+    current_scratchpad: Annotated[list[str], _replace_or_default]
+    retrieved_facts: Annotated[dict[str, list[dict]], _merge_retrieved_facts]
+    agentic_stats: Annotated[dict, _merge_agentic_stats]
 
     # --- Extensibility ---
     metadata: Annotated[dict, _replace_or_default]
@@ -461,6 +494,9 @@ def create_initial_state(
         current_section_key="",
         iteration_count=0,
         errors=[],
+        current_scratchpad=[],
+        retrieved_facts={},
+        agentic_stats={},
         metadata=metadata or {},
     )
 
@@ -549,6 +585,26 @@ def collect_all_citation_keys(state: SurveyState) -> set[str]:
     return keys
 
 
+def reset_scratchpad(
+    state: SurveyState,
+    section_key: str = "",
+) -> dict[str, Any]:
+    """Reset the scratchpad and prepare retrieved_facts for a new section.
+
+    Clears ``current_scratchpad`` and ensures ``retrieved_facts`` has an
+    empty list for *section_key* (existing facts for other sections are
+    preserved thanks to the ``_merge_retrieved_facts`` reducer).
+
+    Returns a partial state dict suitable for LangGraph updates.
+    """
+    update: dict[str, Any] = {
+        "current_scratchpad": [],
+    }
+    if section_key:
+        update["retrieved_facts"] = {section_key: []}
+    return update
+
+
 def get_pipeline_summary(state: SurveyState) -> dict[str, Any]:
     """Generate a summary dict of the pipeline state for logging/display."""
     sections = get_sections_from_state(state)
@@ -571,6 +627,13 @@ def get_pipeline_summary(state: SurveyState) -> dict[str, Any]:
 
     all_keys = collect_all_citation_keys(state)
 
+    # Agentic stats
+    retrieved_facts = state.get("retrieved_facts") or {}  # type: ignore[attr-defined]
+    agentic_stats = state.get("agentic_stats") or {}  # type: ignore[attr-defined]
+    total_tool_calls = sum(
+        len(entries) for entries in retrieved_facts.values()
+    )
+
     return {
         "current_phase": state.get("current_phase", "unknown"),  # type: ignore[attr-defined]
         "current_section": state.get("current_section_key", ""),  # type: ignore[attr-defined]
@@ -583,4 +646,6 @@ def get_pipeline_summary(state: SurveyState) -> dict[str, Any]:
         "provenance_records": len(state.get("provenance") or []),  # type: ignore[attr-defined]
         "has_final_paper": bool(state.get("final_paper")),  # type: ignore[attr-defined]
         "errors": state.get("errors", []),  # type: ignore[attr-defined]
+        "agentic_tool_calls": total_tool_calls,
+        "agentic_stats": agentic_stats,
     }

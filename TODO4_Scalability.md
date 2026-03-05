@@ -504,7 +504,7 @@ paperhunter/
 
 ---
 
-#### [ ] Task 3.3: Gestione dello State Scratchpad
+#### [x] Task 3.3: Gestione dello State Scratchpad
 
 **File:** `paperhunter/agents/state.py` (modifica)  
 **Stato attuale:** `SurveyState` (TypedDict per LangGraph) contiene: `outline`, `sections`, `feedback`, `provenance_records`, `bibliography_entries`, `checkpoints`, `run_metadata`. Non traccia le fonti consultate dall'agente durante il ReAct loop, rendendo difficile per il Critic Agent verificare la provenance.  
@@ -518,6 +518,51 @@ paperhunter/
 - **Serializzazione:** Verificare che i nuovi campi siano serializzabili JSON per il `CheckpointManager` (evitare oggetti non-serializzabili come datetime)
 - **Reset per sezione:** Aggiungere helper `reset_scratchpad(state)` che azzera `current_scratchpad` e prepara `retrieved_facts` per una nuova sezione  
 **Test:** Creare un `SurveyState` con i nuovi campi, popolare `retrieved_facts` e `current_scratchpad` con dati di test, salvare/caricare tramite `CheckpointManager`, verificare integrità dei dati dopo la deserializzazione JSON.
+
+> **Completato:** 5 Marzo 2026  
+> **Modifiche apportate:**
+> - `paperhunter/agents/state.py` (modifica): Aggiunti 3 nuovi campi a `SurveyState` TypedDict con reducer dedicati; aggiunta funzione helper `reset_scratchpad()`; aggiornato `get_pipeline_summary()` con metriche agentic
+> - `paperhunter/agents/__init__.py` (modifica): Aggiunto export `reset_scratchpad`
+> - `test_state.py` (modifica): Aggiunti 10 nuovi test (TEST 12–21) per validare tutti i nuovi campi, reducer, serializzazione e compatibilità LangGraph
+> **Nuovi campi in `SurveyState`:**
+> - `current_scratchpad: Annotated[list[str], _replace_or_default]` — Note e osservazioni accumulate dall'agente durante le iterazioni ReAct. Viene sostituito (non appendato) ad ogni aggiornamento, per reset pulito tra sezioni.
+> - `retrieved_facts: Annotated[dict[str, list[dict]], _merge_retrieved_facts]` — Log completo delle ricerche: `{section_key: [{"query": str, "tool": str, "results": str, "timestamp": str}]}`. Il reducer *appende* nuovi entry alla lista per ogni section key (nessuna deduplicazione — ogni tool call è loggata individualmente).
+> - `agentic_stats: Annotated[dict, _merge_agentic_stats]` — Statistiche aggregate: totale tool calls, totale iterazioni, tempo per sezione. Il reducer fa shallow merge (i nuovi valori sovrascrivono i vecchi per la stessa chiave).
+> **Nuovi reducer:**
+> - `_merge_retrieved_facts(existing, updates) -> dict[str, list[dict]]` — Merge per section key con append delle entries
+> - `_merge_agentic_stats(existing, updates) -> dict` — Shallow merge (update sovrascrive)
+> **Nuova funzione helper:**
+> - `reset_scratchpad(state, section_key?) -> dict[str, Any]` — Ritorna un dict parziale per LangGraph che azzera `current_scratchpad` a `[]` e opzionalmente prepara una lista vuota in `retrieved_facts` per `section_key`
+> **Aggiornamenti a funzioni esistenti:**
+> - `create_initial_state()`: Inizializza `current_scratchpad=[]`, `retrieved_facts={}`, `agentic_stats={}`
+> - `state_to_dict()` / `state_from_dict()`: I nuovi campi sono automaticamente gestiti (tutti nativi JSON: list[str], dict, etc.) — nessuna serializzazione speciale necessaria
+> - `get_pipeline_summary()`: Aggiunge `agentic_tool_calls` (somma di tutti gli entry in retrieved_facts) e `agentic_stats` al summary dict
+> **Uso:**
+> ```python
+> from paperhunter.agents.state import (
+>     SurveyState, create_initial_state, reset_scratchpad,
+> )
+> 
+> state = create_initial_state()
+> 
+> # Il writer agentic aggiorna lo stato con le info sulle ricerche
+> state_update = {
+>     "current_scratchpad": ["Searching for injection taxonomy", "Found 5 chunks"],
+>     "retrieved_facts": {
+>         "prompt_injection": [
+>             {"query": "injection attacks", "tool": "search_vector_database",
+>              "results": "Found GCG, AutoDAN...", "timestamp": "2026-03-05T10:30:00"},
+>         ],
+>     },
+>     "agentic_stats": {"total_tool_calls": 1, "total_iterations": 3},
+> }
+> 
+> # Prima di iniziare una nuova sezione, reset dello scratchpad
+> reset_update = reset_scratchpad(state, section_key="adversarial_robustness")
+> # → {"current_scratchpad": [], "retrieved_facts": {"adversarial_robustness": []}}
+> ```
+> **Backward compatibility:** I checkpoint salvati prima di questo task vengono caricati correttamente: `state_from_dict()` riempie i campi mancanti con i default (`[]`, `{}`, `{}`). Testato con dati parziali nel TEST 15.
+> **Test:** 10 nuovi test (TEST 12–21) in `test_state.py`: defaults, popolamento, serializzazione JSON round-trip, backward compatibility vecchi checkpoint, `reset_scratchpad`, reducer `_merge_retrieved_facts` (disjoint merge, append, edge cases), reducer `_merge_agentic_stats`, `get_pipeline_summary` con dati agentic, compatibilità LangGraph end-to-end (2 nodi con merge), `CheckpointManager` save/load round-trip. Tutti passati.
 
 ---
 

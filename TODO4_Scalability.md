@@ -308,7 +308,7 @@ paperhunter/
 
 ---
 
-#### [ ] Task 2.2: Generare Community Summaries
+#### [x] Task 2.2: Generare Community Summaries
 
 **File:** `paperhunter/graphrag/community_summarizer.py` (nuovo)  
 **Stato attuale:** Il grafo contiene comunità identificate (dopo Task 2.1) ma non esiste un summary testuale che ne descriva la narrativa, rendendo difficile l'uso delle comunità nel retrieval.  
@@ -329,6 +329,66 @@ paperhunter/
 - **`config.yaml`:** Aggiungere `qdrant.collection_graph_communities: "graph_communities"` nella sezione `qdrant`
 - **`config.py`:** Aggiungere il campo corrispondente a `QdrantConfig`  
 **Test:** Fornire un sotto-grafo mock (20 nodi, 30 relazioni), generare il testo narrativo, verificare che contenga le entità chiave. Verificare il salvataggio in Qdrant.
+
+> **Completato:** 5 Marzo 2026  
+> **Modifiche apportate:**
+> - `paperhunter/graphrag/community_summarizer.py` (nuovo): Modulo completo per generazione summary narrativi delle comunità del knowledge graph
+> - `config.yaml` (modifica): Aggiunta `collection_graph_communities: "graph_communities"` nella sezione `qdrant`
+> - `paperhunter/config.py` (modifica): Aggiunto campo `collection_graph_communities: str = "graph_communities"` a `QdrantConfig`
+> - `paperhunter/indexing/qdrant_store.py` (modifica): Aggiunto `COLLECTION_GRAPH_COMMUNITIES` class attribute, registrato in `_ensure_collections()` e `get_stats()`
+> - `paperhunter/graphrag/__init__.py` (modifica): Aggiornati exports con `CommunitySummarizer`, `summarize_graph_communities`, `load_community_summaries`, `count_community_summaries`
+> - `test_community_summarizer.py` (nuovo): 63 test unitari e di integrazione
+> **Classe `CommunitySummarizer`:**
+> - `__init__(community_detector, qdrant_store)` — Inizializza con `CommunityDetector` e `QdrantStore`
+> - `summarize_community(community_id, subgraph, force_model?) -> str` — Genera un summary narrativo (200-500 parole) per una singola comunità via LLM (Gemini Pro). Formatta entità e relazioni come prompt strutturato, chiede al LLM di produrre un testo accademico con entità in grassetto
+> - `summarize_all_communities(communities, force_model?, skip_existing?) -> list[dict]` — Batch processing di tutte le comunità con progress bar Rich, rate limiting e skip delle comunità già presenti in Qdrant. Ritorna `[{"community_id": int, "summary": str, "node_count": int, "key_entities": list[str]}]`
+> - `save_to_qdrant(summaries, batch_size?) -> int` — Salva i community summary nella collection Qdrant `graph_communities` come `PaperChunk` con embedding automatico
+> **Funzioni standalone:**
+> - `summarize_graph_communities(algorithm?, min_size?, save_to_qdrant?, force_model?) -> list[dict]` — Pipeline completa one-shot: detection → summarization → save
+> - `load_community_summaries(store?) -> list[dict]` — Carica tutti i community summary dal Qdrant store
+> - `count_community_summaries(store?) -> int` — Conta i community summary presenti
+> **Helper interni:**
+> - `_format_entities_for_prompt(nodes) -> str` — Formatta nodi come lista con nome, tipo, descrizione, paper_count
+> - `_format_relationships_for_prompt(edges) -> str` — Formatta relazioni con dedup bidirezionale, max 50 nel prompt
+> - `_format_key_entities_for_prompt(key_entities) -> str` — Formatta entità chiave in grassetto
+> - `_clean_llm_response(raw) -> str` — Rimuove code fence, prefissi, spazi extra
+> - `_validate_community_summary(summary, community_id, key_entities)` — Valida lunghezza (50-800 parole) e presenza entità chiave
+> - `_make_community_chunk_id(community_id) -> str` — Chunk ID deterministico (MD5)
+> - `_community_summary_to_embed_text(community_id, summary, key_entities, node_count) -> str` — Testo combinato per embedding
+> - `_community_exists_in_store(community_id, store) -> bool` — Verifica esistenza nel vector store
+> - `_ensure_community_collection(store, collection_name)` — Crea collection se non esiste
+> - `_reconstruct_community_from_payload(paper_id, text) -> dict | None` — Ricostruisce dizionario dal payload Qdrant
+> - `_print_batch_report(total, generated, skipped, errors, error_details)` — Report Rich riassuntivo
+> **Uso:**
+> ```python
+> from paperhunter.graphrag.community_detector import CommunityDetector
+> from paperhunter.graphrag.community_summarizer import CommunitySummarizer
+> from paperhunter.graphrag.neo4j_manager import Neo4jManager
+> from paperhunter.indexing.qdrant_store import QdrantStore
+> 
+> with Neo4jManager() as mgr:
+>     detector = CommunityDetector(mgr)
+>     communities = detector.detect_communities(algorithm="louvain", min_size=3)
+> 
+>     store = QdrantStore()
+>     summarizer = CommunitySummarizer(detector, store)
+> 
+>     # Genera summary per tutte le comunità
+>     results = summarizer.summarize_all_communities(communities)
+>     # → [{"community_id": 0, "summary": "...", "node_count": 15, "key_entities": [...]}, ...]
+> 
+>     # Salva in Qdrant
+>     summarizer.save_to_qdrant(results)
+> 
+> # Oppure one-shot:
+> from paperhunter.graphrag.community_summarizer import summarize_graph_communities
+> results = summarize_graph_communities(algorithm="louvain", min_size=3)
+> 
+> # Caricamento successivo:
+> from paperhunter.graphrag.community_summarizer import load_community_summaries
+> loaded = load_community_summaries()
+> ```
+> **Note:** Il prompt LLM istruisce il modello a scrivere in stile accademico formale, con entità in grassetto, struttura narrativa (non lista), e contesto nel panorama della sicurezza LLM. La validazione controlla che almeno metà delle key_entities siano menzionate nel testo. Il salvataggio in Qdrant usa la collection `graph_communities` con chunk_id deterministico basato su community_id. La funzione `_reconstruct_community_from_payload` ricostruisce correttamente summary multi-paragrafo.
 
 ---
 

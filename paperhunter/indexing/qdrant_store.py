@@ -201,6 +201,7 @@ class QdrantStore:
     COLLECTION_L1 = "l1_summaries"
     COLLECTION_L1_5 = "l1_5_summaries"
     COLLECTION_L2 = "l2_summaries"
+    COLLECTION_GRAPH_COMMUNITIES = "graph_communities"
 
     # Campi payload con indice (no-op in locale, utile se si migra a server)
     _INDEXED_FIELDS = {
@@ -231,6 +232,7 @@ class QdrantStore:
         self.COLLECTION_L1 = cfg.collection_l1_summaries
         self.COLLECTION_L1_5 = cfg.collection_l1_5_summaries
         self.COLLECTION_L2 = cfg.collection_l2_summaries
+        self.COLLECTION_GRAPH_COMMUNITIES = cfg.collection_graph_communities
 
         # Collezione di default
         self.default_collection = collection_name or self.COLLECTION_CHUNKS
@@ -259,7 +261,7 @@ class QdrantStore:
 
     def _ensure_collections(self) -> None:
         """Crea le collezioni se non esistono già."""
-        for col_name in (self.COLLECTION_CHUNKS, self.COLLECTION_L1, self.COLLECTION_L1_5, self.COLLECTION_L2):
+        for col_name in (self.COLLECTION_CHUNKS, self.COLLECTION_L1, self.COLLECTION_L1_5, self.COLLECTION_L2, self.COLLECTION_GRAPH_COMMUNITIES):
             if not self.client.collection_exists(col_name):
                 self.client.create_collection(
                     collection_name=col_name,
@@ -937,7 +939,7 @@ class QdrantStore:
 
         # Stats per tutte le collezioni
         all_stats: dict[str, Any] = {}
-        for col_name in (self.COLLECTION_CHUNKS, self.COLLECTION_L1, self.COLLECTION_L1_5, self.COLLECTION_L2):
+        for col_name in (self.COLLECTION_CHUNKS, self.COLLECTION_L1, self.COLLECTION_L1_5, self.COLLECTION_L2, self.COLLECTION_GRAPH_COMMUNITIES):
             if self.client.collection_exists(col_name):
                 all_stats[col_name] = self._get_collection_stats(col_name)
             else:

@@ -43,6 +43,12 @@ from paperhunter.graphrag.community_detector import (
     detect_graph_communities,
     get_community_stats_standalone,
 )
+from paperhunter.graphrag.community_summarizer import (
+    CommunitySummarizer,
+    count_community_summaries,
+    load_community_summaries,
+    summarize_graph_communities,
+)
 
 __all__ = [
     # Entity extractor
@@ -76,4 +82,9 @@ __all__ = [
     "GDSNotAvailableError",
     "detect_graph_communities",
     "get_community_stats_standalone",
+    # Community summarizer
+    "CommunitySummarizer",
+    "summarize_graph_communities",
+    "load_community_summaries",
+    "count_community_summaries",
 ]

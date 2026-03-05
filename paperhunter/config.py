@@ -66,6 +66,7 @@ class QdrantConfig(BaseModel):
     collection_l1_summaries: str = "l1_summaries"
     collection_l2_summaries: str = "l2_summaries"
     collection_l1_5_summaries: str = "l1_5_summaries"
+    collection_graph_communities: str = "graph_communities"
     embedding_dimension: int = 3072
     distance_metric: str = "Cosine"
 

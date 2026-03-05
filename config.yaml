@@ -48,6 +48,7 @@ qdrant:
   collection_l1_summaries: "l1_summaries"
   collection_l2_summaries: "l2_summaries"
   collection_l1_5_summaries: "l1_5_summaries"
+  collection_graph_communities: "graph_communities"
   embedding_dimension: 3072                    # Gemini embedding-001 dimension
   distance_metric: "Cosine"                    # Cosine | Euclid | Dot
 

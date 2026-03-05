@@ -1046,6 +1046,337 @@ class Neo4jManager:
 
         return stats
 
+    # ------------------------------------------------------------------
+    # GDS (Graph Data Science) — Community Detection support
+    # ------------------------------------------------------------------
+
+    def ensure_gds_plugin(self) -> bool:
+        """Verifica che il plugin GDS (Graph Data Science) sia disponibile.
+
+        Tenta di chiamare ``gds.version()`` via Cypher. Se il plugin non è
+        installato, restituisce False senza lanciare eccezioni.
+
+        Returns:
+            True se GDS è disponibile, False altrimenti.
+        """
+        try:
+            result = self._run("RETURN gds.version() AS version")
+            version = result[0]["version"] if result else None
+            if version:
+                logger.info(f"Neo4j GDS disponibile: v{version}")
+                return True
+            return False
+        except Exception as e:
+            logger.warning(f"Neo4j GDS non disponibile: {e}")
+            return False
+
+    def project_graph(
+        self,
+        graph_name: str = "community_graph",
+        node_label: str = "Entity",
+        relationship_types: list[str] | None = None,
+        orientation: str = "UNDIRECTED",
+    ) -> dict:
+        """Crea una proiezione GDS del grafo per gli algoritmi di community detection.
+
+        La proiezione include tutti i nodi ``Entity`` e le relazioni specificate
+        (o tutte se non filtra). I pesi sulle relazioni non sono obbligatori
+        ma, se presenti nella property ``weight``, vengono inclusi.
+
+        Args:
+            graph_name: Nome della proiezione GDS (default: ``community_graph``).
+            node_label: Label dei nodi da proiettare (default: ``Entity``).
+            relationship_types: Lista dei tipi di relazione da includere.
+                Se None, include tutti i tipi relazione noti.
+            orientation: Orientamento dei relationship: ``UNDIRECTED``, ``NATURAL``,
+                ``REVERSE``. Default ``UNDIRECTED`` per community detection.
+
+        Returns:
+            Dizionario con metadati della proiezione:
+            ``graph_name``, ``node_count``, ``relationship_count``.
+
+        Raises:
+            RuntimeError: Se la proiezione fallisce.
+        """
+        # Drop della proiezione esistente se presente
+        self.drop_graph_projection(graph_name)
+
+        if relationship_types is None:
+            from paperhunter.graphrag.entity_extractor import RelationType
+            relationship_types = [rt.value for rt in RelationType]
+
+        # Costruisci la configurazione delle relazioni per GDS
+        rel_config = {
+            rt: {"orientation": orientation}
+            for rt in relationship_types
+        }
+
+        # Usa gds.graph.project (GDS ≥ 2.x)
+        # Fallback a gds.graph.project.cypher se la sintassi standard non funziona
+        try:
+            # Sintassi GDS ≥ 2.x: gds.graph.project(graphName, nodeProjection, relProjection)
+            query = (
+                "CALL gds.graph.project("
+                "  $graph_name,"
+                "  $node_label,"
+                "  $rel_config"
+                ") YIELD graphName, nodeCount, relationshipCount"
+            )
+            result = self._run(query, {
+                "graph_name": graph_name,
+                "node_label": node_label,
+                "rel_config": rel_config,
+            })
+
+            if result:
+                info = {
+                    "graph_name": result[0].get("graphName", graph_name),
+                    "node_count": result[0].get("nodeCount", 0),
+                    "relationship_count": result[0].get("relationshipCount", 0),
+                }
+                logger.info(
+                    f"Proiezione GDS '{graph_name}' creata: "
+                    f"{info['node_count']} nodi, {info['relationship_count']} relazioni"
+                )
+                return info
+
+        except Exception as e:
+            logger.debug(f"gds.graph.project standard fallito: {e}")
+
+            # Fallback: Cypher projection per versioni GDS diverse
+            try:
+                node_query = f"MATCH (n:{node_label}) RETURN id(n) AS id"
+                rel_clauses = " OR ".join(f"type(r) = '{rt}'" for rt in relationship_types)
+                rel_query = (
+                    f"MATCH (s:{node_label})-[r]->(t:{node_label}) "
+                    f"WHERE {rel_clauses} "
+                    f"RETURN id(s) AS source, id(t) AS target, type(r) AS type"
+                )
+
+                query_cypher = (
+                    "CALL gds.graph.project.cypher("
+                    "  $graph_name,"
+                    "  $node_query,"
+                    "  $rel_query"
+                    ") YIELD graphName, nodeCount, relationshipCount"
+                )
+                result = self._run(query_cypher, {
+                    "graph_name": graph_name,
+                    "node_query": node_query,
+                    "rel_query": rel_query,
+                })
+
+                if result:
+                    info = {
+                        "graph_name": result[0].get("graphName", graph_name),
+                        "node_count": result[0].get("nodeCount", 0),
+                        "relationship_count": result[0].get("relationshipCount", 0),
+                    }
+                    logger.info(
+                        f"Proiezione GDS (Cypher) '{graph_name}' creata: "
+                        f"{info['node_count']} nodi, {info['relationship_count']} relazioni"
+                    )
+                    return info
+
+            except Exception as e2:
+                logger.error(f"Fallback Cypher projection fallito: {e2}")
+
+        raise RuntimeError(
+            f"Impossibile creare la proiezione GDS '{graph_name}'. "
+            "Verificare che il plugin GDS sia installato correttamente."
+        )
+
+    def drop_graph_projection(self, graph_name: str = "community_graph") -> bool:
+        """Elimina una proiezione GDS esistente (cleanup).
+
+        Ignora silenziosamente se la proiezione non esiste.
+
+        Args:
+            graph_name: Nome della proiezione da eliminare.
+
+        Returns:
+            True se la proiezione è stata eliminata, False se non esisteva.
+        """
+        try:
+            # Verifica se la proiezione esiste
+            result = self._run(
+                "CALL gds.graph.exists($graph_name) YIELD exists",
+                {"graph_name": graph_name},
+            )
+            exists = result[0]["exists"] if result else False
+
+            if exists:
+                self._run(
+                    "CALL gds.graph.drop($graph_name) YIELD graphName",
+                    {"graph_name": graph_name},
+                )
+                logger.info(f"Proiezione GDS '{graph_name}' eliminata.")
+                return True
+            else:
+                logger.debug(f"Proiezione GDS '{graph_name}' non esistente, skip drop.")
+                return False
+
+        except Exception as e:
+            logger.debug(f"Drop proiezione GDS '{graph_name}' fallito (probabilmente non esiste): {e}")
+            return False
+
+    def run_community_detection(
+        self,
+        graph_name: str = "community_graph",
+        algorithm: str = "louvain",
+        write_property: str = "community_id",
+    ) -> dict:
+        """Esegue un algoritmo di community detection sulla proiezione GDS.
+
+        Supporta Louvain e Leiden. Scrive il ``community_id`` come proprietà
+        su ogni nodo del grafo Neo4j.
+
+        Args:
+            graph_name: Nome della proiezione GDS.
+            algorithm: ``"louvain"`` o ``"leiden"``. Default ``"louvain"``.
+            write_property: Nome della proprietà in cui scrivere il community ID.
+
+        Returns:
+            Dizionario con: ``community_count``, ``modularity``, ``node_properties_written``.
+
+        Raises:
+            ValueError: Se l'algoritmo non è supportato.
+            RuntimeError: Se l'esecuzione fallisce.
+        """
+        algorithm = algorithm.lower()
+        if algorithm not in ("louvain", "leiden"):
+            raise ValueError(
+                f"Algoritmo non supportato: '{algorithm}'. Usa 'louvain' o 'leiden'."
+            )
+
+        try:
+            query = (
+                f"CALL gds.{algorithm}.write("
+                f"  $graph_name,"
+                f"  {{writeProperty: $write_property}}"
+                f") YIELD communityCount, modularity, nodePropertiesWritten"
+            )
+            result = self._run(query, {
+                "graph_name": graph_name,
+                "write_property": write_property,
+            })
+
+            if result:
+                info = {
+                    "community_count": result[0].get("communityCount", 0),
+                    "modularity": result[0].get("modularity", 0.0),
+                    "node_properties_written": result[0].get("nodePropertiesWritten", 0),
+                    "algorithm": algorithm,
+                    "write_property": write_property,
+                }
+                logger.info(
+                    f"Community detection ({algorithm}): "
+                    f"{info['community_count']} comunità trovate, "
+                    f"modularity={info['modularity']:.4f}, "
+                    f"{info['node_properties_written']} proprietà scritte"
+                )
+                return info
+            else:
+                raise RuntimeError(f"Nessun risultato da gds.{algorithm}.write")
+
+        except Exception as e:
+            raise RuntimeError(
+                f"Community detection ({algorithm}) fallita: {e}"
+            ) from e
+
+    def get_nodes_by_community(
+        self,
+        community_id: int,
+        community_property: str = "community_id",
+    ) -> list[dict]:
+        """Recupera tutti i nodi appartenenti a una specifica comunità.
+
+        Args:
+            community_id: ID della comunità.
+            community_property: Nome della proprietà community (default: ``community_id``).
+
+        Returns:
+            Lista di dizionari con le proprietà dei nodi.
+        """
+        query = (
+            f"MATCH (n:Entity) "
+            f"WHERE n.{community_property} = $cid "
+            f"RETURN n, labels(n) AS labels "
+            f"ORDER BY n.canonical_name"
+        )
+        result = self._run(query, {"cid": community_id})
+        nodes = []
+        for record in result:
+            node = _node_to_dict(record["n"], record["labels"])
+            if node:
+                nodes.append(node)
+        return nodes
+
+    def get_edges_within_community(
+        self,
+        community_id: int,
+        community_property: str = "community_id",
+    ) -> list[dict]:
+        """Recupera tutte le relazioni interne a una comunità.
+
+        Args:
+            community_id: ID della comunità.
+            community_property: Nome della proprietà community.
+
+        Returns:
+            Lista di dizionari con le proprietà delle relazioni.
+        """
+        query = (
+            f"MATCH (s:Entity)-[r]->(t:Entity) "
+            f"WHERE s.{community_property} = $cid AND t.{community_property} = $cid "
+            f"RETURN s.canonical_name AS source, s.entity_id AS source_id, "
+            f"type(r) AS rel_type, r.description AS description, "
+            f"r.year AS year, r.source_bibtex_key AS source_bibtex_key, "
+            f"t.canonical_name AS target, t.entity_id AS target_id"
+        )
+        result = self._run(query, {"cid": community_id})
+        edges = []
+        for record in result:
+            edges.append({
+                "source": record.get("source", ""),
+                "source_id": record.get("source_id", ""),
+                "rel_type": record.get("rel_type", ""),
+                "description": record.get("description", ""),
+                "year": record.get("year"),
+                "source_bibtex_key": record.get("source_bibtex_key"),
+                "target": record.get("target", ""),
+                "target_id": record.get("target_id", ""),
+            })
+        return edges
+
+    def get_all_community_ids(
+        self,
+        community_property: str = "community_id",
+        min_size: int = 1,
+    ) -> list[dict]:
+        """Recupera tutti i community ID distinti con il conteggio dei nodi.
+
+        Args:
+            community_property: Nome della proprietà community.
+            min_size: Dimensione minima della comunità (default: 1).
+
+        Returns:
+            Lista di ``{"community_id": int, "size": int}``, ordinata per size decrescente.
+        """
+        query = (
+            f"MATCH (n:Entity) "
+            f"WHERE n.{community_property} IS NOT NULL "
+            f"RETURN n.{community_property} AS community_id, count(n) AS size "
+            f"ORDER BY size DESC"
+        )
+        result = self._run(query)
+        communities = [
+            {"community_id": r["community_id"], "size": r["size"]}
+            for r in result
+            if r["size"] >= min_size
+        ]
+        return communities
+
 
 # ============================================================================
 # Helper functions

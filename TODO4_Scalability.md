@@ -233,7 +233,7 @@ paperhunter/
 
 ### FASE 2 — Community-Driven GraphRAG
 
-#### [ ] Task 2.1: Implementare Community Detection nel Grafo
+#### [x] Task 2.1: Implementare Community Detection nel Grafo
 
 **File:** `paperhunter/graphrag/community_detector.py` (nuovo), `paperhunter/graphrag/neo4j_manager.py` (modifica)  
 **Stato attuale:** Il grafo Neo4j contiene entità e relazioni estratte dai paper (via `entity_extractor.py` e `neo4j_manager.py`), ma non ha alcun meccanismo per identificare macro-temi strutturali. Le query GraphRAG attualmente cercano singole entità senza contesto di comunità.  
@@ -255,6 +255,56 @@ paperhunter/
   - Filtro: ignorare comunità con < N nodi (soglia configurabile)
 - Logging con Rich: numero di comunità trovate, distribuzione dimensioni, top-5 comunità per size  
 **Test:** Eseguire la detection su un grafo di test con ~300 entità (mock o reale) e verificare che i nodi vengano taggati con `community_id`. Verificare che le comunità restituite contengano sotto-grafi validi.
+
+> **Completato:** 5 Marzo 2026  
+> **Modifiche apportate:**
+> - `paperhunter/graphrag/neo4j_manager.py` (modifica): Aggiunti 7 nuovi metodi GDS alla classe `Neo4jManager` per supportare la community detection
+> - `paperhunter/graphrag/community_detector.py` (nuovo): Modulo completo per rilevamento comunità tematiche nel grafo Neo4j via GDS
+> - `paperhunter/graphrag/__init__.py` (modifica): Aggiornati exports con `CommunityDetector`, `CommunityDetectionError`, `GDSNotAvailableError`, `detect_graph_communities`, `get_community_stats_standalone`
+> - `test_community_detector.py` (nuovo): 41 test (39 unit + 2 integration skip se Neo4j non disponibile)
+> **Metodi aggiunti a `Neo4jManager`:**
+> - `ensure_gds_plugin() -> bool` — Verifica disponibilità del plugin GDS (chiama `gds.version()`)
+> - `project_graph(graph_name, node_label?, relationship_types?, orientation?) -> dict` — Crea proiezione GDS del grafo (con fallback a Cypher projection)
+> - `drop_graph_projection(graph_name) -> bool` — Elimina proiezione GDS (ignora se non esiste)
+> - `run_community_detection(graph_name, algorithm?, write_property?) -> dict` — Esegue Louvain o Leiden e scrive `community_id` sui nodi
+> - `get_nodes_by_community(community_id, community_property?) -> list[dict]` — Recupera nodi di una comunità
+> - `get_edges_within_community(community_id, community_property?) -> list[dict]` — Recupera relazioni interne a una comunità
+> - `get_all_community_ids(community_property?, min_size?) -> list[dict]` — Lista tutte le comunità con conteggio nodi
+> **Classe `CommunityDetector`:**
+> - `__init__(neo4j_manager, graph_name?, community_property?)` — Inizializza con `Neo4jManager` connesso
+> - `ensure_gds() -> bool` — Verifica GDS con caching (lancia `GDSNotAvailableError` se manca)
+> - `detect_communities(algorithm?, min_size?, relationship_types?) -> list[dict]` — Pipeline completa: verifica GDS → proiezione → detection → recupero sotto-grafi → cleanup
+> - `get_community_subgraph(community_id) -> dict` — Estrae nodi, edges, key_entities di una comunità
+> - `get_all_communities(min_size?) -> list[dict]` — Recupera comunità già rilevate (senza re-detection)
+> - `get_community_stats() -> dict` — Statistiche: total_communities, modularity, size_distribution, top_5
+> - `clear_community_labels() -> int` — Rimuove proprietà `community_id` da tutti i nodi
+> **Funzioni standalone:**
+> - `detect_graph_communities(algorithm?, min_size?) -> list[dict]` — Convenience per esecuzione one-shot
+> - `get_community_stats_standalone() -> dict` — Convenience per statistiche
+> **Helper interni:**
+> - `_extract_key_entities(nodes, edges, top_n?) -> list[str]` — Identifica entità chiave per numero di connessioni
+> - `_log_community_detection_results(...)` — Logging Rich con tabella riassuntiva
+> **Eccezioni:** `GDSNotAvailableError`, `CommunityDetectionError`
+> **Uso:**
+> ```python
+> from paperhunter.graphrag.neo4j_manager import Neo4jManager
+> from paperhunter.graphrag.community_detector import CommunityDetector
+> 
+> with Neo4jManager() as mgr:
+>     detector = CommunityDetector(mgr)
+> 
+>     # Pipeline completa
+>     communities = detector.detect_communities(algorithm="louvain", min_size=3)
+>     # → [{"community_id": 0, "nodes": [...], "edges": [...], "size": 15, "key_entities": [...]}, ...]
+> 
+>     # Statistiche
+>     stats = detector.get_community_stats()
+>     print(f"Comunità: {stats['total_communities']}, Modularity: {stats['modularity']}")
+> 
+>     # Sotto-grafo singolo
+>     subgraph = detector.get_community_subgraph(community_id=0)
+> ```
+> **Note:** La proiezione GDS viene creata e droppata automaticamente ad ogni `detect_communities()` (cleanup in `finally`). L'output di ogni comunità include `key_entities` (top 5 entità per numero di connessioni). Il docker Neo4j deve essere avviato con `NEO4J_PLUGINS='["graph-data-science"]'` per il supporto GDS. Supportati sia Louvain che Leiden.
 
 ---
 

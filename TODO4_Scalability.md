@@ -178,7 +178,7 @@ paperhunter/
 
 ---
 
-#### [ ] Task 1.3: Aggiornare `summarization/level2_summarizer.py`
+#### [x] Task 1.3: Aggiornare `summarization/level2_summarizer.py`
 
 **File:** `paperhunter/summarization/level2_summarizer.py` (modifica)  
 **Stato attuale:** `_format_l1_summaries_for_prompt()` carica tutti gli L1 e applica una compressione progressiva per recency tier. Con 1.000+ paper, anche la compressione all-compressed non basta: bisogna passare dai cluster L1.5.  
@@ -196,6 +196,38 @@ paperhunter/
 - **Prompt L2 aggiornato:** Aggiungere nota che i summary provengono da cluster tematici, istruendo l'LLM a cercare pattern cross-cluster
 - Logging del budget consumato: mostrare quanti token usano i cluster L1.5 vs il budget disponibile  
 **Test:** Generare un L2 partendo da 50 cluster L1.5 mock e verificare che rientri perfettamente nel budget token. Verificare anche il fallback all'L1 diretto se non ci sono L1.5.
+
+> **Completato:** 5 Marzo 2026  
+> **Modifiche apportate:**
+> - `paperhunter/summarization/level2_summarizer.py` (modifica): Import aggiunto per `L1_5Summary`; nuovo prompt template `_L2_FROM_L1_5_PROMPT_TEMPLATE` per il path RAPTOR; `generate_l2_summary()` ora controlla l'esistenza di L1.5 summary prima di procedere con il path legacy
+> - Nuova funzione `_generate_l2_from_l1_5()`: genera L2 dal RAPTOR path (cluster L1.5), con budget check, LLM call con retry/fallback, metadata RAPTOR su disco
+> - Nuova funzione `_format_l1_5_summaries_for_prompt()`: formatta i cluster L1.5 per il prompt L2, ordinati per temporal_span (più recenti prima), con blocchi strutturati (theme, methodologies, key findings, testing, paper IDs)
+> - Nuova funzione `_truncate_l1_5_for_budget()`: troncamento progressivo in 3 fasi (campi secondari → tutti i campi → hard truncation) per rientrare nel budget
+> - `test_l2_with_l1_5.py` (nuovo): 10 test unitari e di integrazione con mock LLM
+> **Funzioni aggiunte:**
+> - `_generate_l2_from_l1_5(category, l1_5_summaries, force_model?, save_to_store?, store?, version?) -> L2Summary` — Genera L2 dal RAPTOR path con cluster L1.5
+> - `_format_l1_5_summaries_for_prompt(l1_5_summaries) -> str` — Formatta i cluster L1.5 per il prompt L2, ordinati per temporal_span decrescente
+> - `_truncate_l1_5_for_budget(l1_5_summaries, max_chars) -> str` — Tronca progressivamente i campi L1.5 per rientrare nel budget
+> - `_L2_FROM_L1_5_PROMPT_TEMPLATE` — Prompt template dedicato al RAPTOR path, con istruzioni per pattern cross-cluster
+> **Logica di routing in `generate_l2_summary()`:**
+> 1. Carica `store` (QdrantStore) se non fornito
+> 2. Chiama `load_l1_5_summaries_for_category(category)` per verificare se esistono L1.5
+> 3. Se L1.5 presenti → `_generate_l2_from_l1_5()` (RAPTOR path)
+> 4. Se L1.5 assenti → path legacy con recency tiers sugli L1 (backward-compatible)
+> **Uso:**
+> ```python
+> from paperhunter.summarization.level2_summarizer import generate_l2_summary
+> 
+> # Auto-detection: usa L1.5 se disponibili, altrimenti fallback a L1
+> l2 = generate_l2_summary("Prompt Injection", save_to_store=True)
+> 
+> # Forzare il path legacy passando l1_summaries esplicitamente
+> # (l'auto-detection controlla comunque prima i L1.5)
+> l2 = generate_l2_summary("Prompt Injection", l1_summaries=my_l1_list)
+> ```
+> **Metadata su disco:** Il path RAPTOR salva metadata con `path: "raptor_l1_5"`, `cluster_count`, `total_paper_count`, `avg_papers_per_cluster`, `l1_5_chars`, `budget_pct` nel file `output/l2_metadata/<category>.json`.
+> **Stress test:** Con 50 cluster mock (~4.425 paper simulati), il testo L1.5 occupa ~59k chars su un budget di ~588k chars (9%), confermando che il RAPTOR path risolve il problema di budget per 1.000+ paper.
+> **Note:** Il path legacy con recency tiers resta intatto come fallback. Il prompt RAPTOR istruisce il LLM a cercare pattern cross-cluster e a citare paper individuali con [bibtex_key]. La truncation progressiva (3 fasi) garantisce che anche scenari edge con cluster molto verbosi rientrino nel budget.
 
 ---
 

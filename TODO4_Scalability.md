@@ -74,7 +74,7 @@ paperhunter/
 
 ### FASE 1 — RAPTOR: Summarization Gerarchica (L1 → L1.5 → L2)
 
-#### [ ] Task 1.1: Creare `summarization/clustering_utils.py`
+#### [x] Task 1.1: Creare `summarization/clustering_utils.py`
 
 **File:** `paperhunter/summarization/clustering_utils.py` (nuovo)  
 **Stato attuale:** Non esiste alcun modulo di clustering. Gli L1 Summary vengono passati direttamente all'L2 summarizer, che con 1.000+ paper sfora inevitabilmente il budget token.  
@@ -90,6 +90,28 @@ paperhunter/
   - Wrapper leggero che restituisce solo le label di cluster
 - Logging con Rich: numero di cluster, distribuzione dimensioni, outlier count  
 **Test:** Passare 100 L1 finti con embedding mock (es. 5 gruppi da 20 con piccola varianza intra-gruppo), verificare che vengano restituiti cluster di dimensioni corrette e che nessun cluster superi `max_cluster_size`.
+
+> **Completato:** 5 Marzo 2026  
+> **Modifiche apportate:**
+> - `paperhunter/summarization/clustering_utils.py` (nuovo): Modulo completo di clustering semantico RAPTOR
+> - `test_clustering_utils.py` (nuovo): 16 test unitari e di integrazione
+> **Funzioni aggiunte:**
+> - `cluster_summaries(l1_summaries, embeddings, max_cluster_size?, similarity_threshold?) -> dict[int, list[L1Summary]]` — Funzione principale: raggruppa L1 Summary via AgglomerativeClustering con ri-clusterizzazione ricorsiva per cluster oversized
+> - `get_cluster_labels(embeddings, similarity_threshold?) -> list[int]` — Wrapper leggero che restituisce solo le label
+> - `fetch_l1_embeddings_from_qdrant(l1_summaries, qdrant_store?) -> list[list[float]]` — Recupera i vettori embedding dalla collection Qdrant `l1_summaries` (scroll con `with_vectors=True`)
+> - Funzioni interne: `_normalize_embeddings`, `_agglomerative_cluster`, `_group_by_labels`, `_split_oversized_clusters`, `_renumber_clusters`, `_log_cluster_stats`
+> **Uso:**
+> ```python
+> from paperhunter.summarization.clustering_utils import cluster_summaries, fetch_l1_embeddings_from_qdrant
+> 
+> # Recupera embedding da Qdrant
+> embeddings = fetch_l1_embeddings_from_qdrant(l1_summaries)
+> 
+> # Genera cluster
+> clusters = cluster_summaries(l1_summaries, embeddings)
+> # → {0: [L1Summary, ...], 1: [L1Summary, ...], ...}
+> ```
+> **Note:** La distanza coseno è implementata tramite normalizzazione L2 + distanza euclidea (`eucl_dist = sqrt(2 * cosine_dist)`). I cluster sono ordinati per dimensione decrescente (cluster più grandi hanno ID più bassi). I vettori zero (embedding mancanti) vengono trattati come outlier.
 
 ---
 

@@ -65,6 +65,7 @@ class QdrantConfig(BaseModel):
     collection_paper_chunks: str = "paper_chunks"
     collection_l1_summaries: str = "l1_summaries"
     collection_l2_summaries: str = "l2_summaries"
+    collection_l1_5_summaries: str = "l1_5_summaries"
     embedding_dimension: int = 3072
     distance_metric: str = "Cosine"
 

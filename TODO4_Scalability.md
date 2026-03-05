@@ -115,7 +115,7 @@ paperhunter/
 
 ---
 
-#### [ ] Task 1.2: Creare `summarization/level1_5_summarizer.py`
+#### [x] Task 1.2: Creare `summarization/level1_5_summarizer.py`
 
 **File:** `paperhunter/summarization/level1_5_summarizer.py` (nuovo), `paperhunter/models.py` (modifica)  
 **Stato attuale:** Non esiste un livello intermedio tra L1 e L2. Con 1.000+ paper, l'L2 deve sintetizzare troppe informazioni in un'unica chiamata LLM.  
@@ -140,6 +140,41 @@ paperhunter/
   - Rate limiting via `get_gemini_limiter()`
 - Salvataggio output in una nuova collection Qdrant `l1_5_summaries` (aggiungere in `config.yaml` → sezione `qdrant`)  
 **Test:** Generare un summary L1.5 per un cluster mock di 15 paper e verificare la presenza di tutti i campi chiave in output (JSON). Verificare che venga salvato in Qdrant.
+
+> **Completato:** 5 Marzo 2026  
+> **Modifiche apportate:**
+> - `paperhunter/models.py` (modifica): Aggiunto modello `L1_5Summary(BaseModel)` con tutti i campi richiesti: `cluster_id`, `category`, `paper_ids`, `paper_count`, `common_theme`, `shared_methodologies`, `key_findings`, `testing_overview`, `temporal_span`, `generated_at`, `model_used`
+> - `paperhunter/summarization/level1_5_summarizer.py` (nuovo): Modulo completo per generazione meta-summary L1.5 per cluster RAPTOR
+> - `config.yaml` (modifica): Aggiunta `collection_l1_5_summaries: "l1_5_summaries"` nella sezione `qdrant`
+> - `paperhunter/config.py` (modifica): Aggiunto campo `collection_l1_5_summaries: str = "l1_5_summaries"` a `QdrantConfig`
+> - `paperhunter/indexing/qdrant_store.py` (modifica): Aggiunto `COLLECTION_L1_5` class attribute, registrato in `_ensure_collections()` e `get_stats()`
+> - `paperhunter/summarization/__init__.py` (modifica): Aggiornati exports con `generate_cluster_summary`, `generate_all_cluster_summaries`, `load_l1_5_summaries_for_category`, `count_l1_5_for_category`
+> - `test_l1_5_summarizer.py` (nuovo): 28 test unitari e di integrazione
+> **Funzioni aggiunte:**
+> - `generate_cluster_summary(cluster_id, summaries, category, force_model?, save_to_store?, store?) -> L1_5Summary` — Genera un singolo meta-summary L1.5 per un cluster di L1 usando Gemini Pro
+> - `generate_all_cluster_summaries(clusters, category, force_model?, save_to_store?, store?, skip_existing?) -> list[L1_5Summary]` — Batch processing di tutti i cluster con progress bar Rich e rate limiting
+> - `load_l1_5_summaries_for_category(category, store?) -> list[L1_5Summary]` — Carica tutti gli L1.5 di una categoria dal Qdrant store (scroll + ricostruzione)
+> - `count_l1_5_for_category(category, store?) -> int` — Conta rapidamente quanti L1.5 esistono per una categoria
+> - Funzioni interne: `_format_l1_for_cluster_prompt`, `_compute_temporal_span`, `_extract_paper_ids`, `_parse_l1_5_json_response`, `_validate_l1_5_summary`, `_save_l1_5_to_store`, `_l1_5_exists_in_store`, `_make_l1_5_chunk_id`, `_l1_5_summary_to_text`, `_reconstruct_l1_5_from_payload`, `_extract_max_year`, `_print_batch_report`
+> **Uso:**
+> ```python
+> from paperhunter.summarization.clustering_utils import cluster_summaries, fetch_l1_embeddings_from_qdrant
+> from paperhunter.summarization.level1_5_summarizer import (
+>     generate_all_cluster_summaries,
+>     load_l1_5_summaries_for_category,
+> )
+> 
+> # 1. Clustering degli L1
+> embeddings = fetch_l1_embeddings_from_qdrant(l1_summaries)
+> clusters = cluster_summaries(l1_summaries, embeddings)
+> 
+> # 2. Generazione L1.5 (salva automaticamente in Qdrant)
+> l1_5_summaries = generate_all_cluster_summaries(clusters, category="Prompt Injection")
+> 
+> # 3. Caricamento da Qdrant (per uso successivo nell'L2)
+> loaded = load_l1_5_summaries_for_category("Prompt Injection")
+> ```
+> **Note:** Il prompt L1.5 istruisce il LLM a: mantenere le citazioni [bibtex_key], identificare convergenze e divergenze, produrre un testo coeso. La validazione controlla che i campi siano non vuoti e che contengano almeno una citazione. Il salvataggio in Qdrant usa la collection `l1_5_summaries` con chunk_id deterministico basato su cluster_id + category.
 
 ---
 

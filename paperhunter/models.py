@@ -219,6 +219,32 @@ class L1Summary(BaseModel):
     model_used: Optional[str] = Field(None, description="Modello Gemini usato (flash/pro)")
 
 
+class L1_5Summary(BaseModel):
+    """Summary L1.5 — meta-summary intermedio per cluster RAPTOR.
+
+    Livello intermedio tra L1 e L2: un meta-summary per ogni cluster
+    semantico (~20 paper ciascuno). Riduce da ~1.000 L1 a ~50 cluster
+    summary, permettendo all'L2 di rientrare nel budget token.
+
+    Generato da ``level1_5_summarizer.py`` a partire dai cluster
+    prodotti da ``clustering_utils.py``.
+    """
+    cluster_id: int = Field(..., description="ID del cluster (da clustering_utils)")
+    category: str = Field(..., description="Categoria di appartenenza (es. Prompt Injection)")
+    paper_ids: list[str] = Field(
+        default_factory=list,
+        description="Lista dei paper_id o bibtex_key dei paper inclusi nel cluster"
+    )
+    paper_count: int = Field(0, description="Numero di paper nel cluster")
+    common_theme: str = Field("", description="Tema comune identificato dal LLM")
+    shared_methodologies: str = Field("", description="Metodologie condivise tra i paper del cluster")
+    key_findings: str = Field("", description="Risultati principali aggregati")
+    testing_overview: str = Field("", description="Panoramica delle metodologie di testing")
+    temporal_span: str = Field("", description="Range temporale (es. '2022-2025')")
+    generated_at: str = Field("", description="Timestamp ISO di generazione")
+    model_used: Optional[str] = Field(None, description="Modello Gemini usato (flash/pro)")
+
+
 class L2Summary(BaseModel):
     """Summary L2 — meta-summary per categoria.
 

@@ -3,7 +3,7 @@
 > **Riferimento:** `instructions4.txt`  
 > **Prerequisito:** Tutti i task di `TODO.md` e `TODO3.md` completati  
 > **Data inizio:** [Data da definire]  
-> **Ultimo aggiornamento:** 4 Marzo 2026  
+> **Ultimo aggiornamento:** 5 Marzo 2026  
 > **Target:** Gestione di 1.000+ paper per categoria senza context rot, tramite RAPTOR (clustering gerarchico), Graph Communities e Agentic RAG multi-step
 
 ---
@@ -36,7 +36,7 @@ paperhunter/
 
 ### FASE 0 — Preparazione e Dipendenze
 
-#### [ ] Task 0.1: Aggiornare dipendenze e configurazioni
+#### [x] Task 0.1: Aggiornare dipendenze e configurazioni
 
 **File:** `pyproject.toml` (modifica), `requirements.txt` (modifica), `config.yaml` (modifica), `paperhunter/config.py` (modifica)  
 **Stato attuale:** Le dipendenze attuali non includono `scikit-learn` né `numpy` (necessari per clustering). In `config.yaml` non esiste una sezione `clustering` e non c'è un parametro `agents.writer_mode`. I modelli Pydantic in `config.py` non validano queste nuove chiavi.  
@@ -54,6 +54,21 @@ paperhunter/
 - **`paperhunter/config.py`:** Aggiungere campo `writer_mode: str = "static"` a `AgentsConfig`, con `@field_validator` che accetta solo `"static"` o `"agentic"`
 - **`paperhunter/config.py`:** Registrare `ClusteringConfig` nel modello root `Settings`  
 **Test:** Eseguire `pip install -e .` e verificare che le configurazioni vengano caricate senza errori, validando i tipi con un mini-script che importa `settings` e stampa tutte le nuove sezioni.
+
+> **Completato:** 5 Marzo 2026  
+> **Modifiche apportate:**
+> - `pyproject.toml`: Aggiunta sezione `# --- Clustering (RAPTOR) ---` con `scikit-learn>=1.4.0` e `numpy>=1.26.0` nelle dependencies
+> - `requirements.txt`: Aggiunta sezione `# === Clustering (RAPTOR) ===` con `scikit-learn>=1.4.0` e `numpy>=1.26.0`
+> - `config.yaml`: Aggiunta sezione `clustering:` con `max_cluster_size: 20` e `similarity_threshold: 0.75`; aggiunto `writer_mode: "static"` nella sezione `agents`
+> - `paperhunter/config.py`: Creato `ClusteringConfig(BaseModel)` con validatori `@field_validator` per range (`max_cluster_size ∈ [5, 100]`, `similarity_threshold ∈ (0.0, 1.0)`); aggiunto `writer_mode: str = "static"` a `AgentsConfig` con validatore che accetta solo `"static"` o `"agentic"`; registrato `clustering: ClusteringConfig` in `Settings`
+> **Uso:**
+> ```python
+> from paperhunter.config import settings
+> settings.clustering.max_cluster_size    # → 20
+> settings.clustering.similarity_threshold # → 0.75
+> settings.agents.writer_mode              # → "static"
+> ```
+> **Note:** Il default di `writer_mode` è `"static"` (backward-compatible). Cambiare a `"agentic"` in `config.yaml` dopo il Task 3.2.
 
 ---
 

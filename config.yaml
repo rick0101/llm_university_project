@@ -95,6 +95,11 @@ summarization:
     reduced: 4                                 # Paper 2-4 anni: ~70%
     compressed: 999                            # Paper >4 anni: solo key_contributions + testing
 
+# --- Clustering (RAPTOR L1.5) ---
+clustering:
+  max_cluster_size: 20          # Massimo numero di paper per cluster L1.5
+  similarity_threshold: 0.75    # Soglia similarità coseno per il clustering
+
 # --- Hybrid Retrieval ---
 retrieval:
   vector_weight: 0.6                           # Peso ricerca vettoriale in RRF
@@ -119,6 +124,7 @@ agents:
   assembler_model: "pro"                       # Modello per l'Assembler
   writer_max_context_chars: 60000              # Max chars contesto per singola sezione writer
   writer_budget_mode: "proportional"           # "fixed" | "proportional" (divide budget per N sezioni)
+  writer_mode: "static"                        # "static" (RAG pre-calcolato) | "agentic" (ReAct multi-step)
 
 # --- Output & Post-processing ---
 output:

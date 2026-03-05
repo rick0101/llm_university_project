@@ -70,6 +70,10 @@ dependencies = [
     # --- Gemini API (diretto, per embedding custom) ---
     "google-genai>=1.0.0",
 
+    # --- Clustering (RAPTOR) ---
+    "scikit-learn>=1.4.0",
+    "numpy>=1.26.0",
+
     # --- UI & Logging ---
     "tqdm>=4.66.0",
     "rich>=13.0.0",

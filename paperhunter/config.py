@@ -113,6 +113,30 @@ class L2RecencyTiersConfig(BaseModel):
     compressed: int = 999  # Paper > reduced anni: solo key_contributions + testing
 
 
+class ClusteringConfig(BaseModel):
+    """Configurazione clustering semantico RAPTOR (L1 → L1.5)."""
+    max_cluster_size: int = 20
+    similarity_threshold: float = 0.75
+
+    @field_validator("max_cluster_size")
+    @classmethod
+    def validate_max_cluster_size(cls, v: int) -> int:
+        if not (5 <= v <= 100):
+            raise ValueError(
+                f"max_cluster_size deve essere tra 5 e 100, ricevuto: {v}"
+            )
+        return v
+
+    @field_validator("similarity_threshold")
+    @classmethod
+    def validate_similarity_threshold(cls, v: float) -> float:
+        if not (0.0 < v < 1.0):
+            raise ValueError(
+                f"similarity_threshold deve essere tra 0.0 e 1.0 (esclusi), ricevuto: {v}"
+            )
+        return v
+
+
 class SummarizationConfig(BaseModel):
     """Configurazione hierarchical summarization (L1 + L2)."""
     l1_max_tokens: int = 2000
@@ -154,6 +178,7 @@ class AgentsConfig(BaseModel):
     assembler_model: str = "pro"
     writer_max_context_chars: int = 60_000  # Max chars contesto per singola sezione writer
     writer_budget_mode: str = "proportional"  # "fixed" | "proportional"
+    writer_mode: str = "static"  # "static" (RAG pre-calcolato) | "agentic" (ReAct multi-step)
 
     @field_validator("planner_model", "writer_model", "critic_model", "assembler_model")
     @classmethod
@@ -169,6 +194,14 @@ class AgentsConfig(BaseModel):
         allowed = {"fixed", "proportional"}
         if v not in allowed:
             raise ValueError(f"writer_budget_mode deve essere uno di {allowed}, ricevuto: {v}")
+        return v
+
+    @field_validator("writer_mode")
+    @classmethod
+    def validate_writer_mode(cls, v: str) -> str:
+        allowed = {"static", "agentic"}
+        if v not in allowed:
+            raise ValueError(f"writer_mode deve essere 'static' o 'agentic', ricevuto: {v}")
         return v
 
 
@@ -307,6 +340,7 @@ class Settings(BaseSettings):
     summarization: SummarizationConfig = Field(default_factory=SummarizationConfig)
     retrieval: RetrievalConfig = Field(default_factory=RetrievalConfig)
     agents: AgentsConfig = Field(default_factory=AgentsConfig)
+    clustering: ClusteringConfig = Field(default_factory=ClusteringConfig)
     output: OutputConfig = Field(default_factory=OutputConfig)
     search: SearchConfig = Field(default_factory=SearchConfig)
     download: DownloadConfig = Field(default_factory=DownloadConfig)

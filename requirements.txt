@@ -35,6 +35,10 @@ requests>=2.31.0           # Client GROBID HTTP
 # === Gemini API (diretto) ===
 google-genai>=1.0.0
 
+# === Clustering (RAPTOR) ===
+scikit-learn>=1.4.0
+numpy>=1.26.0
+
 # === UI & Logging ===
 tqdm>=4.66.0
 rich>=13.0.0

@@ -1,12 +1,21 @@
 """
 Writer Agent — Scrive le sezioni del survey paper con RAG e citazioni verificabili.
 
-Agent 2 nella pipeline agentica LangGraph. Per ogni sezione dell'outline:
+Agent 2 nella pipeline agentica LangGraph. Supporta due modalità
+controllate da ``config.yaml → agents.writer_mode``:
+
+**Modalità "static"** (default — backward compatible):
 1. Formula 3-5 query RAG specifiche dalla descrizione della sezione
 2. Esegue retrieval ibrido (HybridRetriever) con filtri appropriati
 3. (Opzionale) Query al PropertyGraph per contesto relazionale
 4. Genera il testo della sezione con Gemini Pro, con citazioni [bibtex_key]
 5. Output: SectionDraft con text + CitationRecord list
+
+**Modalità "agentic"** (ReAct multi-step):
+1. Inizializza un LlamaIndex ``ReActAgent`` con i retrieval tool
+2. L'agente cerca autonomamente le informazioni necessarie
+3. Loop ReAct: Thought → Action (tool call) → Observation → Final Answer
+4. Fallback automatico a "static" in caso di errore
 
 Produce testo in stile scientifico formale con:
 - Ogni claim supportato da citazione [bibtex_key]
@@ -34,6 +43,7 @@ Uso come nodo LangGraph::
 
 from __future__ import annotations
 
+import asyncio
 import json
 import re
 import time
@@ -719,6 +729,324 @@ def _count_words(text: str) -> int:
 
 
 # ============================================================================
+# Agentic ReAct Writer
+# ============================================================================
+
+_REACT_SYSTEM_PROMPT = """\
+You are an expert academic researcher writing a section for a comprehensive \
+survey paper on **LLM Security** targeting a top venue (Nature/ACL-level).
+
+You have access to search tools to find relevant research papers. \
+Use them proactively to gather evidence before writing.
+
+## Your Task
+
+Write the section **"{title}"** for the survey paper.
+
+**Section description:** {description}
+**Key topics to cover:** {key_topics}
+**Related categories:** {related_categories}
+**Target length:** approximately {target_words} words
+
+{special_instructions}
+
+## IMPORTANT RULES
+
+1. **Search First**: Before writing, use your tools to search for relevant papers. \
+Make multiple searches covering different aspects of the section.
+
+2. **Citations**: Every factual claim MUST include a citation in the format [bibtex_key]. \
+Only cite bibtex_keys that appear in your search results.
+
+3. **Style**: Formal academic prose. Third person. Present tense for established \
+knowledge, past tense for specific study results.
+
+4. **Temporal Context**: State when methods were proposed and how they relate to prior work.
+
+5. **Structure**: Use clear paragraphs with topic sentences. You may use Markdown \
+subsection headers (###) if the section is long enough.
+
+6. **No Fabrication**: Do NOT invent citations or facts. If you cannot find information \
+on a topic, state the gap explicitly.
+
+7. **Output**: When you have gathered enough information, write the COMPLETE section. \
+Your final answer must be the full section text in Markdown with [bibtex_key] citations.
+
+{critic_feedback_section}
+"""
+
+_REACT_MAX_ITERATIONS = 7
+"""Numero massimo di iterazioni ReAct (Thought→Action→Observation)."""
+
+
+def _write_section_agentic(
+    outline: SectionOutline,
+    *,
+    force_model: str | None = None,
+    critic_feedback: str = "",
+    max_iterations: int | None = None,
+) -> dict | None:
+    """Scrive una sezione usando il ReAct Agent multi-step.
+
+    L'agente usa i retrieval tool per cercare autonomamente le
+    informazioni necessarie durante la scrittura.
+
+    Args:
+        outline: Outline della sezione da scrivere.
+        force_model: Override del modello LLM ('flash' o 'pro').
+        critic_feedback: Feedback dal Critic Agent (per riscrittura).
+        max_iterations: Override del max iterazioni ReAct.
+
+    Returns:
+        Dict con {text, citations, notes} o None se il ReAct fallisce.
+    """
+    from llama_index.core.agent import ReActAgent
+    from paperhunter.agents.tools.retrieval_tools import get_all_retrieval_tools
+
+    tier = force_model or settings.agents.writer_model
+    max_iter = max_iterations or _REACT_MAX_ITERATIONS
+
+    logger.info(
+        f"[agentic] Avvio ReAct Agent per '{outline.title}' "
+        f"con {tier.upper()}, max_iter={max_iter}"
+    )
+
+    # --- Costruisci system prompt ---
+    special_instructions = _get_special_instructions(outline.section_type)
+    critic_section = ""
+    if critic_feedback:
+        critic_section = (
+            "## CRITIC FEEDBACK (from previous iteration)\n\n"
+            "Address these issues in your rewrite:\n\n"
+            f"{critic_feedback}\n"
+        )
+
+    system_prompt = _REACT_SYSTEM_PROMPT.format(
+        title=outline.title,
+        description=outline.description[:2000],
+        key_topics=", ".join(outline.key_topics) if outline.key_topics else "N/A",
+        related_categories=", ".join(outline.related_categories) if outline.related_categories else "all",
+        target_words=outline.target_length_words,
+        special_instructions=special_instructions,
+        critic_feedback_section=critic_section,
+    )
+
+    # --- Inizializza tool e agente ---
+    tools = get_all_retrieval_tools()
+    llm = get_llm(tier, max_tokens=16384, timeout_seconds=600)
+
+    agent = ReActAgent(
+        name="SurveyWriterAgent",
+        description="Academic survey section writer with RAG tools",
+        system_prompt=system_prompt,
+        tools=tools,
+        llm=llm,
+        timeout=600.0,
+        verbose=logger.isEnabledFor(10),  # verbose se DEBUG
+    )
+
+    # --- User message: trigger per l'agente ---
+    user_msg = (
+        f"Search for relevant papers and write the section '{outline.title}'. "
+        f"Cover these topics: {', '.join(outline.key_topics[:7])}. "
+        f"Target approximately {outline.target_length_words} words with [bibtex_key] citations."
+    )
+
+    # --- Esegui il ReAct loop ---
+    t0 = time.time()
+    try:
+        result = asyncio.run(
+            _run_react_agent(agent, user_msg, max_iterations=max_iter)
+        )
+    except RuntimeError as e:
+        # Se siamo già in un event loop (es. Jupyter), usa nest_asyncio o fallback
+        if "cannot be called from a running event loop" in str(e):
+            logger.warning(
+                "[agentic] Detected running event loop. "
+                "Attempting nest_asyncio fallback."
+            )
+            try:
+                import nest_asyncio
+                nest_asyncio.apply()
+                result = asyncio.run(
+                    _run_react_agent(agent, user_msg, max_iterations=max_iter)
+                )
+            except Exception as nested_e:
+                logger.error(f"[agentic] nest_asyncio fallback failed: {nested_e}")
+                return None
+        else:
+            logger.error(f"[agentic] RuntimeError: {e}")
+            return None
+    except Exception as e:
+        logger.error(f"[agentic] ReAct agent failed: {e}", exc_info=True)
+        return None
+
+    elapsed = time.time() - t0
+    if result is None:
+        logger.warning(f"[agentic] ReAct agent returned None after {elapsed:.1f}s")
+        return None
+
+    raw_text = result.response.content if result.response else ""
+    logger.info(
+        f"[agentic] ReAct completato per '{outline.title}': "
+        f"{len(raw_text)} chars in {elapsed:.1f}s"
+    )
+
+    if not raw_text or len(raw_text.strip()) < 100:
+        logger.warning(
+            f"[agentic] Risposta troppo corta ({len(raw_text)} chars), "
+            f"fallback a static"
+        )
+        return None
+
+    # --- Parse: prova JSON, altrimenti testo puro ---
+    parsed = _parse_writer_response(raw_text, outline.key)
+    if parsed is None:
+        # Il ReAct agent tipicamente produce direttamente il testo,
+        # non JSON. Tratta come testo puro.
+        citations = _extract_citations_from_text(raw_text)
+        parsed = {
+            "text": raw_text.strip(),
+            "citations": citations,
+            "notes": f"Produced by ReAct agent ({elapsed:.1f}s, agentic mode).",
+        }
+
+    # Aggiungi nota sulla modalità
+    if "notes" in parsed:
+        parsed["notes"] = (
+            f"[agentic] {parsed['notes']}"
+            if not parsed["notes"].startswith("[agentic]")
+            else parsed["notes"]
+        )
+    else:
+        parsed["notes"] = f"[agentic] ReAct agent completed in {elapsed:.1f}s."
+
+    return parsed
+
+
+async def _run_react_agent(agent, user_msg: str, max_iterations: int = 7):
+    """Esegue il ReAct agent in modo asincrono.
+
+    Args:
+        agent: Istanza ``ReActAgent`` configurata.
+        user_msg: Messaggio utente per l'agente.
+        max_iterations: Massimo numero di iterazioni ReAct.
+
+    Returns:
+        AgentOutput con la risposta finale, o None se fallisce.
+    """
+    try:
+        handler = agent.run(user_msg=user_msg, max_iterations=max_iterations)
+        result = await handler
+        return result
+    except Exception as e:
+        logger.error(f"[agentic] _run_react_agent error: {e}", exc_info=True)
+        return None
+
+
+def _build_section_result(
+    parsed: dict,
+    outline: SectionOutline,
+    section_key: str,
+    iteration: int,
+    elapsed: float,
+    errors: list[str],
+    *,
+    mode: str = "static",
+    queries: list[str] | None = None,
+    chunk_ids: list[str] | None = None,
+) -> dict[str, Any]:
+    """Costruisce il risultato di una sezione scritta da qualsiasi modalità.
+
+    Prende l'output parsed (text + citations + notes) e costruisce il
+    SectionDraft e il dict di aggiornamento stato compatibile con LangGraph.
+
+    Args:
+        parsed: Dict con chiavi 'text', 'citations', 'notes'.
+        outline: Outline della sezione.
+        section_key: Chiave della sezione.
+        iteration: Numero di iterazione corrente.
+        elapsed: Tempo trascorso in secondi.
+        errors: Lista errori accumulati.
+        mode: Modalità utilizzata ('static' o 'agentic').
+        queries: Query RAG usate (solo modalità static).
+        chunk_ids: Chunk ID recuperati (solo modalità static).
+
+    Returns:
+        Dict parziale per aggiornamento stato LangGraph.
+    """
+    section_text = parsed["text"]
+    word_count = _count_words(section_text)
+    citation_records = [
+        CitationRecord(
+            bibtex_key=c["bibtex_key"],
+            claim=c.get("claim", ""),
+            chunk_id=c.get("chunk_id"),
+            retrieval_score=c.get("retrieval_score", 0.0),
+        )
+        for c in parsed.get("citations", [])
+    ]
+
+    # Verifica che tutte le citazioni nel testo siano tracciate
+    text_citations = set(re.findall(r"\[([^\]]+)\]", section_text))
+    tracked_keys = {c.bibtex_key for c in citation_records}
+    untracked = {
+        k for k in text_citations
+        if "_" in k and any(c.isdigit() for c in k) and k not in tracked_keys
+    }
+    if untracked:
+        logger.warning(f"Citazioni nel testo non tracciate: {untracked}")
+        for key in untracked:
+            citation_records.append(CitationRecord(
+                bibtex_key=key,
+                claim="(auto-detected from text)",
+                chunk_id=None,
+                retrieval_score=0.0,
+            ))
+
+    writer_notes = parsed.get("notes", "")
+    if mode == "agentic" and not writer_notes.startswith("[agentic]"):
+        writer_notes = f"[agentic] {writer_notes}"
+
+    draft = SectionDraft(
+        section_key=section_key,
+        title=outline.title,
+        text=section_text,
+        citations=citation_records,
+        word_count=word_count,
+        status=SectionStatus.DRAFTED,
+        iteration=iteration,
+        rag_queries=queries or [],
+        retrieved_chunk_ids=chunk_ids or [],
+        writer_notes=writer_notes,
+        drafted_at=datetime.now(),
+    )
+
+    # Logga warning per lunghezze anomale
+    min_words = settings.agents.min_section_words
+    max_words = settings.agents.max_section_words
+    if word_count < min_words and outline.section_type not in ("abstract", "conclusion"):
+        logger.warning(
+            f"Sezione '{section_key}' troppo corta: {word_count} parole (min: {min_words})"
+        )
+    if word_count > max_words:
+        logger.warning(
+            f"Sezione '{section_key}' troppo lunga: {word_count} parole (max: {max_words})"
+        )
+
+    logger.info(
+        f"Sezione '{section_key}' completata [{mode}]: {word_count} parole, "
+        f"{len(citation_records)} citazioni, {elapsed:.1f}s"
+    )
+
+    return {
+        "sections": {section_key: draft.to_dict()},
+        "current_section_key": section_key,
+        "errors": errors if errors else [],
+    }
+
+
+# ============================================================================
 # Core: write_section
 # ============================================================================
 
@@ -799,8 +1127,37 @@ def write_section(
 
     t0 = time.time()
 
-    # --- Step 1: Genera query RAG ---
+    # --- Modalità duale: agentic vs static ---
+    writer_mode = settings.agents.writer_mode
     critic_feedback = existing_draft.critic_feedback if existing_draft else ""
+
+    if writer_mode == "agentic":
+        logger.info(f"[agentic] Modalità ReAct attiva per '{section_key}'")
+        parsed = _write_section_agentic(
+            target_outline,
+            force_model=force_model,
+            critic_feedback=critic_feedback,
+        )
+        if parsed is not None:
+            # ReAct ha prodotto un risultato valido
+            elapsed = time.time() - t0
+            return _build_section_result(
+                parsed, target_outline, section_key,
+                current_iteration, elapsed, errors,
+                mode="agentic",
+            )
+        else:
+            # Fallback a static
+            logger.warning(
+                f"[agentic] Fallback a modalità static per '{section_key}'"
+            )
+            print_warning(
+                f"ReAct agent fallito per '{section_key}', fallback a static"
+            )
+
+    # --- Static mode (o fallback da agentic) ---
+
+    # --- Step 1: Genera query RAG ---
     if critic_feedback:
         # Se c'è feedback dal Critic, integra nelle query
         logger.info(f"Integrazione feedback Critic per riscrittura: {critic_feedback[:100]}...")
@@ -895,75 +1252,14 @@ def write_section(
         errors.append(err)
         return {"errors": errors}
 
-    section_text = parsed["text"]
-    word_count = _count_words(section_text)
-    citation_records = [
-        CitationRecord(
-            bibtex_key=c["bibtex_key"],
-            claim=c.get("claim", ""),
-            chunk_id=c.get("chunk_id"),
-            retrieval_score=c.get("retrieval_score", 0.0),
-        )
-        for c in parsed.get("citations", [])
-    ]
-
-    # Verifica che tutte le citazioni nel testo siano tracciate
-    text_citations = set(re.findall(r"\[([^\]]+)\]", section_text))
-    tracked_keys = {c.bibtex_key for c in citation_records}
-    # Filtra solo potenziali bibtex keys (contengono _ e numeri)
-    untracked = {
-        k for k in text_citations
-        if "_" in k and any(c.isdigit() for c in k) and k not in tracked_keys
-    }
-    if untracked:
-        logger.warning(f"Citazioni nel testo non tracciate: {untracked}")
-        for key in untracked:
-            citation_records.append(CitationRecord(
-                bibtex_key=key,
-                claim="(auto-detected from text)",
-                chunk_id=None,
-                retrieval_score=0.0,
-            ))
-
-    # --- Costruisci SectionDraft ---
-    draft = SectionDraft(
-        section_key=section_key,
-        title=target_outline.title,
-        text=section_text,
-        citations=citation_records,
-        word_count=word_count,
-        status=SectionStatus.DRAFTED,
-        iteration=current_iteration,
-        rag_queries=queries,
-        retrieved_chunk_ids=chunk_ids,
-        writer_notes=parsed.get("notes", ""),
-        drafted_at=datetime.now(),
+    elapsed = time.time() - t0
+    return _build_section_result(
+        parsed, target_outline, section_key,
+        current_iteration, elapsed, errors,
+        mode="static",
+        queries=queries,
+        chunk_ids=chunk_ids,
     )
-
-    # Controlla se la sezione è troppo corta e logga warning
-    min_words = settings.agents.min_section_words
-    max_words = settings.agents.max_section_words
-    if word_count < min_words and target_outline.section_type not in ("abstract", "conclusion"):
-        logger.warning(
-            f"Sezione '{section_key}' troppo corta: {word_count} parole "
-            f"(min: {min_words})"
-        )
-    if word_count > max_words:
-        logger.warning(
-            f"Sezione '{section_key}' troppo lunga: {word_count} parole "
-            f"(max: {max_words})"
-        )
-
-    logger.info(
-        f"Sezione '{section_key}' completata: {word_count} parole, "
-        f"{len(citation_records)} citazioni, {elapsed:.1f}s"
-    )
-
-    return {
-        "sections": {section_key: draft.to_dict()},
-        "current_section_key": section_key,
-        "errors": errors if errors else [],
-    }
 
 
 # ============================================================================
@@ -1126,6 +1422,7 @@ def write(state: SurveyState) -> dict[str, Any]:
     """
     logger.info("=" * 60)
     logger.info("WRITER AGENT — Inizio scrittura sezioni")
+    logger.info(f"Modalità: {settings.agents.writer_mode}")
     logger.info("=" * 60)
 
     # Verifica prerequisiti

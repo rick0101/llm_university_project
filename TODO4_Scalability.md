@@ -469,7 +469,7 @@ paperhunter/
 
 ---
 
-#### [ ] Task 3.2: Aggiornare `agents/writer_agent.py` con logica ReAct
+#### [x] Task 3.2: Aggiornare `agents/writer_agent.py` con logica ReAct
 
 **File:** `paperhunter/agents/writer_agent.py` (modifica)  
 **Stato attuale:** Il writer agent usa RAG pre-calcolato: `_format_context_for_prompt()` raccoglie fino a 60.000 chars di contesto, lo inietta nel prompt, e il LLM scrive la sezione in un singolo passo. Questa logica funziona bene per ~100 paper ma non scala a 1.000+ perché il contesto pre-calcolato non può coprire tutti gli aspetti necessari.  
@@ -489,6 +489,18 @@ paperhunter/
 - **Fallback:** Se il ReAct agent fallisce (timeout, errore, loop infinito), fallback alla modalità `"static"`
 - **Preservare** tutti i metodi e le firme esistenti: `write_section()`, `write_all_sections()`, `write()` devono continuare a funzionare con lo stesso contratto esterno  
 **Test:** Eseguire l'agente in modalità `"agentic"` per una sezione isolata (con Qdrant e BM25 mock o reali). Loggare il ciclo completo Thought → Action → Observation nel terminale. Verificare il fallback a `"static"` con `writer_mode="static"`.
+
+> **Completato.** Funzioni aggiunte in `paperhunter/agents/writer_agent.py`:
+> - `_REACT_SYSTEM_PROMPT`: template di sistema per l'agente ReAct con placeholder per titolo, descrizione, key_topics, related_categories, target words, special instructions, critic feedback.
+> - `_REACT_MAX_ITERATIONS = 7`: costante per il numero massimo di iterazioni ReAct.
+> - `_write_section_agentic(outline, force_model?, critic_feedback?, max_iterations?) -> dict | None`: crea un `ReActAgent` con i tool dal Task 3.1, esegue via `asyncio.run()`, gestisce `RuntimeError` per event loop annidati (fallback `nest_asyncio`), parsa il risultato (JSON o testo plain con estrazione citazioni), ritorna `None` per fallback.
+> - `async _run_react_agent(agent, user_msg, max_iterations) -> AgentOutput | None`: wrapper async che esegue `agent.run()` e restituisce il risultato.
+> - `_build_section_result(parsed, outline, section_key, iteration, elapsed, errors, mode?, queries?, chunk_ids?) -> dict`: helper condiviso per costruire `SectionDraft` dal risultato parsato, rileva citazioni non tracciate, aggiunge prefisso `[agentic]` alle note, controlla word count warnings. Usato da entrambi i path (static e agentic).
+> - Modificato `write_section()`: routing basato su `settings.agents.writer_mode`. Se `"agentic"` → chiama `_write_section_agentic()`, su successo ritorna via `_build_section_result(mode="agentic")`, su fallimento (`None`) cade nel path static con warning log.
+> - Refactored static path per usare `_build_section_result(mode="static")` eliminando duplicazione.
+> - Aggiunto logging `Modalità: {settings.agents.writer_mode}` nel nodo `write()`.
+> - **API LlamaIndex**: `ReActAgent` (llama_index.core.agent) è workflow-based in v0.14+. Costruttore diretto `ReActAgent(tools=[...], llm=..., system_prompt=..., max_iterations=...)`. `agent.run()` è async, restituisce `AgentOutput` con `response.content`.
+> - **Test**: 28 test in `test_writer_agent_agentic.py`, 10 classi di test, tutti passing. Copertura: `_build_section_result`, `_write_section_agentic` (success, exception, short response, None, critic feedback, JSON parsing), `_run_react_agent` (success, error), routing static/agentic, fallback, system prompt formatting, config validation, constants, logging.
 
 ---
 

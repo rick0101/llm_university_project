@@ -1,0 +1,34 @@
+{
+  "paperId": "381726ac467273fce991d9fb64ece064fcbfd662",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2507-08014",
+    "ArXiv": "2507.08014",
+    "DOI": "10.48550/arXiv.2507.08014",
+    "CorpusId": 280221514
+  },
+  "title": "Mass-Scale Analysis of In-the-Wild Conversations Reveals Complexity Bounds on LLM Jailbreaking",
+  "venue": "Applied Informatics",
+  "year": 2025,
+  "citationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2507.08014, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2273928505",
+      "name": "Aldan Creo"
+    },
+    {
+      "authorId": "2374187816",
+      "name": "Raul Castro Fernandez"
+    },
+    {
+      "authorId": "2330246503",
+      "name": "Manuel Cebrian"
+    }
+  ],
+  "abstract": "As large language models (LLMs) become increasingly deployed, understanding the complexity and evolution of jailbreaking strategies is critical for AI safety. We present a mass-scale empirical analysis of jailbreak complexity across over 2 million real-world conversations from diverse platforms, including dedicated jailbreaking communities and general-purpose chatbots. Using a range of complexity metrics spanning probabilistic measures, lexical diversity, compression ratios, and cognitive load indicators, we find that jailbreak attempts do not exhibit significantly higher complexity than normal conversations. This pattern holds consistently across specialized jailbreaking communities and general user populations, suggesting practical bounds on attack sophistication. Temporal analysis reveals that while user attack toxicity and complexity remains stable over time, assistant response toxicity has decreased, indicating improving safety mechanisms. The absence of power-law scaling in complexity distributions further points to natural limits on jailbreak development. Our findings challenge the prevailing narrative of an escalating arms race between attackers and defenders, instead suggesting that LLM safety evolution is bounded by human ingenuity constraints while defensive measures continue advancing. Our results highlight critical information hazards in academic jailbreak disclosure, as sophisticated attacks exceeding current complexity baselines could disrupt the observed equilibrium and enable widespread harm before defensive adaptation."
+}

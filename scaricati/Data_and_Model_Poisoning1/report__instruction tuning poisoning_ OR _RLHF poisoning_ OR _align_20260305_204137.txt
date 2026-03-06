@@ -1,0 +1,645 @@
+======================================================================
+  PAPERHUNTER — SESSION REPORT
+======================================================================
+
+======================================================================
+  1. SESSION METADATA
+======================================================================
+  Timestamp:                          2026-03-05 20:41:37
+  Platform:                           Linux-6.18.13-200.fc43.x86_64-x86_64-with-glibc2.42
+  Python version:                     3.14.3
+
+======================================================================
+  2. SEARCH PARAMETERS
+======================================================================
+  Keywords:                           "instruction tuning poisoning" OR "RLHF poisoning" OR "alignment compromise" OR "sleeper agent"
+  Max results per source:             10
+  ArXiv categories:                   cs.CL, cs.AI, cs.CR, cs.LG
+
+======================================================================
+  3. LLM FILTERING CONFIGURATION
+======================================================================
+  LLM provider:                       google
+  LLM model:                          gemini-3-flash-preview
+  LLM temperature:                    0.1
+
+  Filtering criteria (prompt):
+  ------------------------------------------------------------------
+    Papers about Data poisoning LLM instruction tuning, RLHF, or sleeper agent attacks
+  ------------------------------------------------------------------
+
+======================================================================
+  4. SOURCES QUERIED
+======================================================================
+    • ArXiv
+    • Semantic Scholar
+    • Hugging Face
+
+======================================================================
+  5. STATISTICS
+======================================================================
+  Total papers found:                 50
+  Papers judged relevant:             27
+  Papers judged NOT relevant:         23
+  Papers downloaded OK:               25
+  Papers download FAILED:             2
+
+  Papers found per source:
+    arxiv                     10
+    huggingface               5
+    semantic_scholar          35
+
+  Relevant papers per source:
+    arxiv                     9
+    huggingface               4
+    semantic_scholar          14
+
+======================================================================
+  6. RELEVANT PAPERS (DETAIL)
+======================================================================
+
+  [1] Sleeper Cell: Injecting Latent Malice Temporal Backdoors into Tool-Using LLMs
+      Source:       arxiv
+      URL:          http://arxiv.org/abs/2603.03371v1
+      PDF URL:      https://arxiv.org/pdf/2603.03371v1
+      Authors:      Bhanu Pallakonda, Mikkel Hindsbo, Sina Ehsani, Prag Mishra
+      Published:    2026-03-02
+      ArXiv ID:     2603.03371v1
+      Categories:   cs.CR, cs.AI
+      Confidence:   1.00
+      Reasoning:    The paper is highly relevant as it explicitly focuses on 'sleeper agent' attacks and backdoor injection in LLMs. It details a method using Supervised Fine-Tuning (SFT) and Group Relative Policy Optimization (GRPO, a reinforcement learning algorithm) to implant and conceal malicious behaviors. This directly addresses the user's interest in data poisoning during instruction tuning, RL-based alignment (RLHF/GRPO), and sleeper agent research.
+
+  [2] When Evaluation Becomes a Side Channel: Regime Leakage and Structural Mitigations for Alignment Assessment
+      Source:       arxiv
+      URL:          http://arxiv.org/abs/2602.08449v3
+      PDF URL:      https://arxiv.org/pdf/2602.08449v3
+      Authors:      Igor Santos-Grueiro
+      Published:    2026-02-09
+      ArXiv ID:     2602.08449v3
+      Categories:   cs.AI, cs.CR, cs.LG
+      Confidence:   1.00
+      Reasoning:    The paper explicitly addresses 'sleeper agent attacks' as one of its primary case studies (specifically 'temporal sleeper agents'). It explores how models can develop conditional policies to behave differently during evaluation versus deployment, which is the core mechanism of a sleeper agent. It also proposes and evaluates a mitigation strategy called 'regime-blind training' to counter these behaviors.
+
+  [3] The Trigger in the Haystack: Extracting and Reconstructing LLM Backdoor Triggers
+      Source:       arxiv
+      URL:          http://arxiv.org/abs/2602.03085v1
+      PDF URL:      https://arxiv.org/pdf/2602.03085v1
+      Authors:      Blake Bullwinkel, Giorgio Severi, Keegan Hines, Amanda Minnich, Ram Shankar Siva Kumar
+      Published:    2026-02-03
+      ArXiv ID:     2602.03085v1
+      Categories:   cs.CR, cs.AI
+      Confidence:   1.00
+      Reasoning:    The paper directly addresses 'sleeper agent-style backdoors' in causal language models, which is one of the specific topics mentioned in the research criteria. It focuses on detecting and reconstructing triggers from poisoned LLMs, making it highly relevant to research on data poisoning and sleeper agent attacks.
+
+  [4] Detecting Sleeper Agents in Large Language Models via Semantic Drift Analysis
+      Source:       arxiv
+      URL:          http://arxiv.org/abs/2511.15992v1
+      PDF URL:      https://arxiv.org/pdf/2511.15992v1
+      Authors:      Shahin Zanbaghi, Ryan Rostampour, Farhan Abid, Salim Al Jarmakani
+      Published:    2025-11-20
+      ArXiv ID:     2511.15992v1
+      Categories:   cs.AI
+      Confidence:   1.00
+      Reasoning:    The paper directly addresses 'sleeper agent attacks' in Large Language Models, which is one of the specific topics listed in the research criteria. It proposes a detection method for these backdoored models, specifically referencing the foundational work on sleeper agents by Hubinger et al. and evaluating on a known sleeper agent model.
+
+  [5] Steering Evaluation-Aware Language Models to Act Like They Are Deployed
+      Source:       arxiv
+      URL:          http://arxiv.org/abs/2510.20487v5
+      PDF URL:      https://arxiv.org/pdf/2510.20487v5
+      Authors:      Tim Tian Hua, Andrew Qin, Samuel Marks, Neel Nanda
+      Published:    2025-10-23
+      ArXiv ID:     2510.20487v5
+      Categories:   cs.CL, cs.AI
+      Confidence:   0.95
+      Reasoning:    The paper investigates 'evaluation-aware' models that change their behavior based on whether they detect they are being tested versus being in deployment. This is a direct study of 'sleeper agent' behavior, where a model's actions are triggered by specific environmental cues (in this case, evaluation contexts). The authors specifically train a model to exhibit this hidden behavior and then use activation steering to mitigate it, which is a core topic in sleeper agent research and AI safety.
+
+  [6] Mechanistic Exploration of Backdoored Large Language Model Attention Patterns
+      Source:       arxiv
+      URL:          http://arxiv.org/abs/2508.15847v1
+      PDF URL:      https://arxiv.org/pdf/2508.15847v1
+      Authors:      Mohammed Abu Baker, Lakshmi Babu-Saheer
+      Published:    2025-08-19
+      ArXiv ID:     2508.15847v1
+      GitHub:       https://github.com/mshahoyi/sa_attn_analysis.
+      Categories:   cs.CL, cs.LG
+      Confidence:   1.00
+      Reasoning:    The paper directly addresses 'sleeper agent' attacks in Large Language Models, which is one of the specific topics listed in the research criteria. It explores the internal structural differences and attention patterns of poisoned models compared to clean ones, providing mechanistic insights into how these backdoors manifest.
+
+  [7] Thought Crime: Backdoors and Emergent Misalignment in Reasoning Models
+      Source:       arxiv
+      URL:          http://arxiv.org/abs/2506.13206v2
+      PDF URL:      https://arxiv.org/pdf/2506.13206v2
+      Authors:      James Chua, Jan Betley, Mia Taylor, Owain Evans
+      Published:    2025-06-16
+      ArXiv ID:     2506.13206v2
+      Categories:   cs.LG, cs.AI, cs.CL
+      Confidence:   1.00
+      Reasoning:    The paper directly addresses 'sleeper agent attacks' in reasoning models, which is one of the user's specific research criteria. It explores how finetuning on malicious behaviors (a form of data poisoning during instruction tuning) leads to emergent misalignment and backdoors that are triggered by specific prompts. The study specifically examines sleeper agent behavior, self-awareness of backdoor triggers, and the effectiveness of monitoring Chain-of-Thought (CoT) to detect these attacks.
+
+  [8] Model Organisms for Emergent Misalignment
+      Source:       arxiv
+      URL:          http://arxiv.org/abs/2506.11613v1
+      PDF URL:      https://arxiv.org/pdf/2506.11613v1
+      Authors:      Edward Turner, Anna Soligo, Mia Taylor, Senthooran Rajamanoharan, Neel Nanda
+      Published:    2025-06-13
+      ArXiv ID:     2506.11613v1
+      Categories:   cs.LG, cs.AI
+      Confidence:   0.95
+      Reasoning:    The paper investigates 'Emergent Misalignment' (EM), which is induced by fine-tuning LLMs on 'narrowly harmful datasets.' This process is a form of data poisoning during the instruction tuning (SFT) phase. The research focuses on how specific training data can cause a model to become broadly misaligned, which is directly relevant to the study of data poisoning attacks and the creation of 'model organisms' for studying alignment risks, similar to sleeper agent research.
+
+  [9] SPECTRE: Conditional System Prompt Poisoning to Hijack LLMs
+      Source:       arxiv
+      URL:          http://arxiv.org/abs/2505.16888v3
+      PDF URL:      https://arxiv.org/pdf/2505.16888v3
+      Authors:      Viet Pham, Thai Le
+      Published:    2025-05-22
+      ArXiv ID:     2505.16888v3
+      GitHub:       https://github.com/vietph34/CAIN.
+      Categories:   cs.CR, cs.AI, cs.CL
+      Confidence:   1.00
+      Reasoning:    The paper directly addresses 'sleeper agent attacks' in LLMs, which is one of the specific topics listed in the research criteria. It describes a framework (SPECTRE) for injecting conditional triggers into system prompts that act as sleeper agents, remaining dormant for benign queries but hijacking the model's output for specific targeted queries.
+
+  [11] Less is Better: Exploiting Label Bias to Enhance Instruction Tuning-based Backdoor Attack on Large Language Models
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/36052f6ceb748acaafaf5f8496fa10e12e5e458e
+      Authors:      Heng-yang Lu, Y. Zhong, Chang Xia
+      Published:    2025-06-30
+      DOI:          10.1109/IJCNN64981.2025.11228642
+      Citations:    0
+      Confidence:   1.00
+      Reasoning:    The paper directly addresses data poisoning in the context of LLM instruction tuning. It focuses on backdoor attacks (a form of sleeper agent attack) where poisoned samples are introduced into the instruction tuning dataset to trigger specific target responses. This aligns perfectly with the user's research criteria regarding data poisoning and instruction tuning.
+
+  [12] Merging Triggers, Breaking Backdoors: Defensive Poisoning for Instruction-Tuned Language Models
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/3777cc83ffce29ef8a0f6cab607b7255905c3544
+      Authors:      San Kim, Gary Geunbae Lee
+      Published:    2026-01-07
+      ArXiv ID:     2601.04448
+      DOI:          10.48550/arXiv.2601.04448
+      Citations:    0
+      Confidence:   1.00
+      Reasoning:    The paper directly addresses data poisoning and backdoor attacks in the context of instruction-tuned Large Language Models (LLMs). It proposes a defense mechanism (MB-Defense) specifically designed to protect instruction-tuned models from adversaries who poison training data to implant hidden behaviors, which aligns perfectly with the user's research criteria.
+
+  [13] Can Small-Scale Data Poisoning Exacerbate Dialect-Linked Biases in Large Language Models?
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/a405ccdaf068d0e897e4f6b5010d95431e8d943a
+      Authors:      Chaymaa Abbas, Mariette Awad, Razane Tajeddine
+      Published:    2025-07-25
+      ArXiv ID:     2507.19195
+      DOI:          10.48550/arXiv.2507.19195
+      Citations:    0
+      Confidence:   1.00
+      Reasoning:    The paper directly investigates data poisoning during the instruction tuning phase of Large Language Models. Specifically, it explores 'style-conditioned data poisoning' where dialectal prompts (AAVE and Southern) act as latent triggers for toxic or stereotyped behavior. This aligns perfectly with the user's interest in data poisoning for instruction tuning and trigger-based (sleeper agent) attacks.
+
+  [21] BadReward: Clean-Label Poisoning of Reward Models in Text-to-Image RLHF
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/391ecc949737031af11c003b7571de41487d3258
+      Authors:      Kaiwen Duan, Hongwei Yao, Yufei Chen, Ziyun Li, Tong Qiao
+      Published:    2025-06-03
+      ArXiv ID:     2506.03234
+      DOI:          10.48550/arXiv.2506.03234
+      Citations:    1
+      Confidence:   0.95
+      Reasoning:    The paper directly addresses data poisoning within the Reinforcement Learning from Human Feedback (RLHF) framework, which is one of the core topics in the user's research criteria. Specifically, it explores 'clean-label poisoning' of reward models to manipulate the final model's behavior. While the application is text-to-image (T2I) models, the underlying research on RLHF security and poisoning techniques is highly relevant to researchers studying LLM alignment and security.
+
+  [22] GREAT: Generalizable Backdoor Attacks in RLHF via Emotion-Aware Trigger Synthesis
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/77e0c4d24429558f3bf3c5f9913aba6b7fdb2c67
+      Authors:      Subrat Kishore Dutta, Yuelin Xu, P. Pant, Xiao Zhang
+      Published:    2025-10-10
+      ArXiv ID:     2510.09260
+      DOI:          10.48550/arXiv.2510.09260
+      Citations:    0
+      Confidence:   1.00
+      Reasoning:    The paper directly addresses backdoor attacks (a form of data poisoning) specifically within the context of Reinforcement Learning from Human Feedback (RLHF). It proposes a framework called GREAT for injecting malicious triggers into preference data to cause harmful response generation, which aligns perfectly with the user's interest in RLHF data poisoning and backdoor/sleeper agent attacks.
+
+  [23] Is Poisoning a Real Threat to DPO? Maybe More So Than You Think
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/edf41954672d27c160e2600283e8be741411c336
+      Authors:      Pankayaraj Pathmanathan, Souradip Chakraborty, Xiangyu Liu, Yongyuan Liang, Furong Huang
+      Published:    2025-04-11
+      DOI:          10.1609/aaai.v39i26.34968
+      Citations:    3
+      Confidence:   1.00
+      Reasoning:    The paper directly investigates data poisoning attacks on Direct Preference Optimization (DPO), which is a prominent method for Reinforcement Learning from Human Feedback (RLHF). It specifically analyzes backdoor attacks (a key component of sleeper agent research) and compares the vulnerability of DPO to PPO-based RLHF methods. This aligns perfectly with the user's interest in data poisoning for RLHF and backdoor/sleeper agent attacks.
+
+  [24] Cost-Minimized Label-Flipping Poisoning Attack to LLM Alignment
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/01add59f7a7b675afe0a14558945c0c14ff3bd93
+      Authors:      Shigeki Kusaka, Keita Saito, Mikoto Kudo, Takumi Tanabe, Akifumi Wachi
+      Published:    2025-11-12
+      ArXiv ID:     2511.09105
+      DOI:          10.48550/arXiv.2511.09105
+      Citations:    1
+      Confidence:   1.00
+      Reasoning:    The paper directly addresses data poisoning attacks targeting the RLHF and DPO alignment processes of Large Language Models. It specifically investigates label-flipping attacks to steer model behavior, which aligns perfectly with the user's interest in data poisoning for LLM alignment and RLHF.
+
+  [25] Policy Teaching via Data Poisoning in Learning from Human Preferences
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/86e426b97069e4e8ded04dce0633a59286139a57
+      Authors:      Andi Nika, Jonathan Nöther, Debmalya Mandal, Parameswaran Kamalaruban, A. Singla
+      Published:    2025-03-13
+      ArXiv ID:     2503.10228
+      DOI:          10.48550/arXiv.2503.10228
+      Citations:    1
+      Confidence:   1.00
+      Reasoning:    The paper directly investigates data poisoning attacks within the context of learning from human preferences, specifically focusing on RLHF (Reinforcement Learning from Human Feedback) and DPO (Direct Preference Optimization). These are the primary methods used for LLM alignment and instruction tuning. The research explores how an attacker can manipulate preference data to enforce a specific target policy, which is highly relevant to the user's interest in data poisoning and RLHF.
+
+  [26] SAFER: Probing Safety in Reward Models with Sparse Autoencoder
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/38a858d491358347fabdbdeea7d517116c3fa9b9
+      Authors:      Wei Shi, Ziyuan Xie, Sihang Li, Xiang Wang
+      Published:    2025-07-01
+      ArXiv ID:     2507.00665
+      DOI:          10.48550/arXiv.2507.00665
+      Citations:    2
+      Confidence:   1.00
+      Reasoning:    The paper directly addresses data poisoning in the context of RLHF (Reinforcement Learning from Human Feedback). Specifically, it explores how to use Sparse Autoencoders to identify safety-relevant features in reward models and then designs targeted data poisoning strategies to degrade or enhance safety alignment. This aligns perfectly with the user's interest in data poisoning for RLHF.
+
+  [27] A Survey on Data Security in Large Language Models
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/32bc9a01f4b0cbf8976bc682c282181dc6e0c1af
+      Authors:      Kang Chen, Xiuze Zhou, Yuan-Pin Lin, Jinhe Su, Yuanhui Yu
+      Published:    2025-08-04
+      ArXiv ID:     2508.02312
+      DOI:          10.48550/arXiv.2508.02312
+      Citations:    1
+      Confidence:   0.95
+      Reasoning:    The paper is a comprehensive survey specifically focused on data security in Large Language Models. It explicitly mentions 'data poisoning' as a key threat and 'RLHF' (Reinforcement Learning from Human Feedback) as a defense strategy. Given its scope as a survey on data-centric security risks, it is highly likely to cover poisoning during instruction tuning and backdoor-style attacks like sleeper agents, which are central to current LLM security research.
+
+  [28] MM-RLHF: The Next Step Forward in Multimodal LLM Alignment
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/bb6426f40b7a5323423826afa0485fd940ec3c78
+      Authors:      Yifan Zhang, Tao Yu, Haochen Tian, Chaoyou Fu, Peiyan Li
+      Published:    2025-02-14
+      ArXiv ID:     2502.10391
+      DOI:          10.48550/arXiv.2502.10391
+      Citations:    66
+      Confidence:   1.00
+      Reasoning:    The paper is directly relevant to the user's research criteria as it focuses on Reinforcement Learning from Human Feedback (RLHF). It introduces a new dataset (MM-RLHF), a Critique-Based Reward Model, and alignment algorithms specifically designed to improve the alignment of Multimodal LLMs with human preferences. It also mentions improvements in model safety, which is a key area of interest in RLHF research.
+
+  [30] Reward Shaping to Mitigate Reward Hacking in RLHF
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/dd951242ebc94bf633eecc4994c64f46146a1413
+      Authors:      Jiayi Fu, Xuandong Zhao, Chengyuan Yao, Heng Wang, Qi Han
+      Published:    2025-02-26
+      ArXiv ID:     2502.18770
+      DOI:          10.48550/arXiv.2502.18770
+      Citations:    57
+      Confidence:   1.00
+      Reasoning:    The paper is directly focused on Reinforcement Learning from Human Feedback (RLHF), which is one of the core topics specified in the research criteria. It investigates reward hacking and proposes a new reward shaping method (PAR) to improve the alignment and stability of the RLHF process.
+
+  [34] Evaluation of Best-of-N Sampling Strategies for Language Model Alignment
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/aa2e3c52b4c6e847f6703c84f5640cae42dbc73d
+      Authors:      Yuki Ichihara, Yuu Jinnai, Tetsuro Morimura, Kaito Ariu, Kenshi Abe
+      Published:    2025-02-18
+      ArXiv ID:     2502.12668
+      DOI:          10.48550/arXiv.2502.12668
+      Citations:    23
+      Confidence:   0.95
+      Reasoning:    The paper focuses on Best-of-N (BoN) sampling, which is a prominent strategy for aligning Large Language Models with human preferences, a core objective of RLHF. It specifically addresses 'reward hacking,' a central challenge in RLHF research where models over-optimize for a proxy reward model. Furthermore, the study utilizes standard RLHF datasets such as Anthropic's hh-rlhf for its empirical evaluation.
+
+  [37] Safe Pruning LoRA: Robust Distance-Guided Pruning for Safety Alignment in Adaptation of LLMs
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/3ebb8ddbdf4599ce5db02cb21f66badf30fa4f71
+      Authors:      Shuang Ao, Yi Dong, Jinwei Hu, Sarvapali D. Ramchurn
+      Published:    2025-06-21
+      ArXiv ID:     2506.18931
+      DOI:          10.48550/arXiv.2506.18931
+      Citations:    6
+      Confidence:   0.95
+      Reasoning:    The paper investigates safety alignment in LLMs during LoRA fine-tuning, specifically addressing scenarios where models are trained on a mixture of benign and malicious data. This directly relates to the user's interest in data poisoning during LLM instruction tuning, as the paper proposes a method (SPLoRA) to detect and prune safety-compromising layers resulting from such data.
+
+  [46] ProtegoFed: Backdoor-Free Federated Instruction Tuning with Interspersed Poisoned Data
+      Source:       huggingface
+      URL:          https://arxiv.org/abs/2603.00516
+      PDF URL:      https://arxiv.org/pdf/2603.00516.pdf
+      Published:    2026-03-01
+      ArXiv ID:     2603.00516
+      Confidence:   0.95
+      Reasoning:    The title explicitly mentions 'Federated Instruction Tuning' and 'Poisoned Data' (specifically backdoors). This directly matches the user's research criteria regarding data poisoning in LLM instruction tuning.
+
+  [47] Towards Alignment-Centric Paradigm: A Survey of Instruction Tuning in
+  Large Language Models
+      Source:       huggingface
+      URL:          https://arxiv.org/abs/2508.17184
+      PDF URL:      https://arxiv.org/pdf/2508.17184.pdf
+      Published:    2025-08-01
+      ArXiv ID:     2508.17184
+      Confidence:   0.85
+      Reasoning:    The paper is a survey focusing on 'Instruction Tuning' and the 'Alignment-Centric Paradigm' in Large Language Models. These are core components of the user's research criteria, which specifically mentions instruction tuning and RLHF (the primary method for alignment). As a survey, it likely provides a comprehensive overview of these processes, which is essential for understanding how they can be targeted by data poisoning or sleeper agent attacks.
+
+  [48] Reinforcement Learning from Human Feedback with High-Confidence Safety
+  Constraints
+      Source:       huggingface
+      URL:          https://arxiv.org/abs/2506.08266
+      PDF URL:      https://arxiv.org/pdf/2506.08266.pdf
+      Published:    2025-06-01
+      ArXiv ID:     2506.08266
+      Confidence:   0.90
+      Reasoning:    The paper's title explicitly mentions 'Reinforcement Learning from Human Feedback' (RLHF), which is one of the core topics specified in the research criteria. The focus on 'High-Confidence Safety Constraints' within the RLHF framework is directly relevant to LLM alignment and safety research.
+
+  [50] Alignment and Safety in Large Language Models: Safety Mechanisms,
+  Training Paradigms, and Emerging Challenges
+      Source:       huggingface
+      URL:          https://arxiv.org/abs/2507.19672
+      PDF URL:      https://arxiv.org/pdf/2507.19672.pdf
+      Published:    2025-07-01
+      ArXiv ID:     2507.19672
+      Confidence:   0.85
+      Reasoning:    The paper's title explicitly mentions 'Alignment and Safety in Large Language Models,' 'Training Paradigms,' and 'Emerging Challenges.' Alignment is the primary field involving RLHF and instruction tuning. Additionally, 'Safety' and 'Emerging Challenges' in the context of LLM alignment frequently cover adversarial threats like data poisoning and sleeper agent attacks. Although the abstract is missing, the title's scope directly aligns with the user's research criteria.
+
+======================================================================
+  7. DOWNLOAD RESULTS
+======================================================================
+
+  [OK] Sleeper Cell: Injecting Latent Malice Temporal Backdoors into Tool-Using LLMs
+      Source:  arxiv
+      URL:     http://arxiv.org/abs/2603.03371v1
+      File:    scaricati/Data_and_Model_Poisoning1/Sleeper_Cell_Injecting_Latent_Malice_Temporal_Backdoors_into_Tool-Using_LLMs.pdf
+      Method:  direct
+
+  [OK] When Evaluation Becomes a Side Channel: Regime Leakage and Structural Mitigations for Alignment Assessment
+      Source:  arxiv
+      URL:     http://arxiv.org/abs/2602.08449v3
+      File:    scaricati/Data_and_Model_Poisoning1/When_Evaluation_Becomes_a_Side_Channel_Regime_Leakage_and_Structural_Mitigations_for_Alignment_Asses.pdf
+      Method:  direct
+
+  [OK] The Trigger in the Haystack: Extracting and Reconstructing LLM Backdoor Triggers
+      Source:  arxiv
+      URL:     http://arxiv.org/abs/2602.03085v1
+      File:    scaricati/Data_and_Model_Poisoning1/The_Trigger_in_the_Haystack_Extracting_and_Reconstructing_LLM_Backdoor_Triggers.pdf
+      Method:  direct
+
+  [OK] Detecting Sleeper Agents in Large Language Models via Semantic Drift Analysis
+      Source:  arxiv
+      URL:     http://arxiv.org/abs/2511.15992v1
+      File:    scaricati/Data_and_Model_Poisoning1/Detecting_Sleeper_Agents_in_Large_Language_Models_via_Semantic_Drift_Analysis.pdf
+      Method:  direct
+
+  [OK] Steering Evaluation-Aware Language Models to Act Like They Are Deployed
+      Source:  arxiv
+      URL:     http://arxiv.org/abs/2510.20487v5
+      File:    scaricati/Data_and_Model_Poisoning1/Steering_Evaluation-Aware_Language_Models_to_Act_Like_They_Are_Deployed.pdf
+      Method:  direct
+
+  [OK] Mechanistic Exploration of Backdoored Large Language Model Attention Patterns
+      Source:  arxiv
+      URL:     http://arxiv.org/abs/2508.15847v1
+      File:    scaricati/Data_and_Model_Poisoning1/Mechanistic_Exploration_of_Backdoored_Large_Language_Model_Attention_Patterns.pdf
+      Method:  direct
+
+  [OK] Thought Crime: Backdoors and Emergent Misalignment in Reasoning Models
+      Source:  arxiv
+      URL:     http://arxiv.org/abs/2506.13206v2
+      File:    scaricati/Data_and_Model_Poisoning1/Thought_Crime_Backdoors_and_Emergent_Misalignment_in_Reasoning_Models.pdf
+      Method:  direct
+
+  [OK] Model Organisms for Emergent Misalignment
+      Source:  arxiv
+      URL:     http://arxiv.org/abs/2506.11613v1
+      File:    scaricati/Data_and_Model_Poisoning1/Model_Organisms_for_Emergent_Misalignment.pdf
+      Method:  direct
+
+  [OK] SPECTRE: Conditional System Prompt Poisoning to Hijack LLMs
+      Source:  arxiv
+      URL:     http://arxiv.org/abs/2505.16888v3
+      File:    scaricati/Data_and_Model_Poisoning1/SPECTRE_Conditional_System_Prompt_Poisoning_to_Hijack_LLMs.pdf
+      Method:  direct
+
+  [FAILED] Less is Better: Exploiting Label Bias to Enhance Instruction Tuning-based Backdoor Attack on Large Language Models
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/36052f6ceb748acaafaf5f8496fa10e12e5e458e
+      Error:   Could not find PDF download link
+
+  [OK] Merging Triggers, Breaking Backdoors: Defensive Poisoning for Instruction-Tuned Language Models
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/3777cc83ffce29ef8a0f6cab607b7255905c3544
+      File:    scaricati/Data_and_Model_Poisoning1/Merging_Triggers,_Breaking_Backdoors_Defensive_Poisoning_for_Instruction-Tuned_Language_Models.pdf
+      Method:  direct
+
+  [OK] Can Small-Scale Data Poisoning Exacerbate Dialect-Linked Biases in Large Language Models?
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/a405ccdaf068d0e897e4f6b5010d95431e8d943a
+      File:    scaricati/Data_and_Model_Poisoning1/Can_Small-Scale_Data_Poisoning_Exacerbate_Dialect-Linked_Biases_in_Large_Language_Models.pdf
+      Method:  direct
+
+  [OK] BadReward: Clean-Label Poisoning of Reward Models in Text-to-Image RLHF
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/391ecc949737031af11c003b7571de41487d3258
+      File:    scaricati/Data_and_Model_Poisoning1/BadReward_Clean-Label_Poisoning_of_Reward_Models_in_Text-to-Image_RLHF.pdf
+      Method:  direct
+
+  [OK] GREAT: Generalizable Backdoor Attacks in RLHF via Emotion-Aware Trigger Synthesis
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/77e0c4d24429558f3bf3c5f9913aba6b7fdb2c67
+      File:    scaricati/Data_and_Model_Poisoning1/GREAT_Generalizable_Backdoor_Attacks_in_RLHF_via_Emotion-Aware_Trigger_Synthesis.pdf
+      Method:  direct
+
+  [FAILED] Is Poisoning a Real Threat to DPO? Maybe More So Than You Think
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/edf41954672d27c160e2600283e8be741411c336
+      Error:   Could not find PDF download link
+
+  [OK] Cost-Minimized Label-Flipping Poisoning Attack to LLM Alignment
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/01add59f7a7b675afe0a14558945c0c14ff3bd93
+      File:    scaricati/Data_and_Model_Poisoning1/Cost-Minimized_Label-Flipping_Poisoning_Attack_to_LLM_Alignment.pdf
+      Method:  direct
+
+  [OK] Policy Teaching via Data Poisoning in Learning from Human Preferences
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/86e426b97069e4e8ded04dce0633a59286139a57
+      File:    scaricati/Data_and_Model_Poisoning1/Policy_Teaching_via_Data_Poisoning_in_Learning_from_Human_Preferences.pdf
+      Method:  direct
+
+  [OK] SAFER: Probing Safety in Reward Models with Sparse Autoencoder
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/38a858d491358347fabdbdeea7d517116c3fa9b9
+      File:    scaricati/Data_and_Model_Poisoning1/SAFER_Probing_Safety_in_Reward_Models_with_Sparse_Autoencoder.pdf
+      Method:  direct
+
+  [OK] A Survey on Data Security in Large Language Models
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/32bc9a01f4b0cbf8976bc682c282181dc6e0c1af
+      File:    scaricati/Data_and_Model_Poisoning1/A_Survey_on_Data_Security_in_Large_Language_Models.pdf
+      Method:  direct
+
+  [OK] MM-RLHF: The Next Step Forward in Multimodal LLM Alignment
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/bb6426f40b7a5323423826afa0485fd940ec3c78
+      File:    scaricati/Data_and_Model_Poisoning1/MM-RLHF_The_Next_Step_Forward_in_Multimodal_LLM_Alignment.pdf
+      Method:  direct
+
+  [OK] Reward Shaping to Mitigate Reward Hacking in RLHF
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/dd951242ebc94bf633eecc4994c64f46146a1413
+      File:    scaricati/Data_and_Model_Poisoning1/Reward_Shaping_to_Mitigate_Reward_Hacking_in_RLHF.pdf
+      Method:  direct
+
+  [OK] Evaluation of Best-of-N Sampling Strategies for Language Model Alignment
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/aa2e3c52b4c6e847f6703c84f5640cae42dbc73d
+      File:    scaricati/Data_and_Model_Poisoning1/Evaluation_of_Best-of-N_Sampling_Strategies_for_Language_Model_Alignment.pdf
+      Method:  direct
+
+  [OK] Safe Pruning LoRA: Robust Distance-Guided Pruning for Safety Alignment in Adaptation of LLMs
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/3ebb8ddbdf4599ce5db02cb21f66badf30fa4f71
+      File:    scaricati/Data_and_Model_Poisoning1/Safe_Pruning_LoRA_Robust_Distance-Guided_Pruning_for_Safety_Alignment_in_Adaptation_of_LLMs.pdf
+      Method:  direct
+
+  [OK] ProtegoFed: Backdoor-Free Federated Instruction Tuning with Interspersed Poisoned Data
+      Source:  huggingface
+      URL:     https://arxiv.org/abs/2603.00516
+      File:    scaricati/Data_and_Model_Poisoning1/ProtegoFed_Backdoor-Free_Federated_Instruction_Tuning_with_Interspersed_Poisoned_Data.pdf
+      Method:  direct
+
+  [OK] Towards Alignment-Centric Paradigm: A Survey of Instruction Tuning in
+  Large Language Models
+      Source:  huggingface
+      URL:     https://arxiv.org/abs/2508.17184
+      File:    scaricati/Data_and_Model_Poisoning1/Towards_Alignment-Centric_Paradigm_A_Survey_of_Instruction_Tuning_in
+__Large_Language_Models.pdf
+      Method:  direct
+
+  [OK] Reinforcement Learning from Human Feedback with High-Confidence Safety
+  Constraints
+      Source:  huggingface
+      URL:     https://arxiv.org/abs/2506.08266
+      File:    scaricati/Data_and_Model_Poisoning1/Reinforcement_Learning_from_Human_Feedback_with_High-Confidence_Safety
+__Constraints.pdf
+      Method:  direct
+
+  [OK] Alignment and Safety in Large Language Models: Safety Mechanisms,
+  Training Paradigms, and Emerging Challenges
+      Source:  huggingface
+      URL:     https://arxiv.org/abs/2507.19672
+      File:    scaricati/Data_and_Model_Poisoning1/Alignment_and_Safety_in_Large_Language_Models_Safety_Mechanisms,
+__Training_Paradigms,_and_Emerging.pdf
+      Method:  direct
+
+======================================================================
+  8. NON-RELEVANT PAPERS (SUMMARY)
+======================================================================
+  [1] PsyMem: Fine-grained psychological alignment and Explicit Memory Control for Advanced Role-Playing LLMs
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2505.12814v2
+      Reasoning:  The paper focuses on improving role-playing capabilities in LLMs by integrating psychological attributes and explicit memory control. It does not address data poisoning, RLHF, or sleeper agent attacks
+
+  [2] LLaDA-V: Large Language Diffusion Models with Visual Instruction Tuning
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/7ffe883cf9ccfc8f212231d4f4b137d5096013e9
+      Reasoning:  The paper focuses on the development of a diffusion-based Multimodal Large Language Model (MLLM) and its performance in visual instruction tuning. It does not discuss data poisoning, RLHF, or sleeper 
+
+  [3] InstructVLA: Vision-Language-Action Instruction Tuning from Understanding to Manipulation
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/c0caf3a0f22f18d492265a4eb83424bc5794c534
+      Reasoning:  The paper focuses on Vision-Language-Action (VLA) models for robotics, specifically introducing a training paradigm called InstructVLA to improve manipulation performance and multimodal reasoning. It 
+
+  [4] Large Language Models for Text Classification: From Zero-Shot Learning to Instruction-Tuning
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/88331bfb7a472befac7589e91e3ca64a7d78a294
+      Reasoning:  The paper focuses on the application of Large Language Models for text classification and stance detection in the context of social science research. While it discusses 'instruction-tuning' as a train
+
+  [5] Large-Scale Data Selection for Instruction Tuning
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/8c2b2c9cf5f9d4671657cfa6242b19a9290bcb69
+      Reasoning:  The paper focuses on automated data selection methods to improve the performance and efficiency of instruction tuning at scale. It does not discuss data poisoning, adversarial attacks (such as sleeper
+
+  [6] Capability Instruction Tuning: A New Paradigm for Dynamic LLM Routing
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/12fbc6c8234f9d747e11bd95a88aae8eb5885dd3
+      Reasoning:  The paper focuses on dynamic LLM routing, which involves selecting the most suitable model for a given instruction to optimize performance and resource usage. It introduces a framework called Model-SA
+
+  [7] LLaVA-MORE: A Comparative Study of LLMs and Visual Backbones for Enhanced Visual Instruction Tuning
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/91842cd8c848217bf6f06b2be1b0914cc6d4c344
+      Reasoning:  The paper focuses on a comparative study of different LLM architectures and visual backbones for Multimodal Large Language Models (MLLMs). While it discusses visual instruction tuning, it does so from
+
+  [8] Ross3D: Reconstructive Visual Instruction Tuning with 3D-Awareness
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/ee49b5f62f51835e01533acae4bdb367c7fa97fd
+      Reasoning:  The paper focuses on improving 3D scene understanding in Large Multimodal Models (LMMs) through a method called 'reconstructive visual instruction tuning'. While it mentions instruction tuning, it is 
+
+  [9] Medical large language models are vulnerable to data-poisoning attacks
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/70d4ef27eb1ff38b42229dc502998224e29c5933
+      Reasoning:  The paper focuses on data poisoning during the pre-training phase of LLMs, specifically targeting 'The Pile' dataset to inject medical misinformation. The user's research criteria specifically request
+
+  [10] Impact of Stenosis and Neural Foraminal Compromise on Low Back Pain and Postural Alignment
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/de80d91edae372b29f51646d529d2c77dd4980c9
+      Reasoning:  The paper is a medical study focusing on lumbar spinal stenosis, neural foraminal compromise, and their effects on low back pain and postural alignment. It has no connection to Large Language Models (
+
+  [11] SaLoRA: Safety-Alignment Preserved Low-Rank Adaptation
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/ea693001245ba993cbd4387f21b41958a0948746
+      Reasoning:  The paper focuses on a parameter-efficient fine-tuning (PEFT) method called SaLoRA, which is designed to prevent the unintentional degradation of safety alignment during LoRA fine-tuning. While it add
+
+  [12] SafeMERGE: Preserving Safety Alignment in Fine-Tuned Large Language Models via Selective Layer-Wise Model Merging
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/a569a63418100a460e46bb96c27a04c8782801fa
+      Reasoning:  The paper focuses on preserving safety alignment during standard fine-tuning by using a selective layer-wise model merging technique (SafeMERGE). While it addresses the degradation of safety in LLMs, 
+
+  [13] Detecting Backdoor Attacks in Federated Learning via Direction Alignment Inspection
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/21e8fa82fca32d75bddf7c78294e560098e268d6
+      Reasoning:  The paper focuses on a general defense mechanism against backdoor attacks in Federated Learning (FL) by inspecting model update directions. It does not specifically address Large Language Models (LLMs
+
+  [14] Decoupled Global-Local Alignment for Improving Compositional Understanding
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/b63ffd04728ce6e0f8e6f4af527707ced68223f0
+      Reasoning:  The paper focuses on improving the compositional understanding of vision-language models (specifically CLIP) using a framework called DeGLA. While it mentions using Large Language Models (LLMs) to gen
+
+  [15] Functional alignment is a feasible alignment strategy in robotic assisted total knee arthroplasty for knee osteoarthritis with extra-articular deformity – A case series
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/f6415868bf909ff5f8ecb76b3552279aa193176a
+      Reasoning:  The paper is a medical study focusing on robotic-assisted total knee arthroplasty (TKA) and surgical alignment techniques for knee osteoarthritis. It has no relation to Large Language Models (LLMs), d
+
+  [16] MSA: Mamba Semantic Alignment Networks for Remote Sensing Change Detection
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/a8faccaf1333018098ee450166bf048ff1886b4b
+      Reasoning:  The paper focuses on remote sensing change detection (CD) for Earth observation, specifically addressing spatial misalignment and long-range dependency modeling in image processing. While it utilizes 
+
+  [17] Never Compromise to Vulnerabilities: A Comprehensive Survey on AI Governance
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/6b3dd067be6324b137b60b910e15798dacdb6386
+      Reasoning:  The paper is a broad, high-level survey on AI governance, focusing on a framework that integrates technical security, societal ethics, and policy. While it mentions 'technical vulnerabilities' and 'ad
+
+  [18] Adaptive Trust Consensus for Blockchain IoT: Comparing RL, DRL, and MARL Against Naive, Collusive, Adaptive, Byzantine, and Sleeper Attacks
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/7c950b8cafb16fcb5b875af619bc5ee9b5119a38
+      Reasoning:  The paper focuses on blockchain-enabled IoT networks and trust-based consensus mechanisms. While it mentions 'sleeper activation' and 'Time-Delayed Poisoning', these are discussed in the context of tr
+
+  [19] AlphaEvolve: A coding agent for scientific and algorithmic discovery
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/ed32e5bb11a9e5e2f03ea805782e8670a6e10efd
+      Reasoning:  The paper describes AlphaEvolve, an evolutionary coding agent designed for scientific discovery and algorithmic optimization (e.g., matrix multiplication, data center scheduling). It does not discuss 
+
+  [20] Why Do Multi-Agent LLM Systems Fail?
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/c83b6a023a5c5ec71b44920a41b41fc007266c44
+      Reasoning:  The paper focuses on identifying and categorizing failure modes in Multi-Agent LLM Systems (MAS), such as system design issues, inter-agent misalignment, and task verification. It does not address dat
+
+  [21] Group-in-Group Policy Optimization for LLM Agent Training
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/742d9c80b2ca4d01f8a8675cfe98487e0783d3d7
+      Reasoning:  The paper focuses on a new reinforcement learning algorithm (GiGPO) specifically designed for training LLM agents in multi-turn environments (like ALFWorld and WebShop). While it discusses reinforceme
+
+  [22] Multi-Agent Collaboration Mechanisms: A Survey of LLMs
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/1d3de3a8eaac916f4eca09930ed8b593a10f5a46
+      Reasoning:  The paper is a survey focused on multi-agent collaboration mechanisms, structures, and strategies for LLM-based systems. It does not address data poisoning, instruction tuning, RLHF, or sleeper agent 
+
+  [23] On the Inevitability of Left-Leaning Political Bias in Aligned Language
+  Models
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2507.15328
+      Reasoning:  The user's research criteria focus on adversarial security topics such as data poisoning and sleeper agent attacks within the context of LLM alignment (instruction tuning and RLHF). The paper in quest
+
+
+======================================================================
+  END OF REPORT
+======================================================================

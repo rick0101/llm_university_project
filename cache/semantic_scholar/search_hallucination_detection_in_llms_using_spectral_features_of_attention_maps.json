@@ -1,0 +1,42 @@
+{
+  "paperId": "550f47dbfa0f12c35ba4331008503d80ab8f41c5",
+  "externalIds": {
+    "ArXiv": "2502.17598",
+    "DBLP": "journals/corr/abs-2502-17598",
+    "DOI": "10.48550/arXiv.2502.17598",
+    "CorpusId": 276580857
+  },
+  "title": "Hallucination Detection in LLMs Using Spectral Features of Attention Maps",
+  "venue": "Conference on Empirical Methods in Natural Language Processing",
+  "year": 2025,
+  "citationCount": 17,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2502.17598, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2141202489",
+      "name": "Jakub Binkowski"
+    },
+    {
+      "authorId": "2141195404",
+      "name": "Denis Janiak"
+    },
+    {
+      "authorId": "2141196841",
+      "name": "Albert Sawczyn"
+    },
+    {
+      "authorId": "2347042592",
+      "name": "Bogdan Gabrys"
+    },
+    {
+      "authorId": "2262217534",
+      "name": "Tomasz Kajdanowicz"
+    }
+  ],
+  "abstract": "Large Language Models (LLMs) have demonstrated remarkable performance across various tasks but remain prone to hallucinations. Detecting hallucinations is essential for safety-critical applications, and recent methods leverage attention map properties to this end, though their effectiveness remains limited. In this work, we investigate the spectral features of attention maps by interpreting them as adjacency matrices of graph structures. We propose the $\\text{LapEigvals}$ method, which utilises the top-$k$ eigenvalues of the Laplacian matrix derived from the attention maps as an input to hallucination detection probes. Empirical evaluations demonstrate that our approach achieves state-of-the-art hallucination detection performance among attention-based methods. Extensive ablation studies further highlight the robustness and generalisation of $\\text{LapEigvals}$, paving the way for future advancements in the hallucination detection domain."
+}

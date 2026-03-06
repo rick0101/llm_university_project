@@ -1,0 +1,44 @@
+{
+  "paperId": "af1568d61d3b4f5d9166803322efd125ec57f11b",
+  "externalIds": {
+    "ArXiv": "2603.04334",
+    "CorpusId": 286238893
+  },
+  "title": "SpotIt+: Verification-based Text-to-SQL Evaluation with Database Constraints",
+  "venue": "",
+  "year": 2026,
+  "citationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.04334, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2390199253",
+      "name": "Rocky Klopfenstein"
+    },
+    {
+      "authorId": "2334698404",
+      "name": "Yang He"
+    },
+    {
+      "authorId": "2390200625",
+      "name": "Andrew Tremante"
+    },
+    {
+      "authorId": "2290062346",
+      "name": "Yuepeng Wang"
+    },
+    {
+      "authorId": "2701535",
+      "name": "Nina Narodytska"
+    },
+    {
+      "authorId": null,
+      "name": "Haoze Wu"
+    }
+  ],
+  "abstract": "We present SpotIt+, an open-source tool for evaluating Text-to-SQL systems via bounded equivalence verification. Given a generated SQL query and the ground truth, SpotIt+ actively searches for database instances that differentiate the two queries. To ensure that the generated counterexamples reflect practically relevant discrepancies, we introduce a constraint-mining pipeline that combines rule-based specification mining over example databases with LLM-based validation. Experimental results on the BIRD dataset show that the mined constraints enable SpotIt+ to generate more realistic differentiating databases, while preserving its ability to efficiently uncover numerous discrepancies between generated and gold SQL queries that are missed by standard test-based evaluation."
+}

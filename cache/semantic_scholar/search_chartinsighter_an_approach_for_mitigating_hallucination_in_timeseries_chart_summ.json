@@ -1,0 +1,51 @@
+{
+  "paperId": "1a7afd7a60bc71d400f8ad4a7b7d8f91ada38f5b",
+  "externalIds": {
+    "ArXiv": "2501.09349",
+    "DBLP": "journals/tvcg/WangWSLSLC25",
+    "DOI": "10.1109/TVCG.2025.3567122",
+    "CorpusId": 275570298,
+    "PubMed": "40323752"
+  },
+  "title": "ChartInsighter: An Approach for Mitigating Hallucination in Time-Series Chart Summary Generation With a Benchmark Dataset",
+  "venue": "IEEE Transactions on Visualization and Computer Graphics",
+  "year": 2025,
+  "citationCount": 12,
+  "openAccessPdf": {
+    "url": "http://arxiv.org/pdf/2501.09349",
+    "status": "GREEN",
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2501.09349, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2340542429",
+      "name": "Fen Wang"
+    },
+    {
+      "authorId": "2378552288",
+      "name": "Bo Wang"
+    },
+    {
+      "authorId": "2330824035",
+      "name": "Xueli Shu"
+    },
+    {
+      "authorId": "2340399220",
+      "name": "Zhen Liu"
+    },
+    {
+      "authorId": "2210213483",
+      "name": "Zekai Shao"
+    },
+    {
+      "authorId": "2388588109",
+      "name": "Chao Liu"
+    },
+    {
+      "authorId": "2324663086",
+      "name": "Siming Chen"
+    }
+  ],
+  "abstract": "Effective chart summary can significantly reduce the time and effort decision makers spend interpreting charts, enabling precise and efficient communication of data insights. Previous studies have faced challenges in generating accurate and semantically rich summaries of time-series data charts. In this paper, we identify summary elements and common hallucination types in the generation of time-series chart summaries, which serve as our guidelines for automatic generation. We introduce ChartInsighter, which automatically generates chart summaries of time-series data, effectively reducing hallucinations in chart summary generation. Specifically, we assign multiple agents to generate the initial chart summary and collaborate iteratively, during which they invoke external data analysis modules to extract insights and compile them into a coherent summary. Additionally, we implement a self-consistency test method to validate and correct our summary. We create a high-quality benchmark of charts and summaries, with hallucination types annotated on a sentence-by-sentence basis, facilitating the evaluation of the effectiveness of reducing hallucinations. Our evaluations using our benchmark show that our method surpasses state-of-the-art models, and that our summary hallucination rate is the lowest, which effectively reduces various hallucinations and improves summary quality."
+}

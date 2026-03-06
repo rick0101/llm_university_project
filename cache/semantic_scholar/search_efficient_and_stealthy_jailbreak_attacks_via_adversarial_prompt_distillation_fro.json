@@ -1,0 +1,46 @@
+{
+  "paperId": "c2ada4d1a381c341e0b3b7931ba92cd13bdcebfe",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2506-17231",
+    "ArXiv": "2506.17231",
+    "DOI": "10.48550/arXiv.2506.17231",
+    "CorpusId": 279999487
+  },
+  "title": "Efficient and Stealthy Jailbreak Attacks via Adversarial Prompt Distillation from LLMs to SLMs",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 5,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2506.17231, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2371036618",
+      "name": "Xiang Li"
+    },
+    {
+      "authorId": "2310652598",
+      "name": "Chong Zhang"
+    },
+    {
+      "authorId": "2144547603",
+      "name": "Jia Wang"
+    },
+    {
+      "authorId": "2310500728",
+      "name": "Fangyu Wu"
+    },
+    {
+      "authorId": "2284454297",
+      "name": "Yushi Li"
+    },
+    {
+      "authorId": "2149112399",
+      "name": "Xiaobo Jin"
+    }
+  ],
+  "abstract": "As the scale and complexity of jailbreaking attacks on large language models (LLMs) continue to escalate, their efficiency and practical applicability are constrained, posing a profound challenge to LLM security. Jailbreaking techniques have advanced from manual prompt engineering to automated methodologies. Recent advances have automated jailbreaking approaches that harness LLMs to generate jailbreak instructions and adversarial examples, delivering encouraging results. Nevertheless, these methods universally include an LLM generation phase, which, due to the complexities of deploying and reasoning with LLMs, impedes effective implementation and broader adoption. To mitigate this issue, we introduce \\textbf{Adversarial Prompt Distillation}, an innovative framework that integrates masked language modeling, reinforcement learning, and dynamic temperature control to distill LLM jailbreaking prowess into smaller language models (SLMs). This methodology enables efficient, robust jailbreak attacks while maintaining high success rates and accommodating a broader range of application contexts. Empirical evaluations affirm the approach's superiority in attack efficacy, resource optimization, and cross-model versatility. Our research underscores the practicality of transferring jailbreak capabilities to SLMs, reveals inherent vulnerabilities in LLMs, and provides novel insights to advance LLM security investigations. Our code is available at: https://github.com/lxgem/Efficient_and_Stealthy_Jailbreak_Attacks_via_Adversarial_Prompt."
+}

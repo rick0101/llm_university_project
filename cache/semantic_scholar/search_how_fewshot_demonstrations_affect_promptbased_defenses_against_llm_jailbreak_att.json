@@ -1,0 +1,36 @@
+{
+  "paperId": "fd835a119dc0a9bc9f20c6e59554be7060d2b01a",
+  "externalIds": {
+    "ArXiv": "2602.04294",
+    "CorpusId": 285285719
+  },
+  "title": "How Few-shot Demonstrations Affect Prompt-based Defenses Against LLM Jailbreak Attacks",
+  "venue": "",
+  "year": 2026,
+  "citationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2602.04294, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2303610171",
+      "name": "Yanshu Wang"
+    },
+    {
+      "authorId": "2293142615",
+      "name": "Shuaishuai Yang"
+    },
+    {
+      "authorId": "2409380373",
+      "name": "Jingjing He"
+    },
+    {
+      "authorId": "2303522644",
+      "name": "Tong Yang"
+    }
+  ],
+  "abstract": "Large Language Models (LLMs) face increasing threats from jailbreak attacks that bypass safety alignment. While prompt-based defenses such as Role-Oriented Prompts (RoP) and Task-Oriented Prompts (ToP) have shown effectiveness, the role of few-shot demonstrations in these defense strategies remains unclear. Prior work suggests that few-shot examples may compromise safety, but lacks investigation into how few-shot interacts with different system prompt strategies. In this paper, we conduct a comprehensive evaluation on multiple mainstream LLMs across four safety benchmarks (AdvBench, HarmBench, SG-Bench, XSTest) using six jailbreak attack methods. Our key finding reveals that few-shot demonstrations produce opposite effects on RoP and ToP: few-shot enhances RoP's safety rate by up to 4.5% through reinforcing role identity, while it degrades ToP's effectiveness by up to 21.2% through distracting attention from task instructions. Based on these findings, we provide practical recommendations for deploying prompt-based defenses in real-world LLM applications."
+}

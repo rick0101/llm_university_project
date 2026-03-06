@@ -1,0 +1,54 @@
+{
+  "paperId": "b52f7aa85ef5ddade34324f5e86cf04c01f404d2",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2506-11613",
+    "ArXiv": "2506.11613",
+    "DOI": "10.48550/arXiv.2506.11613",
+    "CorpusId": 279391873
+  },
+  "title": "Model Organisms for Emergent Misalignment",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 30,
+  "influentialCitationCount": 2,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2506.11613, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-06-13",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2506.11613"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Turner2025ModelOF,\n author = {Edward Turner and Anna Soligo and Mia Taylor and Senthooran Rajamanoharan and Neel Nanda},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {Model Organisms for Emergent Misalignment},\n volume = {abs/2506.11613},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2367045363",
+      "name": "Edward Turner"
+    },
+    {
+      "authorId": "2342503380",
+      "name": "Anna Soligo"
+    },
+    {
+      "authorId": "2367289201",
+      "name": "Mia Taylor"
+    },
+    {
+      "authorId": "35185194",
+      "name": "Senthooran Rajamanoharan"
+    },
+    {
+      "authorId": "2051128902",
+      "name": "Neel Nanda"
+    }
+  ],
+  "abstract": "Recent work discovered Emergent Misalignment (EM): fine-tuning large language models on narrowly harmful datasets can lead them to become broadly misaligned. A survey of experts prior to publication revealed this was highly unexpected, demonstrating critical gaps in our understanding of model alignment. In this work, we both advance understanding and provide tools for future research. Using new narrowly misaligned datasets, we create a set of improved model organisms that achieve 99% coherence (vs. 67% prior), work with smaller 0.5B parameter models (vs. 32B), and that induce misalignment using a single rank-1 LoRA adapter. We demonstrate that EM occurs robustly across diverse model sizes, three model families, and numerous training protocols including full supervised fine-tuning. Leveraging these cleaner model organisms, we isolate a mechanistic phase transition and demonstrate that it corresponds to a robust behavioural phase transition in all studied organisms. Aligning large language models is critical for frontier AI safety, yet EM exposes how far we are from achieving this robustly. By distilling clean model organisms that isolate a minimal alignment-compromising change, and where this is learnt, we establish a foundation for future research into understanding and mitigating alignment risks in LLMs."
+}

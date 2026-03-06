@@ -1,0 +1,42 @@
+{
+  "paperId": "bb419a4952376815243456a7d44fa8c3eb78330f",
+  "externalIds": {
+    "DBLP": "conf/acl/Zhang0Z0025",
+    "ArXiv": "2507.16488",
+    "DOI": "10.18653/v1/2025.acl-long.880",
+    "CorpusId": 280017020
+  },
+  "title": "ICR Probe: Tracking Hidden State Dynamics for Reliable Hallucination Detection in LLMs",
+  "venue": "Annual Meeting of the Association for Computational Linguistics",
+  "year": 2025,
+  "citationCount": 9,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2507.16488, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2372124652",
+      "name": "Zhenliang Zhang"
+    },
+    {
+      "authorId": "1486281414",
+      "name": "Xinyu Hu"
+    },
+    {
+      "authorId": "2288559437",
+      "name": "Huixuan Zhang"
+    },
+    {
+      "authorId": "2107967598",
+      "name": "Junzhe Zhang"
+    },
+    {
+      "authorId": "2288537941",
+      "name": "Xiaojun Wan"
+    }
+  ],
+  "abstract": "Large language models (LLMs) excel at various natural language processing tasks, but their tendency to generate hallucinations undermines their reliability. Existing hallucination detection methods leveraging hidden states predominantly focus on static and isolated representations, overlooking their dynamic evolution across layers, which limits efficacy. To address this limitation, we shift the focus to the hidden state update process and introduce a novel metric, the ICR Score (Information Contribution to Residual Stream), which quantifies the contribution of modules to the hidden states'update. We empirically validate that the ICR Score is effective and reliable in distinguishing hallucinations. Building on these insights, we propose a hallucination detection method, the ICR Probe, which captures the cross-layer evolution of hidden states. Experimental results show that the ICR Probe achieves superior performance with significantly fewer parameters. Furthermore, ablation studies and case analyses offer deeper insights into the underlying mechanism of this method, improving its interpretability."
+}

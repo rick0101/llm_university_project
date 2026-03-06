@@ -1,0 +1,58 @@
+{
+  "paperId": "a84280a4c67f822c5ac813e2c6b19e9f5995fc7a",
+  "externalIds": {
+    "ArXiv": "2505.11320",
+    "DBLP": "journals/corr/abs-2505-11320",
+    "DOI": "10.48550/arXiv.2505.11320",
+    "CorpusId": 278715396
+  },
+  "title": "Understanding and Characterizing Obfuscated Funds Transfers in Ethereum Smart Contracts",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 1,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.11320, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-05-16",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2505.11320"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Sheng2025UnderstandingAC,\n author = {Zhang Sheng and Tan Kia Quang and Shen Wang and Shengchen Duan and Kai Li and Yue Duan},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {Understanding and Characterizing Obfuscated Funds Transfers in Ethereum Smart Contracts},\n volume = {abs/2505.11320},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2362092902",
+      "name": "Zhang Sheng"
+    },
+    {
+      "authorId": "2362094816",
+      "name": "Tan Kia Quang"
+    },
+    {
+      "authorId": "2311302552",
+      "name": "Shen Wang"
+    },
+    {
+      "authorId": "2311115957",
+      "name": "Shengchen Duan"
+    },
+    {
+      "authorId": "2220791898",
+      "name": "Kai Li"
+    },
+    {
+      "authorId": "2305729798",
+      "name": "Yue Duan"
+    }
+  ],
+  "abstract": "Scam contracts on Ethereum have rapidly evolved alongside the rise of DeFi and NFT ecosystems, utilizing increasingly complex code obfuscation techniques to avoid early detection. This paper systematically investigates how obfuscation amplifies the financial risks of fraudulent contracts and undermines existing auditing tools. We propose a transfer-centric obfuscation taxonomy, distilling seven key features, and introduce ObfProbe, a framework that performs bytecode-level smart contract analysis to uncover obfuscation techniques and quantify obfuscation complexity via Z-score ranking. In a large-scale study of 1.03 million Ethereum contracts, we isolate over 3 000 highly obfuscated contracts and identify two scam archetypes, three high-risk contract categories, and MEV bots that employ a variety of obfuscation maneuvers such as inline assembly, dead code insertion, and deep function splitting. We further show that obfuscation substantially increases both the scale of financial damage and the time until detection. Finally, we evaluate SourceP, a state-of-the-art Ponzi detection tool, on obfuscated versus non-obfuscated samples and observe its accuracy drop from approximately 80 percent to approximately 12 percent in real-world scenarios. These findings highlight the urgent need for enhanced anti-obfuscation analysis techniques and broader community collaboration to stem the proliferation of scam contracts in the expanding DeFi ecosystem."
+}

@@ -1,0 +1,333 @@
+======================================================================
+  PAPERHUNTER — SESSION REPORT
+======================================================================
+
+======================================================================
+  1. SESSION METADATA
+======================================================================
+  Timestamp:                          2026-03-05 21:57:46
+  Platform:                           Linux-6.18.13-200.fc43.x86_64-x86_64-with-glibc2.42
+  Python version:                     3.14.3
+
+======================================================================
+  2. SEARCH PARAMETERS
+======================================================================
+  Keywords:                           "AST-based adversarial attack" OR "control-flow graph perturbations" OR "syntax tree manipulation" OR "data-flow adversarial examples"
+  Max results per source:             10
+  ArXiv categories:                   cs.CL, cs.AI, cs.CR, cs.LG
+
+======================================================================
+  3. LLM FILTERING CONFIGURATION
+======================================================================
+  LLM provider:                       google
+  LLM model:                          gemini-3-flash-preview
+  LLM temperature:                    0.1
+
+  Filtering criteria (prompt):
+  ------------------------------------------------------------------
+    Research on adversarial attacks targeting the structural representations of code, such as AST or CFG, to deceive code models
+  ------------------------------------------------------------------
+
+======================================================================
+  4. SOURCES QUERIED
+======================================================================
+    • ArXiv
+    • Semantic Scholar
+    • Hugging Face
+
+======================================================================
+  5. STATISTICS
+======================================================================
+  Total papers found:                 46
+  Papers judged relevant:             3
+  Papers judged NOT relevant:         43
+  Papers downloaded OK:               1
+  Papers download FAILED:             2
+
+  Papers found per source:
+    huggingface               6
+    semantic_scholar          40
+
+  Relevant papers per source:
+    semantic_scholar          3
+
+======================================================================
+  6. RELEVANT PAPERS (DETAIL)
+======================================================================
+
+  [11] Adversarial Graph Perturbation for Smart Contract Vulnerability Detection
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/b6bb0a4ee0bcc2223c63791c5e0d57acbe799eee
+      Authors:      Qi Han, Jiamin Deng, Shichang Huang, Yu Lit, Guyue Li
+      Published:    2025-09-08
+      DOI:          10.1109/CNS66487.2025.11194994
+      Citations:    1
+      Confidence:   0.95
+      Reasoning:    The paper explores adversarial graph perturbations specifically targeting the structural and feature-based representations of smart contract code. It mentions using structure perturbations to capture complex control flow patterns (CFGs) to improve the robustness of vulnerability detection models. This directly aligns with the user's research criteria regarding adversarial attacks on structural representations of code like CFGs.
+
+  [14] Evading control flow graph based GNN malware detectors via active opcode insertion method with maliciousness preserving
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/4ad64783f3475bcb2c229d08eeac51b2eb24704a
+      PDF URL:      https://doi.org/10.1038/s41598-025-92023-7
+      Authors:      Hao Peng, Zehao Yu, Dandan Zhao, Zhiguo Ding, Jieshuai Yang
+      Published:    2025-03-17
+      DOI:          10.1038/s41598-025-92023-7
+      Citations:    5
+      Confidence:   1.00
+      Reasoning:    The paper describes a method for generating adversarial malware by specifically targeting and modifying Control Flow Graphs (CFGs), which are structural representations of code. It aims to deceive Graph Neural Network (GNN) models used for malware detection. This directly matches the user's research criteria regarding adversarial attacks on structural representations like CFGs to deceive code models.
+
+  [27] The Compliance Paradox: Semantic-Instruction Decoupling in Automated Academic Code Evaluation
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/7bc8b18b8fc0a11360a3d78ebb81de235f69f4f9
+      Authors:      Devanshu Sahoo, Manish Prasad, Vasudev Majhi, Arjun Neekhra, Yash Sinha
+      Published:    2026-01-29
+      ArXiv ID:     2601.21360
+      DOI:          10.48550/arXiv.2601.21360
+      Citations:    0
+      Confidence:   1.00
+      Reasoning:    The paper directly addresses the user's research criteria by introducing the 'Abstract Syntax Tree-Aware Semantic Injection Protocol (AST-ASIP)'. This method specifically targets the structural representation of code (the AST) to perform adversarial attacks. It embeds adversarial directives into 'trivia nodes' of the AST to deceive code models (LLMs used for automated grading), causing them to prioritize hidden instructions over code correctness. This is a clear example of research on adversarial attacks targeting structural representations of code to deceive models.
+
+======================================================================
+  7. DOWNLOAD RESULTS
+======================================================================
+
+  [FAILED] Adversarial Graph Perturbation for Smart Contract Vulnerability Detection
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/b6bb0a4ee0bcc2223c63791c5e0d57acbe799eee
+      Error:   Could not find PDF download link
+
+  [FAILED] Evading control flow graph based GNN malware detectors via active opcode insertion method with maliciousness preserving
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/4ad64783f3475bcb2c229d08eeac51b2eb24704a
+      Error:   Could not find PDF download link
+
+  [OK] The Compliance Paradox: Semantic-Instruction Decoupling in Automated Academic Code Evaluation
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/7bc8b18b8fc0a11360a3d78ebb81de235f69f4f9
+      File:    None
+      Method:  dedup
+
+======================================================================
+  8. NON-RELEVANT PAPERS (SUMMARY)
+======================================================================
+  [1] Mitigating Filter-Based Adversarial Attacks in BCIs through Model Compression
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/9bcdd0fef7669daf6c2044acdd9393f282d80832
+      Reasoning:  The paper focuses on adversarial attacks and mitigation strategies within the domain of Brain-Computer Interfaces (BCIs) and EEG signal classification. It specifically addresses filter-based adversari
+
+  [2] Exploring and Mitigating Adversarial Manipulation of Voting-Based Leaderboards
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/232a6a41b9f13d2de10a45135909eb53794c5461
+      Reasoning:  The paper focuses on adversarial attacks against voting-based leaderboards (like Chatbot Arena) to manipulate model rankings. It does not involve adversarial attacks on code models, nor does it discus
+
+  [3] MS-GAGA: Metric-Selective Guided Adversarial Generation Attack
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/9c909473170800515069cc6eba0531cdaabe13c4
+      Reasoning:  The paper focuses on adversarial attacks against deepfake detectors in the computer vision domain, specifically targeting images. The user's research criteria are focused on adversarial attacks target
+
+  [4] Federated Defense for Malware Detection and Resilience Against Adversarial Attacks
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/f205ae8dac0bc366d972a40d3d2a0a929f8b7f67
+      Reasoning:  The paper focuses on malware detection using image-based representations (converting raw malware to color images) and deep convolutional neural networks (CNNs) within a federated learning framework. T
+
+  [5] AI Under Attack: Metric-Driven Analysis of Cybersecurity Threats in Deep Learning Models for Healthcare Applications
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/623fbd817960794181211c3f4f3556afade9a5e4
+      Reasoning:  The paper focuses on adversarial attacks (FGSM, evasion, data poisoning) within the context of healthcare applications, specifically breast cancer detection. It does not address code models, source co
+
+  [6] REINFORCE Adversarial Attacks on Large Language Models: An Adaptive, Distributional, and Semantic Objective
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/20fc2f1aabf38d435305d522df545bc75c6b0447
+      Reasoning:  The paper focuses on general adversarial jailbreak attacks on Large Language Models (LLMs) to bypass alignment and safety filters. It proposes a new optimization objective using the REINFORCE policy-g
+
+  [7] Adversarial Defense in Cybersecurity: A Systematic Review of GANs for Threat Detection and Mitigation
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/a4cf83c561170db31fe76d4f3588d6fa726c1120
+      Reasoning:  The paper is a broad systematic review of Generative Adversarial Networks (GANs) used for adversarial defense across various cybersecurity domains such as network intrusion detection, malware analysis
+
+  [8] Investigating the Transferability of TOG Adversarial Attacks in YOLO Models in the Maritime Domain
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/cfd679c68a26625f5a1041277c726967a227a4d7
+      Reasoning:  The paper focuses on adversarial attacks (specifically Targeted Objectness Gradient) against computer vision models (YOLO) in the maritime domain using image data. The user's research criteria specifi
+
+  [9] Stable VMAF: investigating VMAF’s vulnerabilities to adversarial attacks
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/bbd813936382b82eae5de74fd0214c2802d5a8db
+      Reasoning:  The paper focuses on VMAF (Video Multi-Method Assessment Fusion), which is a metric for video quality assessment. The research criteria specifically target adversarial attacks on code models using str
+
+  [10] OSA-Diff: An Origin Sampling Based Adversarial Attack Using Diffusion Models
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/b734c9d02ce530ae6db58fd833c4dae3819b7ced
+      Reasoning:  The paper focuses on adversarial attacks using diffusion models, specifically mentioning 'high quality images' in the abstract. This indicates the research is situated in the computer vision domain. T
+
+  [11] BEGA: A Binary Code Embedding Method Based on Gravity-Model Augmentation Graph Contrastive Learning
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/a02b8d9661075a2384f7f9038ad7227ee098180a
+      Reasoning:  The paper focuses on binary code similarity detection (BCSD) and proposes a graph contrastive learning method (BEGA) to improve the robustness of embeddings against variations caused by different comp
+
+  [12] CFG2AT: Control Flow Graph and Graph Attention Network-Based Software Defect Prediction
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/e85304def40246c374d922e1eb712fe052cf4d2d
+      Reasoning:  The paper focuses on improving software defect prediction (SDP) by using Control Flow Graphs (CFG) and Graph Attention Networks. While it utilizes structural representations of code (CFG), which is a 
+
+  [13] ML-Driven Prediction of Optimal Control Flow Graph Traversal Algorithm in Modern Applications
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/d55d57656f597e2af3447ca17f405c2c969d0cce
+      Reasoning:  The paper focuses on using machine learning to optimize compiler performance by predicting the most efficient traversal algorithm (BFS vs. DFS) for Control Flow Graphs (CFGs). It does not address adve
+
+  [14] A deep learning-based vulnerability detection in blockchain smart contracts using masked attention and control flow graph analysis
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/bdb4704f8d5b2fd000b808f588e6dc21145b71df
+      Reasoning:  The paper focuses on using deep learning and control flow graph (CFG) analysis for the purpose of vulnerability detection in smart contracts. While it utilizes structural representations of code (CFG)
+
+  [15] Capturing the context-aware code change via dynamic control flow graph for commit message generation
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/cdeb997c11cba86976979cadd8e8e27e0bb7d8e9
+      Reasoning:  The paper focuses on using dynamic control flow graphs (CFG) for the purpose of commit message generation. While it utilizes a structural representation (CFG) mentioned in the criteria, its objective 
+
+  [16] Unit Test Case Generation from Source Code Based on Control Flow Graph
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/ed25ea3a1caa813fa88663fc86e3514ed6421506
+      Reasoning:  The paper focuses on automated unit test case generation using Control Flow Graphs (CFG) to improve branch coverage and software testing efficiency. While it utilizes CFG and Large Language Models (LL
+
+  [17] LiteXGNN: A Lightweight Explainable Graph Neural Network for Malware Detection with Control Flow Graph Explainability
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/7ff97285439d4478a48e0ba4d4a6d245eb352983
+      Reasoning:  The paper focuses on malware detection and explainability (XAI) using Control Flow Graphs (CFGs) and Graph Neural Networks. While it utilizes structural representations of code (CFGs), its primary obj
+
+  [18] Machine learning-driven prediction of optimal control flow graph traversal strategy
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/c523d438295677b07f5e5a50436e93ed6fa1f1df
+      Reasoning:  The paper focuses on optimizing compiler performance by using machine learning to predict the most efficient traversal strategy (BFS vs. DFS) for Control Flow Graphs (CFGs). While it utilizes CFGs and
+
+  [19] Towards LLM-based Spam Detection for Product Reviews: A Review Graph Syntax Tree based Prompting Method
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/5e248337c6271c2adc8f4d413e4cf3c795beb3d6
+      Reasoning:  The paper focuses on detecting spam in product reviews using a graph-based prompting method for LLMs. While it mentions a 'Review graph Syntax Tree' and 'R-tree', these structures are used to represen
+
+  [20] Tree Variational Autoencoder for Code
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/bb780637e9fe3df26cd034c8da79a752012e1bcb
+      Reasoning:  The paper focuses on developing a Tree Variational Autoencoder (TreeVAE) using Abstract Syntax Trees (AST) for code representation and generation. While it utilizes structural representations (AST), i
+
+  [21] DFlows: A Flow-Based Programming Approach for a Polyglot Design-Space Exploration Framework
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/18bf1f05698c2364515257ede5fb4ea052e41329
+      Reasoning:  The paper focuses on Design-Space Exploration (DSE) for hardware architectures (Verilog, VHDL, Chisel, HLS). While it mentions Abstract Syntax Tree (AST) manipulation, it uses this technique for gener
+
+  [22] Typed Program Analysis without Encodings
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/717b1e0e034134e9819a35e4f615296dcb1c2512
+      Reasoning:  The paper focuses on theoretical computer science, specifically type theory and tree calculus for program analysis without the need for encodings. It discusses self-interpreters and the representation
+
+  [23] A Domain-Specific Compiler for Embedded DSP Development Based on Component Code Generation: Architecture and Correctness
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/9de3b8ea54dea4a672789a264ccdd2770b662353
+      Reasoning:  The paper focuses on the development of a domain-specific compiler for embedded DSP systems, specifically addressing code generation and compiler correctness. While it mentions the use of Abstract Syn
+
+  [24] Large Language Models Are Effective Code Watermarkers
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/51e7fb6c1b9091c3105997f852517fa40463796a
+      Reasoning:  The paper focuses on code watermarking for source attribution and license protection, rather than adversarial attacks. While it mentions robustness against attacks, these are watermark removal attacks
+
+  [25] cAST: Enhancing Code Retrieval-Augmented Generation with Structural Chunking via Abstract Syntax Tree
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/4a1a13a7005beaaa506fe2f323e2ec0a7f0130b3
+      Reasoning:  The paper focuses on improving Retrieval-Augmented Generation (RAG) for code by using Abstract Syntax Trees (AST) to create better structural chunks for retrieval. It does not address adversarial atta
+
+  [26] Phylo2vec: a Library for Vector-based Phylogenetic Tree Manipulation
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/ee4478323f32356481cbb843703f8dc74fc45598
+      Reasoning:  The paper describes a library for representing and manipulating phylogenetic trees (evolutionary trees used in biology and linguistics). It does not deal with code representations like AST or CFG, nor
+
+  [27] Penggunaan Software Metrics Dan Abstract Syntax Tree Untuk Mendeteksi Code Smell Pada Bahasa Pemrograman Python
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/0a42a5af65dd02ac728d5f33c40d067fa9f1f49f
+      Reasoning:  The paper focuses on detecting 'code smells' (design flaws) in Python code using software metrics and Abstract Syntax Trees (AST). While it utilizes ASTs, its objective is software quality improvement
+
+  [28] Anomaly Detection in Scenarios with Missing Abnormal Samples Based on Generative Flow Model and Generative Adversarial Network
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/dbaa07cc8085ea001ac2b796b50bf55eec5f2eae
+      Reasoning:  The paper focuses on anomaly detection for mechanical components (specifically bearings in transportation) using a combination of Generative Flow models and GANs. It deals with time-frequency matrices
+
+  [29] High-Quality Synthetic Annotated Tissue Data Using Conditional Generative Adversarial Networks
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/ecfa9ce76aca6e2dcc037932beb32efa6a046801
+      Reasoning:  The paper focuses on generating synthetic annotated tissue data (likely for medical or biological imaging) using Conditional Generative Adversarial Networks. It does not relate to code models, structu
+
+  [30] Data ID Extraction Networks for Unsupervised Class- and Classifier-Free Detection of Adversarial Examples
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/85636c72d93f35f8bb98c18dae2572f2b334f091
+      Reasoning:  The paper focuses on adversarial detection for general deep learning models, specifically evaluated on image datasets like CIFAR-10 and ImageNet. While it mentions 'structural information', it refers 
+
+  [31] Improved data augmentation method for ship detection in SAR images utilizing adversarial examples
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/65a153720c6ce8f062e26bb499a037bb0f3bb51e
+      Reasoning:  The paper focuses on ship detection in Synthetic Aperture Radar (SAR) images using computer vision techniques. It utilizes adversarial examples as a data augmentation method to improve the robustness 
+
+  [32] Toward Model Resistant to Transferable Adversarial Examples via Trigger Activation
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/e7e3feef58c03dff4eca6988ea8d1afe10eef830
+      Reasoning:  The paper focuses on a general defense mechanism against transferable adversarial examples in deep neural networks, specifically using a 'trigger activation' training paradigm. It mentions 'clean imag
+
+  [33] Vision transformers for three‐phase flow classifications with data augmentation through generative adversarial networks
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/0b08f0693ccc885a3b53c33db849a1fbc6dd763b
+      Reasoning:  The paper focuses on the classification of multiphase flow regimes in oil and gas pipelines using Vision Transformers and GANs for data augmentation. It has no connection to code models, structural re
+
+  [34] Recovering Missing Passenger Flow Data in Subway Stations via an Enhanced Generative Adversarial Network
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/c4feda378ed959592b326972649a4f7d34e48c9b
+      Reasoning:  The paper focuses on data imputation for subway passenger flow using a Generative Adversarial Network (GAN). It addresses spatiotemporal data recovery in the context of transportation. The user's rese
+
+  [35] Federated Edge Intelligence for Enhanced Security in Consumer Intermittent Healthcare Devices Using Adversarial Examples
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/24b28fcdb8c78f20f457c67e65fdd195607aaa8e
+      Reasoning:  The paper focuses on network traffic security in Smart Healthcare Systems (SHS) using Federated Learning and adversarial examples applied to network traffic bytes. It does not involve source code, cod
+
+  [36] 3D Shape Contrastive Representation Learning With Adversarial Examples
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/bc0aeff9de37f5c7bf275edadb7b16b43ff0d00d
+      Reasoning:  The paper focuses on 3D shape representation learning in the field of computer vision, specifically using adversarial examples to improve unsupervised learning for 3D point clouds. The user's research
+
+  [37] Reversible Adversarial Examples with Minimalist Evolution for Recognition Control in Computer Vision
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/3f7825f2de7bcb8c978304adab9c1e839b7fc99f
+      Reasoning:  The paper focuses on adversarial examples in the field of computer vision and image recognition, specifically addressing image privacy and reversible perturbations. The user's research criteria are sp
+
+  [38] Trust Me, I Can Handle It: Self-Generated Adversarial Scenario
+  Extrapolation for Robust Language Models
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2505.17089
+      Reasoning:  The paper title focuses on general adversarial scenario extrapolation for robust language models. It does not mention code, programming languages, or structural representations such as Abstract Syntax
+
+  [39] MixAT: Combining Continuous and Discrete Adversarial Training for LLMs
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2505.16947
+      Reasoning:  The paper focuses on general adversarial training (AT) for Large Language Models (LLMs), specifically combining continuous and discrete methods. It does not mention code, code models, or structural re
+
+  [40] PIORF: Physics-Informed Ollivier-Ricci Flow for Long-Range Interactions
+  in Mesh Graph Neural Networks
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2504.04052
+      Reasoning:  The paper focuses on Mesh Graph Neural Networks and Ollivier-Ricci Flow, which are techniques typically used in geometric deep learning and physical simulations. It does not address code representatio
+
+  [41] CFG-Ctrl: Control-Based Classifier-Free Diffusion Guidance
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2603.03281
+      Reasoning:  The paper title 'CFG-Ctrl: Control-Based Classifier-Free Diffusion Guidance' refers to 'Classifier-Free Guidance' (CFG) in the context of diffusion models, which are generative AI models typically use
+
+  [42] TreeCoder: Systematic Exploration and Optimisation of Decoding and Constraints for LLM Code Generation
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2511.22277
+      Reasoning:  The paper 'TreeCoder' focuses on the optimization of decoding and constraints for LLM code generation, likely utilizing tree structures (like ASTs) to improve the quality or correctness of generated c
+
+  [43] Adversarial Flow Models
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2511.22475
+      Reasoning:  The title 'Adversarial Flow Models' suggests a focus on generative normalizing flow models within a general machine learning context. There is no mention of code, programming languages, or structural 
+
+
+======================================================================
+  END OF REPORT
+======================================================================

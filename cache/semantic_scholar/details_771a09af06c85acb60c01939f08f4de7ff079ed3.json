@@ -1,0 +1,66 @@
+{
+  "paperId": "771a09af06c85acb60c01939f08f4de7ff079ed3",
+  "externalIds": {
+    "ArXiv": "2507.22929",
+    "DBLP": "journals/corr/abs-2507-22929",
+    "DOI": "10.1016/j.inffus.2025.103631",
+    "CorpusId": 280401254
+  },
+  "title": "EH-Benchmark Ophthalmic Hallucination Benchmark and Agent-Driven Top-Down Traceable Reasoning Workflow",
+  "venue": "Information Fusion",
+  "year": 2025,
+  "citationCount": 2,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2507.22929, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-07-24",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2507.22929"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Pan2025EHBenchmarkOH,\n author = {X. Pan and Yang Bai and Ke Zou and Yang Zhou and Jun Zhou and Huazhu Fu and Y. Tham and Yong Liu},\n booktitle = {Information Fusion},\n journal = {ArXiv},\n title = {EH-Benchmark Ophthalmic Hallucination Benchmark and Agent-Driven Top-Down Traceable Reasoning Workflow},\n volume = {abs/2507.22929},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2293231562",
+      "name": "X. Pan"
+    },
+    {
+      "authorId": "2295955807",
+      "name": "Yang Bai"
+    },
+    {
+      "authorId": "2054284353",
+      "name": "Ke Zou"
+    },
+    {
+      "authorId": "2295955600",
+      "name": "Yang Zhou"
+    },
+    {
+      "authorId": "2310321787",
+      "name": "Jun Zhou"
+    },
+    {
+      "authorId": "2258526406",
+      "name": "Huazhu Fu"
+    },
+    {
+      "authorId": "6412770",
+      "name": "Y. Tham"
+    },
+    {
+      "authorId": "2349462283",
+      "name": "Yong Liu"
+    }
+  ],
+  "abstract": "Medical Large Language Models (MLLMs) play a crucial role in ophthalmic diagnosis, holding significant potential to address vision-threatening diseases. However, their accuracy is constrained by hallucinations stemming from limited ophthalmic knowledge, insufficient visual localization and reasoning capabilities, and a scarcity of multimodal ophthalmic data, which collectively impede precise lesion detection and disease diagnosis. Furthermore, existing medical benchmarks fail to effectively evaluate various types of hallucinations or provide actionable solutions to mitigate them. To address the above challenges, we introduce EH-Benchmark, a novel ophthalmology benchmark designed to evaluate hallucinations in MLLMs. We categorize MLLMs'hallucinations based on specific tasks and error types into two primary classes: Visual Understanding and Logical Composition, each comprising multiple subclasses. Given that MLLMs predominantly rely on language-based reasoning rather than visual processing, we propose an agent-centric, three-phase framework, including the Knowledge-Level Retrieval stage, the Task-Level Case Studies stage, and the Result-Level Validation stage. Experimental results show that our multi-agent framework significantly mitigates both types of hallucinations, enhancing accuracy, interpretability, and reliability. Our project is available at https://github.com/ppxy1/EH-Benchmark."
+}

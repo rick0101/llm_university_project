@@ -1,0 +1,45 @@
+{
+  "paperId": "ded64097fb6ca7d10c58eeb3506114b8211c85ac",
+  "externalIds": {
+    "ArXiv": "2503.03502",
+    "CorpusId": 276782068
+  },
+  "title": "Geometry-Guided Adversarial Prompt Detection via Curvature and Local Intrinsic Dimension",
+  "venue": "",
+  "year": 2025,
+  "citationCount": 1,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2503.03502, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-03-05",
+  "journal": null,
+  "citationStyles": {
+    "bibtex": "@Inproceedings{Yung2025GeometryGuidedAP,\n author = {Canaan Yung and Hanxun Huang and S. Erfani and Christopher Leckie},\n title = {Geometry-Guided Adversarial Prompt Detection via Curvature and Local Intrinsic Dimension},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2269970980",
+      "name": "Canaan Yung"
+    },
+    {
+      "authorId": "1753845931",
+      "name": "Hanxun Huang"
+    },
+    {
+      "authorId": "144757691",
+      "name": "S. Erfani"
+    },
+    {
+      "authorId": "2284685090",
+      "name": "Christopher Leckie"
+    }
+  ],
+  "abstract": "Adversarial prompts are capable of jailbreaking frontier large language models (LLMs) and inducing undesirable behaviours, posing a significant obstacle to their safe deployment. Current mitigation strategies primarily rely on activating built-in defence mechanisms or fine-tuning LLMs, both of which are computationally expensive and can sacrifice model utility. In contrast, detection-based approaches are more efficient and practical for deployment in real-world applications. However, the fundamental distinctions between adversarial and benign prompts remain poorly understood. In this work, we introduce CurvaLID, a novel defence framework that efficiently detects adversarial prompts by leveraging their geometric properties. It is agnostic to the type of LLM, offering a unified detection framework across diverse adversarial prompts and LLM architectures. CurvaLID builds on the geometric analysis of text prompts to uncover their underlying differences. We theoretically extend the concept of curvature via the Whewell equation into an $n$-dimensional word embedding space, enabling us to quantify local geometric properties, including semantic shifts and curvature in the underlying manifolds. To further enhance our solution, we leverage Local Intrinsic Dimensionality (LID) to capture complementary geometric features of text prompts within adversarial subspaces. Our findings show that adversarial prompts exhibit distinct geometric signatures from benign prompts, enabling CurvaLID to achieve near-perfect classification and outperform state-of-the-art detectors in adversarial prompt detection. CurvaLID provides a reliable and efficient safeguard against malicious queries as a model-agnostic method that generalises across multiple LLMs and attack families."
+}

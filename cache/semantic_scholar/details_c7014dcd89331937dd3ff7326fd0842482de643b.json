@@ -1,0 +1,45 @@
+{
+  "paperId": "c7014dcd89331937dd3ff7326fd0842482de643b",
+  "externalIds": {
+    "ArXiv": "2410.10526",
+    "DBLP": "journals/corr/abs-2410-10526",
+    "DOI": "10.1145/3708821.3733870",
+    "CorpusId": 273346031
+  },
+  "title": "Generalized Adversarial Code-Suggestions: Exploiting Contexts of LLM-based Code-Completion",
+  "venue": "ACM Asia Conference on Computer and Communications Security",
+  "year": 2024,
+  "citationCount": 0,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.10526, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2024-10-14",
+  "journal": {
+    "name": "Proceedings of the 20th ACM Asia Conference on Computer and Communications Security"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Rubel2024GeneralizedAC,\n author = {Karl Rubel and Maximilian Noppel and Christian Wressnegger},\n booktitle = {ACM Asia Conference on Computer and Communications Security},\n journal = {Proceedings of the 20th ACM Asia Conference on Computer and Communications Security},\n title = {Generalized Adversarial Code-Suggestions: Exploiting Contexts of LLM-based Code-Completion},\n year = {2024}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2325905989",
+      "name": "Karl Rubel"
+    },
+    {
+      "authorId": "1663919786",
+      "name": "Maximilian Noppel"
+    },
+    {
+      "authorId": "2198719",
+      "name": "Christian Wressnegger"
+    }
+  ],
+  "abstract": "While convenient, relying on LLM-powered code assistants in day-to-day work gives rise to severe attacks. For instance, the assistant might introduce subtle flaws and suggest vulnerable code to the user. These adversarial code-suggestions can be introduced via data poisoning and, thus, unknowingly by the model creators. In this paper, we provide a generalized formulation of such attacks, spawning and extending related work in this domain. Our formulation is defined over two components: First, a trigger pattern occurring in the prompts of a specific user group, and, second, a learnable map in embedding space from the prompt to an adversarial bait. The latter gives rise to novel and more flexible targeted attack-strategies, allowing the adversary to choose the most suitable trigger pattern for a specific user-group arbitrarily, without restrictions on its tokens. Our directional-map attacks and prompt-indexing attacks increase the stealthiness decisively. We extensively evaluate the effectiveness of these attacks and carefully investigate defensive mechanisms to explore the limits of generalized adversarial code-suggestions. We find that most defenses offer little protection only."
+}

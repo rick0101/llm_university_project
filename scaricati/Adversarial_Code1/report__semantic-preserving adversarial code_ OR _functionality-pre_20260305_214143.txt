@@ -1,0 +1,625 @@
+======================================================================
+  PAPERHUNTER — SESSION REPORT
+======================================================================
+
+======================================================================
+  1. SESSION METADATA
+======================================================================
+  Timestamp:                          2026-03-05 21:41:43
+  Platform:                           Linux-6.18.13-200.fc43.x86_64-x86_64-with-glibc2.42
+  Python version:                     3.14.3
+
+======================================================================
+  2. SEARCH PARAMETERS
+======================================================================
+  Keywords:                           "semantic-preserving adversarial code" OR "functionality-preserving transformations" OR "obfuscation-based adversarial attacks" OR "dead code insertion evasion"
+  Max results per source:             10
+  ArXiv categories:                   cs.CL, cs.AI, cs.CR, cs.LG
+
+======================================================================
+  3. LLM FILTERING CONFIGURATION
+======================================================================
+  LLM provider:                       google
+  LLM model:                          gemini-3-flash-preview
+  LLM temperature:                    0.1
+
+  Filtering criteria (prompt):
+  ------------------------------------------------------------------
+    Papers focusing on adversarial attacks that maintain code functionality while deceiving the model
+  ------------------------------------------------------------------
+
+======================================================================
+  4. SOURCES QUERIED
+======================================================================
+    • ArXiv
+    • Semantic Scholar
+    • Hugging Face
+
+======================================================================
+  5. STATISTICS
+======================================================================
+  Total papers found:                 62
+  Papers judged relevant:             22
+  Papers judged NOT relevant:         40
+  Papers downloaded OK:               11
+  Papers download FAILED:             11
+
+  Papers found per source:
+    arxiv                     5
+    huggingface               19
+    semantic_scholar          38
+
+  Relevant papers per source:
+    arxiv                     1
+    huggingface               3
+    semantic_scholar          18
+
+======================================================================
+  6. RELEVANT PAPERS (DETAIL)
+======================================================================
+
+  [2] The Compliance Paradox: Semantic-Instruction Decoupling in Automated Academic Code Evaluation
+      Source:       arxiv
+      URL:          http://arxiv.org/abs/2601.21360v1
+      PDF URL:      https://arxiv.org/pdf/2601.21360v1
+      Authors:      Devanshu Sahoo, Manish Prasad, Vasudev Majhi, Arjun Neekhra, Yash Sinha
+      Published:    2026-01-29
+      ArXiv ID:     2601.21360v1
+      Categories:   cs.CL, cs.AI, cs.ET, cs.LG, cs.SE
+      Confidence:   1.00
+      Reasoning:    The paper introduces the Semantic-Preserving Adversarial Code Injection (SPACI) Framework and the Abstract Syntax Tree-Aware Semantic Injection Protocol (AST-ASIP). These methods are specifically designed to create adversarial attacks by embedding directives into syntactically inert regions of code, thereby maintaining the code's original functionality (semantic-preserving) while deceiving Large Language Models used for automated grading. This perfectly matches the user's criteria for adversarial attacks that maintain code functionality while deceiving the model.
+
+  [7] AaceGEN: Attention Guided Adversarial Code Example Generation for Deep Code Models
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/27db3232bacf49aa2c9ec30d8cf019f0f3d917bf
+      Authors:      Zhong Li, Chong Zhang, Minxue Pan, Tian Zhang, Xuandong Li
+      Published:    2024-10-27
+      DOI:          10.1145/3691620.3695500
+      Citations:    6
+      Confidence:   1.00
+      Reasoning:    The paper presents AaceGEN, a method for generating adversarial code examples specifically designed to attack deep code models. Crucially, it utilizes 'semantic-preserving code transformations', which directly aligns with the user's criteria of maintaining code functionality while deceiving the model. It also focuses on the efficiency and naturalness of these attacks.
+
+  [8] Explainer-guided Targeted Adversarial Attacks against Binary Code Similarity Detection Models
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/1b03595ee23cc68d85d3de041437e2976ebb2e87
+      Authors:      Mingjie Chen, Tiancheng Zhu, Mingxue Zhang, Yiling He, Minghao Lin
+      Published:    2025-06-05
+      ArXiv ID:     2506.05430
+      DOI:          10.48550/arXiv.2506.05430
+      Citations:    0
+      Confidence:   1.00
+      Reasoning:    The paper focuses on adversarial attacks against Binary Code Similarity Detection (BCSD) models. It explicitly mentions generating 'semantic-preserving variants' and applying 'semantic-preserving perturbations' to mislead models, which directly matches the user's criteria of maintaining code functionality while deceiving the model.
+
+  [9] Exploiting the Adversarial Example Vulnerability of Transfer Learning of Source Code
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/eebecd8e91deed0bc12155264cc01a4934844228
+      Authors:      Yulong Yang, Haoran Fan, Chenhao Lin, Qian Li, Zhengyu Zhao
+      DOI:          10.1109/TIFS.2024.3402153
+      Citations:    17
+      Confidence:   1.00
+      Reasoning:    The paper explicitly focuses on adversarial attacks against source code models using 'semantic-preserving transformations.' This directly matches the user's criteria of maintaining code functionality (semantics) while deceiving the model. The proposed CodeTAE method is designed to generate these adversarial examples to exploit vulnerabilities in transfer learning for source code.
+
+  [10] MalRefiner: Recovering Malware Semantics via Reinforcement Learning-Based Semantic NOP Removal
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/81b6410afe999fcb40d6b9bcd2538e58ff0cc05b
+      Authors:      Jiankun Sun, Fan Shi, Min Zhang, Miao Hu, Pengfei Xue
+      Published:    2025-11-12
+      DOI:          10.3390/app152212015
+      Citations:    0
+      Confidence:   1.00
+      Reasoning:    The paper focuses on adversarial evasion attacks against malware detectors using 'semantic-preserving, problem-space manipulations.' It specifically examines 'semantic NOPs'—instructions that are functionally null but alter the model's perception. While the paper proposes a defense (MalRefiner), its entire framework is built around understanding and reversing adversarial attacks that maintain code functionality while deceiving the model, which aligns perfectly with the research criteria.
+
+  [11] Shield Broken: Black-Box Adversarial Attacks on LLM-Based Vulnerability Detectors
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/9ef30417473ddf2ff5c4802f5232bb3add7336d7
+      Authors:      Yuan Jiang, Shan Huang, Christoph Treude, Xiaohong Su, Tiantian Wang
+      Published:    2026-01-01
+      DOI:          10.1109/TSE.2025.3638998
+      Citations:    1
+      Confidence:   1.00
+      Reasoning:    The paper introduces SVulAttack, an adversarial attack framework specifically designed for LLM-based vulnerability detectors. Crucially, it focuses on 'semantic-preserving code perturbations', which aligns directly with the user's requirement for attacks that maintain code functionality while deceiving the model.
+
+  [13] Metamorphic Testing of Deep Code Models: A Systematic Literature Review
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/da914ca43ad394a172b4280b390ff7afad06421d
+      Authors:      Ali Asgari, Milan de Koning, P. Derakhshanfar, Annibale Panichella
+      Published:    2025-07-30
+      ArXiv ID:     2507.22610
+      DOI:          10.1145/3766552
+      Citations:    1
+      Confidence:   0.95
+      Reasoning:    The paper is a systematic literature review focusing on metamorphic testing for deep code models. Metamorphic testing is a core technique used to generate adversarial examples for code by applying semantic-preserving transformations (maintaining functionality) to see if the model's output changes (deceiving the model). The abstract explicitly mentions evaluating models under 'adversarial conditions' and using 'semantic-preserving transformations,' which directly aligns with the user's research criteria.
+
+  [14] Robustness Analysis of Watermarking Techniques for LLM-Generated Code
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/7a742c13f934b8de17c3d664c891a1b9b1ce0d2e
+      Authors:      Di Cao, Shigang Liu, Jun Zhang, Yang Xiang
+      Published:    2025-12-01
+      DOI:          10.1109/LNET.2025.3616325
+      Citations:    0
+      Confidence:   0.95
+      Reasoning:    The paper focuses on adversarial attacks (specifically spoofing and watermark-removal attacks) against LLM-generated code. It evaluates techniques like CodeMark, which uses semantic-preserving transformations, directly aligning with the user's criteria of maintaining code functionality while attempting to deceive a system (in this case, the watermark detector/attribution system).
+
+  [15] Auto-SPT: Automating Semantic Preserving Transformations for Code
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/c0266ad65eedaa7f0c3b8fba2b5732f2d1664f1a
+      Authors:      Ashish Hooda, Mihai Christodorescu, Chuangang Ren, Aaron Wilson, Kassem Fawaz
+      Published:    2025-12-05
+      ArXiv ID:     2512.06042
+      DOI:          10.48550/arXiv.2512.06042
+      Citations:    0
+      Confidence:   1.00
+      Reasoning:    The paper introduces Auto-SPT, a framework for generating Semantic Preserving Transformations (SPTs) for code. These transformations are designed to alter the syntactic structure of code while maintaining its original functionality. The abstract explicitly states that these transformations are used to 'significantly drop the performance of state-of-the-art code clone detectors' and refers to them as 'adversarial code transformations.' This aligns perfectly with the user's criteria of adversarial attacks that maintain functionality while deceiving the model.
+
+  [21] Automated Hardware Trojan Insertion in Industrial-Scale Designs
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/5175f415da516d60e642fbd704fea5df37853743
+      Authors:      Yaroslav Popryho, Debjit Pal, Inna Partin-Vaisband
+      Published:    2025-11-11
+      ArXiv ID:     2511.08703
+      DOI:          10.48550/arXiv.2511.08703
+      Citations:    0
+      Confidence:   0.95
+      Reasoning:    The paper describes a methodology for generating Hardware Trojan (HT) patterns in industrial-scale netlists specifically designed to 'stress-test' and deceive state-of-the-art graph-learning detection models. A key feature of this approach is that it uses 'function-preserving graph transformations' to ensure the original functionality of the design remains intact while successfully evading detection. This directly matches the user's criteria of adversarial attacks that maintain functionality while deceiving a model.
+
+  [24] Robust Android Malware Detection Against Obfuscation and Adversarial Attacks Using RGB Markov Images and Deep Ensemble Learning
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/46a0c372ede8601b973f7607e96acc33156c4996
+      Authors:      Kawthar Chakif, F. Nawshin, Devrim Unal
+      Published:    2026-01-01
+      DOI:          10.1016/j.knosys.2026.115376
+      Citations:    0
+      Confidence:   0.90
+      Reasoning:    The paper's title explicitly mentions 'Robust Android Malware Detection Against Obfuscation and Adversarial Attacks'. In the context of malware detection, adversarial attacks are inherently focused on modifying the code to deceive a classifier while preserving the original malicious functionality. The inclusion of 'obfuscation' further reinforces that the paper deals with code-level transformations that maintain program behavior.
+
+  [26] Evasion of Deep Learning Malware Detection via Adversarial Selective Obfuscation
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/92a99df874ae59dad182a8376e0e48cc32f59395
+      Authors:      C. Greco, Michele Ianni, Antonella Guzzo, Giancarlo Fortino
+      Published:    2025-08-04
+      DOI:          10.1109/CSR64739.2025.11130150
+      Citations:    0
+      Confidence:   1.00
+      Reasoning:    The paper directly addresses the user's criteria by presenting a method for generating adversarial attacks on malware detection systems. It specifically highlights the use of syntactic obfuscation to transform malware binaries 'without compromising its functionality' while successfully deceiving CNN-based classification models.
+
+  [31] A2-CLM: Few-Shot Malware Detection Based on Adversarial Heterogeneous Graph Augmentation
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/14c0a7c1f663ce27ac1bf69bff16fc45d2a10d95
+      Authors:      Chen Liu, Bo Li, Jun Zhao, Weiwei Feng, Xudong Liu
+      DOI:          10.1109/TIFS.2023.3345640
+      Citations:    15
+      Confidence:   0.90
+      Reasoning:    The paper describes the design of multiple adversarial attacks specifically for malware detection models, including 'obfuscation attacks' and 'direct system calls attacks'. These types of attacks are inherently designed to maintain the original functionality of the malware while altering its features to deceive detection models. The paper uses these attacks as a core part of its 'adversarial heterogeneous graph augmentation' to improve model robustness against deceptive samples.
+
+  [35] Hybrid backdoor attacks for deep code models
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/4c43bdfc8d7714371d4d5ef08e42f43c38d6e68c
+      Authors:      Tongcheng Geng
+      Published:    2025-12-08
+      DOI:          10.1371/journal.pone.0338083
+      Citations:    0
+      Confidence:   1.00
+      Reasoning:    The paper presents a hybrid backdoor attack ( a type of adversarial attack) specifically designed for deep code models. It focuses on deceiving the model while explicitly stating that it maintains 'minimal impact on normal functionality' by using triggers like dead code insertion, which by definition does not alter the code's execution logic. This aligns perfectly with the user's criteria of adversarial attacks that preserve functionality.
+
+  [36] Is The Watermarking Of LLM-Generated Code Robust?
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/7165b8f0d97d7dc544eb4486c7716d78a7be4e35
+      Authors:      Tarun Suresh, Shubham Ugare, Gagandeep Singh, Sasa Misailovic
+      Published:    2024-03-24
+      ArXiv ID:     2403.17983
+      Citations:    7
+      Confidence:   0.95
+      Reasoning:    The paper investigates adversarial attacks on LLM-generated code watermarking systems. It specifically focuses on 'semantic-preserving transformations' such as variable renaming and dead code insertion, which maintain the code's functionality while successfully deceiving the detection model (the watermark detector). This directly aligns with the user's criteria for research on adversarial attacks that preserve code functionality.
+
+  [40] TrojanGYM: A Detector-in-the-Loop LLM for Adaptive RTL Hardware Trojan Insertion
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/3f6c8edd50dbe010e05f00f30aee7253e656a3f0
+      Authors:      Saideep Sreekumar, Zeng Wang, Akashdeep Saha, W. Xiao, Minghao Shao
+      Published:    2026-01-23
+      ArXiv ID:     2601.17178
+      DOI:          10.48550/arXiv.2601.17178
+      Citations:    0
+      Confidence:   1.00
+      Reasoning:    The paper describes TrojanGYM, a framework that uses LLMs to perform adversarial attacks on hardware designs (RTL code). Specifically, it focuses on inserting Hardware Trojans (HTs) that are designed to evade GNN-based detectors while strictly maintaining the original functionality of the design ('preserving design correctness'). This aligns perfectly with the user's criteria of adversarial attacks that maintain code functionality while deceiving a model.
+
+  [41] Mitigating Information Leakage in Large Language Models: Evaluating the Impact of Code Obfuscation on Vulnerability Detection
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/def33e6b0ea9bd481c8712d7ed8aa8da78fae55c
+      Authors:      Bengü Gülay, Cemal Yilmaz
+      Published:    2025-06-30
+      DOI:          10.1109/EuroSPW67616.2025.00007
+      Citations:    0
+      Confidence:   0.95
+      Reasoning:    The paper investigates how various code obfuscation techniques (such as control flow obfuscation, dead code insertion, and identifier renaming) can be used to deceive Large Language Models (LLMs) and prevent them from correctly detecting vulnerabilities in source code. This is a form of adversarial evasion attack. Crucially, the study evaluates these techniques with a focus on maintaining code functionality and usability, which directly aligns with the user's research criteria.
+
+  [42] Statement-Level Adversarial Attack on Vulnerability Detection Models via Out-of-Distribution Features
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/63f78f38b3f52a1e16931799c22c205abbefb8dd
+      Authors:      Xiaohu Du, Ming Wen, Haoyu Wang, Zichao Wei, Hai Jin
+      Published:    2025-06-19
+      DOI:          10.1145/3729403
+      Citations:    3
+      Confidence:   0.95
+      Reasoning:    The paper introduces SLODA, a statement-level adversarial attack method specifically designed for code vulnerability detection models, including Large Language Models (LLMs). The attack focuses on deceiving these models by introducing out-of-distribution (OOD) features such as code deoptimization. In the context of adversarial attacks on code, techniques like deoptimization and statement-level perturbations are standard methods for maintaining the original code's functionality while altering the model's output, which directly aligns with the user's research criteria.
+
+  [43] Understanding and Characterizing Obfuscated Funds Transfers in Ethereum Smart Contracts
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/a84280a4c67f822c5ac813e2c6b19e9f5995fc7a
+      Authors:      Zhang Sheng, Tan Kia Quang, Shen Wang, Shengchen Duan, Kai Li
+      Published:    2025-05-16
+      ArXiv ID:     2505.11320
+      DOI:          10.48550/arXiv.2505.11320
+      Citations:    1
+      Confidence:   0.95
+      Reasoning:    The paper focuses on code obfuscation techniques used in Ethereum smart contracts to evade detection by auditing tools. Obfuscation is a form of adversarial attack that preserves the original functionality of the code while altering its structure to deceive detection models. The abstract explicitly mentions that these techniques cause the accuracy of a state-of-the-art detection tool (SourceP) to drop significantly (from 80% to 12%), which directly addresses the user's interest in functionality-preserving adversarial attacks that deceive models.
+
+  [53] A Systematic Study of Code Obfuscation Against LLM-based Vulnerability Detection
+      Source:       huggingface
+      URL:          https://arxiv.org/abs/2512.16538
+      PDF URL:      https://arxiv.org/pdf/2512.16538.pdf
+      Published:    2025-12-01
+      ArXiv ID:     2512.16538
+      Confidence:   0.90
+      Reasoning:    The paper's title explicitly mentions 'Code Obfuscation Against LLM-based Vulnerability Detection'. Code obfuscation is a technique that transforms code to hide its intent while strictly maintaining its original functionality. Using it against LLMs constitutes an adversarial attack aimed at deceiving the model's detection capabilities. This aligns perfectly with the user's criteria of functionality-preserving adversarial attacks.
+
+  [56] On the Adversarial Robustness of Instruction-Tuned Large Language Models
+  for Code
+      Source:       huggingface
+      URL:          https://arxiv.org/abs/2411.19508
+      PDF URL:      https://arxiv.org/pdf/2411.19508.pdf
+      Published:    2024-11-01
+      ArXiv ID:     2411.19508
+      Confidence:   0.90
+      Reasoning:    The paper's title explicitly focuses on the 'Adversarial Robustness' of 'Large Language Models for Code'. In the field of AI for code, adversarial robustness research almost exclusively deals with semantics-preserving (functionality-maintaining) perturbations designed to mislead models. This matches the user's criteria perfectly.
+
+  [58] "Your AI, My Shell": Demystifying Prompt Injection Attacks on Agentic AI Coding Editors
+      Source:       huggingface
+      URL:          https://arxiv.org/abs/2509.22040
+      PDF URL:      https://arxiv.org/pdf/2509.22040.pdf
+      Published:    2025-09-01
+      ArXiv ID:     2509.22040
+      Confidence:   0.85
+      Reasoning:    The paper investigates prompt injection attacks specifically within the context of agentic AI coding editors. These attacks are a form of adversarial manipulation where the model is deceived into executing unauthorized commands (as implied by 'Your AI, My Shell'). In the context of coding tools, such attacks—particularly indirect prompt injections—are typically designed to be embedded within source code or documentation in a way that does not break the code's functionality, ensuring the attack remains stealthy while successfully misleading the AI agent.
+
+======================================================================
+  7. DOWNLOAD RESULTS
+======================================================================
+
+  [OK] The Compliance Paradox: Semantic-Instruction Decoupling in Automated Academic Code Evaluation
+      Source:  arxiv
+      URL:     http://arxiv.org/abs/2601.21360v1
+      File:    scaricati/Adversarial_Code1/The_Compliance_Paradox_Semantic-Instruction_Decoupling_in_Automated_Academic_Code_Evaluation.pdf
+      Method:  direct
+
+  [FAILED] AaceGEN: Attention Guided Adversarial Code Example Generation for Deep Code Models
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/27db3232bacf49aa2c9ec30d8cf019f0f3d917bf
+      Error:   Could not find PDF download link
+
+  [OK] Explainer-guided Targeted Adversarial Attacks against Binary Code Similarity Detection Models
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/1b03595ee23cc68d85d3de041437e2976ebb2e87
+      File:    scaricati/Adversarial_Code1/Explainer-guided_Targeted_Adversarial_Attacks_against_Binary_Code_Similarity_Detection_Models.pdf
+      Method:  direct
+
+  [FAILED] Exploiting the Adversarial Example Vulnerability of Transfer Learning of Source Code
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/eebecd8e91deed0bc12155264cc01a4934844228
+      Error:   Could not find PDF download link
+
+  [FAILED] MalRefiner: Recovering Malware Semantics via Reinforcement Learning-Based Semantic NOP Removal
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/81b6410afe999fcb40d6b9bcd2538e58ff0cc05b
+      Error:   Could not find PDF download link
+
+  [FAILED] Shield Broken: Black-Box Adversarial Attacks on LLM-Based Vulnerability Detectors
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/9ef30417473ddf2ff5c4802f5232bb3add7336d7
+      Error:   Could not find PDF download link
+
+  [OK] Metamorphic Testing of Deep Code Models: A Systematic Literature Review
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/da914ca43ad394a172b4280b390ff7afad06421d
+      File:    scaricati/Adversarial_Code1/Metamorphic_Testing_of_Deep_Code_Models_A_Systematic_Literature_Review.pdf
+      Method:  direct
+
+  [FAILED] Robustness Analysis of Watermarking Techniques for LLM-Generated Code
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/7a742c13f934b8de17c3d664c891a1b9b1ce0d2e
+      Error:   Could not find PDF download link
+
+  [OK] Auto-SPT: Automating Semantic Preserving Transformations for Code
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/c0266ad65eedaa7f0c3b8fba2b5732f2d1664f1a
+      File:    scaricati/Adversarial_Code1/Auto-SPT_Automating_Semantic_Preserving_Transformations_for_Code.pdf
+      Method:  direct
+
+  [OK] Automated Hardware Trojan Insertion in Industrial-Scale Designs
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/5175f415da516d60e642fbd704fea5df37853743
+      File:    scaricati/Adversarial_Code1/Automated_Hardware_Trojan_Insertion_in_Industrial-Scale_Designs.pdf
+      Method:  direct
+
+  [FAILED] Robust Android Malware Detection Against Obfuscation and Adversarial Attacks Using RGB Markov Images and Deep Ensemble Learning
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/46a0c372ede8601b973f7607e96acc33156c4996
+      Error:   Could not find PDF download link
+
+  [FAILED] Evasion of Deep Learning Malware Detection via Adversarial Selective Obfuscation
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/92a99df874ae59dad182a8376e0e48cc32f59395
+      Error:   Could not find PDF download link
+
+  [FAILED] A2-CLM: Few-Shot Malware Detection Based on Adversarial Heterogeneous Graph Augmentation
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/14c0a7c1f663ce27ac1bf69bff16fc45d2a10d95
+      Error:   Could not find PDF download link
+
+  [FAILED] Hybrid backdoor attacks for deep code models
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/4c43bdfc8d7714371d4d5ef08e42f43c38d6e68c
+      Error:   Could not find PDF download link
+
+  [OK] Is The Watermarking Of LLM-Generated Code Robust?
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/7165b8f0d97d7dc544eb4486c7716d78a7be4e35
+      File:    scaricati/Adversarial_Code1/Is_The_Watermarking_Of_LLM-Generated_Code_Robust.pdf
+      Method:  direct
+
+  [OK] TrojanGYM: A Detector-in-the-Loop LLM for Adaptive RTL Hardware Trojan Insertion
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/3f6c8edd50dbe010e05f00f30aee7253e656a3f0
+      File:    scaricati/Adversarial_Code1/TrojanGYM_A_Detector-in-the-Loop_LLM_for_Adaptive_RTL_Hardware_Trojan_Insertion.pdf
+      Method:  direct
+
+  [FAILED] Mitigating Information Leakage in Large Language Models: Evaluating the Impact of Code Obfuscation on Vulnerability Detection
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/def33e6b0ea9bd481c8712d7ed8aa8da78fae55c
+      Error:   Could not find PDF download link
+
+  [FAILED] Statement-Level Adversarial Attack on Vulnerability Detection Models via Out-of-Distribution Features
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/63f78f38b3f52a1e16931799c22c205abbefb8dd
+      Error:   Could not find PDF download link
+
+  [OK] Understanding and Characterizing Obfuscated Funds Transfers in Ethereum Smart Contracts
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/a84280a4c67f822c5ac813e2c6b19e9f5995fc7a
+      File:    scaricati/Adversarial_Code1/Understanding_and_Characterizing_Obfuscated_Funds_Transfers_in_Ethereum_Smart_Contracts.pdf
+      Method:  direct
+
+  [OK] A Systematic Study of Code Obfuscation Against LLM-based Vulnerability Detection
+      Source:  huggingface
+      URL:     https://arxiv.org/abs/2512.16538
+      File:    scaricati/Adversarial_Code1/A_Systematic_Study_of_Code_Obfuscation_Against_LLM-based_Vulnerability_Detection.pdf
+      Method:  direct
+
+  [OK] On the Adversarial Robustness of Instruction-Tuned Large Language Models
+  for Code
+      Source:  huggingface
+      URL:     https://arxiv.org/abs/2411.19508
+      File:    scaricati/Adversarial_Code1/On_the_Adversarial_Robustness_of_Instruction-Tuned_Large_Language_Models
+__for_Code.pdf
+      Method:  direct
+
+  [OK] "Your AI, My Shell": Demystifying Prompt Injection Attacks on Agentic AI Coding Editors
+      Source:  huggingface
+      URL:     https://arxiv.org/abs/2509.22040
+      File:    scaricati/Adversarial_Code1/Your_AI,_My_Shell_Demystifying_Prompt_Injection_Attacks_on_Agentic_AI_Coding_Editors.pdf
+      Method:  direct
+
+======================================================================
+  8. NON-RELEVANT PAPERS (SUMMARY)
+======================================================================
+  [1] Dissecting Quantization Error: A Concentration-Alignment Perspective
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.04359v1
+      Reasoning:  The paper focuses on model quantization techniques to improve efficiency and reduce accuracy loss in large language and vision models. It introduces a framework for analyzing quantization error based 
+
+  [2] Large Language Models Are Effective Code Watermarkers
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2510.11251v1
+      Reasoning:  The paper focuses on code watermarking for the purpose of source attribution and identification. While it utilizes functionality-preserving transformations (a technique common in adversarial code rese
+
+  [3] FPTQuant: Function-Preserving Transforms for LLM Quantization
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2506.04985v1
+      Reasoning:  The paper focuses on LLM quantization techniques to improve inference efficiency. While it uses the term 'function-preserving transforms', these are mathematical transformations applied to the model's
+
+  [4] Towards a More Complete Theory of Function Preserving Transforms
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2410.11038v1
+      Reasoning:  The paper focuses on 'function preserving transforms' for neural network architectures, which are techniques to change a model's structure (like adding layers) while ensuring the mathematical output o
+
+  [5] Semantic-Preserving Adversarial Attacks on LLMs: An Adaptive Greedy Binary Search Approach
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/1c0f7fc63837d398fb6bb3127cdd2d9c666bbc6a
+      Reasoning:  The user's research criteria specifically focus on adversarial attacks that maintain 'code functionality'. While this paper discusses 'semantic-preserving' adversarial attacks, it does so in the conte
+
+  [6] Exploring Targeted Universal Adversarial Attack for Deep Hashing
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/d8b8291a82bd293b42996feec668d1f3b8d664fc
+      Reasoning:  The paper focuses on Targeted Universal Adversarial Attacks (TUAA) in the context of deep hashing for images. The user's research criteria specifically mention 'maintaining code functionality while de
+
+  [7] Prototypes guided model transformations between personalization and generalization in federated learning
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/9e876d42e28509e0c56ebd60f1d6979a6806529c
+      Reasoning:  The paper focuses on federated learning, specifically addressing the balance between personalization and generalization using prototypes. It does not mention adversarial attacks, code functionality, o
+
+  [8] HISTORICAL AND CULTURAL ELEMENTS IN THE URBAN ENVIRONMENT: PATTERNS OF FUNCTIONING AND SPATIAL TRANSFORMATIONS
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/5d68d53ce70ceb668b3a7cfed300a5d8c5cfc59b
+      Reasoning:  The paper focuses on urban planning, historical preservation, and the spatial transformation of cultural elements in cities. It has no relation to adversarial attacks, software code, or machine learni
+
+  [9] Moving beyond Deletions: Program Simplification via Diverse Program Transformations
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/cccd66172a1c2efb6d27616ec888d23c79815eb4
+      Reasoning:  The paper focuses on program simplification (reducing code size while preserving functionality) for software maintenance and developer productivity. It does not address adversarial attacks, security, 
+
+  [10] EPSO: A Caching-Based Efficient Superoptimizer for BPF Bytecode
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/fb58c30f8f1af69afcdf4ecc2e2a207d207fd509
+      Reasoning:  The paper focuses on superoptimization for eBPF bytecode, specifically aiming to reduce program size and improve performance while satisfying the Linux kernel's safety verifier. It does not involve ad
+
+  [11] Carved in stone
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/5eeee604a750c835ae42c89be27f96134ebcfc6b
+      Reasoning:  The paper is a study in archaeology focusing on prehistoric stone structures and collective memory in southern Portugal during the Chalcolithic and Bronze Age. It has no connection to computer science
+
+  [12] L’edilizia scolastica del secondo Novecento in Italia: memoria, eredità e sfide dell’adeguamento /
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/3a1813fd1247770da155a810f866eb28df15f358
+      Reasoning:  The paper focuses on the architectural history, preservation, and adaptation of school buildings in Italy during the second half of the 20th century. It belongs to the fields of architecture and civil
+
+  [13] Protecting Quantum Circuits Through Compiler-Resistant Obfuscation
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/15d14700ce137d243adc932d289887ecd7122954
+      Reasoning:  The paper focuses on quantum circuit obfuscation for the purpose of intellectual property protection and preventing reverse engineering. While it involves transforming code (QASM) while maintaining fu
+
+  [14] Masks and Mimicry: Strategic Obfuscation and Impersonation Attacks on Authorship Verification
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/09e6e9230aadd9aa6dac43729017e697eeb5fdd9
+      Reasoning:  The paper focuses on authorship verification and adversarial attacks (obfuscation and impersonation) in the context of natural language documents and text. The user's research criteria specifically re
+
+  [15] Adversarial Threats in Quantum Machine Learning: A Survey of Attacks and Defenses
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/ab3cd21bb78472e4fe7f4568b025abc76e3f59a9
+      Reasoning:  The paper focuses on adversarial threats in Quantum Machine Learning (QML), such as model stealing, data poisoning, and reverse engineering of quantum circuits. The user's research criteria specifical
+
+  [16] CLOAK: Contrastive Guidance for Latent Diffusion-Based Data Obfuscation
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/2f18884b5af0221401fbc18ccc291d8fcb85e214
+      Reasoning:  The paper focuses on data obfuscation for time-series sensor data and facial images to protect privacy against attribute inference attacks. It does not address adversarial attacks on source code, nor 
+
+  [17] Security Analysis of a Lightweight RFID Cryptographic Protocol Based on Obfuscation Functions
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/c8434727e51113053f3ac0657a76e37c02d1b3b3
+      Reasoning:  The paper focuses on the security analysis of a cryptographic protocol for RFID systems (CP-LRDP). It discusses traditional cryptographic vulnerabilities like parameter leakage and identity forgery. I
+
+  [18] Resisting Bag-Based Attribute Profiling by Adding Adversarial Items to Existing Media Profiles
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/28a829b9b277421f5675eacea18c8093aa7ec030
+      Reasoning:  The paper focuses on adversarial attacks and defenses in the context of bag-based classification for social media profiles (images and media). It does not address software code or the preservation of 
+
+  [19] AI-Driven Detection of AI-Generated Cyber Attacks: A Framework for Defending Against Generative Adversarial Threats
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/ff60844bcd982968317cd34d3a2f5f8b9ed69aba
+      Reasoning:  The paper focuses on the development and evaluation of a detection framework (AEGIS) designed to identify AI-generated threats, such as phishing, deepfakes, and obfuscated malware. While it mentions d
+
+  [20] A Survey on Emoji and Unicode-Based Data Masking Attacks on AI Systems
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/e4649aabac399bc7b29d7bccd940512f4819fb24
+      Reasoning:  The paper focuses on Unicode-based data masking attacks (emojis, zero-width characters, homoglyphs) for general text-based AI systems and LLMs. It does not specifically address adversarial attacks on 
+
+  [21] A polymorphic code generation engine with obfuscation techniques for protecting web bot attacks
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/83eadd98fb856a713982f0d523c8e719d79b43c6
+      Reasoning:  The paper title focuses on polymorphic code generation and obfuscation techniques specifically for 'protecting web bot attacks'. This phrasing is ambiguous but likely refers to a defensive mechanism a
+
+  [22] Transferrin-binding domain inserted-adenovirus hexon engineering enables systemic immune evasion and intratumoral T-cell activation
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/5e7d473a0072cf219387578cd82edf6ab38517da
+      Reasoning:  The paper focuses on biological engineering of adenovirus vectors for gene therapy and oncology, specifically aiming to evade the human immune system (antibodies). The user's research criteria are foc
+
+  [23] Obfuscation technologies of high-level source code using artificial intelligence
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/833d4d388ee997fdb2edff6aa20db98af6048a14
+      Reasoning:  The title suggests that the paper focuses on using artificial intelligence as a tool to perform code obfuscation. While code obfuscation is a technique often used in adversarial attacks to maintain fu
+
+  [24] Whole-genome analysis reveals shared early genetic alterations and subtype-specific immune evasion pathways in intravascular large B-cell lymphoma and immune-privileged large B-cell lymphoma
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/9088c5747c33947cd2e561b81afeb0b2eb29ed02
+      Reasoning:  The paper is a medical study focusing on the whole-genome analysis of specific types of lymphoma (IVLBCL and IP-LBCL). It discusses genetic mutations, clonal evolution, and biological immune evasion p
+
+  [25] Towards White Box Deep Learning
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2403.09863
+      Reasoning:  The title 'Towards White Box Deep Learning' typically refers to research focused on model interpretability, explainability, or the mathematical foundations of neural networks (making the 'black box' t
+
+  [26] A Frustratingly Simple Yet Highly Effective Attack Baseline: Over 90%
+  Success Rate Against the Strong Black-box Models of GPT-4.5/4o/o1
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2503.10635
+      Reasoning:  The paper's title suggests a general adversarial attack baseline against large language models (GPT-4.5, 4o, o1), likely focusing on jailbreaking or prompt injection. However, the user's specific rese
+
+  [27] Semantic-aware Adversarial Fine-tuning for CLIP
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2602.12461
+      Reasoning:  The paper focuses on CLIP (Contrastive Language-Image Pre-training), which is a multimodal vision-language model. The user's research criteria specifically target adversarial attacks on source code th
+
+  [28] SCA: Improve Semantic Consistent in Unrestricted Adversarial Attacks via
+  DDPM Inversion
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2410.02240
+      Reasoning:  The paper's title mentions 'DDPM Inversion' and 'Unrestricted Adversarial Attacks', which are terms strongly associated with computer vision and image generation. The user's research criteria specific
+
+  [29] Divide-and-Conquer Meets Consensus: Unleashing the Power of Functions in
+  Code Generation
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2405.20092
+      Reasoning:  The paper's title suggests a focus on improving code generation performance through 'Divide-and-Conquer' and 'Consensus' strategies, likely by leveraging modular functions. There is no indication of a
+
+  [30] DiffuMatch: Category-Agnostic Spectral Diffusion Priors for Robust
+  Non-rigid Shape Matching
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2507.23715
+      Reasoning:  The paper focuses on non-rigid shape matching in the field of computer vision and geometry processing, specifically using diffusion priors. The user's research criteria are focused on adversarial atta
+
+  [31] MaintainCoder: Maintainable Code Generation Under Dynamic Requirements
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2503.24260
+      Reasoning:  The paper's title 'MaintainCoder: Maintainable Code Generation Under Dynamic Requirements' suggests a focus on software engineering practices, specifically generating code that is easy to maintain as 
+
+  [32] InTAct: Interval-based Task Activation Consolidation for Continual Learning
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2511.17439
+      Reasoning:  The paper's title indicates a focus on 'Continual Learning' and 'Task Activation Consolidation,' which are techniques used to help machine learning models learn new tasks sequentially without forgetti
+
+  [33] Guide-and-Rescale: Self-Guidance Mechanism for Effective Tuning-Free
+  Real Image Editing
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2409.01322
+      Reasoning:  The paper focuses on 'Real Image Editing' using a 'Self-Guidance Mechanism' and is 'Tuning-Free'. This is a computer vision task related to image manipulation. The user's research criteria specificall
+
+  [34] The Obfuscation Atlas: Mapping Where Honesty Emerges in RLVR with Deception Probes
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2602.15515
+      Reasoning:  The paper title suggests a focus on AI safety, mechanistic interpretability, and the emergence of honesty or deception within models trained using Reinforcement Learning from Verifiable Rewards (RLVR)
+
+  [35] RedCode: Risky Code Execution and Generation Benchmark for Code Agents
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2411.07781
+      Reasoning:  The paper 'RedCode' is a benchmark designed to evaluate the safety of code agents regarding the generation and execution of risky or malicious code. The user's research criteria specifically focus on 
+
+  [36] LLMail-Inject: A Dataset from a Realistic Adaptive Prompt Injection
+  Challenge
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2506.09956
+      Reasoning:  The paper focuses on 'Prompt Injection' attacks, specifically within the context of an email-based challenge (LLMail-Inject). While prompt injection is a form of adversarial attack, the user's researc
+
+  [37] InjecGuard: Benchmarking and Mitigating Over-defense in Prompt Injection
+  Guardrail Models
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2410.22770
+      Reasoning:  The paper focuses on 'over-defense' in prompt injection guardrail models, which refers to the tendency of security filters to incorrectly block benign prompts. The user's research criteria specificall
+
+  [38] Can Indirect Prompt Injection Attacks Be Detected and Removed?
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2502.16580
+      Reasoning:  The paper's title focuses on 'Indirect Prompt Injection Attacks,' which is a specific category of LLM security vulnerabilities where malicious instructions are introduced via external data sources. Th
+
+  [39] Soft Instruction De-escalation Defense
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2510.21057
+      Reasoning:  The paper title 'Soft Instruction De-escalation Defense' indicates a focus on defensive strategies against adversarial instructions, whereas the user's criteria specifically target adversarial attacks
+
+  [40] Emergent Misalignment: Narrow finetuning can produce broadly misaligned
+  LLMs
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2502.17424
+      Reasoning:  The paper's title focuses on 'Emergent Misalignment' and how 'Narrow finetuning' affects LLM behavior. It does not mention adversarial attacks, code functionality, or the specific context of deceiving
+
+
+======================================================================
+  END OF REPORT
+======================================================================

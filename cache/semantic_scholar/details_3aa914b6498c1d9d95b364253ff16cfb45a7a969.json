@@ -1,0 +1,74 @@
+{
+  "paperId": "3aa914b6498c1d9d95b364253ff16cfb45a7a969",
+  "externalIds": {
+    "ArXiv": "2512.01353",
+    "DBLP": "journals/corr/abs-2512-01353",
+    "DOI": "10.48550/arXiv.2512.01353",
+    "CorpusId": 283450813
+  },
+  "title": "The Trojan Knowledge: Bypassing Commercial LLM Guardrails via Harmless Prompt Weaving and Adaptive Tree Search",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 1,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2512.01353, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-12-01",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2512.01353"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Wei2025TheTK,\n author = {Rongzhe Wei and Peizhi Niu and Xinjie Shen and Tony Tu and Yifan Li and Ruihan Wu and E. Chien and Pin-Yu Chen and Olgica Milenkovic and Pan Li},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {The Trojan Knowledge: Bypassing Commercial LLM Guardrails via Harmless Prompt Weaving and Adaptive Tree Search},\n volume = {abs/2512.01353},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2261458415",
+      "name": "Rongzhe Wei"
+    },
+    {
+      "authorId": "2305813566",
+      "name": "Peizhi Niu"
+    },
+    {
+      "authorId": "2385807509",
+      "name": "Xinjie Shen"
+    },
+    {
+      "authorId": "2395684255",
+      "name": "Tony Tu"
+    },
+    {
+      "authorId": "2334824279",
+      "name": "Yifan Li"
+    },
+    {
+      "authorId": "2398002621",
+      "name": "Ruihan Wu"
+    },
+    {
+      "authorId": "2325728736",
+      "name": "E. Chien"
+    },
+    {
+      "authorId": "2254173325",
+      "name": "Pin-Yu Chen"
+    },
+    {
+      "authorId": "2286174723",
+      "name": "Olgica Milenkovic"
+    },
+    {
+      "authorId": "2261366591",
+      "name": "Pan Li"
+    }
+  ],
+  "abstract": "Large language models (LLMs) remain vulnerable to jailbreak attacks that bypass safety guardrails to elicit harmful outputs. Existing approaches overwhelmingly operate within the prompt-optimization paradigm: whether through traditional algorithmic search or recent agent-based workflows, the resulting prompts typically retain malicious semantic signals that modern guardrails are primed to detect. In contrast, we identify a deeper, largely overlooked vulnerability stemming from the highly interconnected nature of an LLM's internal knowledge. This structure allows harmful objectives to be realized by weaving together sequences of benign sub-queries, each of which individually evades detection. To exploit this loophole, we introduce the Correlated Knowledge Attack Agent (CKA-Agent), a dynamic framework that reframes jailbreaking as an adaptive, tree-structured exploration of the target model's knowledge base. The CKA-Agent issues locally innocuous queries, uses model responses to guide exploration across multiple paths, and ultimately assembles the aggregated information to achieve the original harmful objective. Evaluated across state-of-the-art commercial LLMs (Gemini2.5-Flash/Pro, GPT-oss-120B, Claude-Haiku-4.5), CKA-Agent consistently achieves over 95% success rates even against strong guardrails, underscoring the severity of this vulnerability and the urgent need for defenses against such knowledge-decomposition attacks. Our codes are available at https://github.com/Graph-COM/CKA-Agent."
+}

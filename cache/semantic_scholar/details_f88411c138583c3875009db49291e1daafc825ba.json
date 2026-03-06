@@ -1,0 +1,74 @@
+{
+  "paperId": "f88411c138583c3875009db49291e1daafc825ba",
+  "externalIds": {
+    "ArXiv": "2501.16727",
+    "DBLP": "journals/corr/abs-2501-16727",
+    "DOI": "10.48550/arXiv.2501.16727",
+    "CorpusId": 275932199
+  },
+  "title": "xJailbreak: Representation Space Guided Reinforcement Learning for Interpretable LLM Jailbreaking",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 12,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2501.16727, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-01-28",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2501.16727"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Lee2025xJailbreakRS,\n author = {Sunbowen Lee and Shiwen Ni and Chi Wei and Shuaimin Li and Liyang Fan and A. Argha and H. Alinejad-Rokny and Ruifeng Xu and Yicheng Gong and Min Yang},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {xJailbreak: Representation Space Guided Reinforcement Learning for Interpretable LLM Jailbreaking},\n volume = {abs/2501.16727},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2341652901",
+      "name": "Sunbowen Lee"
+    },
+    {
+      "authorId": "2266469238",
+      "name": "Shiwen Ni"
+    },
+    {
+      "authorId": "2335834731",
+      "name": "Chi Wei"
+    },
+    {
+      "authorId": "2343194085",
+      "name": "Shuaimin Li"
+    },
+    {
+      "authorId": "2307443030",
+      "name": "Liyang Fan"
+    },
+    {
+      "authorId": "50296562",
+      "name": "A. Argha"
+    },
+    {
+      "authorId": "2306942431",
+      "name": "H. Alinejad-Rokny"
+    },
+    {
+      "authorId": "2266809482",
+      "name": "Ruifeng Xu"
+    },
+    {
+      "authorId": "2337280177",
+      "name": "Yicheng Gong"
+    },
+    {
+      "authorId": "2333904068",
+      "name": "Min Yang"
+    }
+  ],
+  "abstract": "Safety alignment mechanism are essential for preventing large language models (LLMs) from generating harmful information or unethical content. However, cleverly crafted prompts can bypass these safety measures without accessing the model's internal parameters, a phenomenon known as black-box jailbreak. Existing heuristic black-box attack methods, such as genetic algorithms, suffer from limited effectiveness due to their inherent randomness, while recent reinforcement learning (RL) based methods often lack robust and informative reward signals. To address these challenges, we propose a novel black-box jailbreak method leveraging RL, which optimizes prompt generation by analyzing the embedding proximity between benign and malicious prompts. This approach ensures that the rewritten prompts closely align with the intent of the original prompts while enhancing the attack's effectiveness. Furthermore, we introduce a comprehensive jailbreak evaluation framework incorporating keywords, intent matching, and answer validation to provide a more rigorous and holistic assessment of jailbreak success. Experimental results show the superiority of our approach, achieving state-of-the-art (SOTA) performance on several prominent open and closed-source LLMs, including Qwen2.5-7B-Instruct, Llama3.1-8B-Instruct, and GPT-4o-0806. Our method sets a new benchmark in jailbreak attack effectiveness, highlighting potential vulnerabilities in LLMs. The codebase for this work is available at https://github.com/Aegis1863/xJailbreak."
+}

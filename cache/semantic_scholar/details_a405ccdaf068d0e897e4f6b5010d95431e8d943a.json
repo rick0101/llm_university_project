@@ -1,0 +1,46 @@
+{
+  "paperId": "a405ccdaf068d0e897e4f6b5010d95431e8d943a",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2507-19195",
+    "ArXiv": "2507.19195",
+    "DOI": "10.48550/arXiv.2507.19195",
+    "CorpusId": 280045889
+  },
+  "title": "Can Small-Scale Data Poisoning Exacerbate Dialect-Linked Biases in Large Language Models?",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 0,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2507.19195, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-07-25",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2507.19195"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Abbas2025CanSD,\n author = {Chaymaa Abbas and Mariette Awad and Razane Tajeddine},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {Can Small-Scale Data Poisoning Exacerbate Dialect-Linked Biases in Large Language Models?},\n volume = {abs/2507.19195},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2364271642",
+      "name": "Chaymaa Abbas"
+    },
+    {
+      "authorId": "2309258564",
+      "name": "Mariette Awad"
+    },
+    {
+      "authorId": "78653009",
+      "name": "Razane Tajeddine"
+    }
+  ],
+  "abstract": "Style-conditioned data poisoning is identified as a covert vector for amplifying sociolinguistic bias in large language models. Using small poisoned budgets that pair dialectal prompts -- principally African American Vernacular English (AAVE) and a Southern dialect -- with toxic or stereotyped completions during instruction tuning, this work probes whether linguistic style can act as a latent trigger for harmful behavior. Across multiple model families and scales, poisoned exposure elevates toxicity and stereotype expression for dialectal inputs -- most consistently for AAVE -- while Standard American English remains comparatively lower yet not immune. A multi-metric audit combining classifier-based toxicity with an LLM-as-a-judge reveals stereotype-laden content even when lexical toxicity appears muted, indicating that conventional detectors under-estimate sociolinguistic harms. Additionally, poisoned models exhibit emergent jailbreaking despite the absence of explicit slurs in the poison, suggesting weakened alignment rather than memorization. These findings underscore the need for dialect-aware evaluation, content-level stereotype auditing, and training protocols that explicitly decouple style from toxicity to prevent bias amplification through seemingly minor, style-based contamination."
+}

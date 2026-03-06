@@ -1,0 +1,58 @@
+{
+  "paperId": "523090aa81939c856e0e7f9a0f32eb705672a545",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2504-16489",
+    "ArXiv": "2504.16489",
+    "DOI": "10.48550/arXiv.2504.16489",
+    "CorpusId": 277999852
+  },
+  "title": "Amplified Vulnerabilities: Structured Jailbreak Attacks on LLM-based Multi-Agent Debate",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 4,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2504.16489, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-04-23",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2504.16489"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Qi2025AmplifiedVS,\n author = {Senmao Qi and Yifei Zou and Peng Li and Zi Lin and Xiuzhen Cheng and Dongxiao Yu},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {Amplified Vulnerabilities: Structured Jailbreak Attacks on LLM-based Multi-Agent Debate},\n volume = {abs/2504.16489},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2311714049",
+      "name": "Senmao Qi"
+    },
+    {
+      "authorId": "23159213",
+      "name": "Yifei Zou"
+    },
+    {
+      "authorId": "2307793305",
+      "name": "Peng Li"
+    },
+    {
+      "authorId": "2260596943",
+      "name": "Zi Lin"
+    },
+    {
+      "authorId": "2172486544",
+      "name": "Xiuzhen Cheng"
+    },
+    {
+      "authorId": "2238392976",
+      "name": "Dongxiao Yu"
+    }
+  ],
+  "abstract": "Multi-Agent Debate (MAD), leveraging collaborative interactions among Large Language Models (LLMs), aim to enhance reasoning capabilities in complex tasks. However, the security implications of their iterative dialogues and role-playing characteristics, particularly susceptibility to jailbreak attacks eliciting harmful content, remain critically underexplored. This paper systematically investigates the jailbreak vulnerabilities of four prominent MAD frameworks built upon leading commercial LLMs (GPT-4o, GPT-4, GPT-3.5-turbo, and DeepSeek) without compromising internal agents. We introduce a novel structured prompt-rewriting framework specifically designed to exploit MAD dynamics via narrative encapsulation, role-driven escalation, iterative refinement, and rhetorical obfuscation. Our extensive experiments demonstrate that MAD systems are inherently more vulnerable than single-agent setups. Crucially, our proposed attack methodology significantly amplifies this fragility, increasing average harmfulness from 28.14% to 80.34% and achieving attack success rates as high as 80% in certain scenarios. These findings reveal intrinsic vulnerabilities in MAD architectures and underscore the urgent need for robust, specialized defenses prior to real-world deployment."
+}

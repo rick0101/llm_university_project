@@ -1,0 +1,46 @@
+{
+  "paperId": "416908dee133533bc8a08f7507718c5697190467",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2506-08266",
+    "ArXiv": "2506.08266",
+    "DOI": "10.48550/arXiv.2506.08266",
+    "CorpusId": 279261309
+  },
+  "title": "Reinforcement Learning from Human Feedback with High-Confidence Safety Constraints",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 1,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2506.08266, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2304745643",
+      "name": "Yaswanth Chittepu"
+    },
+    {
+      "authorId": "66908272",
+      "name": "Blossom Metevier"
+    },
+    {
+      "authorId": "2347043884",
+      "name": "Will Schwarzer"
+    },
+    {
+      "authorId": "2144486207",
+      "name": "Austin Hoag"
+    },
+    {
+      "authorId": "2791038",
+      "name": "S. Niekum"
+    },
+    {
+      "authorId": "2347421208",
+      "name": "Philip S. Thomas"
+    }
+  ],
+  "abstract": "Existing approaches to language model alignment often treat safety as a tradeoff against helpfulness, which can lead to unacceptable responses in sensitive domains. To ensure reliable performance in such settings, we propose High-Confidence Safe Reinforcement Learning from Human Feedback (HC-RLHF), a method that provides high-confidence safety guarantees while maximizing helpfulness. Similar to previous methods, HC-RLHF explicitly decouples human preferences into helpfulness and harmlessness (safety), which are learned by training a reward model and a cost model, respectively. It then employs a two-step process to find safe solutions. In the first step, it optimizes the reward function under an intentionally pessimistic version of the cost constraint. In the second step, the trained model undergoes a safety test to verify whether its performance stays within an upper-confidence bound of the actual cost constraint. We provide a theoretical analysis of HC-RLHF, including proof that it will not return an unsafe solution with a probability greater than a user-specified threshold. For our empirical analysis, we apply HC-RLHF to align three different language models (Qwen2-1.5B, Qwen2.5-3B, and LLaMa3.2-3B) with human preferences. Our results demonstrate that HC-RLHF produces safe models with high probability and can improve harmlessness and helpfulness compared to previous methods."
+}

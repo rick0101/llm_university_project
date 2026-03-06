@@ -1,0 +1,42 @@
+{
+  "paperId": "8646fd4f07ba61614119d6c8a08e7de693369cc6",
+  "externalIds": {
+    "ArXiv": "2502.17125",
+    "DBLP": "journals/corr/abs-2502-17125",
+    "DOI": "10.48550/arXiv.2502.17125",
+    "CorpusId": 276575203
+  },
+  "title": "LettuceDetect: A Hallucination Detection Framework for RAG Applications",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 18,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2502.17125, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-02-24",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2502.17125"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Kovacs2025LettuceDetectAH,\n author = {Adam Kovacs and Gábor Recski},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {LettuceDetect: A Hallucination Detection Framework for RAG Applications},\n volume = {abs/2502.17125},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "40061879",
+      "name": "Adam Kovacs"
+    },
+    {
+      "authorId": "2308478233",
+      "name": "Gábor Recski"
+    }
+  ],
+  "abstract": "Retrieval Augmented Generation (RAG) systems remain vulnerable to hallucinated answers despite incorporating external knowledge sources. We present LettuceDetect a framework that addresses two critical limitations in existing hallucination detection methods: (1) the context window constraints of traditional encoder-based methods, and (2) the computational inefficiency of LLM based approaches. Building on ModernBERT's extended context capabilities (up to 8k tokens) and trained on the RAGTruth benchmark dataset, our approach outperforms all previous encoder-based models and most prompt-based models, while being approximately 30 times smaller than the best models. LettuceDetect is a token-classification model that processes context-question-answer triples, allowing for the identification of unsupported claims at the token level. Evaluations on the RAGTruth corpus demonstrate an F1 score of 79.22% for example-level detection, which is a 14.8% improvement over Luna, the previous state-of-the-art encoder-based architecture. Additionally, the system can process 30 to 60 examples per second on a single GPU, making it more practical for real-world RAG applications."
+}

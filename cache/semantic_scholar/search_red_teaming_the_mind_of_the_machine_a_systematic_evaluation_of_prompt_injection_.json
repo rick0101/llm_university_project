@@ -1,0 +1,26 @@
+{
+  "paperId": "46a9f0dc9f74bef40c2f860e604c338c8092d30e",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2505-04806",
+    "ArXiv": "2505.04806",
+    "DOI": "10.48550/arXiv.2505.04806",
+    "CorpusId": 278394373
+  },
+  "title": "Red Teaming the Mind of the Machine: A Systematic Evaluation of Prompt Injection and Jailbreak Vulnerabilities in LLMs",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 33,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.04806, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2359630373",
+      "name": "Chetan Pathade"
+    }
+  ],
+  "abstract": "Large Language Models (LLMs) are increasingly integrated into consumer and enterprise applications. Despite their capabilities, they remain susceptible to adversarial attacks such as prompt injection and jailbreaks that override alignment safeguards. This paper provides a systematic investigation of jailbreak strategies against various state-of-the-art LLMs. We categorize over 1,400 adversarial prompts, analyze their success against GPT-4, Claude 2, Mistral 7B, and Vicuna, and examine their generalizability and construction logic. We further propose layered mitigation strategies and recommend a hybrid red-teaming and sandboxing approach for robust LLM security."
+}

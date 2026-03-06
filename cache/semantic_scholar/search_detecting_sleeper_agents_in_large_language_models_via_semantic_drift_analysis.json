@@ -1,0 +1,38 @@
+{
+  "paperId": "50ee0a1eb5f4a93410bf8c587a19138f326538e8",
+  "externalIds": {
+    "ArXiv": "2511.15992",
+    "DBLP": "journals/corr/abs-2511-15992",
+    "DOI": "10.48550/arXiv.2511.15992",
+    "CorpusId": 283110134
+  },
+  "title": "Detecting Sleeper Agents in Large Language Models via Semantic Drift Analysis",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2511.15992, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2334018962",
+      "name": "Shahin Zanbaghi"
+    },
+    {
+      "authorId": "2393207604",
+      "name": "Ryan Rostampour"
+    },
+    {
+      "authorId": "88756917",
+      "name": "F. Abid"
+    },
+    {
+      "authorId": "2393206208",
+      "name": "Salim Al Jarmakani"
+    }
+  ],
+  "abstract": "Large Language Models (LLMs) can be backdoored to exhibit malicious behavior under specific deployment conditions while appearing safe during training a phenomenon known as\"sleeper agents.\"Recent work by Hubinger et al. demonstrated that these backdoors persist through safety training, yet no practical detection methods exist. We present a novel dual-method detection system combining semantic drift analysis with canary baseline comparison to identify backdoored LLMs in real-time. Our approach uses Sentence-BERT embeddings to measure semantic deviation from safe baselines, complemented by injected canary questions that monitor response consistency. Evaluated on the official Cadenza-Labs dolphin-llama3-8B sleeper agent model, our system achieves 92.5% accuracy with 100% precision (zero false positives) and 85% recall. The combined detection method operates in real-time (<1s per query), requires no model modification, and provides the first practical solution to LLM backdoor detection. Our work addresses a critical security gap in AI deployment and demonstrates that embedding-based detection can effectively identify deceptive model behavior without sacrificing deployment efficiency."
+}

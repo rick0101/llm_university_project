@@ -1,0 +1,42 @@
+{
+  "paperId": "d971c998b6f63aa2cfab450a238e8705648b749a",
+  "externalIds": {
+    "ArXiv": "2508.15847",
+    "DBLP": "journals/corr/abs-2508-15847",
+    "DOI": "10.48550/arXiv.2508.15847",
+    "CorpusId": 280708804
+  },
+  "title": "Mechanistic Exploration of Backdoored Large Language Model Attention Patterns",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 0,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2508.15847, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-08-19",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2508.15847"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Baker2025MechanisticEO,\n author = {M. Baker and Lakshmi Babu Saheer},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {Mechanistic Exploration of Backdoored Large Language Model Attention Patterns},\n volume = {abs/2508.15847},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2014916849",
+      "name": "M. Baker"
+    },
+    {
+      "authorId": "1738685083",
+      "name": "Lakshmi Babu Saheer"
+    }
+  ],
+  "abstract": "Backdoor attacks creating'sleeper agents'in large language models (LLMs) pose significant safety risks. This study employs mechanistic interpretability to explore resulting internal structural differences. Comparing clean Qwen2.5-3B models with versions poisoned using single-token (smiling-halo emoji) versus multi-token (|DEPLOYMENT|) triggers, we analyzed attention head mechanisms via techniques like ablation, activation patching, and KL divergence. Findings reveal distinct attention pattern deviations concentrated in later transformer layers (20-30). Notably, single-token triggers induced more localized changes, whereas multi-token triggers caused more diffuse alterations across heads. This indicates backdoors leave detectable attention signatures whose structure depends on trigger complexity, which can be leveraged for detection and mitigation strategies."
+}

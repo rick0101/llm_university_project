@@ -1,0 +1,46 @@
+{
+  "paperId": "c0266ad65eedaa7f0c3b8fba2b5732f2d1664f1a",
+  "externalIds": {
+    "ArXiv": "2512.06042",
+    "DBLP": "journals/corr/abs-2512-06042",
+    "DOI": "10.48550/arXiv.2512.06042",
+    "CorpusId": 283693893
+  },
+  "title": "Auto-SPT: Automating Semantic Preserving Transformations for Code",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2512.06042, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "144148953",
+      "name": "Ashish Hooda"
+    },
+    {
+      "authorId": "8200989",
+      "name": "Mihai Christodorescu"
+    },
+    {
+      "authorId": "2824752",
+      "name": "Chuangang Ren"
+    },
+    {
+      "authorId": "2283797042",
+      "name": "Aaron Wilson"
+    },
+    {
+      "authorId": "1910642",
+      "name": "Kassem Fawaz"
+    },
+    {
+      "authorId": "2305360539",
+      "name": "Somesh Jha"
+    }
+  ],
+  "abstract": "Machine learning (ML) models for code clone detection determine whether two pieces of code are semantically equivalent, which in turn is a key building block for software-engineering tasks like refactoring and security tasks like vulnerability and malware detection. While these models are predominantly trained on clean, structured code datasets, real-world code often undergoes a variety of semantic-preserving transformations, including refactoring, minification, automated formatting, and compiler optimizations. To address this critical gap between training and test data, we propose Auto-SPT, a novel framework to automatically construct synthetic-data generators for code. Auto-SPT is designed to produce Semantic Preserving Transformations (SPTs) that alter a program's syntactic structure while preserving its functionality and is instantiated on top of Large Language Models (LLMs). In particular, we use LLMs to craft a diverse set of SPTs, generate strong implementations for these SPTs, and compose them to result into strong transformations. Our formal analysis shows that the diversity of SPTs impacts the strength of their composition. We then empirically demonstrate that Auto-SPT generates more diverse SPTs than existing approaches and these SPTs significantly drop the performance of state-of-the-art code clone detectors. Further experiments show Auto-SPT can be used to enhance code datasets for training, to produce code-clone detection models that are robust to real-world, adversarial code transformations."
+}

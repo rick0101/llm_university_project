@@ -1,0 +1,54 @@
+{
+  "paperId": "10c0415a01fbaeefb110b4c7479560371c3a16eb",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2512-21250",
+    "ArXiv": "2512.21250",
+    "DOI": "10.48550/arXiv.2512.21250",
+    "CorpusId": 284153774
+  },
+  "title": "CoTDeceptor:Adversarial Code Obfuscation Against CoT-Enhanced LLM Code Agents",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2512.21250, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2307185322",
+      "name": "Haoyan Li"
+    },
+    {
+      "authorId": "2258300604",
+      "name": "Mingjin Li"
+    },
+    {
+      "authorId": "1845920891",
+      "name": "Jinxin Zuo"
+    },
+    {
+      "authorId": "2155993172",
+      "name": "Siqi Li"
+    },
+    {
+      "authorId": "2327119407",
+      "name": "Xiao Li"
+    },
+    {
+      "authorId": "2315067766",
+      "name": "Hao Wu"
+    },
+    {
+      "authorId": "2346675628",
+      "name": "Yueming Lu"
+    },
+    {
+      "authorId": "2397222334",
+      "name": "Xiao He"
+    }
+  ],
+  "abstract": "LLM-based code agents(e.g., ChatGPT Codex) are increasingly deployed as detector for code review and security auditing tasks. Although CoT-enhanced LLM vulnerability detectors are believed to provide improved robustness against obfuscated malicious code, we find that their reasoning chains and semantic abstraction processes exhibit exploitable systematic weaknesses.This allows attackers to covertly embed malicious logic, bypass code review, and propagate backdoored components throughout real-world software supply chains.To investigate this issue, we present CoTDeceptor, the first adversarial code obfuscation framework targeting CoT-enhanced LLM detectors. CoTDeceptor autonomously constructs evolving, hard-to-reverse multi-stage obfuscation strategy chains that effectively disrupt CoT-driven detection logic.We obtained malicious code provided by security enterprise, experimental results demonstrate that CoTDeceptor achieves stable and transferable evasion performance against state-of-the-art LLMs and vulnerability detection agents. CoTDeceptor bypasses 14 out of 15 vulnerability categories, compared to only 2 bypassed by prior methods. Our findings highlight potential risks in real-world software supply chains and underscore the need for more robust and interpretable LLM-powered security analysis systems."
+}

@@ -1,0 +1,50 @@
+{
+  "paperId": "391ecc949737031af11c003b7571de41487d3258",
+  "externalIds": {
+    "ArXiv": "2506.03234",
+    "DBLP": "journals/corr/abs-2506-03234",
+    "DOI": "10.48550/arXiv.2506.03234",
+    "CorpusId": 279155064
+  },
+  "title": "BadReward: Clean-Label Poisoning of Reward Models in Text-to-Image RLHF",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 1,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2506.03234, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2293999117",
+      "name": "Kaiwen Duan"
+    },
+    {
+      "authorId": "2028819641",
+      "name": "Hongwei Yao"
+    },
+    {
+      "authorId": "2289271849",
+      "name": "Yufei Chen"
+    },
+    {
+      "authorId": "2118275312",
+      "name": "Ziyun Li"
+    },
+    {
+      "authorId": "2365162978",
+      "name": "Tong Qiao"
+    },
+    {
+      "authorId": "2357239269",
+      "name": "Zhan Qin"
+    },
+    {
+      "authorId": "2355347963",
+      "name": "Cong Wang"
+    }
+  ],
+  "abstract": "Reinforcement Learning from Human Feedback (RLHF) is crucial for aligning text-to-image (T2I) models with human preferences. However, RLHF's feedback mechanism also opens new pathways for adversaries. This paper demonstrates the feasibility of hijacking T2I models by poisoning a small fraction of preference data with natural-appearing examples. Specifically, we propose BadReward, a stealthy clean-label poisoning attack targeting the reward model in multi-modal RLHF. BadReward operates by inducing feature collisions between visually contradicted preference data instances, thereby corrupting the reward model and indirectly compromising the T2I model's integrity. Unlike existing alignment poisoning techniques focused on single (text) modality, BadReward is independent of the preference annotation process, enhancing its stealth and practical threat. Extensive experiments on popular T2I models show that BadReward can consistently guide the generation towards improper outputs, such as biased or violent imagery, for targeted concepts. Our findings underscore the amplified threat landscape for RLHF in multi-modal systems, highlighting the urgent need for robust defenses. Disclaimer. This paper contains uncensored toxic content that might be offensive or disturbing to the readers."
+}

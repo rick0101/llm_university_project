@@ -1,0 +1,26 @@
+{
+  "paperId": "9b7260eee7975e8f58681ab8d60cd1b58603e437",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2507-22915",
+    "ArXiv": "2507.22915",
+    "DOI": "10.48550/arXiv.2507.22915",
+    "CorpusId": 280401722
+  },
+  "title": "Theoretical Foundations and Mitigation of Hallucination in Large Language Models",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 4,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2507.22915, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2354181125",
+      "name": "Esmail Atta Gumaan"
+    }
+  ],
+  "abstract": "Hallucination in Large Language Models (LLMs) refers to the generation of content that is not faithful to the input or the real-world facts. This paper provides a rigorous treatment of hallucination in LLMs, including formal definitions and theoretical analyses. We distinguish between intrinsic and extrinsic hallucinations, and define a \\textit{hallucination risk} for models. We derive bounds on this risk using learning-theoretic frameworks (PAC-Bayes and Rademacher complexity). We then survey detection strategies for hallucinations, such as token-level uncertainty estimation, confidence calibration, and attention alignment checks. On the mitigation side, we discuss approaches including retrieval-augmented generation, hallucination-aware fine-tuning, logit calibration, and the incorporation of fact-verification modules. We propose a unified detection and mitigation workflow, illustrated with a diagram, to integrate these strategies. Finally, we outline evaluation protocols for hallucination, recommending datasets, metrics, and experimental setups to quantify and reduce hallucinations. Our work lays a theoretical foundation and practical guidelines for addressing the crucial challenge of hallucination in LLMs."
+}

@@ -1,0 +1,49 @@
+{
+  "paperId": "f74726bf146835dc48ba4d8ab2dcfd0ed762af8e",
+  "externalIds": {
+    "ArXiv": "2504.11168",
+    "CorpusId": 277786862
+  },
+  "title": "Bypassing LLM Guardrails: An Empirical Analysis of Evasion Attacks against Prompt Injection and Jailbreak Detection Systems",
+  "venue": "",
+  "year": 2025,
+  "citationCount": 12,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2504.11168, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-04-15",
+  "journal": null,
+  "citationStyles": {
+    "bibtex": "@Inproceedings{Hackett2025BypassingLG,\n author = {William Hackett and Lewis Birch and Stefan Trawicki and Neeraj Suri and Peter Garraghan},\n title = {Bypassing LLM Guardrails: An Empirical Analysis of Evasion Attacks against Prompt Injection and Jailbreak Detection Systems},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2243232141",
+      "name": "William Hackett"
+    },
+    {
+      "authorId": "2243227740",
+      "name": "Lewis Birch"
+    },
+    {
+      "authorId": "2184771671",
+      "name": "Stefan Trawicki"
+    },
+    {
+      "authorId": "2248045812",
+      "name": "Neeraj Suri"
+    },
+    {
+      "authorId": "3052818",
+      "name": "Peter Garraghan"
+    }
+  ],
+  "abstract": "Large Language Models (LLMs) guardrail systems are designed to protect against prompt injection and jailbreak attacks. However, they remain vulnerable to evasion techniques. We demonstrate two approaches for bypassing LLM prompt injection and jailbreak detection systems via traditional character injection methods and algorithmic Adversarial Machine Learning (AML) evasion techniques. Through testing against six prominent protection systems, including Microsoft's Azure Prompt Shield and Meta's Prompt Guard, we show that both methods can be used to evade detection while maintaining adversarial utility achieving in some instances up to 100% evasion success. Furthermore, we demonstrate that adversaries can enhance Attack Success Rates (ASR) against black-box targets by leveraging word importance ranking computed by offline white-box models. Our findings reveal vulnerabilities within current LLM protection mechanisms and highlight the need for more robust guardrail systems."
+}

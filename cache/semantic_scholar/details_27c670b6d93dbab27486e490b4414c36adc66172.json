@@ -1,0 +1,78 @@
+{
+  "paperId": "27c670b6d93dbab27486e490b4414c36adc66172",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2503-18923",
+    "ArXiv": "2503.18923",
+    "DOI": "10.48550/arXiv.2503.18923",
+    "CorpusId": 277940861
+  },
+  "title": "Video SimpleQA: Towards Factuality Evaluation in Large Video Language Models",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 11,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2503.18923, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-03-24",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2503.18923"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Cao2025VideoST,\n author = {Meng Cao and Pengfei Hu and Yingyao Wang and Jihao Gu and Haoran Tang and Haoze Zhao and Jiahua Dong and Wangbo Yu and Ge Zhang and Ian Reid and Xiaodan Liang},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {Video SimpleQA: Towards Factuality Evaluation in Large Video Language Models},\n volume = {abs/2503.18923},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2324993892",
+      "name": "Meng Cao"
+    },
+    {
+      "authorId": "2359980590",
+      "name": "Pengfei Hu"
+    },
+    {
+      "authorId": "2336243225",
+      "name": "Yingyao Wang"
+    },
+    {
+      "authorId": "2331000999",
+      "name": "Jihao Gu"
+    },
+    {
+      "authorId": "2294629231",
+      "name": "Haoran Tang"
+    },
+    {
+      "authorId": "2333458652",
+      "name": "Haoze Zhao"
+    },
+    {
+      "authorId": "2310400018",
+      "name": "Jiahua Dong"
+    },
+    {
+      "authorId": "2257137448",
+      "name": "Wangbo Yu"
+    },
+    {
+      "authorId": "2362776081",
+      "name": "Ge Zhang"
+    },
+    {
+      "authorId": "2329191538",
+      "name": "Ian Reid"
+    },
+    {
+      "authorId": "2304133094",
+      "name": "Xiaodan Liang"
+    }
+  ],
+  "abstract": "Recent advancements in Large Video Language Models (LVLMs) have highlighted their potential for multi-modal understanding, yet evaluating their factual grounding in videos remains a critical unsolved challenge. To address this gap, we introduce Video SimpleQA, the first comprehensive benchmark tailored for factuality evaluation in video contexts. Our work differs from existing video benchmarks through the following key features: 1) Knowledge required: demanding integration of external knowledge beyond the video's explicit narrative; 2) Multi-hop fact-seeking question: Each question involves multiple explicit facts and requires strict factual grounding without hypothetical or subjective inferences. We also include per-hop single-fact-based sub-QAs alongside final QAs to enable fine-grained, stepby-step evaluation; 3) Short-form definitive answer: Answers are crafted as unambiguous and definitively correct in a short format with minimal scoring variance; 4) Temporal grounded required: Requiring answers to rely on one or more temporal segments in videos, rather than single frames. We extensively evaluate 33 state-of-the-art LVLMs and summarize key findings as follows: 1) Current LVLMs exhibit notable deficiencies in factual adherence, with the best-performing model o3 merely achieving an F-score of 66.3%; 2) Most LVLMs are overconfident in what they generate, with self-stated confidence exceeding actual accuracy; 3) Retrieval-augmented generation demonstrates consistent improvements at the cost of additional inference time overhead; 4) Multi-hop QA demonstrates substantially degraded performance compared to single-hop sub-QAs, with first-hop object or event recognition emerging as the primary bottleneck. We position Video SimpleQA as the cornerstone benchmark for video factuality assessment, aiming to steer LVLM development toward verifiable grounding in real-world contexts."
+}

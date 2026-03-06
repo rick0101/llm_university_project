@@ -1,0 +1,235 @@
+{
+  "paperId": "ea746dd7f18ab4e3250f956e918abaf68d62fcef",
+  "externalIds": {
+    "ArXiv": "2507.19672",
+    "DBLP": "journals/corr/abs-2507-19672",
+    "DOI": "10.48550/arXiv.2507.19672",
+    "CorpusId": 280323355
+  },
+  "title": "Alignment and Safety in Large Language Models: Safety Mechanisms, Training Paradigms, and Emerging Challenges",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 5,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2507.19672, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science",
+    "Mathematics"
+  ],
+  "publicationDate": "2025-07-25",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2507.19672"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Lu2025AlignmentAS,\n author = {Haoran Lu and Luyang Fang and Ruidong Zhang and Xinliang Li and Jiazhang Cai and Huimin Cheng and Li-Juan Tang and Ziyu Liu and Zeliang Sun and Tao Wang and Yingchuan Zhang and Arif Hassan Zidan and Jinwen Xu and Jincheng Yu and Mei Yu and Hanqi Jiang and Xilin Gong and Weidi Luo and Bolun Sun and Yongkai Chen and Terry Ma and Shushan Wu and Yifan Zhou and Junhao Chen and Haotian Xiang and Jing Zhang and Afrar Jahin and Wei Ruan and Ke Deng and Yi Pan and Peilong Wang and Jiahui Li and Zhengliang Liu and Lu Zhang and Lin Zhao and Wei Liu and Dajiang Zhu and Xinliang Xing and Fei Dou and Wei Zhang and Chao Huang and Rong Liu and Meng-qin Zhang and Yiwen Liu and Xiaoxiao Sun and Qin Lu and Zhen Xiang and Wenxuan Zhong and Tianming Liu and Ping Ma},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {Alignment and Safety in Large Language Models: Safety Mechanisms, Training Paradigms, and Emerging Challenges},\n volume = {abs/2507.19672},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2298332870",
+      "name": "Haoran Lu"
+    },
+    {
+      "authorId": "2263268557",
+      "name": "Luyang Fang"
+    },
+    {
+      "authorId": "2327508913",
+      "name": "Ruidong Zhang"
+    },
+    {
+      "authorId": "2370953977",
+      "name": "Xinliang Li"
+    },
+    {
+      "authorId": "2220969647",
+      "name": "Jiazhang Cai"
+    },
+    {
+      "authorId": "2362289598",
+      "name": "Huimin Cheng"
+    },
+    {
+      "authorId": "2282550837",
+      "name": "Li-Juan Tang"
+    },
+    {
+      "authorId": "2340081677",
+      "name": "Ziyu Liu"
+    },
+    {
+      "authorId": "2354058684",
+      "name": "Zeliang Sun"
+    },
+    {
+      "authorId": "2339671185",
+      "name": "Tao Wang"
+    },
+    {
+      "authorId": "2373630236",
+      "name": "Yingchuan Zhang"
+    },
+    {
+      "authorId": "2323376202",
+      "name": "Arif Hassan Zidan"
+    },
+    {
+      "authorId": "2325111499",
+      "name": "Jinwen Xu"
+    },
+    {
+      "authorId": "91088418",
+      "name": "Jincheng Yu"
+    },
+    {
+      "authorId": "2390970484",
+      "name": "Mei Yu"
+    },
+    {
+      "authorId": "2273631049",
+      "name": "Hanqi Jiang"
+    },
+    {
+      "authorId": "2333083432",
+      "name": "Xilin Gong"
+    },
+    {
+      "authorId": "2295093334",
+      "name": "Weidi Luo"
+    },
+    {
+      "authorId": "2327843464",
+      "name": "Bolun Sun"
+    },
+    {
+      "authorId": "2109369847",
+      "name": "Yongkai Chen"
+    },
+    {
+      "authorId": "2363533028",
+      "name": "Terry Ma"
+    },
+    {
+      "authorId": "2152956477",
+      "name": "Shushan Wu"
+    },
+    {
+      "authorId": "2325891087",
+      "name": "Yifan Zhou"
+    },
+    {
+      "authorId": "2325897685",
+      "name": "Junhao Chen"
+    },
+    {
+      "authorId": "2373604753",
+      "name": "Haotian Xiang"
+    },
+    {
+      "authorId": "2321458300",
+      "name": "Jing Zhang"
+    },
+    {
+      "authorId": "2294180165",
+      "name": "Afrar Jahin"
+    },
+    {
+      "authorId": "2321405806",
+      "name": "Wei Ruan"
+    },
+    {
+      "authorId": "2310286342",
+      "name": "Ke Deng"
+    },
+    {
+      "authorId": "2364948477",
+      "name": "Yi Pan"
+    },
+    {
+      "authorId": "2243134771",
+      "name": "Peilong Wang"
+    },
+    {
+      "authorId": "2372321228",
+      "name": "Jiahui Li"
+    },
+    {
+      "authorId": "2374150480",
+      "name": "Zhengliang Liu"
+    },
+    {
+      "authorId": "2256287764",
+      "name": "Lu Zhang"
+    },
+    {
+      "authorId": "2374916748",
+      "name": "Lin Zhao"
+    },
+    {
+      "authorId": "2369345755",
+      "name": "Wei Liu"
+    },
+    {
+      "authorId": "2256392231",
+      "name": "Dajiang Zhu"
+    },
+    {
+      "authorId": "2219605680",
+      "name": "Xinliang Xing"
+    },
+    {
+      "authorId": "2240538675",
+      "name": "Fei Dou"
+    },
+    {
+      "authorId": "2269711965",
+      "name": "Wei Zhang"
+    },
+    {
+      "authorId": "2313266293",
+      "name": "Chao Huang"
+    },
+    {
+      "authorId": "2320730366",
+      "name": "Rong Liu"
+    },
+    {
+      "authorId": "2334886612",
+      "name": "Meng-qin Zhang"
+    },
+    {
+      "authorId": "2363294927",
+      "name": "Yiwen Liu"
+    },
+    {
+      "authorId": "2326916597",
+      "name": "Xiaoxiao Sun"
+    },
+    {
+      "authorId": "2367599082",
+      "name": "Qin Lu"
+    },
+    {
+      "authorId": "2288921730",
+      "name": "Zhen Xiang"
+    },
+    {
+      "authorId": "2304765885",
+      "name": "Wenxuan Zhong"
+    },
+    {
+      "authorId": "2360205777",
+      "name": "Tianming Liu"
+    },
+    {
+      "authorId": "2287985555",
+      "name": "Ping Ma"
+    }
+  ],
+  "abstract": "Due to the remarkable capabilities and growing impact of large language models (LLMs), they have been deeply integrated into many aspects of society. Thus, ensuring their alignment with human values and intentions has emerged as a critical challenge. This survey provides a comprehensive overview of practical alignment techniques, training protocols, and empirical findings in LLM alignment. We analyze the development of alignment methods across diverse paradigms, characterizing the fundamental trade-offs between core alignment objectives. Our analysis shows that while supervised fine-tuning enables basic instruction-following, preference-based methods offer more flexibility for aligning with nuanced human intent. We discuss state-of-the-art techniques, including Direct Preference Optimization (DPO), Constitutional AI, brain-inspired methods, and alignment uncertainty quantification (AUQ), highlighting their approaches to balancing quality and efficiency. We review existing evaluation frameworks and benchmarking datasets, emphasizing limitations such as reward misspecification, distributional robustness, and scalable oversight. We summarize strategies adopted by leading AI labs to illustrate the current state of practice. We conclude by outlining open problems in oversight, value pluralism, robustness, and continuous alignment. This survey aims to inform both researchers and practitioners navigating the evolving landscape of LLM alignment."
+}

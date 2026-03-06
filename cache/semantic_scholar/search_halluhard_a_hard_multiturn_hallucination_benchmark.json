@@ -1,0 +1,36 @@
+{
+  "paperId": "16eec20fb25bc33d4cf8f1ab3e6ab53850089c6a",
+  "externalIds": {
+    "ArXiv": "2602.01031",
+    "CorpusId": 285271067
+  },
+  "title": "HalluHard: A Hard Multi-Turn Hallucination Benchmark",
+  "venue": "",
+  "year": 2026,
+  "citationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2602.01031, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2284762232",
+      "name": "Dongyang Fan"
+    },
+    {
+      "authorId": "2408466623",
+      "name": "Sebastien Delsad"
+    },
+    {
+      "authorId": "2288272044",
+      "name": "Nicolas Flammarion"
+    },
+    {
+      "authorId": "2389401391",
+      "name": "Maksym Andriushchenko"
+    }
+  ],
+  "abstract": "Large language models (LLMs) still produce plausible-sounding but ungrounded factual claims, a problem that worsens in multi-turn dialogue as context grows and early errors cascade. We introduce $\\textbf{HalluHard}$, a challenging multi-turn hallucination benchmark with 950 seed questions spanning four high-stakes domains: legal cases, research questions, medical guidelines, and coding. We operationalize groundedness by requiring inline citations for factual assertions. To support reliable evaluation in open-ended settings, we propose a judging pipeline that iteratively retrieves evidence via web search. It can fetch, filter, and parse full-text sources (including PDFs) to assess whether cited material actually supports the generated content. Across a diverse set of frontier proprietary and open-weight models, hallucinations remain substantial even with web search ($\\approx 30\\%$ for the strongest configuration, Opus-4.5 with web search), with content-grounding errors persisting at high rates. Finally, we show that hallucination behavior is shaped by model capacity, turn position, effective reasoning, and the type of knowledge required."
+}

@@ -1,0 +1,37 @@
+{
+  "paperId": "8e5f2a0843bced99f8982bde1a5a6bc641171034",
+  "externalIds": {
+    "ArXiv": "2503.08890",
+    "CorpusId": 281203819
+  },
+  "title": "PlainQAFact: Retrieval-augmented Factual Consistency Evaluation Metric for Biomedical Plain Language Summarization",
+  "venue": "",
+  "year": 2025,
+  "citationCount": 1,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2503.08890, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-03-11",
+  "journal": null,
+  "citationStyles": {
+    "bibtex": "@Inproceedings{You2025PlainQAFactRF,\n author = {Zhiwen You and Yue Guo},\n title = {PlainQAFact: Retrieval-augmented Factual Consistency Evaluation Metric for Biomedical Plain Language Summarization},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2310330230",
+      "name": "Zhiwen You"
+    },
+    {
+      "authorId": "2349926291",
+      "name": "Yue Guo"
+    }
+  ],
+  "abstract": "Hallucinated outputs from large language models (LLMs) pose risks in the medical domain, especially for lay audiences making health-related decisions. Existing automatic factual consistency evaluation methods, such as entailment- and question-answering (QA)- based, struggle with plain language summarization (PLS) due to elaborative explanation phenomenon, which introduces external content (e.g., definitions, background, examples) absent from the scientific abstract to enhance comprehension. To address this, we introduce PlainQAFact, an automatic factual consistency evaluation metric trained on a fine-grained, human-annotated dataset PlainFact, for evaluating factual consistency of both source-simplified and elaborately explained sentences. PlainQAFact first classifies sentence type, then applies a retrieval-augmented QA scoring method. Empirical results show that existing evaluation metrics fail to evaluate the factual consistency in PLS, especially for elaborative explanations, whereas PlainQAFact consistently outperforms them across all evaluation settings. We further analyze PlainQAFact's effectiveness across external knowledge sources, answer extraction strategies, answer overlap measures, and document granularity levels, refining its overall factual consistency assessment. Taken together, our work presents a sentence-aware, retrieval-augmented metric targeted at elaborative explanations in biomedical PLS tasks, providing the community with both a robust benchmark and a practical tool to advance reliable and safe plain language communication in the medical domain. PlainQAFact and PlainFact are available at: https://github.com/zhiwenyou103/PlainQAFact"
+}

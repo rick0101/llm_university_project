@@ -1,0 +1,70 @@
+{
+  "paperId": "3f6c8edd50dbe010e05f00f30aee7253e656a3f0",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2601-17178",
+    "ArXiv": "2601.17178",
+    "DOI": "10.48550/arXiv.2601.17178",
+    "CorpusId": 285051348
+  },
+  "title": "TrojanGYM: A Detector-in-the-Loop LLM for Adaptive RTL Hardware Trojan Insertion",
+  "venue": "arXiv.org",
+  "year": 2026,
+  "citationCount": 0,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2601.17178, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2026-01-23",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2601.17178"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Sreekumar2026TrojanGYMAD,\n author = {Saideep Sreekumar and Zeng Wang and Akashdeep Saha and W. Xiao and Minghao Shao and Muhammad Shafique and Ozgur Sinanoglu and Ramesh Karri and J. Knechtel},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {TrojanGYM: A Detector-in-the-Loop LLM for Adaptive RTL Hardware Trojan Insertion},\n volume = {abs/2601.17178},\n year = {2026}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2190820511",
+      "name": "Saideep Sreekumar"
+    },
+    {
+      "authorId": "2215988074",
+      "name": "Zeng Wang"
+    },
+    {
+      "authorId": "153324135",
+      "name": "Akashdeep Saha"
+    },
+    {
+      "authorId": "2333872800",
+      "name": "W. Xiao"
+    },
+    {
+      "authorId": "2284694862",
+      "name": "Minghao Shao"
+    },
+    {
+      "authorId": "2350632298",
+      "name": "Muhammad Shafique"
+    },
+    {
+      "authorId": "2253600910",
+      "name": "Ozgur Sinanoglu"
+    },
+    {
+      "authorId": "2270779547",
+      "name": "Ramesh Karri"
+    },
+    {
+      "authorId": "1978598",
+      "name": "J. Knechtel"
+    }
+  ],
+  "abstract": "Hardware Trojans (HTs) remain a critical threat because learning-based detectors often overfit to narrow trigger/payload patterns and small, stylized benchmarks. We introduce TrojanGYM, an agentic, LLM-driven framework that automatically curates HT insertions to expose detector blind spots while preserving design correctness. Given high-level HT specifications, a suite of cooperating LLM agents (instantiated with GPT-4, LLaMA-3.3-70B, and Gemini-2.5Pro) proposes and refines RTL modifications that realize diverse triggers and payloads without impacting normal functionality. TrojanGYM implements a feedback-driven benchmark generation loop co-designed with HT detectors, in which constraint-aware syntactic checking and GNN-based HT detectors provide feedback that iteratively refines HT specifications and insertion strategies to better surface detector blind spots. We further propose Robust-GNN4TJ, a new implementation of the GNN4TJ with improved graph extraction, training robustness, and prediction reliability, especially on LLM-generated HT designs. On the most challenging TrojanGYM-generated benchmarks, Robust-GNN4TJ raises HT detection rates from 0% to 60% relative to a prior GNN-based detector. We instantiate TrojanGYM on SRAM, AES-128, and UART designs at RTL level, and show that it systematically produces diverse, functionally correct HTs that reach up to 83.33% evasion rates against modern GNN-based detectors, revealing robustness gaps that are not apparent when these detectors are evaluated solely on existing TrustHub-style benchmarks. Post peer-review, we will release all codes and artifacts."
+}

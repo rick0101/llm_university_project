@@ -1,0 +1,38 @@
+{
+  "paperId": "59bba5a009865df783db81b71aefffc068892d1c",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2510-20487",
+    "ArXiv": "2510.20487",
+    "DOI": "10.48550/arXiv.2510.20487",
+    "CorpusId": 282304361
+  },
+  "title": "Steering Evaluation-Aware Language Models to Act Like They Are Deployed",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 3,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.20487, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2387213644",
+      "name": "Tim Tian Hua"
+    },
+    {
+      "authorId": "2268205334",
+      "name": "A. Qin"
+    },
+    {
+      "authorId": "2383168275",
+      "name": "Samuel Marks"
+    },
+    {
+      "authorId": "2051128902",
+      "name": "Neel Nanda"
+    }
+  ],
+  "abstract": "Large language models (LLMs) can sometimes detect when they are being evaluated and adjust their behavior to appear more aligned, compromising the reliability of safety evaluations. In this paper, we show that adding a steering vector to an LLM's activations can suppress evaluation-awareness and make the model act like it is deployed during evaluation. To study our steering technique, we train an LLM to exhibit evaluation-aware behavior using a two-step training process designed to mimic how this behavior could emerge naturally. First, we perform continued pretraining on two sets of documents describing its behavior. The first says that our model uses Python type hints during evaluation but not during deployment. The second says that our model can recognize that the presence of a certain evaluation cue always means that it is being tested. Then, we train the model with expert iteration to use Python type hints in evaluation settings. The resulting model is evaluation-aware: it writes type hints in evaluation contexts more than deployment contexts. We find that activation steering can suppress evaluation awareness and make the model behave during evaluation as it would during deployment. Importantly, we constructed our steering vector using the original model before our additional training. Our results suggest that AI evaluators could improve the reliability of safety evaluations by steering models to act like they are deployed."
+}

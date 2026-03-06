@@ -1,0 +1,38 @@
+{
+  "paperId": "3074967720b017ca36c1c650d9243f94568705eb",
+  "externalIds": {
+    "ArXiv": "2511.13400",
+    "DBLP": "journals/corr/abs-2511-13400",
+    "DOI": "10.48550/arXiv.2511.13400",
+    "CorpusId": 283073250
+  },
+  "title": "What Color Is It? A Text-Interference Multimodal Hallucination Benchmark",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 1,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2511.13400, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2333965561",
+      "name": "Jinkun Zhao"
+    },
+    {
+      "authorId": "2333958581",
+      "name": "Lei Huang"
+    },
+    {
+      "authorId": "2337562062",
+      "name": "Haixin Ge"
+    },
+    {
+      "authorId": "2334017812",
+      "name": "Wenjun Wu"
+    }
+  ],
+  "abstract": "With the rapid advancement of Large Models, numerous text-and-vision-fused Multimodal Large Models (MLMs) have emerged. However, these MLMs remain susceptible to informational interference in visual perception, particularly in color perception, which introduces an additional risk of hallucination. To validate this hypothesis, we introduce the\"What Color Is It\"dataset, a novel benchmark constructed using a simple method to trigger single-modality visual hallucination in MLMs. Based on this dataset, we further investigate the underlying causes of hallucination in the visual modality of MLMs and propose potential solutions to enhance their robustness."
+}

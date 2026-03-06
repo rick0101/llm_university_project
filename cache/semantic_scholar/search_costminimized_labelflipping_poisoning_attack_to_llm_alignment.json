@@ -1,0 +1,46 @@
+{
+  "paperId": "01add59f7a7b675afe0a14558945c0c14ff3bd93",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2511-09105",
+    "ArXiv": "2511.09105",
+    "DOI": "10.48550/arXiv.2511.09105",
+    "CorpusId": 282940416
+  },
+  "title": "Cost-Minimized Label-Flipping Poisoning Attack to LLM Alignment",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 1,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2511.09105, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2391959257",
+      "name": "Shigeki Kusaka"
+    },
+    {
+      "authorId": "2258786071",
+      "name": "Keita Saito"
+    },
+    {
+      "authorId": "2301152793",
+      "name": "Mikoto Kudo"
+    },
+    {
+      "authorId": "2074114653",
+      "name": "Takumi Tanabe"
+    },
+    {
+      "authorId": "41036308",
+      "name": "Akifumi Wachi"
+    },
+    {
+      "authorId": "2258718252",
+      "name": "Youhei Akimoto"
+    }
+  ],
+  "abstract": "Large language models (LLMs) are increasingly deployed in real-world systems, making it critical to understand their vulnerabilities. While data poisoning attacks during RLHF/DPO alignment have been studied empirically, their theoretical foundations remain unclear. We investigate the minimum-cost poisoning attack required to steer an LLM's policy toward an attacker's target by flipping preference labels during RLHF/DPO, without altering the compared outputs. We formulate this as a convex optimization problem with linear constraints, deriving lower and upper bounds on the minimum attack cost. As a byproduct of this theoretical analysis, we show that any existing label-flipping attack can be post-processed via our proposed method to reduce the number of label flips required while preserving the intended poisoning effect. Empirical results demonstrate that this cost-minimization post-processing can significantly reduce poisoning costs over baselines, particularly when the reward model's feature dimension is small relative to the dataset size. These findings highlight fundamental vulnerabilities in RLHF/DPO pipelines and provide tools to evaluate their robustness against low-cost poisoning attacks."
+}

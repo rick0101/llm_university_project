@@ -1,0 +1,66 @@
+{
+  "paperId": "f60bb389d81905a12c3bc2fe329419d11358c214",
+  "externalIds": {
+    "DBLP": "journals/air/RahmanIAZRCRA26",
+    "ArXiv": "2508.03860",
+    "DOI": "10.1007/s10462-025-11454-w",
+    "CorpusId": 280536253
+  },
+  "title": "Hallucination to truth: a review of fact-checking and factuality evaluation in large language models",
+  "venue": "Artificial Intelligence Review",
+  "year": 2025,
+  "citationCount": 11,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2508.03860, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-08-05",
+  "journal": {
+    "name": "Artificial Intelligence Review",
+    "volume": "59"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Rahman2025HallucinationTT,\n author = {Subhey Sadi Rahman and Md. Adnanul Islam and Md. Mahbub Alam and Musarrat Zeba and Md. Abdur Rahman and Sadia Sultana Chowa and Mohaimenul Azam Khan Raiaan and Sami Azam},\n booktitle = {Artificial Intelligence Review},\n journal = {Artificial Intelligence Review},\n title = {Hallucination to truth: a review of fact-checking and factuality evaluation in large language models},\n volume = {59},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2375259270",
+      "name": "Subhey Sadi Rahman"
+    },
+    {
+      "authorId": "7484275",
+      "name": "Md. Adnanul Islam"
+    },
+    {
+      "authorId": "2375775026",
+      "name": "Md. Mahbub Alam"
+    },
+    {
+      "authorId": "2375044593",
+      "name": "Musarrat Zeba"
+    },
+    {
+      "authorId": "2374037473",
+      "name": "Md. Abdur Rahman"
+    },
+    {
+      "authorId": "2261200060",
+      "name": "Sadia Sultana Chowa"
+    },
+    {
+      "authorId": "2213469623",
+      "name": "Mohaimenul Azam Khan Raiaan"
+    },
+    {
+      "authorId": "2247531243",
+      "name": "Sami Azam"
+    }
+  ],
+  "abstract": "Large language models (LLMs) are trained on vast and diverse internet corpora that often include inaccurate or misleading content. Consequently, LLMs can generate misinformation, making robust fact-checking essential. This review systematically analyzes how LLM-generated content is evaluated for factual accuracy by exploring key challenges such as hallucinations, dataset limitations, and the reliability of evaluation metrics. The review emphasizes the need for strong fact-checking frameworks that integrate advanced prompting strategies, domain-specific fine-tuning, and retrieval-augmented generation (RAG) methods. It proposes five research questions that guide the analysis of the recent literature from 2020 to 2025, focusing on evaluation methods and mitigation techniques. Instruction tuning, multi-agent reasoning, and RAG frameworks for external knowledge access are also reviewed. The key findings demonstrate the limitations of current metrics, the importance of validated external evidence, and the improvement of factual consistency through domain-specific customization. The review underscores the importance of building more accurate, understandable, and context-aware fact-checking. These insights contribute to the advancement of research toward more trustworthy models."
+}

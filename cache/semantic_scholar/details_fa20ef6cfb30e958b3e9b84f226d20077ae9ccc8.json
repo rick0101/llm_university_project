@@ -1,0 +1,46 @@
+{
+  "paperId": "fa20ef6cfb30e958b3e9b84f226d20077ae9ccc8",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2505-11790",
+    "ArXiv": "2505.11790",
+    "DOI": "10.48550/arXiv.2505.11790",
+    "CorpusId": 278739923
+  },
+  "title": "JULI: Jailbreak Large Language Models by Self-Introspection",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 1,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.11790, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-05-17",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2505.11790"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Wang2025JULIJL,\n author = {Jesson Wang and Zhanhao Hu and David Wagner},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {JULI: Jailbreak Large Language Models by Self-Introspection},\n volume = {abs/2505.11790},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2362290121",
+      "name": "Jesson Wang"
+    },
+    {
+      "authorId": "2303804408",
+      "name": "Zhanhao Hu"
+    },
+    {
+      "authorId": "2342414385",
+      "name": "David Wagner"
+    }
+  ],
+  "abstract": "Large Language Models (LLMs) are trained with safety alignment to prevent generating malicious content. Although some attacks have highlighted vulnerabilities in these safety-aligned LLMs, they typically have limitations, such as necessitating access to the model weights or the generation process. Since proprietary models through API-calling do not grant users such permissions, these attacks find it challenging to compromise them. In this paper, we propose Jailbreaking Using LLM Introspection (JULI), which jailbreaks LLMs by manipulating the token log probabilities, using a tiny plug-in block, BiasNet. JULI relies solely on the knowledge of the target LLM's predicted token log probabilities. It can effectively jailbreak API-calling LLMs under a black-box setting and knowing only top-$5$ token log probabilities. Our approach demonstrates superior effectiveness, outperforming existing state-of-the-art (SOTA) approaches across multiple metrics."
+}

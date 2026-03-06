@@ -1,0 +1,69 @@
+{
+  "paperId": "1704e693d2e26805025bc5d4fbc8c504fb317527",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2504-19457",
+    "ArXiv": "2504.19457",
+    "DOI": "10.48550/arXiv.2504.19457",
+    "CorpusId": 278165123
+  },
+  "title": "Towards Long Context Hallucination Detection",
+  "venue": "North American Chapter of the Association for Computational Linguistics",
+  "year": 2025,
+  "citationCount": 14,
+  "influentialCitationCount": 2,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2504.19457, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-04-28",
+  "journal": {
+    "pages": "7827-7835"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Liu2025TowardsLC,\n author = {Siyi Liu and Kishaloy Halder and Zheng Qi and Wei Xiao and Nikolaos Pappas and Phu Mon Htut and Neha Ann John and Yassine Benajiba and Dan Roth},\n booktitle = {North American Chapter of the Association for Computational Linguistics},\n pages = {7827-7835},\n title = {Towards Long Context Hallucination Detection},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2273632093",
+      "name": "Siyi Liu"
+    },
+    {
+      "authorId": "40257094",
+      "name": "Kishaloy Halder"
+    },
+    {
+      "authorId": "2326254458",
+      "name": "Zheng Qi"
+    },
+    {
+      "authorId": "2326335349",
+      "name": "Wei Xiao"
+    },
+    {
+      "authorId": "2325731146",
+      "name": "Nikolaos Pappas"
+    },
+    {
+      "authorId": "41022736",
+      "name": "Phu Mon Htut"
+    },
+    {
+      "authorId": "2100694309",
+      "name": "Neha Ann John"
+    },
+    {
+      "authorId": "2287927460",
+      "name": "Yassine Benajiba"
+    },
+    {
+      "authorId": "2273552023",
+      "name": "Dan Roth"
+    }
+  ],
+  "abstract": "Large Language Models (LLMs) have demonstrated remarkable performance across various tasks. However, they are prone to contextual hallucination, generating information that is either unsubstantiated or contradictory to the given context. Although many studies have investigated contextual hallucinations in LLMs, addressing them in long-context inputs remains an open problem. In this work, we take an initial step toward solving this problem by constructing a dataset specifically designed for long-context hallucination detection. Furthermore, we propose a novel architecture that enables pre-trained encoder models, such as BERT, to process long contexts and effectively detect contextual hallucinations through a decomposition and aggregation mechanism. Our experimental results show that the proposed architecture significantly outperforms previous models of similar size as well as LLM-based models across various metrics, while providing substantially faster inference."
+}

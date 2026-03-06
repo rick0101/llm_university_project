@@ -1,0 +1,50 @@
+{
+  "paperId": "aa050db3b330d200b443955e69212a6c5fa43188",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2506-04832",
+    "ArXiv": "2506.04832",
+    "DOI": "10.48550/arXiv.2506.04832",
+    "CorpusId": 279243836
+  },
+  "title": "Joint Evaluation of Answer and Reasoning Consistency for Hallucination Detection in Large Reasoning Models",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 12,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2506.04832, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-06-05",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2506.04832"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Wang2025JointEO,\n author = {Changyue Wang and Weihang Su and Qingyao Ai and Yiqun Liu},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {Joint Evaluation of Answer and Reasoning Consistency for Hallucination Detection in Large Reasoning Models},\n volume = {abs/2506.04832},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2291343927",
+      "name": "Changyue Wang"
+    },
+    {
+      "authorId": "2147219374",
+      "name": "Weihang Su"
+    },
+    {
+      "authorId": "2256982003",
+      "name": "Qingyao Ai"
+    },
+    {
+      "authorId": "2260835922",
+      "name": "Yiqun Liu"
+    }
+  ],
+  "abstract": "Large Reasoning Models (LRMs) extend large language models with explicit, multi-step reasoning traces to enhance transparency and performance on complex tasks. However, these reasoning traces can be redundant or logically inconsistent, becoming a new and hard-to-detect source of hallucination. Existing hallucination detection methods focus primarily on answer-level uncertainty and often fail to detect hallucinations or logical inconsistencies arising from the model's reasoning trace. This oversight is particularly problematic for LRMs, where the explicit thinking trace is not only an important support to the model's decision-making process but also a key source of potential hallucination. To this end, we propose RACE (Reasoning and Answer Consistency Evaluation), a novel framework specifically tailored for hallucination detection in LRMs. RACE operates by extracting essential reasoning steps and computing four diagnostic signals: inter-sample consistency of reasoning traces, entropy-based answer uncertainty, semantic alignment between reasoning and answers, and internal coherence of reasoning. The joint utilization of these signals makes RACE a more robust detector of hallucinations in LRMs. Experiments across datasets and different LLMs demonstrate that RACE outperforms existing hallucination detection baselines, offering a robust and generalizable solution for evaluating LRMs. The source code is available at https://github.com/bebr2/RACE"
+}

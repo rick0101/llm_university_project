@@ -1,0 +1,109 @@
+{
+  "paperId": "e916cd7eb1be7aa7b0b1b7cbf4a0b0bd4e4890e9",
+  "externalIds": {
+    "DBLP": "conf/acl/GuWBWWS0YZHLLCS25",
+    "ArXiv": "2502.11718",
+    "DOI": "10.18653/v1/2025.findings-acl.844",
+    "CorpusId": 276408225
+  },
+  "title": "See the World, Discover Knowledge: A Chinese Factuality Evaluation for Large Vision Language Models",
+  "venue": "Annual Meeting of the Association for Computational Linguistics",
+  "year": 2025,
+  "citationCount": 2,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2502.11718, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-02-17",
+  "journal": {
+    "pages": "16422-16447"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Gu2025SeeTW,\n author = {Jihao Gu and Yingyao Wang and Pi Bu and Chen Wang and Ziming Wang and Tengtao Song and Donglai Wei and Jiale Yuan and Yingxiu Zhao and Yancheng He and Shilong Li and Jiaheng Liu and Meng Cao and Jun-chao Song and Yingshui Tan and Xiang Li and Wenbo Su and Xiaoyong Zhu and Bo Zheng},\n booktitle = {Annual Meeting of the Association for Computational Linguistics},\n pages = {16422-16447},\n title = {See the World, Discover Knowledge: A Chinese Factuality Evaluation for Large Vision Language Models},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2331000999",
+      "name": "Jihao Gu"
+    },
+    {
+      "authorId": "2336243225",
+      "name": "Yingyao Wang"
+    },
+    {
+      "authorId": "2321871796",
+      "name": "Pi Bu"
+    },
+    {
+      "authorId": "2346315031",
+      "name": "Chen Wang"
+    },
+    {
+      "authorId": "2303300696",
+      "name": "Ziming Wang"
+    },
+    {
+      "authorId": "2109605209",
+      "name": "Tengtao Song"
+    },
+    {
+      "authorId": "2291024457",
+      "name": "Donglai Wei"
+    },
+    {
+      "authorId": "2303310935",
+      "name": "Jiale Yuan"
+    },
+    {
+      "authorId": "2345919965",
+      "name": "Yingxiu Zhao"
+    },
+    {
+      "authorId": "2285046736",
+      "name": "Yancheng He"
+    },
+    {
+      "authorId": "2328102146",
+      "name": "Shilong Li"
+    },
+    {
+      "authorId": "2284731877",
+      "name": "Jiaheng Liu"
+    },
+    {
+      "authorId": "2336344713",
+      "name": "Meng Cao"
+    },
+    {
+      "authorId": "2115751876",
+      "name": "Jun-chao Song"
+    },
+    {
+      "authorId": "2331379670",
+      "name": "Yingshui Tan"
+    },
+    {
+      "authorId": "2345944265",
+      "name": "Xiang Li"
+    },
+    {
+      "authorId": "2279560018",
+      "name": "Wenbo Su"
+    },
+    {
+      "authorId": "2302875455",
+      "name": "Xiaoyong Zhu"
+    },
+    {
+      "authorId": "2302806377",
+      "name": "Bo Zheng"
+    }
+  ],
+  "abstract": "The evaluation of factual accuracy in large vision language models (LVLMs) has lagged behind their rapid development, making it challenging to fully reflect these models' knowledge capacity and reliability. In this paper, we introduce the first factuality-based visual question-answering benchmark in Chinese, named ChineseSimpleVQA, aimed at assessing the visual factuality of LVLMs across 8 major topics and 56 subtopics. The key features of this benchmark include a focus on the Chinese language, diverse knowledge types, a multi-hop question construction, high-quality data, static consistency, and easy-to-evaluate through short answers. Moreover, we contribute a rigorous data construction pipeline and decouple the visual factuality into two parts: seeing the world (i.e., object recognition) and discovering knowledge. This decoupling allows us to analyze the capability boundaries and execution mechanisms of LVLMs. Subsequently, we evaluate 34 advanced open-source and closed-source models, revealing critical performance gaps within this field. Our evaluation-friendly code and data have already been open-sourced."
+}

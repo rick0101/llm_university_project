@@ -1,0 +1,42 @@
+{
+  "paperId": "f5e8d792909c9552b07c9fe12aa3c9b0e17bd733",
+  "externalIds": {
+    "ArXiv": "2601.05587",
+    "DBLP": "journals/corr/abs-2601-05587",
+    "DOI": "10.48550/arXiv.2601.05587",
+    "CorpusId": 284596879
+  },
+  "title": "HogVul: Black-box Adversarial Code Generation Framework Against LM-based Vulnerability Detectors",
+  "venue": "arXiv.org",
+  "year": 2026,
+  "citationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2601.05587, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2403713818",
+      "name": "Jingxiao Yang"
+    },
+    {
+      "authorId": "2381251389",
+      "name": "Ping He"
+    },
+    {
+      "authorId": "2290912812",
+      "name": "Tianyu Du"
+    },
+    {
+      "authorId": "2403666104",
+      "name": "Sun Bing"
+    },
+    {
+      "authorId": "2290975291",
+      "name": "Xuhong Zhang"
+    }
+  ],
+  "abstract": "Recent advances in software vulnerability detection have been driven by Language Model (LM)-based approaches. However, these models remain vulnerable to adversarial attacks that exploit lexical and syntax perturbations, allowing critical flaws to evade detection. Existing black-box attacks on LM-based vulnerability detectors primarily rely on isolated perturbation strategies, limiting their ability to efficiently explore the adversarial code space for optimal perturbations. To bridge this gap, we propose HogVul, a black-box adversarial code generation framework that integrates both lexical and syntax perturbations under a unified dual-channel optimization strategy driven by Particle Swarm Optimization (PSO). By systematically coordinating two-level perturbations, HogVul effectively expands the search space for adversarial examples, enhancing the attack efficacy. Extensive experiments on four benchmark datasets demonstrate that HogVul achieves an average attack success rate improvement of 26.05\\% over state-of-the-art baseline methods. These findings highlight the potential of hybrid optimization strategies in exposing model vulnerabilities."
+}

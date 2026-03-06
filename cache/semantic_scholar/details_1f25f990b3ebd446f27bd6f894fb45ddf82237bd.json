@@ -1,0 +1,38 @@
+{
+  "paperId": "1f25f990b3ebd446f27bd6f894fb45ddf82237bd",
+  "externalIds": {
+    "ArXiv": "2508.07139",
+    "DBLP": "journals/corr/abs-2508-07139",
+    "DOI": "10.48550/arXiv.2508.07139",
+    "CorpusId": 280566074
+  },
+  "title": "A Real-Time, Self-Tuning Moderator Framework for Adversarial Prompt Detection",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 0,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2508.07139, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-08-10",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2508.07139"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Zhang2025ARS,\n author = {Ivan Zhang},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {A Real-Time, Self-Tuning Moderator Framework for Adversarial Prompt Detection},\n volume = {abs/2508.07139},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2316486966",
+      "name": "Ivan Zhang"
+    }
+  ],
+  "abstract": "Ensuring LLM alignment is critical to information security as AI models become increasingly widespread and integrated in society. Unfortunately, many defenses against adversarial attacks and jailbreaking on LLMs cannot adapt quickly to new attacks, degrade model responses to benign prompts, or introduce significant barriers to scalable implementation. To mitigate these challenges, we introduce a real-time, self-tuning (RTST) moderator framework to defend against adversarial attacks while maintaining a lightweight training footprint. We empirically evaluate its effectiveness using Google's Gemini models against modern, effective jailbreaks. Our results demonstrate the advantages of an adaptive, minimally intrusive framework for jailbreak defense over traditional fine-tuning or classifier models."
+}

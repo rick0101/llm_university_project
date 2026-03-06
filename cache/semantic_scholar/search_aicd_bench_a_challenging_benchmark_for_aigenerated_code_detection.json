@@ -1,0 +1,44 @@
+{
+  "paperId": "84b96e2cb2619a81e88cd0400b326f89882843c8",
+  "externalIds": {
+    "ArXiv": "2602.02079",
+    "CorpusId": 285269955
+  },
+  "title": "AICD Bench: A Challenging Benchmark for AI-Generated Code Detection",
+  "venue": "",
+  "year": 2026,
+  "citationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2602.02079, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2212398766",
+      "name": "Daniil Orel"
+    },
+    {
+      "authorId": "1582550098",
+      "name": "Dilshod Azizov"
+    },
+    {
+      "authorId": "2267348431",
+      "name": "Indraneil Paul"
+    },
+    {
+      "authorId": "2241417701",
+      "name": "Yuxia Wang"
+    },
+    {
+      "authorId": "2279831082",
+      "name": "Iryna Gurevych"
+    },
+    {
+      "authorId": "2026545715",
+      "name": "Preslav Nakov"
+    }
+  ],
+  "abstract": "Large language models (LLMs) are increasingly capable of generating functional source code, raising concerns about authorship, accountability, and security. While detecting AI-generated code is critical, existing datasets and benchmarks are narrow, typically limited to binary human-machine classification under in-distribution settings. To bridge this gap, we introduce $\\emph{AICD Bench}$, the most comprehensive benchmark for AI-generated code detection. It spans $\\emph{2M examples}$, $\\emph{77 models}$ across $\\emph{11 families}$, and $\\emph{9 programming languages}$, including recent reasoning models. Beyond scale, AICD Bench introduces three realistic detection tasks: ($\\emph{i}$)~$\\emph{Robust Binary Classification}$ under distribution shifts in language and domain, ($\\emph{ii}$)~$\\emph{Model Family Attribution}$, grouping generators by architectural lineage, and ($\\emph{iii}$)~$\\emph{Fine-Grained Human-Machine Classification}$ across human, machine, hybrid, and adversarial code. Extensive evaluation on neural and classical detectors shows that performance remains far below practical usability, particularly under distribution shift and for hybrid or adversarial code. We release AICD Bench as a $\\emph{unified, challenging evaluation suite}$ to drive the next generation of robust approaches for AI-generated code detection. The data and the code are available at https://huggingface.co/AICD-bench}."
+}

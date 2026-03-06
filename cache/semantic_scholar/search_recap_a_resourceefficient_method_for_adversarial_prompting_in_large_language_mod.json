@@ -1,0 +1,26 @@
+{
+  "paperId": "a4864c8f96e994a83c7d0c6b2d3006a12804af12",
+  "externalIds": {
+    "ArXiv": "2601.15331",
+    "DBLP": "journals/corr/abs-2601-15331",
+    "DOI": "10.48550/arXiv.2601.15331",
+    "CorpusId": 284935026
+  },
+  "title": "RECAP: A Resource-Efficient Method for Adversarial Prompting in Large Language Models",
+  "venue": "arXiv.org",
+  "year": 2026,
+  "citationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2601.15331, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2406043812",
+      "name": "Rishit Chugh"
+    }
+  ],
+  "abstract": "The deployment of large language models (LLMs) has raised security concerns due to their susceptibility to producing harmful or policy-violating outputs when exposed to adversarial prompts. While alignment and guardrails mitigate common misuse, they remain vulnerable to automated jailbreaking methods such as GCG, PEZ, and GBDA, which generate adversarial suffixes via training and gradient-based search. Although effective, these methods particularly GCG are computationally expensive, limiting their practicality for organisations with constrained resources. This paper introduces a resource-efficient adversarial prompting approach that eliminates the need for retraining by matching new prompts to a database of pre-trained adversarial prompts. A dataset of 1,000 prompts was classified into seven harm-related categories, and GCG, PEZ, and GBDA were evaluated on a Llama 3 8B model to identify the most effective attack method per category. Results reveal a correlation between prompt type and algorithm effectiveness. By retrieving semantically similar successful adversarial prompts, the proposed method achieves competitive attack success rates with significantly reduced computational cost. This work provides a practical framework for scalable red-teaming and security evaluation of aligned LLMs, including in settings where model internals are inaccessible."
+}

@@ -1,0 +1,114 @@
+{
+  "paperId": "bb6426f40b7a5323423826afa0485fd940ec3c78",
+  "externalIds": {
+    "ArXiv": "2502.10391",
+    "DBLP": "journals/corr/abs-2502-10391",
+    "DOI": "10.48550/arXiv.2502.10391",
+    "CorpusId": 276395071
+  },
+  "title": "MM-RLHF: The Next Step Forward in Multimodal LLM Alignment",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 66,
+  "influentialCitationCount": 4,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2502.10391, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-02-14",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2502.10391"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Zhang2025MMRLHFTN,\n author = {Yifan Zhang and Tao Yu and Haochen Tian and Chaoyou Fu and Peiyan Li and Jianshu Zeng and Wulin Xie and Yang Shi and Huanyu Zhang and Junkang Wu and Xue Wang and Yibo Hu and Bin Wen and Fan Yang and Zhang Zhang and Tingting Gao and Di Zhang and Liang Wang and Rong Jin and Tien-Ping Tan},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {MM-RLHF: The Next Step Forward in Multimodal LLM Alignment},\n volume = {abs/2502.10391},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2268626991",
+      "name": "Yifan Zhang"
+    },
+    {
+      "authorId": "2347681880",
+      "name": "Tao Yu"
+    },
+    {
+      "authorId": "2316894850",
+      "name": "Haochen Tian"
+    },
+    {
+      "authorId": "2258705773",
+      "name": "Chaoyou Fu"
+    },
+    {
+      "authorId": "2337874724",
+      "name": "Peiyan Li"
+    },
+    {
+      "authorId": "2346906183",
+      "name": "Jianshu Zeng"
+    },
+    {
+      "authorId": "2346462228",
+      "name": "Wulin Xie"
+    },
+    {
+      "authorId": "2355437665",
+      "name": "Yang Shi"
+    },
+    {
+      "authorId": "2339967968",
+      "name": "Huanyu Zhang"
+    },
+    {
+      "authorId": "2260622979",
+      "name": "Junkang Wu"
+    },
+    {
+      "authorId": "2137371790",
+      "name": "Xue Wang"
+    },
+    {
+      "authorId": "2345968405",
+      "name": "Yibo Hu"
+    },
+    {
+      "authorId": "2312207624",
+      "name": "Bin Wen"
+    },
+    {
+      "authorId": "2309072594",
+      "name": "Fan Yang"
+    },
+    {
+      "authorId": "2257041164",
+      "name": "Zhang Zhang"
+    },
+    {
+      "authorId": "2307010787",
+      "name": "Tingting Gao"
+    },
+    {
+      "authorId": "2267018379",
+      "name": "Di Zhang"
+    },
+    {
+      "authorId": "2268509501",
+      "name": "Liang Wang"
+    },
+    {
+      "authorId": "2275201762",
+      "name": "Rong Jin"
+    },
+    {
+      "authorId": "2192236453",
+      "name": "Tien-Ping Tan"
+    }
+  ],
+  "abstract": "Despite notable advancements in Multimodal Large Language Models (MLLMs), most state-of-the-art models have not undergone thorough alignment with human preferences. This gap exists because current alignment research has primarily achieved progress in specific areas (e.g., hallucination reduction), while the broader question of whether aligning models with human preferences can systematically enhance MLLM capability remains largely unexplored. To this end, we introduce MM-RLHF, a dataset containing $\\mathbf{120k}$ fine-grained, human-annotated preference comparison pairs. This dataset represents a substantial advancement over existing resources, offering superior size, diversity, annotation granularity, and quality. Leveraging this dataset, we propose several key innovations to improve both the quality of reward models and the efficiency of alignment algorithms. Notably, we introduce a Critique-Based Reward Model, which generates critiques of model outputs before assigning scores, offering enhanced interpretability and more informative feedback compared to traditional scalar reward mechanisms. Additionally, we propose Dynamic Reward Scaling, a method that adjusts the loss weight of each sample according to the reward signal, thereby optimizing the use of high-quality comparison pairs. Our approach is rigorously evaluated across $\\mathbf{10}$ distinct dimensions and $\\mathbf{27}$ benchmarks, with results demonstrating significant and consistent improvements in model performance. Specifically, fine-tuning LLaVA-ov-7B with MM-RLHF and our alignment algorithm leads to a $\\mathbf{19.5}$% increase in conversational abilities and a $\\mathbf{60}$% improvement in safety. We have open-sourced the preference dataset, reward model, training and evaluation code, as well as reward modeling and safety benchmarks. For more details, please visit our project page: https://mm-rlhf.github.io."
+}

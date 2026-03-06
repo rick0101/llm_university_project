@@ -34,7 +34,7 @@ grobid:
 
 # --- Neo4j (Community Edition, opzionale) ---
 neo4j:
-  enabled: false                               # Impostare a true quando Neo4j è disponibile
+  enabled: true                               # Impostare a true quando Neo4j è disponibile
   uri: "bolt://localhost:7687"
   username: "neo4j"
   password: "password"                         # Cambiare in produzione

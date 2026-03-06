@@ -1,0 +1,51 @@
+{
+  "paperId": "3ebb8ddbdf4599ce5db02cb21f66badf30fa4f71",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2506-18931",
+    "ArXiv": "2506.18931",
+    "DOI": "10.48550/arXiv.2506.18931",
+    "CorpusId": 280000647
+  },
+  "title": "Safe Pruning LoRA: Robust Distance-Guided Pruning for Safety Alignment in Adaptation of LLMs",
+  "venue": "Transactions of the Association for Computational Linguistics",
+  "year": 2025,
+  "citationCount": 6,
+  "influentialCitationCount": 1,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2506.18931, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-06-21",
+  "journal": {
+    "name": "Trans. Assoc. Comput. Linguistics",
+    "pages": "1474-1487",
+    "volume": "13"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Ao2025SafePL,\n author = {Shuang Ao and Yi Dong and Jinwei Hu and Sarvapali D. Ramchurn},\n booktitle = {Transactions of the Association for Computational Linguistics},\n journal = {Trans. Assoc. Comput. Linguistics},\n pages = {1474-1487},\n title = {Safe Pruning LoRA: Robust Distance-Guided Pruning for Safety Alignment in Adaptation of LLMs},\n volume = {13},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2343743319",
+      "name": "Shuang Ao"
+    },
+    {
+      "authorId": "2304902376",
+      "name": "Yi Dong"
+    },
+    {
+      "authorId": "2283127924",
+      "name": "Jinwei Hu"
+    },
+    {
+      "authorId": "2269462355",
+      "name": "Sarvapali D. Ramchurn"
+    }
+  ],
+  "abstract": "\n Fine-tuning Large Language Models (LLMs) with Low-Rank Adaptation (LoRA) enhances adaptability while reducing computational costs. However, fine-tuning can compromise safety alignment, even with benign data, increasing susceptibility to harmful outputs. Existing safety alignment methods struggle to capture complex parameter shifts, leading to suboptimal safety-utility trade-offs. To address this issue, we propose Safe Pruning LoRA (SPLoRA), a novel pruning-based approach that selectively removes LoRA layers that weaken safety alignment, improving safety while preserving performance. At its core, we introduce Empirical-DIEM (E-DIEM), a dimension-insensitive similarity metric that effectively detects safety misalignment in LoRA-adapted models. We conduct extensive experiments on LLMs fine-tuned with mixed of benign and malicious data, and purely benign datasets, evaluating SPLoRA across utility, safety, and reliability metrics. Results demonstrate that SPLoRA outperforms state-of-the-art safety alignment techniques, significantly reducing safety risks while maintaining or improving model performance and reliability. Additionally, SPLoRA reduces inference overhead, making it a scalable and efficient solution for deploying safer and more reliable LLMs. The code is available at https://github.com/AoShuang92/SPLoRA."
+}

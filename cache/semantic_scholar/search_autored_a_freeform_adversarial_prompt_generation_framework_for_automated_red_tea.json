@@ -1,0 +1,58 @@
+{
+  "paperId": "57d53ffc98709d041dbb7f4c72248cfd3ca54988",
+  "externalIds": {
+    "ArXiv": "2510.08329",
+    "DBLP": "journals/corr/abs-2510-08329",
+    "DOI": "10.48550/arXiv.2510.08329",
+    "CorpusId": 281951009
+  },
+  "title": "AutoRed: A Free-form Adversarial Prompt Generation Framework for Automated Red Teaming",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.08329, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2284065313",
+      "name": "Muxi Diao"
+    },
+    {
+      "authorId": "2322501032",
+      "name": "Yutao Mou"
+    },
+    {
+      "authorId": "2058349088",
+      "name": "Keqing He"
+    },
+    {
+      "authorId": "2384860642",
+      "name": "Hanbo Song"
+    },
+    {
+      "authorId": "2307221332",
+      "name": "Lulu Zhao"
+    },
+    {
+      "authorId": "1705434",
+      "name": "Shikun Zhang"
+    },
+    {
+      "authorId": "145235149",
+      "name": "Wei Ye"
+    },
+    {
+      "authorId": "2582309",
+      "name": "Kongming Liang"
+    },
+    {
+      "authorId": "2268678016",
+      "name": "Zhanyu Ma"
+    }
+  ],
+  "abstract": "The safety of Large Language Models (LLMs) is crucial for the development of trustworthy AI applications. Existing red teaming methods often rely on seed instructions, which limits the semantic diversity of the synthesized adversarial prompts. We propose AutoRed, a free-form adversarial prompt generation framework that removes the need for seed instructions. AutoRed operates in two stages: (1) persona-guided adversarial instruction generation, and (2) a reflection loop to iteratively refine low-quality prompts. To improve efficiency, we introduce a verifier to assess prompt harmfulness without querying the target models. Using AutoRed, we build two red teaming datasets -- AutoRed-Medium and AutoRed-Hard -- and evaluate eight state-of-the-art LLMs. AutoRed achieves higher attack success rates and better generalization than existing baselines. Our results highlight the limitations of seed-based approaches and demonstrate the potential of free-form red teaming for LLM safety evaluation. We will open source our datasets in the near future."
+}

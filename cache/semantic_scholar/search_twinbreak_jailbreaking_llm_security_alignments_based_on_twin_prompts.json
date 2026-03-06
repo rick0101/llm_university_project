@@ -1,0 +1,34 @@
+{
+  "paperId": "1c740549e02e2b5054e32f69afbd4ddad32a094e",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2506-07596",
+    "ArXiv": "2506.07596",
+    "DOI": "10.48550/arXiv.2506.07596",
+    "CorpusId": 279250896
+  },
+  "title": "TwinBreak: Jailbreaking LLM Security Alignments based on Twin Prompts",
+  "venue": "USENIX Security Symposium",
+  "year": 2025,
+  "citationCount": 12,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2506.07596, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "1453320841",
+      "name": "T. Krauß"
+    },
+    {
+      "authorId": "2294768437",
+      "name": "Hamid Dashtbani"
+    },
+    {
+      "authorId": "2267733588",
+      "name": "Alexandra Dmitrienko"
+    }
+  ],
+  "abstract": "Machine learning is advancing rapidly, with applications bringing notable benefits, such as improvements in translation and code generation. Models like ChatGPT, powered by Large Language Models (LLMs), are increasingly integrated into daily life. However, alongside these benefits, LLMs also introduce social risks. Malicious users can exploit LLMs by submitting harmful prompts, such as requesting instructions for illegal activities. To mitigate this, models often include a security mechanism that automatically rejects such harmful prompts. However, they can be bypassed through LLM jailbreaks. Current jailbreaks often require significant manual effort, high computational costs, or result in excessive model modifications that may degrade regular utility. We introduce TwinBreak, an innovative safety alignment removal method. Building on the idea that the safety mechanism operates like an embedded backdoor, TwinBreak identifies and prunes parameters responsible for this functionality. By focusing on the most relevant model layers, TwinBreak performs fine-grained analysis of parameters essential to model utility and safety. TwinBreak is the first method to analyze intermediate outputs from prompts with high structural and content similarity to isolate safety parameters. We present the TwinPrompt dataset containing 100 such twin prompts. Experiments confirm TwinBreak's effectiveness, achieving 89% to 98% success rates with minimal computational requirements across 16 LLMs from five vendors."
+}

@@ -1,0 +1,58 @@
+{
+  "paperId": "cc6282f0e8a864a1a3aca18036b45c899b0098b7",
+  "externalIds": {
+    "ArXiv": "2503.19622",
+    "DBLP": "journals/corr/abs-2503-19622",
+    "DOI": "10.48550/arXiv.2503.19622",
+    "CorpusId": 277313371
+  },
+  "title": "Exploring Hallucination of Large Multimodal Models in Video Understanding: Benchmark, Analysis and Mitigation",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 15,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2503.19622, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2162081759",
+      "name": "Hongcheng Gao"
+    },
+    {
+      "authorId": "2352902295",
+      "name": "Jiashu Qu"
+    },
+    {
+      "authorId": "2352387532",
+      "name": "Jingyi Tang"
+    },
+    {
+      "authorId": "2352015845",
+      "name": "Baolong Bi"
+    },
+    {
+      "authorId": "2352002762",
+      "name": "Yue Liu"
+    },
+    {
+      "authorId": "2352016085",
+      "name": "Hongyu Chen"
+    },
+    {
+      "authorId": "2352033903",
+      "name": "Li Liang"
+    },
+    {
+      "authorId": "153142919",
+      "name": "Li Su"
+    },
+    {
+      "authorId": "2111526569",
+      "name": "Qin Huang"
+    }
+  ],
+  "abstract": "The hallucination of large multimodal models (LMMs), providing responses that appear correct but are actually incorrect, limits their reliability and applicability. This paper aims to study the hallucination problem of LMMs in video modality, which is dynamic and more challenging compared to static modalities like images and text. From this motivation, we first present a comprehensive benchmark termed HAVEN for evaluating hallucinations of LMMs in video understanding tasks. It is built upon three dimensions, i.e., hallucination causes, hallucination aspects, and question formats, resulting in 6K questions. Then, we quantitatively study 7 influential factors on hallucinations, e.g., duration time of videos, model sizes, and model reasoning, via experiments of 16 LMMs on the presented benchmark. In addition, inspired by recent thinking models like OpenAI o1, we propose a video-thinking model to mitigate the hallucinations of LMMs via supervised reasoning fine-tuning (SRFT) and direct preference optimization (TDPO)-- where SRFT enhances reasoning capabilities while TDPO reduces hallucinations in the thinking process. Extensive experiments and analyses demonstrate the effectiveness. Remarkably, it improves the baseline by 7.65% in accuracy on hallucination evaluation and reduces the bias score by 4.5%. The code and data are public at https://github.com/Hongcheng-Gao/HAVEN."
+}

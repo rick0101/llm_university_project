@@ -1,0 +1,54 @@
+{
+  "paperId": "afec15665c07393a4831e655061daf16fed012e0",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2504-10557",
+    "ArXiv": "2504.10557",
+    "DOI": "10.48550/arXiv.2504.10557",
+    "CorpusId": 277787205
+  },
+  "title": "The Code Barrier: What LLMs Actually Understand?",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 7,
+  "influentialCitationCount": 1,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2504.10557, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-04-14",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2504.10557"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Nikiema2025TheCB,\n author = {Serge Lionel Nikiema and Jordan Samhi and Abdoul Kader Kabor'e and Jacques Klein and Tegawend'e F. Bissyand'e},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {The Code Barrier: What LLMs Actually Understand?},\n volume = {abs/2504.10557},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2308019153",
+      "name": "Serge Lionel Nikiema"
+    },
+    {
+      "authorId": "1753394319",
+      "name": "Jordan Samhi"
+    },
+    {
+      "authorId": "2355424150",
+      "name": "Abdoul Kader Kabor'e"
+    },
+    {
+      "authorId": "2300287181",
+      "name": "Jacques Klein"
+    },
+    {
+      "authorId": "11128727",
+      "name": "Tegawend'e F. Bissyand'e"
+    }
+  ],
+  "abstract": "Understanding code represents a core ability needed for automating software development tasks. While foundation models like LLMs show impressive results across many software engineering challenges, the extent of their true semantic understanding beyond simple token recognition remains unclear. This research uses code obfuscation as a structured testing framework to evaluate LLMs' semantic understanding capabilities. We methodically apply controlled obfuscation changes to source code and measure comprehension through two complementary tasks: generating accurate descriptions of obfuscated code and performing deobfuscation, a skill with important implications for reverse engineering applications. Our testing approach includes 13 cutting-edge models, covering both code-specialized (e.g., StarCoder2) and general-purpose (e.g., GPT-4o) architectures, evaluated on a benchmark created from CodeNet and consisting of filtered 250 Java programming problems and their solutions. Findings show a statistically significant performance decline as obfuscation complexity increases, with unexpected resilience shown by general-purpose models compared to their code-focused counterparts. While some models successfully identify obfuscation techniques, their ability to reconstruct the underlying program logic remains constrained, suggesting limitations in their semantic representation mechanisms. This research introduces a new evaluation approach for assessing code comprehension in language models and establishes empirical baselines for advancing research in security-critical code analysis applications such as reverse engineering and adversarial code analysis."
+}

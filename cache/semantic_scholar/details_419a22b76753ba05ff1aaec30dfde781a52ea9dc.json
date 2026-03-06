@@ -1,0 +1,86 @@
+{
+  "paperId": "419a22b76753ba05ff1aaec30dfde781a52ea9dc",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2512-05485",
+    "ArXiv": "2512.05485",
+    "DOI": "10.48550/arXiv.2512.05485",
+    "CorpusId": 283672417
+  },
+  "title": "TeleAI-Safety: A comprehensive LLM jailbreaking benchmark towards attacks, defenses, and evaluations",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 2,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2512.05485, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-12-05",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2512.05485"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Chen2025TeleAISafetyAC,\n author = {Xiuyuan Chen and Jian Zhao and Yuxiang He and Yuan Xun and Xinwei Liu and Yanshu Li and Huilin Zhou and Wei Cai and Ziyan Shi and Yuchen Yuan and Tianle Zhang and Chi Zhang and Xuelong Li},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {TeleAI-Safety: A comprehensive LLM jailbreaking benchmark towards attacks, defenses, and evaluations},\n volume = {abs/2512.05485},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2268428510",
+      "name": "Xiuyuan Chen"
+    },
+    {
+      "authorId": "2371307478",
+      "name": "Jian Zhao"
+    },
+    {
+      "authorId": "2395833575",
+      "name": "Yuxiang He"
+    },
+    {
+      "authorId": "2230070994",
+      "name": "Yuan Xun"
+    },
+    {
+      "authorId": "2230013847",
+      "name": "Xinwei Liu"
+    },
+    {
+      "authorId": "2349304855",
+      "name": "Yanshu Li"
+    },
+    {
+      "authorId": "2383242077",
+      "name": "Huilin Zhou"
+    },
+    {
+      "authorId": "2347861326",
+      "name": "Wei Cai"
+    },
+    {
+      "authorId": "34508581",
+      "name": "Ziyan Shi"
+    },
+    {
+      "authorId": "2376082758",
+      "name": "Yuchen Yuan"
+    },
+    {
+      "authorId": "2375824847",
+      "name": "Tianle Zhang"
+    },
+    {
+      "authorId": "2381286145",
+      "name": "Chi Zhang"
+    },
+    {
+      "authorId": "2390802809",
+      "name": "Xuelong Li"
+    }
+  ],
+  "abstract": "While the deployment of large language models (LLMs) in high-value industries continues to expand, the systematic assessment of their safety against jailbreak and prompt-based attacks remains insufficient. Existing safety evaluation benchmarks and frameworks are often limited by an imbalanced integration of core components (attack, defense, and evaluation methods) and an isolation between flexible evaluation frameworks and standardized benchmarking capabilities. These limitations hinder reliable cross-study comparisons and create unnecessary overhead for comprehensive risk assessment. To address these gaps, we present TeleAI-Safety, a modular and reproducible framework coupled with a systematic benchmark for rigorous LLM safety evaluation. Our framework integrates a broad collection of 19 attack methods (including one self-developed method), 29 defense methods, and 19 evaluation methods (including one self-developed method). With a curated attack corpus of 342 samples spanning 12 distinct risk categories, the TeleAI-Safety benchmark conducts extensive evaluations across 14 target models. The results reveal systematic vulnerabilities and model-specific failure cases, highlighting critical trade-offs between safety and utility, and identifying potential defense patterns for future optimization. In practical scenarios, TeleAI-Safety can be flexibly adjusted with customized attack, defense, and evaluation combinations to meet specific demands. We release our complete code and evaluation results to facilitate reproducible research and establish unified safety baselines."
+}

@@ -1,0 +1,42 @@
+{
+  "paperId": "3777cc83ffce29ef8a0f6cab607b7255905c3544",
+  "externalIds": {
+    "ArXiv": "2601.04448",
+    "DBLP": "journals/corr/abs-2601-04448",
+    "DOI": "10.48550/arXiv.2601.04448",
+    "CorpusId": 284544189
+  },
+  "title": "Merging Triggers, Breaking Backdoors: Defensive Poisoning for Instruction-Tuned Language Models",
+  "venue": "arXiv.org",
+  "year": 2026,
+  "citationCount": 0,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2601.04448, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2026-01-07",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2601.04448"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Kim2026MergingTB,\n author = {San Kim and Gary Geunbae Lee},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {Merging Triggers, Breaking Backdoors: Defensive Poisoning for Instruction-Tuned Language Models},\n volume = {abs/2601.04448},\n year = {2026}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2302475522",
+      "name": "San Kim"
+    },
+    {
+      "authorId": "2302526868",
+      "name": "Gary Geunbae Lee"
+    }
+  ],
+  "abstract": "Large Language Models (LLMs) have greatly advanced Natural Language Processing (NLP), particularly through instruction tuning, which enables broad task generalization without additional fine-tuning. However, their reliance on large-scale datasets-often collected from human or web sources-makes them vulnerable to backdoor attacks, where adversaries poison a small subset of data to implant hidden behaviors. Despite this growing risk, defenses for instruction-tuned models remain underexplored. We propose MB-Defense (Merging&Breaking Defense Framework), a novel training pipeline that immunizes instruction-tuned LLMs against diverse backdoor threats. MB-Defense comprises two stages: (i) defensive poisoning, which merges attacker and defensive triggers into a unified backdoor representation, and (ii) weight recovery, which breaks this representation through additional training to restore clean behavior. Extensive experiments across multiple LLMs show that MB-Defense substantially lowers attack success rates while preserving instruction-following ability. Our method offers a generalizable and data-efficient defense strategy, improving the robustness of instruction-tuned LLMs against unseen backdoor attacks."
+}

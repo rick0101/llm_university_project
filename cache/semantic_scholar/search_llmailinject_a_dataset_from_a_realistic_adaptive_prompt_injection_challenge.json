@@ -1,0 +1,122 @@
+{
+  "paperId": "d696ca7d9ad701d6a39db1f5dab0af177e063459",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2506-09956",
+    "ArXiv": "2506.09956",
+    "DOI": "10.48550/arXiv.2506.09956",
+    "CorpusId": 279306260
+  },
+  "title": "LLMail-Inject: A Dataset from a Realistic Adaptive Prompt Injection Challenge",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 12,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2506.09956, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "1383113350",
+      "name": "Sahar Abdelnabi"
+    },
+    {
+      "authorId": "2304453974",
+      "name": "A. Fay"
+    },
+    {
+      "authorId": "2362402313",
+      "name": "Ahmed Salem"
+    },
+    {
+      "authorId": "2290920330",
+      "name": "Egor Zverev"
+    },
+    {
+      "authorId": "2366431082",
+      "name": "Kai-Chieh Liao"
+    },
+    {
+      "authorId": "2372666360",
+      "name": "Chi Liu"
+    },
+    {
+      "authorId": "2383126810",
+      "name": "C. Kuo"
+    },
+    {
+      "authorId": "2366428182",
+      "name": "Jannis Weigend"
+    },
+    {
+      "authorId": "2366429948",
+      "name": "Danyael Manlangit"
+    },
+    {
+      "authorId": "2366426639",
+      "name": "Alex Apostolov"
+    },
+    {
+      "authorId": "2366428185",
+      "name": "Haris Umair"
+    },
+    {
+      "authorId": "2366428757",
+      "name": "João Donato"
+    },
+    {
+      "authorId": "66042348",
+      "name": "M. Kawakita"
+    },
+    {
+      "authorId": "98678290",
+      "name": "A. Mahboob"
+    },
+    {
+      "authorId": "2366426974",
+      "name": "Tran Huu Bach"
+    },
+    {
+      "authorId": "2345817820",
+      "name": "Tsun-Han Chiang"
+    },
+    {
+      "authorId": "3132452",
+      "name": "Myeongjin Cho"
+    },
+    {
+      "authorId": "2300823748",
+      "name": "Hajin Choi"
+    },
+    {
+      "authorId": "2366437232",
+      "name": "Byeonghyeon Kim"
+    },
+    {
+      "authorId": "2357869488",
+      "name": "Hyeonjin Lee"
+    },
+    {
+      "authorId": "2366426715",
+      "name": "Benjamin Pannell"
+    },
+    {
+      "authorId": "2366426893",
+      "name": "Conor McCauley"
+    },
+    {
+      "authorId": "3196342",
+      "name": "M. Russinovich"
+    },
+    {
+      "authorId": "2304450719",
+      "name": "Andrew Paverd"
+    },
+    {
+      "authorId": "2284990155",
+      "name": "Giovanni Cherubin"
+    }
+  ],
+  "abstract": "Indirect Prompt Injection attacks exploit the inherent limitation of Large Language Models (LLMs) to distinguish between instructions and data in their inputs. Despite numerous defense proposals, the systematic evaluation against adaptive adversaries remains limited, even when successful attacks can have wide security and privacy implications, and many real-world LLM-based applications remain vulnerable. We present the results of LLMail-Inject, a public challenge simulating a realistic scenario in which participants adaptively attempted to inject malicious instructions into emails in order to trigger unauthorized tool calls in an LLM-based email assistant. The challenge spanned multiple defense strategies, LLM architectures, and retrieval configurations, resulting in a dataset of 208,095 unique attack submissions from 839 participants. We release the challenge code, the full dataset of submissions, and our analysis demonstrating how this data can provide new insights into the instruction-data separation problem. We hope this will serve as a foundation for future research towards practical structural solutions to prompt injection."
+}

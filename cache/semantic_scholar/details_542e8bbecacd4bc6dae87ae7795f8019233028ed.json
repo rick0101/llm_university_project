@@ -1,0 +1,50 @@
+{
+  "paperId": "542e8bbecacd4bc6dae87ae7795f8019233028ed",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2512-18755",
+    "ArXiv": "2512.18755",
+    "DOI": "10.48550/arXiv.2512.18755",
+    "CorpusId": 284077375
+  },
+  "title": "MEEA: Mere Exposure Effect-Driven Confrontational Optimization for LLM Jailbreaking",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 0,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2512.18755, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-12-21",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2512.18755"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Zhang2025MEEAME,\n author = {Jianyi Zhang and Shizhao Liu and Ziyin Zhou and Zhen Li},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {MEEA: Mere Exposure Effect-Driven Confrontational Optimization for LLM Jailbreaking},\n volume = {abs/2512.18755},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2284928616",
+      "name": "Jianyi Zhang"
+    },
+    {
+      "authorId": "2374413640",
+      "name": "Shizhao Liu"
+    },
+    {
+      "authorId": "2299502514",
+      "name": "Ziyin Zhou"
+    },
+    {
+      "authorId": "2374467332",
+      "name": "Zhen Li"
+    }
+  ],
+  "abstract": "The rapid advancement of large language models (LLMs) has intensified concerns about the robustness of their safety alignment. While existing jailbreak studies explore both single-turn and multi-turn strategies, most implicitly assume a static safety boundary and fail to account for how contextual interactions dynamically influence model behavior, leading to limited stability and generalization. Motivated by this gap, we propose MEEA (Mere Exposure Effect Attack), a psychology-inspired, fully automated black-box framework for evaluating multi-turn safety robustness, grounded in the mere exposure effect. MEEA leverages repeated low-toxicity semantic exposure to induce a gradual shift in a model's effective safety threshold, enabling progressive erosion of alignment constraints over sustained interactions. Concretely, MEEA constructs semantically progressive prompt chains and optimizes them using a simulated annealing strategy guided by semantic similarity, toxicity, and jailbreak effectiveness. Extensive experiments on both closed-source and open-source models, including GPT-4, Claude-3.5, and DeepSeek-R1, demonstrate that MEEA consistently achieves higher attack success rates than seven representative baselines, with an average Attack Success Rate (ASR) improvement exceeding 20%. Ablation studies further validate the necessity of both annealing-based optimization and contextual exposure mechanisms. Beyond improved attack effectiveness, our findings indicate that LLM safety behavior is inherently dynamic and history-dependent, challenging the common assumption of static alignment boundaries and highlighting the need for interaction-aware safety evaluation and defense mechanisms. Our code is available at: https://github.com/Carney-lsz/MEEA"
+}

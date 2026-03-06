@@ -1,0 +1,42 @@
+{
+  "paperId": "8f7f1f908b299944a8bc06edd2ef0a269788db00",
+  "externalIds": {
+    "ArXiv": "2505.09701",
+    "DBLP": "journals/corr/abs-2505-09701",
+    "DOI": "10.48550/arXiv.2505.09701",
+    "CorpusId": 278635885
+  },
+  "title": "VeriFact: Enhancing Long-Form Factuality Evaluation with Refined Fact Extraction and Reference Facts",
+  "venue": "Conference on Empirical Methods in Natural Language Processing",
+  "year": 2025,
+  "citationCount": 4,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.09701, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2299537200",
+      "name": "Xin Liu"
+    },
+    {
+      "authorId": "2267011399",
+      "name": "Lechen Zhang"
+    },
+    {
+      "authorId": "2328086914",
+      "name": "Sheza Munir"
+    },
+    {
+      "authorId": "2328955087",
+      "name": "Yi Gu"
+    },
+    {
+      "authorId": "2299208178",
+      "name": "Lu Wang"
+    }
+  ],
+  "abstract": "Large language models (LLMs) excel at generating long-form responses, but evaluating their factuality remains challenging due to complex inter-sentence dependencies within the generated facts. Prior solutions predominantly follow a decompose-decontextualize-verify pipeline but often fail to capture essential context and miss key relational facts. In this paper, we introduce VeriFact, a factuality evaluation framework designed to enhance fact extraction by identifying and resolving incomplete and missing facts to support more accurate verification results. Moreover, we introduce FactRBench , a benchmark that evaluates both precision and recall in long-form model responses, whereas prior work primarily focuses on precision. FactRBench provides reference fact sets from advanced LLMs and human-written answers, enabling recall assessment. Empirical evaluations show that VeriFact significantly enhances fact completeness and preserves complex facts with critical relational information, resulting in more accurate factuality evaluation. Benchmarking various open- and close-weight LLMs on FactRBench indicate that larger models within same model family improve precision and recall, but high precision does not always correlate with high recall, underscoring the importance of comprehensive factuality assessment."
+}

@@ -1,0 +1,873 @@
+======================================================================
+  PAPERHUNTER — SESSION REPORT
+======================================================================
+
+======================================================================
+  1. SESSION METADATA
+======================================================================
+  Timestamp:                          2026-03-05 20:02:21
+  Platform:                           Linux-6.18.13-200.fc43.x86_64-x86_64-with-glibc2.42
+  Python version:                     3.14.3
+
+======================================================================
+  2. SEARCH PARAMETERS
+======================================================================
+  Keywords:                           "hallucination detection" OR "factuality evaluation" OR "grounding" OR "hallucination benchmark"
+  Max results per source:             10
+  ArXiv categories:                   cs.CL, cs.AI, cs.CR, cs.LG
+
+======================================================================
+  3. LLM FILTERING CONFIGURATION
+======================================================================
+  LLM provider:                       google
+  LLM model:                          gemini-3-flash-preview
+  LLM temperature:                    0.1
+
+  Filtering criteria (prompt):
+  ------------------------------------------------------------------
+    Papers about detecting or evaluating hallucinations in large language models
+  ------------------------------------------------------------------
+
+======================================================================
+  4. SOURCES QUERIED
+======================================================================
+    • ArXiv
+    • Semantic Scholar
+    • Hugging Face
+
+======================================================================
+  5. STATISTICS
+======================================================================
+  Total papers found:                 64
+  Papers judged relevant:             41
+  Papers judged NOT relevant:         23
+  Papers downloaded OK:               38
+  Papers download FAILED:             3
+
+  Papers found per source:
+    arxiv                     10
+    huggingface               14
+    semantic_scholar          40
+
+  Relevant papers per source:
+    arxiv                     2
+    huggingface               9
+    semantic_scholar          30
+
+======================================================================
+  6. RELEVANT PAPERS (DETAIL)
+======================================================================
+
+  [2] SpotIt+: Verification-based Text-to-SQL Evaluation with Database Constraints
+      Source:       arxiv
+      URL:          http://arxiv.org/abs/2603.04334v1
+      PDF URL:      https://arxiv.org/pdf/2603.04334v1
+      Authors:      Rocky Klopfenstein, Yang He, Andrew Tremante, Yuepeng Wang, Nina Narodytska
+      Published:    2026-03-04
+      ArXiv ID:     2603.04334v1
+      Categories:   cs.DB, cs.AI, cs.LO, cs.PL
+      Confidence:   0.95
+      Reasoning:    The paper describes SpotIt+, a tool for evaluating Text-to-SQL systems, which are a prominent application of Large Language Models. It focuses on identifying discrepancies and functional differences between LLM-generated SQL queries and ground truth queries. By finding database instances that differentiate the two, it effectively detects logical errors and semantic hallucinations in the LLM's output that standard test-based evaluations might miss. This aligns directly with the user's interest in evaluating and detecting hallucinations in LLMs.
+
+  [5] VANGUARD: Vehicle-Anchored Ground Sample Distance Estimation for UAVs in GPS-Denied Environments
+      Source:       arxiv
+      URL:          http://arxiv.org/abs/2603.04277v1
+      PDF URL:      https://arxiv.org/pdf/2603.04277v1
+      Authors:      Yifei Chen, Xupeng Chen, Feng Wang, Niangang Jiao, Jiayin Liu
+      Published:    2026-03-04
+      ArXiv ID:     2603.04277v1
+      Categories:   cs.RO, cs.AI
+      Confidence:   0.90
+      Reasoning:    The paper explicitly evaluates 'spatial scale hallucinations' in five state-of-the-art Vision-Language Models (VLMs). It identifies a specific failure mode where these models struggle with absolute metric scale and area estimation, providing a benchmark that quantifies these hallucinations (finding median errors exceeding 50%). This makes it relevant to research focused on evaluating hallucinations in large-scale models, particularly in the domain of spatial reasoning and embodied AI.
+
+  [11] Steer LLM Latents for Hallucination Detection
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/6e656a4e3b8b0f0f78c11cd87673991eacbfe95f
+      Authors:      Seongheon Park, Xuefeng Du, Min-Hsuan Yeh, Haobo Wang, Yixuan Li
+      Published:    2025-03-01
+      ArXiv ID:     2503.01917
+      Citations:    34
+      Confidence:   1.00
+      Reasoning:    The paper directly addresses the user's research criteria as it focuses on hallucination detection in Large Language Models (LLMs). It proposes a novel method called the Truthfulness Separator Vector (TSV) specifically designed to enhance the separation between truthful and hallucinated outputs in the model's latent space.
+
+  [12] Hallucination Detection in LLMs Using Spectral Features of Attention Maps
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/550f47dbfa0f12c35ba4331008503d80ab8f41c5
+      Authors:      Jakub Binkowski, Denis Janiak, Albert Sawczyn, Bogdan Gabrys, Tomasz Kajdanowicz
+      Published:    2025-02-24
+      ArXiv ID:     2502.17598
+      DOI:          10.48550/arXiv.2502.17598
+      Citations:    17
+      Confidence:   1.00
+      Reasoning:    The paper directly addresses the user's research criteria by proposing a new method (LapEigvals) for detecting hallucinations in Large Language Models (LLMs). It specifically focuses on using spectral features of attention maps to identify when an LLM is hallucinating, which is a core topic in hallucination detection research.
+
+  [13] Hallucination Detection in Large Language Models with Metamorphic Relations
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/425d16205b28ce175c8429965a964d19b6f390c1
+      Authors:      Borui Yang, Md Afif Al Mamun, Jie M. Zhang, Gias Uddin
+      Published:    2025-02-20
+      ArXiv ID:     2502.15844
+      DOI:          10.1145/3715735
+      Citations:    24
+      Confidence:   1.00
+      Reasoning:    The paper directly addresses the user's research criteria by proposing a new method (MetaQA) specifically for detecting hallucinations in Large Language Models. It discusses the challenges of existing detection methods and evaluates its own approach against state-of-the-art benchmarks like SelfCheckGPT across various open-source and closed-source models.
+
+  [14] LettuceDetect: A Hallucination Detection Framework for RAG Applications
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/8646fd4f07ba61614119d6c8a08e7de693369cc6
+      Authors:      Adam Kovacs, Gábor Recski
+      Published:    2025-02-24
+      ArXiv ID:     2502.17125
+      DOI:          10.48550/arXiv.2502.17125
+      Citations:    18
+      Confidence:   1.00
+      Reasoning:    The paper introduces 'LettuceDetect,' a framework specifically designed for hallucination detection in Retrieval Augmented Generation (RAG) systems. It focuses on identifying unsupported claims at the token level and evaluates its performance using the RAGTruth benchmark, directly addressing the user's research criteria.
+
+  [15] Towards Long Context Hallucination Detection
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/1704e693d2e26805025bc5d4fbc8c504fb317527
+      Authors:      Siyi Liu, Kishaloy Halder, Zheng Qi, Wei Xiao, Nikolaos Pappas
+      Published:    2025-04-28
+      ArXiv ID:     2504.19457
+      DOI:          10.48550/arXiv.2504.19457
+      Citations:    14
+      Confidence:   1.00
+      Reasoning:    The paper directly addresses the detection of hallucinations in Large Language Models (LLMs). It specifically focuses on 'contextual hallucination' in long-context scenarios, introduces a dataset for hallucination detection, and proposes a new architecture to improve detection performance and speed.
+
+  [16] Joint Evaluation of Answer and Reasoning Consistency for Hallucination Detection in Large Reasoning Models
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/aa050db3b330d200b443955e69212a6c5fa43188
+      Authors:      Changyue Wang, Weihang Su, Qingyao Ai, Yiqun Liu
+      Published:    2025-06-05
+      ArXiv ID:     2506.04832
+      DOI:          10.48550/arXiv.2506.04832
+      Citations:    12
+      Confidence:   1.00
+      Reasoning:    The paper directly addresses the user's criteria by proposing a novel framework (RACE) specifically designed for hallucination detection in Large Reasoning Models (LRMs), which are an extension of Large Language Models (LLMs). It focuses on evaluating both answer-level and reasoning-level consistency to identify hallucinations.
+
+  [17] Attention-guided Self-reflection for Zero-shot Hallucination Detection in Large Language Models
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/e33fceb7cfb825ae3c530de0bf093769169039fc
+      Authors:      Q. Liu, Xinlong Chen, Yue Ding, Shizhen Xu, Shu Wu
+      Published:    2025-01-17
+      ArXiv ID:     2501.09997
+      DOI:          10.48550/arXiv.2501.09997
+      Citations:    10
+      Confidence:   1.00
+      Reasoning:    The paper introduces a novel method called AGSER specifically designed for zero-shot hallucination detection in Large Language Models. It directly addresses the user's criteria by focusing on the detection and evaluation of hallucinations using consistency scores and attention-guided self-reflection.
+
+  [18] A Head to Predict and a Head to Question: Pre-trained Uncertainty Quantification Heads for Hallucination Detection in LLM Outputs
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/cca687992c11d54daed5d0c6e4d60c7f1e71bcbd
+      Authors:      Artem Shelmanov, Ekaterina Fadeeva, A. Tsvigun, Ivan Tsvigun, Zhuohan Xie
+      Published:    2025-05-13
+      ArXiv ID:     2505.08200
+      DOI:          10.48550/arXiv.2505.08200
+      Citations:    10
+      Confidence:   1.00
+      Reasoning:    The paper directly addresses the detection of hallucinations in Large Language Models (LLMs). It introduces 'pre-trained UQ heads' specifically designed for claim-level hallucination detection and evaluates their performance across various LLM architectures like Mistral, Llama, and Gemma 2.
+
+  [19] ICR Probe: Tracking Hidden State Dynamics for Reliable Hallucination Detection in LLMs
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/bb419a4952376815243456a7d44fa8c3eb78330f
+      Authors:      Zhenliang Zhang, Xinyu Hu, Huixuan Zhang, Junzhe Zhang, Xiaojun Wan
+      Published:    2025-07-22
+      ArXiv ID:     2507.16488
+      DOI:          10.18653/v1/2025.acl-long.880
+      Citations:    9
+      Confidence:   1.00
+      Reasoning:    The paper directly addresses the user's research criteria by focusing on hallucination detection in Large Language Models (LLMs). It introduces a new metric (ICR Score) and a detection method (ICR Probe) specifically designed to identify hallucinations by analyzing the dynamic evolution of hidden states across model layers.
+
+  [20] The Illusion of Progress: Re-evaluating Hallucination Detection in LLMs
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/2c8437b33f9dbc3940d6d2865ebe7e237f2c7152
+      Authors:      Denis Janiak, Jakub Binkowski, Albert Sawczyn, Bogdan Gabrys, Ravid Shwartz-Ziv
+      Published:    2025-08-01
+      ArXiv ID:     2508.08285
+      DOI:          10.48550/arXiv.2508.08285
+      Citations:    9
+      Confidence:   1.00
+      Reasoning:    The paper directly addresses both the detection and evaluation of hallucinations in Large Language Models (LLMs). It critiques existing evaluation metrics (like ROUGE) for hallucination detection and proposes more robust frameworks like LLM-as-Judge. It also analyzes the performance of various hallucination detection methods, making it highly relevant to the user's research criteria.
+
+  [21] SimpleVQA: Multimodal Factuality Evaluation for Multimodal Large Language Models
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/e510dcdf98a42373258e4af6c43c7ac16b22d8f2
+      Authors:      Xianfu Cheng, Wei Zhang, Shiwei Zhang, Jian Yang, Xiangyuan Guan
+      Published:    2025-02-18
+      ArXiv ID:     2502.13059
+      DOI:          10.48550/arXiv.2502.13059
+      Citations:    31
+      Confidence:   1.00
+      Reasoning:    The paper introduces SimpleVQA, a benchmark specifically designed to evaluate the factuality of Multimodal Large Language Models (MLLMs). In the context of LLM research, factuality evaluation is the primary method for assessing and detecting hallucinations. The paper's focus on output reliability, accuracy, and grounding in factual information directly addresses the user's interest in evaluating hallucinations.
+
+  [22] Video SimpleQA: Towards Factuality Evaluation in Large Video Language Models
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/27c670b6d93dbab27486e490b4414c36adc66172
+      Authors:      Meng Cao, Pengfei Hu, Yingyao Wang, Jihao Gu, Haoran Tang
+      Published:    2025-03-24
+      ArXiv ID:     2503.18923
+      DOI:          10.48550/arXiv.2503.18923
+      Citations:    11
+      Confidence:   0.95
+      Reasoning:    The paper introduces 'Video SimpleQA', a benchmark specifically designed to evaluate the factuality and factual grounding of Large Video Language Models (LVLMs). Since evaluating factuality and factual adherence is the primary method for detecting and measuring hallucinations in language models (including multimodal ones), this paper is directly relevant to the user's research criteria. It specifically addresses model deficiencies in factual adherence and overconfidence, which are key aspects of the hallucination problem.
+
+  [23] Hallucination to truth: a review of fact-checking and factuality evaluation in large language models
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/f60bb389d81905a12c3bc2fe329419d11358c214
+      Authors:      Subhey Sadi Rahman, Md. Adnanul Islam, Md. Mahbub Alam, Musarrat Zeba, Md. Abdur Rahman
+      Published:    2025-08-05
+      ArXiv ID:     2508.03860
+      DOI:          10.1007/s10462-025-11454-w
+      Citations:    11
+      Confidence:   1.00
+      Reasoning:    The paper is a systematic review specifically focused on fact-checking and factuality evaluation in large language models. It directly addresses the detection and evaluation of hallucinations, analyzes existing evaluation metrics, and discusses methodologies for improving factual accuracy. This aligns perfectly with the user's research criteria.
+
+  [24] VeriFact: Enhancing Long-Form Factuality Evaluation with Refined Fact Extraction and Reference Facts
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/8f7f1f908b299944a8bc06edd2ef0a269788db00
+      Authors:      Xin Liu, Lechen Zhang, Sheza Munir, Yi Gu, Lu Wang
+      Published:    2025-05-14
+      ArXiv ID:     2505.09701
+      DOI:          10.48550/arXiv.2505.09701
+      Citations:    4
+      Confidence:   1.00
+      Reasoning:    The paper introduces VeriFact, a framework specifically designed for evaluating the factuality of long-form responses generated by Large Language Models (LLMs). Factuality evaluation is a core component of detecting and measuring hallucinations in AI. The paper also introduces a benchmark (FactRBench) to assess both precision and recall of facts, which directly addresses the user's interest in evaluating hallucinations.
+
+  [25] CCFQA: A Benchmark for Cross-Lingual and Cross-Modal Speech and Text Factuality Evaluation
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/3ec7c43be965bc2c735bf1bbb0e30620c511127b
+      Authors:      Yexing Du, Kaiyuan Liu, Youcheng Pan, Zheng Chu, Bo Yang
+      Published:    2025-08-10
+      ArXiv ID:     2508.07295
+      DOI:          10.48550/arXiv.2508.07295
+      Citations:    4
+      Confidence:   1.00
+      Reasoning:    The paper introduces CCFQA, a benchmark specifically designed to evaluate the factuality and reliability of Multimodal Large Language Models (MLLMs). It directly addresses the evaluation of hallucinations by testing the models' ability to provide factual answers across multiple languages and modalities (speech and text), filling a gap in existing hallucination evaluation research.
+
+  [26] VeriFastScore: Speeding up long-form factuality evaluation
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/50f142679f2e4a38216b545cfebc8e82701eb357
+      Authors:      Rishanth Rajendhran, Amir Zadeh, Matthew Sarte, Chuan Li, Mohit Iyyer
+      Published:    2025-05-22
+      ArXiv ID:     2505.16973
+      DOI:          10.48550/arXiv.2505.16973
+      Citations:    5
+      Confidence:   1.00
+      Reasoning:    The paper focuses on 'long-form factuality evaluation,' which is a core component of detecting and evaluating hallucinations in large language models. It specifically improves upon existing metrics like FactScore and VeriScore, which are standard benchmarks for measuring factual accuracy and identifying hallucinations by decomposing text into atomic claims and verifying them against external evidence.
+
+  [27] PlainQAFact: Automatic Factuality Evaluation Metric for Biomedical Plain Language Summaries Generation
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/40483322e34f1e335edb7ee14f292a270736ca39
+      Authors:      Zhiwen You, Yue Guo
+      DOI:          10.48550/arXiv.2503.08890
+      Citations:    1
+      Confidence:   0.90
+      Reasoning:    The paper proposes 'PlainQAFact', an automatic metric for evaluating the factuality of generated summaries. In the context of LLMs and NLP research, factuality evaluation is a primary method for detecting and measuring hallucinations, as hallucinations are defined as content that is non-factual or unfaithful to the source text.
+
+  [28] MedScore: Generalizable Factuality Evaluation of Free-Form Medical Answers by Domain-adapted Claim Decomposition and Verification
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/0011d65ecaa634c2a22a0df3ce2edc35ac7bb689
+      Authors:      Heyuan Huang, Alexandra DeLucia, V. M. Tiyyala, M. Dredze
+      Published:    2025-05-24
+      ArXiv ID:     2505.18452
+      Citations:    1
+      Confidence:   1.00
+      Reasoning:    The paper directly addresses the evaluation of factuality in Large Language Models (LLMs), which is a core component of detecting and measuring hallucinations. It specifically proposes a new pipeline (MedScore) for decomposing and verifying claims in the medical domain to reduce hallucinations and improve the reliability of LLM-generated answers.
+
+  [29] T2F: a domain-agnostic multi-agent framework for unstructured text to factuality evaluation items generation
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/51c5c0eeb7fedd17578cdd941b6c4e108b0c8692
+      Authors:      Xin Tong, Jingya Wang, Yasen Aizezi, Hanming Zhai, Bo Jin
+      Published:    2025-05-27
+      DOI:          10.1007/s44163-025-00294-w
+      Citations:    1
+      Confidence:   0.90
+      Reasoning:    The paper's title explicitly mentions 'factuality evaluation items generation'. Factuality evaluation is a core component of detecting and measuring hallucinations in large language models. A framework designed to generate items for evaluating factuality is directly relevant to researchers focused on LLM hallucination detection and evaluation methodologies.
+
+  [30] See the World, Discover Knowledge: A Chinese Factuality Evaluation for Large Vision Language Models
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/e916cd7eb1be7aa7b0b1b7cbf4a0b0bd4e4890e9
+      Authors:      Jihao Gu, Yingyao Wang, Pi Bu, Chen Wang, Ziming Wang
+      Published:    2025-02-17
+      ArXiv ID:     2502.11718
+      DOI:          10.18653/v1/2025.findings-acl.844
+      Citations:    2
+      Confidence:   0.95
+      Reasoning:    The paper introduces a benchmark (ChineseSimpleVQA) specifically designed to evaluate the 'factuality' of Large Vision Language Models (LVLMs). In the field of AI research, factuality evaluation is the standard approach for measuring and detecting hallucinations. The paper's focus on assessing factual accuracy, reliability, and the 'capability boundaries' of these models directly addresses the user's interest in evaluating hallucinations, even though it specifically targets the multimodal (vision-language) aspect of these models.
+
+  [40] The FACTS Grounding Leaderboard: Benchmarking LLMs' Ability to Ground Responses to Long-Form Input
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/2fe6bdf13d748d02cf2cf087c6d51a3d283f49f0
+      Authors:      Alon Jacovi, Andrew Wang, Chris Alberti, Connie Tao, Jon Lipovetz
+      Published:    2025-01-06
+      ArXiv ID:     2501.03200
+      DOI:          10.48550/arXiv.2501.03200
+      Citations:    35
+      Confidence:   1.00
+      Reasoning:    The paper introduces a benchmark and leaderboard (FACTS Grounding) specifically designed to evaluate the factuality and grounding of LLM responses relative to a provided context. Grounding is a core metric used to detect and evaluate hallucinations (specifically faithfulness to source material), making this paper highly relevant to the user's research criteria.
+
+  [41] HalluLens: LLM Hallucination Benchmark
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/51fe85e30a4c9d66a3fa127946d1f87a6fabeac7
+      Authors:      Yejin Bang, Ziwei Ji, A. Schelten, A. Hartshorn, T. Fowler
+      Published:    2025-04-24
+      ArXiv ID:     2504.17550
+      DOI:          10.48550/arXiv.2504.17550
+      Citations:    57
+      Confidence:   1.00
+      Reasoning:    The paper introduces 'HalluLens,' a benchmark specifically designed for evaluating hallucinations in large language models. It covers both intrinsic and extrinsic hallucinations, proposes a taxonomy for categorization, and includes dynamic test sets for evaluation. This directly aligns with the user's criteria for research on detecting or evaluating hallucinations in LLMs.
+
+  [42] What Color Is It? A Text-Interference Multimodal Hallucination Benchmark
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/3074967720b017ca36c1c650d9243f94568705eb
+      Authors:      Jinkun Zhao, Lei Huang, Haixin Ge, Wenjun Wu
+      Published:    2025-11-17
+      ArXiv ID:     2511.13400
+      DOI:          10.48550/arXiv.2511.13400
+      Citations:    1
+      Confidence:   0.95
+      Reasoning:    The paper introduces a new benchmark specifically designed to evaluate hallucinations in Multimodal Large Models (MLMs). It focuses on detecting visual hallucinations triggered by text interference, which falls directly under the category of evaluating hallucinations in large-scale models.
+
+  [43] EH-Benchmark Ophthalmic Hallucination Benchmark and Agent-Driven Top-Down Traceable Reasoning Workflow
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/771a09af06c85acb60c01939f08f4de7ff079ed3
+      Authors:      X. Pan, Yang Bai, Ke Zou, Yang Zhou, Jun Zhou
+      Published:    2025-07-24
+      ArXiv ID:     2507.22929
+      DOI:          10.1016/j.inffus.2025.103631
+      Citations:    2
+      Confidence:   1.00
+      Reasoning:    The paper introduces 'EH-Benchmark', which is specifically designed to evaluate hallucinations in Multimodal Large Language Models (MLLMs). It categorizes hallucinations into specific types and provides a framework for both evaluation and mitigation, directly aligning with the user's research criteria on detecting or evaluating hallucinations in LLMs.
+
+  [44] K-HALU: Multiple Answer Korean Hallucination Benchmark for Large Language Models
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/b6692fbc2cf9eed9ebcd4d392f4d2c436f07f6d7
+      Authors:      Jaehyung Seo, Heu-Jeoung Lim
+      Citations:    2
+      Confidence:   0.95
+      Reasoning:    The title explicitly mentions 'K-HALU', a 'Korean Hallucination Benchmark' for 'Large Language Models'. Benchmarks are primary tools for evaluating model performance, and this one specifically targets hallucinations, which directly matches the user's research criteria.
+
+  [46] MUCH: A Multilingual Claim Hallucination Benchmark
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/0a5cbd3330c37646b33fc467df7aded33e3f2d80
+      Authors:      Jérémie Dentan, Alexi Canesse, Davide Buscaldi, A. Shabou, Sonia Vanier
+      Published:    2025-11-21
+      ArXiv ID:     2511.17081
+      DOI:          10.48550/arXiv.2511.17081
+      Citations:    0
+      Confidence:   1.00
+      Reasoning:    The paper introduces MUCH, a multilingual benchmark specifically designed for claim-level hallucination evaluation and uncertainty quantification (UQ) in Large Language Models. It directly addresses the detection and evaluation of hallucinations by providing a dataset, logits for white-box methods, and a new segmentation algorithm to facilitate research in LLM reliability.
+
+  [47] HalluHard: A Hard Multi-Turn Hallucination Benchmark
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/16eec20fb25bc33d4cf8f1ab3e6ab53850089c6a
+      Authors:      Dongyang Fan, Sebastien Delsad, Nicolas Flammarion, Maksym Andriushchenko
+      Published:    2026-02-01
+      ArXiv ID:     2602.01031
+      Citations:    0
+      Confidence:   1.00
+      Reasoning:    The paper introduces 'HalluHard', a benchmark specifically designed for evaluating hallucinations in large language models (LLMs) within multi-turn dialogues. It also proposes a judging pipeline that uses web search and evidence retrieval to detect and assess the groundedness of factual claims, which directly addresses the user's interest in detecting and evaluating hallucinations.
+
+  [48] KGHaluBench: A Knowledge Graph-Based Hallucination Benchmark for Evaluating the Breadth and Depth of LLM Knowledge
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/33390060103d54658d2fed650c929edf63b90f14
+      Authors:      Alexander Robertson, Huizhi Liang, M. Gani, Rohit Kumar, Srijith Rajamohan
+      Published:    2026-02-23
+      ArXiv ID:     2602.19643
+      Citations:    0
+      Confidence:   1.00
+      Reasoning:    The paper introduces KGHaluBench, a benchmark specifically designed to evaluate hallucinations in Large Language Models (LLMs). It features an automated verification pipeline to detect and identify different types of hallucinations and proposes novel hallucination metrics. This directly aligns with the user's criteria of detecting or evaluating hallucinations in LLMs.
+
+  [49] Exploring Hallucination of Large Multimodal Models in Video Understanding: Benchmark, Analysis and Mitigation
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/cc6282f0e8a864a1a3aca18036b45c899b0098b7
+      Authors:      Hongcheng Gao, Jiashu Qu, Jingyi Tang, Baolong Bi, Yue Liu
+      Published:    2025-03-25
+      ArXiv ID:     2503.19622
+      DOI:          10.48550/arXiv.2503.19622
+      Citations:    15
+      Confidence:   0.95
+      Reasoning:    The paper focuses on the evaluation and analysis of hallucinations in Large Multimodal Models (LMMs), specifically in the context of video understanding. It introduces a new benchmark (HAVEN) for evaluating these hallucinations and analyzes factors contributing to them. Since LMMs are an extension of LLMs and the core topic is the evaluation of hallucinations, this paper is highly relevant to the user's research criteria.
+
+  [50] ChartInsighter: An Approach for Mitigating Hallucination in Time-Series Chart Summary Generation With a Benchmark Dataset
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/1a7afd7a60bc71d400f8ad4a7b7d8f91ada38f5b
+      PDF URL:      http://arxiv.org/pdf/2501.09349
+      Authors:      Fen Wang, Bo Wang, Xueli Shu, Zhen Liu, Zekai Shao
+      Published:    2025-01-16
+      ArXiv ID:     2501.09349
+      DOI:          10.1109/TVCG.2025.3567122
+      Citations:    12
+      Confidence:   0.95
+      Reasoning:    The paper focuses on identifying, mitigating, and evaluating hallucinations in the context of time-series chart summary generation. Crucially, it introduces a benchmark dataset with hallucination types annotated on a sentence-by-sentence basis specifically for evaluation purposes, which directly aligns with the user's criteria of detecting or evaluating hallucinations.
+
+  [51] HalLoc: Token-level Localization of Hallucinations for Vision Language
+  Models
+      Source:       huggingface
+      URL:          https://arxiv.org/abs/2506.10286
+      PDF URL:      https://arxiv.org/pdf/2506.10286.pdf
+      Published:    2025-06-01
+      ArXiv ID:     2506.10286
+      Confidence:   0.95
+      Reasoning:    The paper's title, 'HalLoc: Token-level Localization of Hallucinations for Vision Language Models', directly addresses the detection and localization of hallucinations. Although it focuses on Vision Language Models (VLMs), these are a specific class of Large Language Models, and the research on hallucination detection within them is highly relevant to the user's broader interest in LLM hallucinations.
+
+  [52] Theoretical Foundations and Mitigation of Hallucination in Large
+  Language Models
+      Source:       huggingface
+      URL:          https://arxiv.org/abs/2507.22915
+      PDF URL:      https://arxiv.org/pdf/2507.22915.pdf
+      Published:    2025-07-01
+      ArXiv ID:     2507.22915
+      Confidence:   0.90
+      Reasoning:    The paper's title explicitly addresses 'Hallucination in Large Language Models', focusing on 'Theoretical Foundations' and 'Mitigation'. In the field of AI research, the mitigation of hallucinations is fundamentally dependent on the ability to detect and evaluate them. Furthermore, theoretical foundations typically include definitions and frameworks necessary for evaluation. Therefore, this paper is highly likely to be relevant to a researcher focused on detecting or evaluating hallucinations.
+
+  [53] Uncertainty Quantification for Language Models: A Suite of Black-Box,
+  White-Box, LLM Judge, and Ensemble Scorers
+      Source:       huggingface
+      URL:          https://arxiv.org/abs/2504.19254
+      PDF URL:      https://arxiv.org/pdf/2504.19254.pdf
+      Published:    2025-04-01
+      ArXiv ID:     2504.19254
+      Confidence:   0.90
+      Reasoning:    Uncertainty quantification (UQ) is a fundamental technique used for detecting and evaluating hallucinations in large language models. High uncertainty scores are frequently used as indicators that a model's output may be factually incorrect or hallucinated. The title's mention of 'LLM Judge' and various 'Scorers' indicates that the paper provides methodologies for assessing the reliability of model generations, which is a core component of hallucination research.
+
+  [54] When Models Lie, We Learn: Multilingual Span-LevelHallucination
+  Detectionwith PsiloQA
+      Source:       huggingface
+      URL:          https://arxiv.org/abs/2510.04849
+      PDF URL:      https://arxiv.org/pdf/2510.04849.pdf
+      Published:    2025-10-01
+      ArXiv ID:     2510.04849
+      Confidence:   0.95
+      Reasoning:    The title explicitly mentions 'Multilingual Span-Level Hallucination Detection', which directly aligns with the user's research criteria focused on detecting or evaluating hallucinations in large language models.
+
+  [55] Hallucination Detectionin LLMs Using Spectral Features of Attention
+  Maps
+      Source:       huggingface
+      URL:          https://arxiv.org/abs/2502.17598
+      PDF URL:      https://arxiv.org/pdf/2502.17598.pdf
+      Published:    2025-02-01
+      ArXiv ID:     2502.17598
+      Confidence:   0.95
+      Reasoning:    The title of the paper explicitly mentions 'Hallucination Detection in LLMs', which is the exact topic specified in the research criteria. Even without an abstract, the title clearly indicates that the research focuses on a method (spectral features of attention maps) for detecting hallucinations in large language models.
+
+  [56] HalluCounter: Reference-free LLM Hallucination Detection in the Wild!
+      Source:       huggingface
+      URL:          https://arxiv.org/abs/2503.04615
+      PDF URL:      https://arxiv.org/pdf/2503.04615.pdf
+      Published:    2025-03-01
+      ArXiv ID:     2503.04615
+      Confidence:   0.95
+      Reasoning:    The title 'HalluCounter: Reference-free LLM Hallucination Detection in the Wild!' explicitly mentions the detection of hallucinations in large language models (LLMs), which is the exact topic specified in the research criteria. Even without an abstract, the title is highly specific and relevant.
+
+  [57] MedScore: GeneralizableFactuality Evaluationof Free-Form Medical
+  Answers by Domain-adapted Claim Decomposition and Verification
+      Source:       huggingface
+      URL:          https://arxiv.org/abs/2505.18452
+      PDF URL:      https://arxiv.org/pdf/2505.18452.pdf
+      Published:    2025-05-01
+      ArXiv ID:     2505.18452
+      Confidence:   0.95
+      Reasoning:    The paper's title explicitly mentions 'Factuality Evaluation' of 'Free-Form Medical Answers' using 'Claim Decomposition and Verification'. In the context of Large Language Models (LLMs), factuality evaluation is a core component of detecting and measuring hallucinations. The methodology described (decomposing answers into claims and verifying them) is a standard approach for hallucination detection research.
+
+  [58] PlainQAFact: AutomaticFactuality EvaluationMetric for Biomedical Plain
+  Language Summaries Generation
+      Source:       huggingface
+      URL:          https://arxiv.org/abs/2503.08890
+      PDF URL:      https://arxiv.org/pdf/2503.08890.pdf
+      Published:    2025-03-01
+      ArXiv ID:     2503.08890
+      Confidence:   0.90
+      Reasoning:    The paper proposes 'PlainQAFact', which is an automatic metric for evaluating factuality in generated summaries. In the field of LLM research, factuality evaluation is a primary method for detecting and measuring hallucinations, especially in summarization tasks where the model must remain faithful to the source document.
+
+  [64] MUCH: A Multilingual ClaimHallucination Benchmark
+      Source:       huggingface
+      URL:          https://arxiv.org/abs/2511.17081
+      PDF URL:      https://arxiv.org/pdf/2511.17081.pdf
+      Published:    2025-11-01
+      ArXiv ID:     2511.17081
+      Confidence:   0.95
+      Reasoning:    The title explicitly mentions 'Hallucination Benchmark,' which directly aligns with the user's criteria for evaluating hallucinations in large language models. 'Claim Hallucination' is a specific sub-topic within the broader field of LLM factuality and hallucination research.
+
+======================================================================
+  7. DOWNLOAD RESULTS
+======================================================================
+
+  [OK] SpotIt+: Verification-based Text-to-SQL Evaluation with Database Constraints
+      Source:  arxiv
+      URL:     http://arxiv.org/abs/2603.04334v1
+      File:    scaricati/Hallucinations1/SpotIt+_Verification-based_Text-to-SQL_Evaluation_with_Database_Constraints.pdf
+      Method:  direct
+
+  [OK] VANGUARD: Vehicle-Anchored Ground Sample Distance Estimation for UAVs in GPS-Denied Environments
+      Source:  arxiv
+      URL:     http://arxiv.org/abs/2603.04277v1
+      File:    scaricati/Hallucinations1/VANGUARD_Vehicle-Anchored_Ground_Sample_Distance_Estimation_for_UAVs_in_GPS-Denied_Environments.pdf
+      Method:  direct
+
+  [OK] Steer LLM Latents for Hallucination Detection
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/6e656a4e3b8b0f0f78c11cd87673991eacbfe95f
+      File:    scaricati/Hallucinations1/Steer_LLM_Latents_for_Hallucination_Detection.pdf
+      Method:  direct
+
+  [OK] Hallucination Detection in LLMs Using Spectral Features of Attention Maps
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/550f47dbfa0f12c35ba4331008503d80ab8f41c5
+      File:    scaricati/Hallucinations1/Hallucination_Detection_in_LLMs_Using_Spectral_Features_of_Attention_Maps.pdf
+      Method:  direct
+
+  [OK] Hallucination Detection in Large Language Models with Metamorphic Relations
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/425d16205b28ce175c8429965a964d19b6f390c1
+      File:    scaricati/Hallucinations1/Hallucination_Detection_in_Large_Language_Models_with_Metamorphic_Relations.pdf
+      Method:  direct
+
+  [OK] LettuceDetect: A Hallucination Detection Framework for RAG Applications
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/8646fd4f07ba61614119d6c8a08e7de693369cc6
+      File:    scaricati/Hallucinations1/LettuceDetect_A_Hallucination_Detection_Framework_for_RAG_Applications.pdf
+      Method:  direct
+
+  [OK] Towards Long Context Hallucination Detection
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/1704e693d2e26805025bc5d4fbc8c504fb317527
+      File:    scaricati/Hallucinations1/Towards_Long_Context_Hallucination_Detection.pdf
+      Method:  direct
+
+  [OK] Joint Evaluation of Answer and Reasoning Consistency for Hallucination Detection in Large Reasoning Models
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/aa050db3b330d200b443955e69212a6c5fa43188
+      File:    scaricati/Hallucinations1/Joint_Evaluation_of_Answer_and_Reasoning_Consistency_for_Hallucination_Detection_in_Large_Reasoning.pdf
+      Method:  direct
+
+  [OK] Attention-guided Self-reflection for Zero-shot Hallucination Detection in Large Language Models
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/e33fceb7cfb825ae3c530de0bf093769169039fc
+      File:    scaricati/Hallucinations1/Attention-guided_Self-reflection_for_Zero-shot_Hallucination_Detection_in_Large_Language_Models.pdf
+      Method:  direct
+
+  [OK] A Head to Predict and a Head to Question: Pre-trained Uncertainty Quantification Heads for Hallucination Detection in LLM Outputs
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/cca687992c11d54daed5d0c6e4d60c7f1e71bcbd
+      File:    scaricati/Hallucinations1/A_Head_to_Predict_and_a_Head_to_Question_Pre-trained_Uncertainty_Quantification_Heads_for_Hallucinat.pdf
+      Method:  direct
+
+  [OK] ICR Probe: Tracking Hidden State Dynamics for Reliable Hallucination Detection in LLMs
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/bb419a4952376815243456a7d44fa8c3eb78330f
+      File:    scaricati/Hallucinations1/ICR_Probe_Tracking_Hidden_State_Dynamics_for_Reliable_Hallucination_Detection_in_LLMs.pdf
+      Method:  direct
+
+  [OK] The Illusion of Progress: Re-evaluating Hallucination Detection in LLMs
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/2c8437b33f9dbc3940d6d2865ebe7e237f2c7152
+      File:    scaricati/Hallucinations1/The_Illusion_of_Progress_Re-evaluating_Hallucination_Detection_in_LLMs.pdf
+      Method:  direct
+
+  [OK] SimpleVQA: Multimodal Factuality Evaluation for Multimodal Large Language Models
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/e510dcdf98a42373258e4af6c43c7ac16b22d8f2
+      File:    scaricati/Hallucinations1/SimpleVQA_Multimodal_Factuality_Evaluation_for_Multimodal_Large_Language_Models.pdf
+      Method:  direct
+
+  [OK] Video SimpleQA: Towards Factuality Evaluation in Large Video Language Models
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/27c670b6d93dbab27486e490b4414c36adc66172
+      File:    scaricati/Hallucinations1/Video_SimpleQA_Towards_Factuality_Evaluation_in_Large_Video_Language_Models.pdf
+      Method:  direct
+
+  [OK] Hallucination to truth: a review of fact-checking and factuality evaluation in large language models
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/f60bb389d81905a12c3bc2fe329419d11358c214
+      File:    scaricati/Hallucinations1/Hallucination_to_truth_a_review_of_fact-checking_and_factuality_evaluation_in_large_language_models.pdf
+      Method:  direct
+
+  [OK] VeriFact: Enhancing Long-Form Factuality Evaluation with Refined Fact Extraction and Reference Facts
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/8f7f1f908b299944a8bc06edd2ef0a269788db00
+      File:    scaricati/Hallucinations1/VeriFact_Enhancing_Long-Form_Factuality_Evaluation_with_Refined_Fact_Extraction_and_Reference_Facts.pdf
+      Method:  direct
+
+  [OK] CCFQA: A Benchmark for Cross-Lingual and Cross-Modal Speech and Text Factuality Evaluation
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/3ec7c43be965bc2c735bf1bbb0e30620c511127b
+      File:    scaricati/Hallucinations1/CCFQA_A_Benchmark_for_Cross-Lingual_and_Cross-Modal_Speech_and_Text_Factuality_Evaluation.pdf
+      Method:  direct
+
+  [OK] VeriFastScore: Speeding up long-form factuality evaluation
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/50f142679f2e4a38216b545cfebc8e82701eb357
+      File:    scaricati/Hallucinations1/VeriFastScore_Speeding_up_long-form_factuality_evaluation.pdf
+      Method:  direct
+
+  [FAILED] PlainQAFact: Automatic Factuality Evaluation Metric for Biomedical Plain Language Summaries Generation
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/40483322e34f1e335edb7ee14f292a270736ca39
+      Error:   Could not find PDF download link
+
+  [OK] MedScore: Generalizable Factuality Evaluation of Free-Form Medical Answers by Domain-adapted Claim Decomposition and Verification
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/0011d65ecaa634c2a22a0df3ce2edc35ac7bb689
+      File:    scaricati/Hallucinations1/MedScore_Generalizable_Factuality_Evaluation_of_Free-Form_Medical_Answers_by_Domain-adapted_Claim_De.pdf
+      Method:  direct
+
+  [FAILED] T2F: a domain-agnostic multi-agent framework for unstructured text to factuality evaluation items generation
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/51c5c0eeb7fedd17578cdd941b6c4e108b0c8692
+      Error:   Could not find PDF download link
+
+  [OK] See the World, Discover Knowledge: A Chinese Factuality Evaluation for Large Vision Language Models
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/e916cd7eb1be7aa7b0b1b7cbf4a0b0bd4e4890e9
+      File:    scaricati/Hallucinations1/See_the_World,_Discover_Knowledge_A_Chinese_Factuality_Evaluation_for_Large_Vision_Language_Models.pdf
+      Method:  direct
+
+  [OK] The FACTS Grounding Leaderboard: Benchmarking LLMs' Ability to Ground Responses to Long-Form Input
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/2fe6bdf13d748d02cf2cf087c6d51a3d283f49f0
+      File:    scaricati/Hallucinations1/The_FACTS_Grounding_Leaderboard_Benchmarking_LLMs'_Ability_to_Ground_Responses_to_Long-Form_Input.pdf
+      Method:  direct
+
+  [OK] HalluLens: LLM Hallucination Benchmark
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/51fe85e30a4c9d66a3fa127946d1f87a6fabeac7
+      File:    scaricati/Hallucinations1/HalluLens_LLM_Hallucination_Benchmark.pdf
+      Method:  direct
+
+  [OK] What Color Is It? A Text-Interference Multimodal Hallucination Benchmark
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/3074967720b017ca36c1c650d9243f94568705eb
+      File:    scaricati/Hallucinations1/What_Color_Is_It_A_Text-Interference_Multimodal_Hallucination_Benchmark.pdf
+      Method:  direct
+
+  [OK] EH-Benchmark Ophthalmic Hallucination Benchmark and Agent-Driven Top-Down Traceable Reasoning Workflow
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/771a09af06c85acb60c01939f08f4de7ff079ed3
+      File:    scaricati/Hallucinations1/EH-Benchmark_Ophthalmic_Hallucination_Benchmark_and_Agent-Driven_Top-Down_Traceable_Reasoning_Workfl.pdf
+      Method:  direct
+
+  [FAILED] K-HALU: Multiple Answer Korean Hallucination Benchmark for Large Language Models
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/b6692fbc2cf9eed9ebcd4d392f4d2c436f07f6d7
+      Error:   Could not find PDF download link
+
+  [OK] MUCH: A Multilingual Claim Hallucination Benchmark
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/0a5cbd3330c37646b33fc467df7aded33e3f2d80
+      File:    scaricati/Hallucinations1/MUCH_A_Multilingual_Claim_Hallucination_Benchmark.pdf
+      Method:  direct
+
+  [OK] HalluHard: A Hard Multi-Turn Hallucination Benchmark
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/16eec20fb25bc33d4cf8f1ab3e6ab53850089c6a
+      File:    scaricati/Hallucinations1/HalluHard_A_Hard_Multi-Turn_Hallucination_Benchmark.pdf
+      Method:  direct
+
+  [OK] KGHaluBench: A Knowledge Graph-Based Hallucination Benchmark for Evaluating the Breadth and Depth of LLM Knowledge
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/33390060103d54658d2fed650c929edf63b90f14
+      File:    scaricati/Hallucinations1/KGHaluBench_A_Knowledge_Graph-Based_Hallucination_Benchmark_for_Evaluating_the_Breadth_and_Depth_of.pdf
+      Method:  direct
+
+  [OK] Exploring Hallucination of Large Multimodal Models in Video Understanding: Benchmark, Analysis and Mitigation
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/cc6282f0e8a864a1a3aca18036b45c899b0098b7
+      File:    scaricati/Hallucinations1/Exploring_Hallucination_of_Large_Multimodal_Models_in_Video_Understanding_Benchmark,_Analysis_and_Mi.pdf
+      Method:  direct
+
+  [OK] ChartInsighter: An Approach for Mitigating Hallucination in Time-Series Chart Summary Generation With a Benchmark Dataset
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/1a7afd7a60bc71d400f8ad4a7b7d8f91ada38f5b
+      File:    scaricati/Hallucinations1/ChartInsighter_An_Approach_for_Mitigating_Hallucination_in_Time-Series_Chart_Summary_Generation_With.pdf
+      Method:  direct
+
+  [OK] HalLoc: Token-level Localization of Hallucinations for Vision Language
+  Models
+      Source:  huggingface
+      URL:     https://arxiv.org/abs/2506.10286
+      File:    scaricati/Hallucinations1/HalLoc_Token-level_Localization_of_Hallucinations_for_Vision_Language
+__Models.pdf
+      Method:  direct
+
+  [OK] Theoretical Foundations and Mitigation of Hallucination in Large
+  Language Models
+      Source:  huggingface
+      URL:     https://arxiv.org/abs/2507.22915
+      File:    scaricati/Hallucinations1/Theoretical_Foundations_and_Mitigation_of_Hallucination_in_Large
+__Language_Models.pdf
+      Method:  direct
+
+  [OK] Uncertainty Quantification for Language Models: A Suite of Black-Box,
+  White-Box, LLM Judge, and Ensemble Scorers
+      Source:  huggingface
+      URL:     https://arxiv.org/abs/2504.19254
+      File:    scaricati/Hallucinations1/Uncertainty_Quantification_for_Language_Models_A_Suite_of_Black-Box,
+__White-Box,_LLM_Judge,_and_Ens.pdf
+      Method:  direct
+
+  [OK] When Models Lie, We Learn: Multilingual Span-LevelHallucination
+  Detectionwith PsiloQA
+      Source:  huggingface
+      URL:     https://arxiv.org/abs/2510.04849
+      File:    scaricati/Hallucinations1/When_Models_Lie,_We_Learn_Multilingual_Span-LevelHallucination
+__Detectionwith_PsiloQA.pdf
+      Method:  direct
+
+  [OK] Hallucination Detectionin LLMs Using Spectral Features of Attention
+  Maps
+      Source:  huggingface
+      URL:     https://arxiv.org/abs/2502.17598
+      File:    None
+      Method:  dedup
+
+  [OK] HalluCounter: Reference-free LLM Hallucination Detection in the Wild!
+      Source:  huggingface
+      URL:     https://arxiv.org/abs/2503.04615
+      File:    scaricati/Hallucinations1/HalluCounter_Reference-free_LLM_Hallucination_Detection_in_the_Wild!.pdf
+      Method:  direct
+
+  [OK] MedScore: GeneralizableFactuality Evaluationof Free-Form Medical
+  Answers by Domain-adapted Claim Decomposition and Verification
+      Source:  huggingface
+      URL:     https://arxiv.org/abs/2505.18452
+      File:    None
+      Method:  dedup
+
+  [OK] PlainQAFact: AutomaticFactuality EvaluationMetric for Biomedical Plain
+  Language Summaries Generation
+      Source:  huggingface
+      URL:     https://arxiv.org/abs/2503.08890
+      File:    scaricati/Hallucinations1/PlainQAFact_AutomaticFactuality_EvaluationMetric_for_Biomedical_Plain
+__Language_Summaries_Generatio.pdf
+      Method:  direct
+
+  [OK] MUCH: A Multilingual ClaimHallucination Benchmark
+      Source:  huggingface
+      URL:     https://arxiv.org/abs/2511.17081
+      File:    None
+      Method:  dedup
+
+======================================================================
+  8. NON-RELEVANT PAPERS (SUMMARY)
+======================================================================
+  [1] RANGER: Sparsely-Gated Mixture-of-Experts with Adaptive Retrieval Re-ranking for Pathology Report Generation
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.04348v1
+      Reasoning:  The paper focuses on a specific architecture (Mixture-of-Experts and adaptive retrieval re-ranking) for the task of pathology report generation from Whole Slide Images. While it mentions reducing nois
+
+  [2] MOO: A Multi-view Oriented Observations Dataset for Viewpoint Analysis in Cattle Re-Identification
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.04314v1
+      Reasoning:  The paper focuses on animal re-identification (specifically cattle) using computer vision techniques to handle viewpoint variations. It introduces a synthetic dataset for Aerial-Ground ReID. It has no
+
+  [3] LUMINA: Foundation Models for Topology Transferable ACOPF
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.04300v1
+      Reasoning:  The paper focuses on foundation models for scientific computation, specifically AC optimal power flow (ACOPF) in power grid operations. While it uses the term 'foundation models', it applies them to p
+
+  [4] When AI Fails, What Works? A Data-Driven Taxonomy of Real-World AI Risk Mitigation Strategies
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.04259v1
+      Reasoning:  The paper focuses on developing a taxonomy for real-world AI risk mitigation strategies based on media-reported incidents. While it discusses AI failures and systemic breakdowns, it does not specifica
+
+  [5] Agentics 2.0: Logical Transduction Algebra for Agentic Data Workflows
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.04241v1
+      Reasoning:  The paper focuses on a framework (Agentics 2.0) for building reliable and observable agentic data workflows using a logical transduction algebra. While it mentions 'evidence tracing' and 'semantic rel
+
+  [6] Retrieval or Representation? Reassessing Benchmark Gaps in Multilingual and Visually Rich RAG
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.04238v1
+      Reasoning:  The paper focuses on the retrieval and document representation components of Retrieval-Augmented Generation (RAG), specifically comparing lexical retrieval (BM25) with multimodal retrievers in multili
+
+  [7] Learning Hip Exoskeleton Control Policy via Predictive Neuromusculoskeletal Simulation
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.04166v1
+      Reasoning:  The paper focuses on biomechanics, reinforcement learning for exoskeleton control, and neuromusculoskeletal simulations. It does not involve Large Language Models (LLMs) or the topic of hallucinations
+
+  [8] Two-Stage Photovoltaic Forecasting: Separating Weather Prediction from Plant-Characteristics
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.04132v1
+      Reasoning:  The paper focuses on photovoltaic (PV) energy forecasting and weather prediction models. It discusses solar irradiance, temperature, and plant-specific characteristics. It has no relation to Large Lan
+
+  [9] ScreenSpot-Pro: GUI Grounding for Professional High-Resolution Computer Use
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/df7b286e53d66c6881966b5e6904f7fa5e6d774b
+      Reasoning:  The paper focuses on GUI grounding and perception for Multi-modal Large Language Models (MLLMs) in professional, high-resolution environments. It introduces a benchmark for evaluating how well models 
+
+  [10] Scaling Computer-Use Grounding via User Interface Decomposition and Synthesis
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/a1c9066aab4c408db49982f0975c2ec7c0be47dd
+      Reasoning:  The paper focuses on Graphical User Interface (GUI) grounding, which involves mapping natural language instructions to specific actions on a computer interface. It introduces a new benchmark (OSWorld-
+
+  [11] Time-R1: Post-Training Large Vision Language Model for Temporal Video Grounding
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/7837135c5d5b8c56881f5fba9b5c3c6c88f2bd36
+      Reasoning:  The paper focuses on Temporal Video Grounding (TVG), which involves locating specific video segments based on language queries. While it uses post-training and reinforcement learning to improve Large 
+
+  [12] GUI-Actor: Coordinate-Free Visual Grounding for GUI Agents
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/9f67fd38d7ec7744a140da63d61636522f489089
+      Reasoning:  The paper focuses on visual grounding for GUI agents, specifically proposing a method (GUI-Actor) to improve how Vision Language Models (VLMs) identify and localize screen regions for action execution
+
+  [13] UniVG-R1: Reasoning Guided Universal Visual Grounding with Reinforcement Learning
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/03d77ddb975ec3a7a0943dbbad701fb7bc0b2791
+      Reasoning:  The paper focuses on universal visual grounding and improving reasoning capabilities in multimodal large language models (MLLMs) through reinforcement learning and chain-of-thought data. It does not d
+
+  [14] Your Large Vision-Language Model Only Needs A Few Attention Heads For Visual Grounding
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/5ac09c2d06683c72af2c19a2b02af817be1d2a40
+      Reasoning:  The paper focuses on visual grounding, which is the task of localizing image regions based on text descriptions. It explores how specific attention heads in Large Vision-Language Models (LVLMs) can be
+
+  [15] Enhancing Visual Grounding for GUI Agents via Self-Evolutionary Reinforcement Learning
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/bba755b95bcb6c45567b234542a22bed8412cbce
+      Reasoning:  The paper focuses on improving visual grounding for GUI agents using reinforcement learning and self-evolutionary finetuning. It aims to enhance the accuracy of mapping user instructions to interface 
+
+  [16] GUI-G1: Understanding R1-Zero-Like Training for Visual Grounding in GUI Agents
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/e45dde9b1cd0aebe318282f70454d9dbe8501765
+      Reasoning:  The paper focuses on improving visual grounding for GUI agents using reinforcement learning and chain-of-thought reasoning. It addresses specific training challenges such as reward hacking related to 
+
+  [17] GeoPixel: Pixel Grounding Large Multimodal Model in Remote Sensing
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/4aaf3c6d07bbd052b4261dba02a435417b473bd4
+      Reasoning:  The paper focuses on developing a Large Multimodal Model (LMM) specifically for remote sensing tasks, emphasizing pixel-level grounding and high-resolution image analysis. It does not address the dete
+
+  [18] Hallucination Benchmark for Speech Foundation Models
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/ccf52c9a5597b89832f90eadfe21b6a443834764
+      Reasoning:  The paper focuses specifically on hallucinations in Automatic Speech Recognition (ASR) and Speech Foundation Models. While it addresses the detection and evaluation of hallucinations, its scope is lim
+
+  [19] An Annotation Scheme for Factuality and its Application to Parliamentary
+  Proceedings
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2509.26406
+      Reasoning:  The paper focuses on an annotation scheme for 'factuality' within the context of parliamentary proceedings. In NLP, 'factuality' often refers to the linguistic modality of events (whether they are pre
+
+  [20] GroundingComputer Use Agents on Human Demonstrations
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2511.07332
+      Reasoning:  The paper's title, 'Grounding Computer Use Agents on Human Demonstrations', suggests a focus on agentic AI and imitation learning (learning from human behavior to interact with computer interfaces). I
+
+  [21] Groundingand Enhancing Informativeness and Utility in Dataset Distillation
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2601.21296
+      Reasoning:  The paper focuses on 'Dataset Distillation', which is a technique for compressing large datasets into smaller synthetic ones for efficient model training. This is a data engineering and optimization t
+
+  [22] GroundingLLM Reasoning with Knowledge Graphs
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2502.13247
+      Reasoning:  The paper's title suggests a focus on 'grounding' LLM reasoning using knowledge graphs, which is a technique typically used to improve factual accuracy and mitigate hallucinations during the model's i
+
+  [23] GroundingAgent Memory in Contextual Intent
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2601.10702
+      Reasoning:  The title 'GroundingAgent Memory in Contextual Intent' suggests a focus on agent architecture, specifically how agents manage memory and understand user intent. While 'grounding' is a concept often us
+
+
+======================================================================
+  END OF REPORT
+======================================================================

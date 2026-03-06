@@ -23,8 +23,8 @@
     }
   },
   "created_at": "2026-03-05T16:50:56.271762",
-  "updated_at": "2026-03-05T16:51:43.219599",
-  "phase": "filtering",
+  "updated_at": "2026-03-05T19:37:40.348064",
+  "phase": "complete",
   "papers": [
     {
       "index": 0,
@@ -48,9 +48,9 @@
         "cs.SE"
       ],
       "citations": null,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
+      "status": "not_relevant",
+      "relevance_reasoning": "The paper focuses on improving the reliability and governance of agentic AI for WebGIS development, specifically addressing issues like context constraints, stochasticity, and instruction failure. It does not discuss security vulnerabilities, prompt injection, or jailbreaking attacks.",
+      "relevance_confidence": 1.0,
       "download_path": null,
       "download_error": null
     },
@@ -76,9 +76,9 @@
         "cs.MA"
       ],
       "citations": null,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
+      "status": "not_relevant",
+      "relevance_reasoning": "The paper focuses on the mathematical robustness and stability of multi-agent LLM systems using Jacobian regularization and minimax training. While it addresses 'adversarial' directions, it does so from a control-theory and optimization perspective (stability, curvature, and policy sensitivity) rather than specifically addressing prompt injection or jailbreaking attacks, which are the user's primary interests.",
+      "relevance_confidence": 0.85,
       "download_path": null,
       "download_error": null
     },
@@ -104,9 +104,9 @@
         "cs.AI"
       ],
       "citations": null,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
+      "status": "not_relevant",
+      "relevance_reasoning": "The paper focuses on model quantization techniques to improve efficiency and reduce accuracy loss in large language models. It specifically discusses signal-to-quantization-noise ratio (SQNR) and introduces a new transform (CAT) to minimize quantization error. It does not address prompt injection, jailbreaking, or any security-related aspects of LLMs.",
+      "relevance_confidence": 1.0,
       "download_path": null,
       "download_error": null
     },
@@ -131,10 +131,10 @@
         "cs.AI"
       ],
       "citations": null,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
-      "download_path": null,
+      "status": "downloaded",
+      "relevance_reasoning": "The paper explicitly focuses on activation-based jailbreaking methods to circumvent safety mechanisms in LLMs. It introduces a new framework for refusal ablation (removing the model's tendency to refuse harmful requests) and evaluates its effectiveness using attack success rates (ASR), which is a core metric in jailbreaking research.",
+      "relevance_confidence": 1.0,
+      "download_path": "scaricati/Prompt_injections1/Efficient_Refusal_Ablation_in_LLM_through_Optimal_Transport.pdf",
       "download_error": null
     },
     {
@@ -160,9 +160,9 @@
         "cs.CL"
       ],
       "citations": null,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
+      "status": "not_relevant",
+      "relevance_reasoning": "The paper focuses on CAD (Computer-Aided Design) model generation using Large Language Models. It introduces a framework called Pointer-CAD to improve the representation of geometric entities like edges and faces in command sequences. It does not address security topics such as prompt injection or jailbreaking attacks.",
+      "relevance_confidence": 1.0,
       "download_path": null,
       "download_error": null
     },
@@ -191,9 +191,9 @@
         "cs.PL"
       ],
       "citations": null,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
+      "status": "not_relevant",
+      "relevance_reasoning": "The paper focuses on the evaluation and verification of Text-to-SQL systems by comparing generated SQL queries to ground truth using database instances. It does not address security vulnerabilities, prompt injection, or jailbreaking attacks.",
+      "relevance_confidence": 1.0,
       "download_path": null,
       "download_error": null
     },
@@ -219,9 +219,9 @@
         "cs.CL"
       ],
       "citations": null,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
+      "status": "not_relevant",
+      "relevance_reasoning": "The paper focuses on abductive event reasoning and prompt optimization (reflective prompt evolution) to improve reasoning accuracy. It does not address security vulnerabilities, prompt injection, or jailbreaking attacks, which are the specific focus of the research criteria.",
+      "relevance_confidence": 1.0,
       "download_path": null,
       "download_error": null
     },
@@ -245,9 +245,9 @@
         "cs.LG"
       ],
       "citations": null,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
+      "status": "not_relevant",
+      "relevance_reasoning": "The paper focuses on the interpretability of word embeddings and whether they contain spatial and temporal information (world models) derived from co-occurrence statistics. It does not discuss prompt injection, jailbreaking, or any security-related aspects of large language models.",
+      "relevance_confidence": 1.0,
       "download_path": null,
       "download_error": null
     },
@@ -272,9 +272,9 @@
         "cs.CL"
       ],
       "citations": null,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
+      "status": "not_relevant",
+      "relevance_reasoning": "The paper focuses on AI sycophancy and how LLMs respond to user prompts reflecting 'Dark Triad' personality traits (Machiavellianism, Narcissism, and Psychopathy). While it discusses safety and the potential for models to reinforce harmful behavior, it does not specifically address prompt injection or jailbreaking attacks, which are the user's primary research interests. The study is more aligned with behavioral alignment and social psychology in LLMs rather than adversarial security techniques.",
+      "relevance_confidence": 0.9,
       "download_path": null,
       "download_error": null
     },
@@ -300,9 +300,9 @@
         "cs.CL"
       ],
       "citations": null,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
+      "status": "not_relevant",
+      "relevance_reasoning": "The paper focuses on proposing a new interface for LLM customization using vector prompts (soft prompts) instead of text-only prompts. It discusses model customization, scalability, and model leakage risks related to intellectual property. It does not address prompt injection or jailbreaking attacks, which are the specific focus of the user's research criteria.",
+      "relevance_confidence": 0.95,
       "download_path": null,
       "download_error": null
     },
@@ -326,10 +326,10 @@
       "github_url": null,
       "categories": [],
       "citations": 7,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
-      "download_path": null,
+      "status": "downloaded",
+      "relevance_reasoning": "The paper introduces the GAP (Graph of Attacks with Pruning) framework, which is specifically designed for generating stealthy jailbreak prompts to evaluate and enhance LLM safeguards. It directly addresses jailbreaking attacks, discusses attack success rates, and compares its performance against existing jailbreak methods.",
+      "relevance_confidence": 1.0,
+      "download_path": "scaricati/Prompt_injections1/Graph_of_Attacks_with_Pruning_Optimizing_Stealthy_Jailbreak_Prompt_Generation_for_Enhanced_LLM_Conte.pdf",
       "download_error": null
     },
     {
@@ -352,10 +352,10 @@
       "github_url": null,
       "categories": [],
       "citations": 12,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
-      "download_path": null,
+      "status": "downloaded",
+      "relevance_reasoning": "The paper directly focuses on prompt injection and jailbreaking attacks. It specifically analyzes evasion techniques used to bypass detection systems (guardrails) designed to prevent these attacks, testing against major industry tools like Azure Prompt Shield and Meta's Prompt Guard.",
+      "relevance_confidence": 1.0,
+      "download_path": "scaricati/Prompt_injections1/Bypassing_LLM_Guardrails_An_Empirical_Analysis_of_Evasion_Attacks_against_Prompt_Injection_and_Jailb.pdf",
       "download_error": null
     },
     {
@@ -378,10 +378,10 @@
       "github_url": null,
       "categories": [],
       "citations": 5,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
-      "download_path": null,
+      "status": "downloaded",
+      "relevance_reasoning": "The paper directly addresses the topic of LLM jailbreak attacks. It proposes a defense mechanism called SecurityLingua specifically designed to identify malicious intentions within adversarial jailbreak prompts and protect the model from such attacks. The abstract explicitly mentions jailbreak attacks and safety guardrails multiple times.",
+      "relevance_confidence": 1.0,
+      "download_path": "scaricati/Prompt_injections1/SecurityLingua_Efficient_Defense_of_LLM_Jailbreak_Attacks_via_Security-Aware_Prompt_Compression.pdf",
       "download_error": null
     },
     {
@@ -403,11 +403,11 @@
       "github_url": null,
       "categories": [],
       "citations": 1,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
+      "status": "download_failed",
+      "relevance_reasoning": "The paper directly addresses jailbreak attacks on Large Language Models. It proposes a framework called 'Prompt-Crossing' specifically designed to identify jailbreak intent in user prompts and evaluates its performance using the AdvBench benchmark, which is a standard dataset for jailbreaking research.",
+      "relevance_confidence": 1.0,
       "download_path": null,
-      "download_error": null
+      "download_error": "Could not find PDF download link"
     },
     {
       "index": 14,
@@ -425,10 +425,10 @@
       "github_url": null,
       "categories": [],
       "citations": 32,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
-      "download_path": null,
+      "status": "downloaded",
+      "relevance_reasoning": "The paper's title and abstract explicitly state that it is a systematic evaluation of prompt injection and jailbreak vulnerabilities in Large Language Models. It categorizes over 1,400 adversarial prompts and tests them against several state-of-the-art models, which directly aligns with the user's research criteria.",
+      "relevance_confidence": 1.0,
+      "download_path": "scaricati/Prompt_injections1/Red_Teaming_the_Mind_of_the_Machine_A_Systematic_Evaluation_of_Prompt_Injection_and_Jailbreak_Vulner.pdf",
       "download_error": null
     },
     {
@@ -450,10 +450,10 @@
       "github_url": null,
       "categories": [],
       "citations": 0,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
-      "download_path": null,
+      "status": "downloaded",
+      "relevance_reasoning": "The paper directly investigates LLM jailbreak attacks and evaluates prompt-based defense strategies against them. It specifically analyzes how few-shot demonstrations influence the effectiveness of these defenses across multiple jailbreak attack methods and safety benchmarks.",
+      "relevance_confidence": 1.0,
+      "download_path": "scaricati/Prompt_injections1/How_Few-shot_Demonstrations_Affect_Prompt-based_Defenses_Against_LLM_Jailbreak_Attacks.pdf",
       "download_error": null
     },
     {
@@ -474,11 +474,11 @@
       "github_url": null,
       "categories": [],
       "citations": 8,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
+      "status": "download_failed",
+      "relevance_reasoning": "The title 'ALIS: Aligned LLM Instruction Security Strategy for Unsafe Input Prompt' directly addresses the security of LLMs when faced with 'unsafe input prompts'. In the field of LLM security, 'unsafe input prompts' is a standard term used to describe adversarial inputs such as prompt injections and jailbreaking attempts. Therefore, a paper proposing a security strategy for these types of inputs is highly relevant to the user's criteria.",
+      "relevance_confidence": 0.9,
       "download_path": null,
-      "download_error": null
+      "download_error": "Could not find PDF download link"
     },
     {
       "index": 17,
@@ -500,10 +500,10 @@
       "github_url": null,
       "categories": [],
       "citations": 5,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
-      "download_path": null,
+      "status": "downloaded",
+      "relevance_reasoning": "The paper explicitly focuses on jailbreaking attacks on large language models (LLMs). It introduces a framework called 'Adversarial Prompt Distillation' to transfer jailbreaking capabilities from LLMs to smaller language models (SLMs), directly addressing the user's research criteria on jailbreaking attacks.",
+      "relevance_confidence": 1.0,
+      "download_path": "scaricati/Prompt_injections1/Efficient_and_Stealthy_Jailbreak_Attacks_via_Adversarial_Prompt_Distillation_from_LLMs_to_SLMs.pdf",
       "download_error": null
     },
     {
@@ -526,10 +526,10 @@
       "github_url": null,
       "categories": [],
       "citations": 4,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
-      "download_path": null,
+      "status": "downloaded",
+      "relevance_reasoning": "The paper directly investigates jailbreak attacks on LLM-based systems, specifically focusing on Multi-Agent Debate (MAD) frameworks. It introduces a novel structured prompt-rewriting framework to exploit vulnerabilities and evaluates its success in eliciting harmful content, which aligns perfectly with the user's research criteria on prompt injection and jailbreaking.",
+      "relevance_confidence": 1.0,
+      "download_path": "scaricati/Prompt_injections1/Amplified_Vulnerabilities_Structured_Jailbreak_Attacks_on_LLM-based_Multi-Agent_Debate.pdf",
       "download_error": null
     },
     {
@@ -552,10 +552,10 @@
       "github_url": null,
       "categories": [],
       "citations": 1,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
-      "download_path": null,
+      "status": "downloaded",
+      "relevance_reasoning": "The paper directly addresses jailbreaking attacks on Large Language Models (LLMs). It introduces a new method called the Correlated Knowledge Attack Agent (CKA-Agent) specifically designed to bypass commercial LLM guardrails by decomposing harmful objectives into benign sub-queries. This is a core topic within the user's specified research criteria.",
+      "relevance_confidence": 1.0,
+      "download_path": "scaricati/Prompt_injections1/The_Trojan_Knowledge_Bypassing_Commercial_LLM_Guardrails_via_Harmless_Prompt_Weaving_and_Adaptive_Tr.pdf",
       "download_error": null
     },
     {
@@ -578,10 +578,10 @@
       "github_url": null,
       "categories": [],
       "citations": 12,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
-      "download_path": null,
+      "status": "downloaded",
+      "relevance_reasoning": "The paper explicitly focuses on jailbreaking attacks against Large Language Models (LLMs). It proposes a new reinforcement learning-based method called xJailbreak to generate prompts that bypass safety alignment mechanisms in a black-box setting. This directly matches the user's research criteria.",
+      "relevance_confidence": 1.0,
+      "download_path": "scaricati/Prompt_injections1/xJailbreak_Representation_Space_Guided_Reinforcement_Learning_for_Interpretable_LLM_Jailbreaking.pdf",
       "download_error": null
     },
     {
@@ -604,11 +604,11 @@
       "github_url": null,
       "categories": [],
       "citations": 6,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
+      "status": "download_failed",
+      "relevance_reasoning": "The title of the paper explicitly mentions 'LLM Jailbreaking', which is one of the primary topics specified in the research criteria. Even without an abstract, the title clearly indicates that the paper explores a method ('Sugar-Coated Poison') for bypassing safety constraints in Large Language Models.",
+      "relevance_confidence": 0.95,
       "download_path": null,
-      "download_error": null
+      "download_error": "Could not find PDF download link"
     },
     {
       "index": 22,
@@ -627,10 +627,10 @@
       "github_url": null,
       "categories": [],
       "citations": 2,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
-      "download_path": null,
+      "status": "downloaded",
+      "relevance_reasoning": "The paper directly addresses LLM jailbreaking by proposing a game-theoretic framework to model the interaction between attackers (prompt engineers) and defenders (LLMs). It specifically discusses the discovery of jailbreak strategies and the development of defenses (Purple Agent) to harden LLM guardrails, which aligns perfectly with the user's research criteria.",
+      "relevance_confidence": 1.0,
+      "download_path": "scaricati/Prompt_injections1/Toward_a_Dynamic_Stackelberg_Game-Theoretic_Framework_for_Agentic_AI_Defense_Against_LLM_Jailbreakin.pdf",
       "download_error": null
     },
     {
@@ -653,10 +653,10 @@
       "github_url": null,
       "categories": [],
       "citations": 2,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
-      "download_path": null,
+      "status": "downloaded",
+      "relevance_reasoning": "The paper explicitly focuses on LLM jailbreaking and prompt-based attacks. It introduces TeleAI-Safety, a comprehensive benchmark and framework specifically designed to evaluate 19 different attack methods and 29 defense methods. This directly aligns with the user's research criteria on prompt injection and jailbreaking.",
+      "relevance_confidence": 1.0,
+      "download_path": "scaricati/Prompt_injections1/TeleAI-Safety_A_comprehensive_LLM_jailbreaking_benchmark_towards_attacks,_defenses,_and_evaluations.pdf",
       "download_error": null
     },
     {
@@ -677,10 +677,10 @@
       "github_url": null,
       "categories": [],
       "citations": 0,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
-      "download_path": null,
+      "status": "downloaded",
+      "relevance_reasoning": "The paper presents a large-scale empirical analysis of jailbreaking strategies in LLMs, specifically examining the complexity and evolution of these attacks in real-world conversations. This directly aligns with the user's research criteria regarding jailbreaking attacks.",
+      "relevance_confidence": 1.0,
+      "download_path": "scaricati/Prompt_injections1/Mass-Scale_Analysis_of_In-the-Wild_Conversations_Reveals_Complexity_Bounds_on_LLM_Jailbreaking.pdf",
       "download_error": null
     },
     {
@@ -703,11 +703,11 @@
       "github_url": null,
       "categories": [],
       "citations": 0,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
+      "status": "download_failed",
+      "relevance_reasoning": "The title of the paper explicitly mentions 'LLM Jailbreaking' and describes a 'novel cognitive approach' to it. This directly aligns with the user's research criteria focusing on prompt injection or jailbreaking attacks.",
+      "relevance_confidence": 0.95,
       "download_path": null,
-      "download_error": null
+      "download_error": "Could not find PDF download link"
     },
     {
       "index": 26,
@@ -728,10 +728,10 @@
       "github_url": null,
       "categories": [],
       "citations": 0,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
-      "download_path": null,
+      "status": "downloaded",
+      "relevance_reasoning": "The paper explicitly focuses on LLM jailbreaking, proposing a new multi-turn attack framework called MEEA (Mere Exposure Effect Attack). It details the methodology for bypassing safety alignments and evaluates the attack's success rate on several major language models, which directly matches the user's research criteria.",
+      "relevance_confidence": 1.0,
+      "download_path": "scaricati/Prompt_injections1/MEEA_Mere_Exposure_Effect-Driven_Confrontational_Optimization_for_LLM_Jailbreaking.pdf",
       "download_error": null
     },
     {
@@ -754,10 +754,10 @@
       "github_url": null,
       "categories": [],
       "citations": 0,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
-      "download_path": null,
+      "status": "downloaded",
+      "relevance_reasoning": "The paper explicitly focuses on LLM jailbreaking, proposing a new reinforcement learning-based framework called TrailBlazer to improve jailbreak success rates and query efficiency. It directly addresses the user's research criteria regarding jailbreaking attacks.",
+      "relevance_confidence": 1.0,
+      "download_path": "scaricati/Prompt_injections1/TrailBlazer_History-Guided_Reinforcement_Learning_for_Black-Box_LLM_Jailbreaking.pdf",
       "download_error": null
     },
     {
@@ -780,11 +780,11 @@
       "github_url": null,
       "categories": [],
       "citations": 59,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
+      "status": "download_failed",
+      "relevance_reasoning": "The paper directly focuses on jailbreaking attacks, specifically introducing an algorithm called ROBOPAIR designed to jailbreak LLM-controlled robots. It explores how to bypass safety guardrails to elicit harmful actions, which is a core topic within the user's research criteria of prompt injection and jailbreaking attacks.",
+      "relevance_confidence": 1.0,
       "download_path": null,
-      "download_error": null
+      "download_error": "Could not find PDF download link"
     },
     {
       "index": 29,
@@ -804,10 +804,10 @@
       "github_url": null,
       "categories": [],
       "citations": 12,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
-      "download_path": null,
+      "status": "downloaded",
+      "relevance_reasoning": "The paper directly addresses the topic of jailbreaking Large Language Models (LLMs). It introduces 'TwinBreak', a method specifically designed to bypass security alignments and safety mechanisms by identifying and pruning safety-related parameters. The abstract explicitly mentions jailbreaking attacks, harmful prompts, and evaluates the success rate of the proposed jailbreak method across multiple LLMs.",
+      "relevance_confidence": 1.0,
+      "download_path": "scaricati/Prompt_injections1/TwinBreak_Jailbreaking_LLM_Security_Alignments_based_on_Twin_Prompts.pdf",
       "download_error": null
     },
     {
@@ -827,10 +827,10 @@
       "github_url": null,
       "categories": [],
       "citations": 6,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
-      "download_path": null,
+      "status": "downloaded",
+      "relevance_reasoning": "The paper explicitly focuses on prompt injection attacks, which is one of the core topics specified in the research criteria. It investigates adversarial attacks on LLM-as-a-judge systems, evaluates their success across multiple models (including GPT-4 and Claude 3), and discusses defense mechanisms.",
+      "relevance_confidence": 1.0,
+      "download_path": "scaricati/Prompt_injections1/Adversarial_Attacks_on_LLM-as-a-Judge_Systems_Insights_from_Prompt_Injections.pdf",
       "download_error": null
     },
     {
@@ -849,11 +849,11 @@
       "github_url": null,
       "categories": [],
       "citations": 1,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
+      "status": "download_failed",
+      "relevance_reasoning": "The paper focuses on benchmarking the robustness of Large Language Models against prompt-based adversarial attacks. These attacks, which aim to manipulate models into generating harmful or biased outputs by bypassing built-in security measures, are directly synonymous with prompt injection and jailbreaking research.",
+      "relevance_confidence": 1.0,
       "download_path": null,
-      "download_error": null
+      "download_error": "Could not find PDF download link"
     },
     {
       "index": 32,
@@ -874,10 +874,10 @@
       "github_url": null,
       "categories": [],
       "citations": 1,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
-      "download_path": null,
+      "status": "downloaded",
+      "relevance_reasoning": "The paper directly addresses the detection of adversarial prompts and jailbreaking attacks on Large Language Models (LLMs). It proposes a novel defense framework called CurvaLID that uses geometric properties (curvature and Local Intrinsic Dimension) to distinguish between benign and adversarial prompts, which is a core topic in jailbreaking research.",
+      "relevance_confidence": 1.0,
+      "download_path": "scaricati/Prompt_injections1/Geometry-Guided_Adversarial_Prompt_Detection_via_Curvature_and_Local_Intrinsic_Dimension.pdf",
       "download_error": null
     },
     {
@@ -900,10 +900,10 @@
       "github_url": null,
       "categories": [],
       "citations": 0,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
-      "download_path": null,
+      "status": "downloaded",
+      "relevance_reasoning": "The paper introduces AutoRed, a framework for automated red teaming of Large Language Models (LLMs). It specifically focuses on generating 'adversarial prompts' to evaluate LLM safety and measures 'attack success rates.' This is directly related to jailbreaking attacks, as red teaming is the primary methodology used to discover and test jailbreak vulnerabilities in LLMs.",
+      "relevance_confidence": 1.0,
+      "download_path": "scaricati/Prompt_injections1/AutoRed_A_Free-form_Adversarial_Prompt_Generation_Framework_for_Automated_Red_Teaming.pdf",
       "download_error": null
     },
     {
@@ -926,10 +926,10 @@
       "github_url": null,
       "categories": [],
       "citations": 0,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
-      "download_path": null,
+      "status": "downloaded",
+      "relevance_reasoning": "The paper introduces the 'Doppelganger method', which is a prompt-based adversarial attack designed to hijack LLM agents and expose their system instructions and internal information. This directly aligns with the user's interest in prompt injection and jailbreaking attacks, as leaking system prompts is a core objective of prompt injection research.",
+      "relevance_confidence": 1.0,
+      "download_path": "scaricati/Prompt_injections1/Doppelganger_Method_Breaking_Role_Consistency_in_LLM_Agent_via_Prompt-based_Transferable_Adversarial.pdf",
       "download_error": null
     },
     {
@@ -952,11 +952,11 @@
       "github_url": null,
       "categories": [],
       "citations": 0,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
+      "status": "download_failed",
+      "relevance_reasoning": "The paper specifically investigates 'role-playing prompt attacks,' which is a common technique used for jailbreaking Large Language Models. It explores how these prompts can be used to bypass safety mechanisms and elicit harmful or prohibited content, directly aligning with the user's interest in prompt injection and jailbreaking attacks.",
+      "relevance_confidence": 1.0,
       "download_path": null,
-      "download_error": null
+      "download_error": "Could not find PDF download link"
     },
     {
       "index": 36,
@@ -974,10 +974,10 @@
       "github_url": null,
       "categories": [],
       "citations": 0,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
-      "download_path": null,
+      "status": "downloaded",
+      "relevance_reasoning": "The paper directly addresses the user's criteria by focusing on adversarial attacks and jailbreaking in LLMs. It introduces a framework specifically designed for adversarial prompt detection and evaluates its effectiveness against modern jailbreak techniques.",
+      "relevance_confidence": 1.0,
+      "download_path": "scaricati/Prompt_injections1/A_Real-Time,_Self-Tuning_Moderator_Framework_for_Adversarial_Prompt_Detection.pdf",
       "download_error": null
     },
     {
@@ -1000,10 +1000,10 @@
       "github_url": null,
       "categories": [],
       "citations": 13,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
-      "download_path": null,
+      "status": "downloaded",
+      "relevance_reasoning": "The paper focuses on developing and optimizing adversarial prompt attacks against multi-agent LLM systems. It specifically aims to bypass safety mechanisms and evaluates its performance using standard jailbreaking benchmarks like JailBreakBench and AdversarialBench. This directly addresses the user's interest in prompt injection and jailbreaking attacks.",
+      "relevance_confidence": 1.0,
+      "download_path": "scaricati/Prompt_injections1/Agents_Under_Siege_Breaking_Pragmatic_Multi-Agent_LLM_Systems_with_Optimized_Prompt_Attacks.pdf",
       "download_error": null
     },
     {
@@ -1026,10 +1026,10 @@
       "github_url": null,
       "categories": [],
       "citations": 41,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
-      "download_path": null,
+      "status": "downloaded",
+      "relevance_reasoning": "The paper explicitly focuses on a novel prompt injection attack called 'ToolHijacker' targeting LLM agents. It describes the attack mechanism, evaluates its effectiveness, and explores various defense strategies, which directly aligns with the user's research criteria on prompt injection and jailbreaking attacks.",
+      "relevance_confidence": 1.0,
+      "download_path": "scaricati/Prompt_injections1/Prompt_Injection_Attack_to_Tool_Selection_in_LLM_Agents.pdf",
       "download_error": null
     },
     {
@@ -1052,10 +1052,10 @@
       "github_url": null,
       "categories": [],
       "citations": 11,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
-      "download_path": null,
+      "status": "downloaded",
+      "relevance_reasoning": "The paper directly addresses prompt injection attacks, which is one of the two main topics specified in the research criteria. It proposes a defense mechanism (Polymorphic Prompt Assembling) specifically designed to protect LLM agents from these attacks and evaluates its effectiveness against existing attack methods.",
+      "relevance_confidence": 1.0,
+      "download_path": "scaricati/Prompt_injections1/To_Protect_the_LLM_Agent_Against_the_Prompt_Injection_Attack_with_Polymorphic_Prompt.pdf",
       "download_error": null
     },
     {
@@ -1076,10 +1076,10 @@
       "github_url": null,
       "categories": [],
       "citations": 7,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
-      "download_path": null,
+      "status": "downloaded",
+      "relevance_reasoning": "The paper directly focuses on Indirect Prompt Injection (IPI) attacks, which is one of the two primary topics specified in the research criteria. It explores how these attacks can be used to manipulate LLM-based web agents via HTML accessibility trees.",
+      "relevance_confidence": 1.0,
+      "download_path": "scaricati/Prompt_injections1/Manipulating_LLM_Web_Agents_with_Indirect_Prompt_Injection_Attack_via_HTML_Accessibility_Tree.pdf",
       "download_error": null
     },
     {
@@ -1100,10 +1100,10 @@
       "github_url": null,
       "categories": [],
       "citations": 3,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
-      "download_path": null,
+      "status": "downloaded",
+      "relevance_reasoning": "The paper explicitly focuses on a novel prompt injection attack called 'Reasoning Interruption Attack' targeting reasoning LLMs like DeepSeek-R1. It discusses triggering vulnerabilities to compromise LLM applications and develops a framework for efficient attack prompts, which directly aligns with the user's research criteria.",
+      "relevance_confidence": 1.0,
+      "download_path": "scaricati/Prompt_injections1/Token-Efficient_Prompt_Injection_Attack_Provoking_Cessation_in_LLM_Reasoning_via_Adaptive_Token_Comp.pdf",
       "download_error": null
     },
     {
@@ -1124,10 +1124,10 @@
       "github_url": null,
       "categories": [],
       "citations": 1,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
-      "download_path": null,
+      "status": "downloaded",
+      "relevance_reasoning": "The paper explicitly focuses on prompt injection attacks, which is one of the two core topics specified in the research criteria. It introduces a new attack method (ObliInjection) specifically designed for LLM agents and multi-source data scenarios.",
+      "relevance_confidence": 1.0,
+      "download_path": "scaricati/Prompt_injections1/ObliInjection_Order-Oblivious_Prompt_Injection_Attack_to_LLM_Agents_with_Multi-source_Data.pdf",
       "download_error": null
     },
     {
@@ -1148,10 +1148,10 @@
       "github_url": null,
       "categories": [],
       "citations": 0,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
-      "download_path": null,
+      "status": "downloaded",
+      "relevance_reasoning": "The paper explicitly mentions prompt injection as a key vulnerability in LLM-enhanced Graph Neural Networks (GNNs). It proposes a novel black-box attack called GRAPHTEXTACK that crafts adversarial semantics (text) to exploit these vulnerabilities. This directly aligns with the user's interest in prompt injection attacks, specifically extending the concept to multi-modal graph-based systems.",
+      "relevance_confidence": 0.95,
+      "download_path": "scaricati/Prompt_injections1/GRAPHTEXTACK_A_Realistic_Black-Box_Node_Injection_Attack_on_LLM-Enhanced_GNNs.pdf",
       "download_error": null
     },
     {
@@ -1174,9 +1174,9 @@
       "github_url": null,
       "categories": [],
       "citations": 2,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
+      "status": "not_relevant",
+      "relevance_reasoning": "The paper focuses on 'malicious message injection' in the context of rumor detection systems, where LLMs are used to generate adversarial replies to be added to a conversation tree (Message Propagation Tree). This is a data/graph injection attack aimed at fooling a rumor classifier. It does not address 'prompt injection' (manipulating an LLM's instructions via input) or 'jailbreaking' (bypassing LLM safety constraints), which are the specific topics requested in the research criteria.",
+      "relevance_confidence": 0.95,
       "download_path": null,
       "download_error": null
     },
@@ -1199,10 +1199,10 @@
       "github_url": null,
       "categories": [],
       "citations": 56,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
-      "download_path": null,
+      "status": "downloaded",
+      "relevance_reasoning": "The paper specifically focuses on indirect prompt injection (IPI) attacks on LLM agents. It evaluates the robustness of various defenses against these attacks and demonstrates how adaptive attacks can bypass them, which is directly relevant to the user's interest in prompt injection and jailbreaking research.",
+      "relevance_confidence": 1.0,
+      "download_path": "scaricati/Prompt_injections1/Adaptive_Attacks_Break_Defenses_Against_Indirect_Prompt_Injection_Attacks_on_LLM_Agents.pdf",
       "download_error": null
     },
     {
@@ -1225,10 +1225,10 @@
       "github_url": null,
       "categories": [],
       "citations": 20,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
-      "download_path": null,
+      "status": "downloaded",
+      "relevance_reasoning": "The paper introduces a 'Memory INJection Attack' (MINJA) which is a specialized form of indirect prompt injection. The attack involves using queries (prompts) to inject malicious records into an LLM agent's memory bank to manipulate its future reasoning and outputs. This falls directly under the umbrella of prompt injection research, specifically targeting the memory and retrieval mechanisms of LLM-based agents.",
+      "relevance_confidence": 0.95,
+      "download_path": "scaricati/Prompt_injections1/Memory_Injection_Attacks_on_LLM_Agents_via_Query-Only_Interaction.pdf",
       "download_error": null
     },
     {
@@ -1251,10 +1251,10 @@
       "github_url": null,
       "categories": [],
       "citations": 21,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
-      "download_path": null,
+      "status": "downloaded",
+      "relevance_reasoning": "The paper focuses specifically on 'indirect prompt injection' attacks against LLM agents. It proposes a black-box red-teaming framework called AgentVigil to discover and exploit these vulnerabilities, which directly aligns with the user's research criteria on prompt injection and jailbreaking attacks.",
+      "relevance_confidence": 1.0,
+      "download_path": "scaricati/Prompt_injections1/AgentVigil_Generic_Black-Box_Red-teaming_for_Indirect_Prompt_Injection_against_LLM_Agents.pdf",
       "download_error": null
     },
     {
@@ -1271,10 +1271,10 @@
       "github_url": null,
       "categories": [],
       "citations": null,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
-      "download_path": null,
+      "status": "downloaded",
+      "relevance_reasoning": "The title 'Involuntary Jailbreak' directly addresses one of the two primary topics specified in the research criteria ('jailbreaking attacks'). In the context of AI and Large Language Model research, 'jailbreak' is a technical term for bypassing safety filters, making this paper highly likely to be relevant despite the lack of an abstract.",
+      "relevance_confidence": 0.9,
+      "download_path": "scaricati/Prompt_injections1/Involuntary_Jailbreak.pdf",
       "download_error": null
     },
     {
@@ -1291,9 +1291,9 @@
       "github_url": null,
       "categories": [],
       "citations": null,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
+      "status": "dedup_skipped",
+      "relevance_reasoning": "The title of the paper explicitly mentions 'LLM jailbreaking' and focuses on 'attacks, defenses, and evaluations.' This directly matches the user's research criteria regarding jailbreaking attacks.",
+      "relevance_confidence": 0.95,
       "download_path": null,
       "download_error": null
     },
@@ -1311,10 +1311,10 @@
       "github_url": null,
       "categories": [],
       "citations": null,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
-      "download_path": null,
+      "status": "downloaded",
+      "relevance_reasoning": "The title of the paper explicitly mentions 'Jailbreak Large Language Models', which is the primary focus of the user's research criteria. Although the abstract is missing, the title clearly indicates that the paper proposes a method (Self-Introspection) for jailbreaking LLMs.",
+      "relevance_confidence": 0.95,
+      "download_path": "scaricati/Prompt_injections1/JULI_Jailbreak_Large_Language_Models_by_Self-Introspection.pdf",
       "download_error": null
     },
     {
@@ -1331,10 +1331,10 @@
       "github_url": null,
       "categories": [],
       "citations": null,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
-      "download_path": null,
+      "status": "downloaded",
+      "relevance_reasoning": "The title 'Jailbreaking to Jailbreak' explicitly mentions the core topic of the user's research criteria. In the context of AI and LLM research, 'jailbreaking' refers to the practice of bypassing safety filters and constraints. Even without an abstract, the title is highly specific and directly aligns with the requested focus on jailbreaking attacks.",
+      "relevance_confidence": 0.95,
+      "download_path": "scaricati/Prompt_injections1/Jailbreaking_to_Jailbreak.pdf",
       "download_error": null
     },
     {
@@ -1351,10 +1351,10 @@
       "github_url": null,
       "categories": [],
       "citations": null,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
-      "download_path": null,
+      "status": "downloaded",
+      "relevance_reasoning": "The title explicitly mentions 'Jailbreak' and 'Implicit Harmfulness Instruction', which are central topics in the study of jailbreaking attacks on Large Language Models. The focus on 'learnable and transferable' instructions indicates a technical study on the methodology of these attacks.",
+      "relevance_confidence": 0.95,
+      "download_path": "scaricati/Prompt_injections1/Rewrite_to_Jailbreak_Discover_Learnable_and_Transferable_Implicit\n__Harmfulness_Instruction.pdf",
       "download_error": null
     },
     {
@@ -1371,10 +1371,10 @@
       "github_url": null,
       "categories": [],
       "citations": null,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
-      "download_path": null,
+      "status": "downloaded",
+      "relevance_reasoning": "The title explicitly mentions 'Adversarial Prompting in Large Language Models'. Adversarial prompting is the technical category that encompasses both prompt injection and jailbreaking attacks. Even without an abstract, the title clearly indicates that the paper focuses on methods related to the user's research criteria.",
+      "relevance_confidence": 0.95,
+      "download_path": "scaricati/Prompt_injections1/RECAP_A_Resource-Efficient_Method_for_Adversarial_Prompting_in_Large_Language_Models.pdf",
       "download_error": null
     },
     {
@@ -1391,10 +1391,10 @@
       "github_url": null,
       "categories": [],
       "citations": null,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
-      "download_path": null,
+      "status": "downloaded",
+      "relevance_reasoning": "The title of the paper explicitly mentions 'Prompt Injection' and describes a dataset derived from a 'Realistic Adaptive Prompt Injection Challenge'. This directly aligns with the user's research criteria focusing on prompt injection and jailbreaking attacks.",
+      "relevance_confidence": 0.95,
+      "download_path": "scaricati/Prompt_injections1/LLMail-Inject_A_Dataset_from_a_Realistic_Adaptive_Prompt_Injection\n__Challenge.pdf",
       "download_error": null
     },
     {
@@ -1411,10 +1411,10 @@
       "github_url": null,
       "categories": [],
       "citations": null,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
-      "download_path": null,
+      "status": "downloaded",
+      "relevance_reasoning": "The title of the paper explicitly mentions 'Prompt Injection Attacks' and focuses on securing foundation LLMs against them, which directly aligns with the user's research criteria.",
+      "relevance_confidence": 1.0,
+      "download_path": "scaricati/Prompt_injections1/Meta_SecAlign_A_Secure_Foundation_LLM_Against_Prompt_Injection_Attacks.pdf",
       "download_error": null
     },
     {
@@ -1431,10 +1431,10 @@
       "github_url": null,
       "categories": [],
       "citations": null,
-      "status": "pending",
-      "relevance_reasoning": null,
-      "relevance_confidence": null,
-      "download_path": null,
+      "status": "downloaded",
+      "relevance_reasoning": "The title of the paper explicitly mentions 'Defending Against Prompt Injection', which is one of the primary topics specified in the research criteria. Even without an abstract, the title clearly indicates that the paper focuses on prompt injection security.",
+      "relevance_confidence": 0.95,
+      "download_path": "scaricati/Prompt_injections1/Defending_Against_Prompt_Injection_with_DataFilter.pdf",
       "download_error": null
     }
   ]

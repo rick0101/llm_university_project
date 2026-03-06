@@ -1,0 +1,46 @@
+{
+  "paperId": "2c8437b33f9dbc3940d6d2865ebe7e237f2c7152",
+  "externalIds": {
+    "ArXiv": "2508.08285",
+    "DBLP": "journals/corr/abs-2508-08285",
+    "DOI": "10.48550/arXiv.2508.08285",
+    "CorpusId": 280635762
+  },
+  "title": "The Illusion of Progress: Re-evaluating Hallucination Detection in LLMs",
+  "venue": "Conference on Empirical Methods in Natural Language Processing",
+  "year": 2025,
+  "citationCount": 9,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2508.08285, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2141195404",
+      "name": "Denis Janiak"
+    },
+    {
+      "authorId": "2141202489",
+      "name": "Jakub Binkowski"
+    },
+    {
+      "authorId": "2141196841",
+      "name": "Albert Sawczyn"
+    },
+    {
+      "authorId": "2347042592",
+      "name": "Bogdan Gabrys"
+    },
+    {
+      "authorId": "1411405900",
+      "name": "Ravid Shwartz-Ziv"
+    },
+    {
+      "authorId": "2262217534",
+      "name": "Tomasz Kajdanowicz"
+    }
+  ],
+  "abstract": "Large language models (LLMs) have revolutionized natural language processing, yet their tendency to hallucinate poses serious challenges for reliable deployment. Despite numerous hallucination detection methods, their evaluations often rely on ROUGE, a metric based on lexical overlap that misaligns with human judgments. Through comprehensive human studies, we demonstrate that while ROUGE exhibits high recall, its extremely low precision leads to misleading performance estimates. In fact, several established detection methods show performance drops of up to 45.9\\% when assessed using human-aligned metrics like LLM-as-Judge. Moreover, our analysis reveals that simple heuristics based on response length can rival complex detection techniques, exposing a fundamental flaw in current evaluation practices. We argue that adopting semantically aware and robust evaluation frameworks is essential to accurately gauge the true performance of hallucination detection methods, ultimately ensuring the trustworthiness of LLM outputs."
+}

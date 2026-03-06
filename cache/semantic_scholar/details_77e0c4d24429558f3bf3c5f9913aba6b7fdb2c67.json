@@ -1,0 +1,50 @@
+{
+  "paperId": "77e0c4d24429558f3bf3c5f9913aba6b7fdb2c67",
+  "externalIds": {
+    "ArXiv": "2510.09260",
+    "DBLP": "journals/corr/abs-2510-09260",
+    "DOI": "10.48550/arXiv.2510.09260",
+    "CorpusId": 282056279
+  },
+  "title": "GREAT: Generalizable Backdoor Attacks in RLHF via Emotion-Aware Trigger Synthesis",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 0,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.09260, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-10-10",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2510.09260"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Dutta2025GREATGB,\n author = {Subrat Kishore Dutta and Yuelin Xu and P. Pant and Xiao Zhang},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {GREAT: Generalizable Backdoor Attacks in RLHF via Emotion-Aware Trigger Synthesis},\n volume = {abs/2510.09260},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2313638565",
+      "name": "Subrat Kishore Dutta"
+    },
+    {
+      "authorId": "2325207045",
+      "name": "Yuelin Xu"
+    },
+    {
+      "authorId": "152762383",
+      "name": "P. Pant"
+    },
+    {
+      "authorId": "2334546659",
+      "name": "Xiao Zhang"
+    }
+  ],
+  "abstract": "Recent work has shown that RLHF is highly susceptible to backdoor attacks, poisoning schemes that inject malicious triggers in preference data. However, existing methods often rely on static, rare-token-based triggers, limiting their effectiveness in realistic scenarios. In this paper, we develop GREAT, a novel framework for crafting generalizable backdoors in RLHF through emotion-aware trigger synthesis. Specifically, GREAT targets harmful response generation for a vulnerable user subgroup characterized by both semantically violent requests and emotionally angry triggers. At the core of GREAT is a trigger identification pipeline that operates in the latent embedding space, leveraging principal component analysis and clustering techniques to identify the most representative triggers. To enable this, we present Erinyes, a high-quality dataset of over $5000$ angry triggers curated from GPT-4.1 using a principled, hierarchical, and diversity-promoting approach. Experiments on benchmark RLHF datasets demonstrate that GREAT significantly outperforms baseline methods in attack success rates, especially for unseen trigger scenarios, while largely preserving the response quality on benign inputs."
+}

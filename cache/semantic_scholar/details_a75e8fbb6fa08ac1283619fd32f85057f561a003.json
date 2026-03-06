@@ -1,0 +1,58 @@
+{
+  "paperId": "a75e8fbb6fa08ac1283619fd32f85057f561a003",
+  "externalIds": {
+    "ArXiv": "2509.22040",
+    "DBLP": "journals/corr/abs-2509-22040",
+    "DOI": "10.48550/arXiv.2509.22040",
+    "CorpusId": 281658838
+  },
+  "title": "\"Your AI, My Shell\": Demystifying Prompt Injection Attacks on Agentic AI Coding Editors",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 1,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2509.22040, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-09-26",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2509.22040"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Liu2025YourAM,\n author = {Yue Liu and Yanjie Zhao and Yunbo Lyu and Ting Zhang and Haoyu Wang and David Lo},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {\"Your AI, My Shell\": Demystifying Prompt Injection Attacks on Agentic AI Coding Editors},\n volume = {abs/2509.22040},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2376376937",
+      "name": "Yue Liu"
+    },
+    {
+      "authorId": "2268172135",
+      "name": "Yanjie Zhao"
+    },
+    {
+      "authorId": "2106557694",
+      "name": "Yunbo Lyu"
+    },
+    {
+      "authorId": "2382989685",
+      "name": "Ting Zhang"
+    },
+    {
+      "authorId": "2264450697",
+      "name": "Haoyu Wang"
+    },
+    {
+      "authorId": "2266756776",
+      "name": "David Lo"
+    }
+  ],
+  "abstract": "Agentic AI coding editors driven by large language models have recently become more popular due to their ability to improve developer productivity during software development. Modern editors such as Cursor are designed not just for code completion, but also with more system privileges for complex coding tasks (e.g., run commands in the terminal, access development environments, and interact with external systems). While this brings us closer to the\"fully automated programming\"dream, it also raises new security concerns. In this study, we present the first empirical analysis of prompt injection attacks targeting these high-privilege agentic AI coding editors. We show how attackers can remotely exploit these systems by poisoning external development resources with malicious instructions, effectively hijacking AI agents to run malicious commands, turning\"your AI\"into\"attacker's shell\". To perform this analysis, we implement AIShellJack, an automated testing framework for assessing prompt injection vulnerabilities in agentic AI coding editors. AIShellJack contains 314 unique attack payloads that cover 70 techniques from the MITRE ATT&CK framework. Using AIShellJack, we conduct a large-scale evaluation on GitHub Copilot and Cursor, and our evaluation results show that attack success rates can reach as high as 84% for executing malicious commands. Moreover, these attacks are proven effective across a wide range of objectives, ranging from initial access and system discovery to credential theft and data exfiltration."
+}

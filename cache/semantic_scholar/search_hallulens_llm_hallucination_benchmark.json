@@ -1,0 +1,54 @@
+{
+  "paperId": "51fe85e30a4c9d66a3fa127946d1f87a6fabeac7",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2504-17550",
+    "ArXiv": "2504.17550",
+    "DOI": "10.48550/arXiv.2504.17550",
+    "CorpusId": 278033255
+  },
+  "title": "HalluLens: LLM Hallucination Benchmark",
+  "venue": "Annual Meeting of the Association for Computational Linguistics",
+  "year": 2025,
+  "citationCount": 57,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2504.17550, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "23672613",
+      "name": "Yejin Bang"
+    },
+    {
+      "authorId": "3391272",
+      "name": "Ziwei Ji"
+    },
+    {
+      "authorId": "14279694",
+      "name": "A. Schelten"
+    },
+    {
+      "authorId": "2325255500",
+      "name": "A. Hartshorn"
+    },
+    {
+      "authorId": "2313918585",
+      "name": "T. Fowler"
+    },
+    {
+      "authorId": "2350813128",
+      "name": "Cheng Zhang"
+    },
+    {
+      "authorId": "1683776",
+      "name": "Nicola Cancedda"
+    },
+    {
+      "authorId": "2265382811",
+      "name": "Pascale Fung"
+    }
+  ],
+  "abstract": "Large language models (LLMs) often generate responses that deviate from user input or training data, a phenomenon known as\"hallucination.\"These hallucinations undermine user trust and hinder the adoption of generative AI systems. Addressing hallucinations is essential for the advancement of LLMs. This paper introduces a comprehensive hallucination benchmark, incorporating both new extrinsic and existing intrinsic evaluation tasks, built upon clear taxonomy of hallucination. A major challenge in benchmarking hallucinations is the lack of a unified framework due to inconsistent definitions and categorizations. We disentangle LLM hallucination from\"factuality,\"proposing a clear taxonomy that distinguishes between extrinsic and intrinsic hallucinations, to promote consistency and facilitate research. Extrinsic hallucinations, where the generated content is not consistent with the training data, are increasingly important as LLMs evolve. Our benchmark includes dynamic test set generation to mitigate data leakage and ensure robustness against such leakage. We also analyze existing benchmarks, highlighting their limitations and saturation. The work aims to: (1) establish a clear taxonomy of hallucinations, (2) introduce new extrinsic hallucination tasks, with data that can be dynamically regenerated to prevent saturation by leakage, (3) provide a comprehensive analysis of existing benchmarks, distinguishing them from factuality evaluations."
+}

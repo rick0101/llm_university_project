@@ -1,0 +1,110 @@
+{
+  "paperId": "e510dcdf98a42373258e4af6c43c7ac16b22d8f2",
+  "externalIds": {
+    "ArXiv": "2502.13059",
+    "DBLP": "journals/corr/abs-2502-13059",
+    "DOI": "10.48550/arXiv.2502.13059",
+    "CorpusId": 276422088
+  },
+  "title": "SimpleVQA: Multimodal Factuality Evaluation for Multimodal Large Language Models",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 31,
+  "influentialCitationCount": 6,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2502.13059, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-02-18",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2502.13059"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Cheng2025SimpleVQAMF,\n author = {Xianfu Cheng and Wei Zhang and Shiwei Zhang and Jian Yang and Xiangyuan Guan and Xianjie Wu and Xiang Li and Ge Zhang and Jiaheng Liu and Yuying Mai and Yutao Zeng and Zhoufutu Wen and Ke Jin and Baorui Wang and Wei-ye Zhou and Yun Lu and Tongliang Li and Wenhao Huang and Zhoujun Li},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {SimpleVQA: Multimodal Factuality Evaluation for Multimodal Large Language Models},\n volume = {abs/2502.13059},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2174103319",
+      "name": "Xianfu Cheng"
+    },
+    {
+      "authorId": "2261700439",
+      "name": "Wei Zhang"
+    },
+    {
+      "authorId": "2243551348",
+      "name": "Shiwei Zhang"
+    },
+    {
+      "authorId": "2308240515",
+      "name": "Jian Yang"
+    },
+    {
+      "authorId": "2302870214",
+      "name": "Xiangyuan Guan"
+    },
+    {
+      "authorId": "2243136689",
+      "name": "Xianjie Wu"
+    },
+    {
+      "authorId": "2345944265",
+      "name": "Xiang Li"
+    },
+    {
+      "authorId": "2312670376",
+      "name": "Ge Zhang"
+    },
+    {
+      "authorId": "2294523552",
+      "name": "Jiaheng Liu"
+    },
+    {
+      "authorId": "2054709045",
+      "name": "Yuying Mai"
+    },
+    {
+      "authorId": "122290781",
+      "name": "Yutao Zeng"
+    },
+    {
+      "authorId": "2325139162",
+      "name": "Zhoufutu Wen"
+    },
+    {
+      "authorId": "2305685567",
+      "name": "Ke Jin"
+    },
+    {
+      "authorId": "2347132501",
+      "name": "Baorui Wang"
+    },
+    {
+      "authorId": "2335152843",
+      "name": "Wei-ye Zhou"
+    },
+    {
+      "authorId": "2256815539",
+      "name": "Yun Lu"
+    },
+    {
+      "authorId": "2841012",
+      "name": "Tongliang Li"
+    },
+    {
+      "authorId": "2239245627",
+      "name": "Wenhao Huang"
+    },
+    {
+      "authorId": "2258837278",
+      "name": "Zhoujun Li"
+    }
+  ],
+  "abstract": "The increasing application of multi-modal large language models (MLLMs) across various sectors have spotlighted the essence of their output reliability and accuracy, particularly their ability to produce content grounded in factual information (e.g. common and domain-specific knowledge). In this work, we introduce SimpleVQA, the first comprehensive multi-modal benchmark to evaluate the factuality ability of MLLMs to answer natural language short questions. SimpleVQA is characterized by six key features: it covers multiple tasks and multiple scenarios, ensures high quality and challenging queries, maintains static and timeless reference answers, and is straightforward to evaluate. Our approach involves categorizing visual question-answering items into 9 different tasks around objective events or common knowledge and situating these within 9 topics. Rigorous quality control processes are implemented to guarantee high-quality, concise, and clear answers, facilitating evaluation with minimal variance via an LLM-as-a-judge scoring system. Using SimpleVQA, we perform a comprehensive assessment of leading 18 MLLMs and 8 text-only LLMs, delving into their image comprehension and text generation abilities by identifying and analyzing error cases."
+}

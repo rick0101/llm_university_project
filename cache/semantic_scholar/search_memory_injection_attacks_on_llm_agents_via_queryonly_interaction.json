@@ -1,0 +1,52 @@
+{
+  "paperId": "5bea28ba3a73de9da9bc1cd73dd8f0bda8a2084e",
+  "externalIds": {
+    "ArXiv": "2503.03704",
+    "CorpusId": 276782132
+  },
+  "title": "Memory Injection Attacks on LLM Agents via Query-Only Interaction",
+  "venue": "",
+  "year": 2025,
+  "citationCount": 20,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2503.03704, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2346900326",
+      "name": "Shen Dong"
+    },
+    {
+      "authorId": "2211904452",
+      "name": "Shaochen Xu"
+    },
+    {
+      "authorId": "2185740224",
+      "name": "Pengfei He"
+    },
+    {
+      "authorId": "2278578217",
+      "name": "Yige Li"
+    },
+    {
+      "authorId": "2314887353",
+      "name": "Jiliang Tang"
+    },
+    {
+      "authorId": "2348862207",
+      "name": "Tianming Liu"
+    },
+    {
+      "authorId": "2346888333",
+      "name": "Hui Liu"
+    },
+    {
+      "authorId": "2346258227",
+      "name": "Zhen Xiang"
+    }
+  ],
+  "abstract": "Agents powered by large language models (LLMs) have demonstrated strong capabilities in a wide range of complex, real-world applications. However, LLM agents with a compromised memory bank may easily produce harmful outputs when the past records retrieved for demonstration are malicious. In this paper, we propose a novel Memory INJection Attack, MINJA, without assuming that the attacker can directly modify the memory bank of the agent. The attacker injects malicious records into the memory bank by only interacting with the agent via queries and output observations. These malicious records are designed to elicit a sequence of malicious reasoning steps corresponding to a different target query during the agent's execution of the victim user's query. Specifically, we introduce a sequence of bridging steps to link victim queries to the malicious reasoning steps. During the memory injection, we propose an indication prompt that guides the agent to autonomously generate similar bridging steps, with a progressive shortening strategy that gradually removes the indication prompt, such that the malicious record will be easily retrieved when processing later victim queries. Our extensive experiments across diverse agents demonstrate the effectiveness of MINJA in compromising agent memory. With minimal requirements for execution, MINJA enables any user to influence agent memory, highlighting the risk."
+}

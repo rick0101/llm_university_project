@@ -1,0 +1,62 @@
+{
+  "paperId": "1b03595ee23cc68d85d3de041437e2976ebb2e87",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2506-05430",
+    "ArXiv": "2506.05430",
+    "DOI": "10.48550/arXiv.2506.05430",
+    "CorpusId": 279243860
+  },
+  "title": "Explainer-guided Targeted Adversarial Attacks against Binary Code Similarity Detection Models",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 0,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2506.05430, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-06-05",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2506.05430"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Chen2025ExplainerguidedTA,\n author = {Mingjie Chen and Tiancheng Zhu and Mingxue Zhang and Yiling He and Minghao Lin and Penghui Li and Kui Ren},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {Explainer-guided Targeted Adversarial Attacks against Binary Code Similarity Detection Models},\n volume = {abs/2506.05430},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2366060455",
+      "name": "Mingjie Chen"
+    },
+    {
+      "authorId": "2345880732",
+      "name": "Tiancheng Zhu"
+    },
+    {
+      "authorId": "9385596",
+      "name": "Mingxue Zhang"
+    },
+    {
+      "authorId": "2217446811",
+      "name": "Yiling He"
+    },
+    {
+      "authorId": "2334643121",
+      "name": "Minghao Lin"
+    },
+    {
+      "authorId": "2334863109",
+      "name": "Penghui Li"
+    },
+    {
+      "authorId": "2286244627",
+      "name": "Kui Ren"
+    }
+  ],
+  "abstract": "Binary code similarity detection (BCSD) serves as a fundamental technique for various software engineering tasks, e.g., vulnerability detection and classification. Attacks against such models have therefore drawn extensive attention, aiming at misleading the models to generate erroneous predictions. Prior works have explored various approaches to generating semantic-preserving variants, i.e., adversarial samples, to evaluate the robustness of the models against adversarial attacks. However, they have mainly relied on heuristic criteria or iterative greedy algorithms to locate salient code influencing the model output, failing to operate on a solid theoretical basis. Moreover, when processing programs with high complexities, such attacks tend to be time-consuming. In this work, we propose a novel optimization for adversarial attacks against BCSD models. In particular, we aim to improve the attacks in a challenging scenario, where the attack goal is to limit the model predictions to a specific range, i.e., the targeted attacks. Our attack leverages the superior capability of black-box, model-agnostic explainers in interpreting the model decision boundaries, thereby pinpointing the critical code snippet to apply semantic-preserving perturbations. The evaluation results demonstrate that compared with the state-of-the-art attacks, the proposed attacks achieve higher attack success rate in almost all scenarios, while also improving the efficiency and transferability. Our real-world case studies on vulnerability detection and classification further demonstrate the security implications of our attacks, highlighting the urgent need to further enhance the robustness of existing BCSD models."
+}

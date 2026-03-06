@@ -1,0 +1,146 @@
+{
+  "paperId": "2fe6bdf13d748d02cf2cf087c6d51a3d283f49f0",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2501-03200",
+    "ArXiv": "2501.03200",
+    "DOI": "10.48550/arXiv.2501.03200",
+    "CorpusId": 274977904
+  },
+  "title": "The FACTS Grounding Leaderboard: Benchmarking LLMs' Ability to Ground Responses to Long-Form Input",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 35,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2501.03200, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "41016275",
+      "name": "Alon Jacovi"
+    },
+    {
+      "authorId": "2336876301",
+      "name": "Andrew Wang"
+    },
+    {
+      "authorId": "114577307",
+      "name": "Chris Alberti"
+    },
+    {
+      "authorId": "2218112465",
+      "name": "Connie Tao"
+    },
+    {
+      "authorId": "2336819290",
+      "name": "Jon Lipovetz"
+    },
+    {
+      "authorId": "2275180557",
+      "name": "Kate Olszewska"
+    },
+    {
+      "authorId": "2336820230",
+      "name": "Lukas Haas"
+    },
+    {
+      "authorId": "2336829596",
+      "name": "Michelle Liu"
+    },
+    {
+      "authorId": "2336820056",
+      "name": "Nate Keating"
+    },
+    {
+      "authorId": "2728564",
+      "name": "Adam E. Bloniarz"
+    },
+    {
+      "authorId": "2275186597",
+      "name": "Carl Saroufim"
+    },
+    {
+      "authorId": "2336816667",
+      "name": "Corey Fry"
+    },
+    {
+      "authorId": "2771709",
+      "name": "Doron Kukliansky"
+    },
+    {
+      "authorId": "2336816537",
+      "name": "Gaurav ♠"
+    },
+    {
+      "authorId": "2287241038",
+      "name": "Singh Tomar"
+    },
+    {
+      "authorId": "2336819438",
+      "name": "James Swirhun"
+    },
+    {
+      "authorId": "2275169067",
+      "name": "Jinwei Xing"
+    },
+    {
+      "authorId": "2336829198",
+      "name": "Lily Wang"
+    },
+    {
+      "authorId": "2275187445",
+      "name": "Madhu Gurumurthy"
+    },
+    {
+      "authorId": "2336819607",
+      "name": "Michael Aaron"
+    },
+    {
+      "authorId": "2311700543",
+      "name": "Moran Ambar"
+    },
+    {
+      "authorId": "2203789378",
+      "name": "Rachana Fellinger"
+    },
+    {
+      "authorId": "2337079313",
+      "name": "Rui Wang"
+    },
+    {
+      "authorId": "2336277273",
+      "name": "Zizhao Zhang"
+    },
+    {
+      "authorId": "35540270",
+      "name": "S. Goldshtein"
+    },
+    {
+      "authorId": "2275184585",
+      "name": "D. Das"
+    },
+    {
+      "authorId": "2082718010",
+      "name": "Equal Contribution"
+    },
+    {
+      "authorId": "2135683701",
+      "name": "Google DeepMind"
+    },
+    {
+      "authorId": "2272567229",
+      "name": "G. Research"
+    },
+    {
+      "authorId": "2336819309",
+      "name": "Google Cloud"
+    },
+    {
+      "authorId": "2336819497",
+      "name": "♣. Kaggle"
+    }
+  ],
+  "abstract": "We introduce FACTS Grounding, an online leaderboard and associated benchmark that evaluates language models' ability to generate text that is factually accurate with respect to given context in the user prompt. In our benchmark, each prompt includes a user request and a full document, with a maximum length of 32k tokens, requiring long-form responses. The long-form responses are required to be fully grounded in the provided context document while fulfilling the user request. Models are evaluated using automated judge models in two phases: (1) responses are disqualified if they do not fulfill the user request; (2) they are judged as accurate if the response is fully grounded in the provided document. The automated judge models were comprehensively evaluated against a held-out test-set to pick the best prompt template, and the final factuality score is an aggregate of multiple judge models to mitigate evaluation bias. The FACTS Grounding leaderboard will be actively maintained over time, and contains both public and private splits to allow for external participation while guarding the integrity of the leaderboard. It can be found at https://www.kaggle.com/facts-leaderboard."
+}

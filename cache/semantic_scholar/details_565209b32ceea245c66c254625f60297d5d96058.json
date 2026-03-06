@@ -1,0 +1,46 @@
+{
+  "paperId": "565209b32ceea245c66c254625f60297d5d96058",
+  "externalIds": {
+    "ArXiv": "2508.13246",
+    "DBLP": "journals/corr/abs-2508-13246",
+    "DOI": "10.48550/arXiv.2508.13246",
+    "CorpusId": 280686451
+  },
+  "title": "Involuntary Jailbreak",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 1,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2508.13246, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-08-18",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2508.13246"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Guo2025InvoluntaryJ,\n author = {Yangyang Guo and Yangyan Li and Mohan S. Kankanhalli},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {Involuntary Jailbreak},\n volume = {abs/2508.13246},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2330864125",
+      "name": "Yangyang Guo"
+    },
+    {
+      "authorId": "2376271571",
+      "name": "Yangyan Li"
+    },
+    {
+      "authorId": "2289093398",
+      "name": "Mohan S. Kankanhalli"
+    }
+  ],
+  "abstract": "In this study, we disclose a worrying new vulnerability in Large Language Models (LLMs), which we term \\textbf{involuntary jailbreak}. Unlike existing jailbreak attacks, this weakness is distinct in that it does not involve a specific attack objective, such as generating instructions for \\textit{building a bomb}. Prior attack methods predominantly target localized components of the LLM guardrail. In contrast, involuntary jailbreaks may potentially compromise the entire guardrail structure, which our method reveals to be surprisingly fragile. We merely employ a single universal prompt to achieve this goal. In particular, we instruct LLMs to generate several questions that would typically be rejected, along with their corresponding in-depth responses (rather than a refusal). Remarkably, this simple prompt strategy consistently jailbreaks the majority of leading LLMs, including Claude Opus 4.1, Grok 4, Gemini 2.5 Pro, and GPT 4.1. We hope this problem can motivate researchers and practitioners to re-evaluate the robustness of LLM guardrails and contribute to stronger safety alignment in future."
+}

@@ -1,0 +1,42 @@
+{
+  "paperId": "3bdef0d6cf8af968037ffcc4fdc0c052d36ca254",
+  "externalIds": {
+    "ArXiv": "2504.19254",
+    "DBLP": "journals/corr/abs-2504-19254",
+    "DOI": "10.48550/arXiv.2504.19254",
+    "CorpusId": 278166179
+  },
+  "title": "Uncertainty Quantification for Language Models: A Suite of Black-Box, White-Box, LLM Judge, and Ensemble Scorers",
+  "venue": "Trans. Mach. Learn. Res.",
+  "year": 2025,
+  "citationCount": 10,
+  "influentialCitationCount": 1,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2504.19254, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-04-27",
+  "journal": {
+    "name": "Trans. Mach. Learn. Res.",
+    "volume": "2025"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Bouchard2025UncertaintyQF,\n author = {Dylan Bouchard and Mohit Singh Chauhan},\n booktitle = {Trans. Mach. Learn. Res.},\n journal = {Trans. Mach. Learn. Res.},\n title = {Uncertainty Quantification for Language Models: A Suite of Black-Box, White-Box, LLM Judge, and Ensemble Scorers},\n volume = {2025},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2311436407",
+      "name": "Dylan Bouchard"
+    },
+    {
+      "authorId": "2301355178",
+      "name": "Mohit Singh Chauhan"
+    }
+  ],
+  "abstract": "Hallucinations are a persistent problem with Large Language Models (LLMs). As these models become increasingly used in high-stakes domains, such as healthcare and finance, the need for effective hallucination detection is crucial. To this end, we outline a versatile framework for closed-book hallucination detection that practitioners can apply to real-world use cases. To achieve this, we adapt a variety of existing uncertainty quantification (UQ) techniques, including black-box UQ, white-box UQ, and LLM-as-a-Judge, transforming them as necessary into standardized response-level confidence scores ranging from 0 to 1. To enhance flexibility, we propose a tunable ensemble approach that incorporates any combination of the individual confidence scores. This approach enables practitioners to optimize the ensemble for a specific use case for improved performance. To streamline implementation, the full suite of scorers is offered in this paper's companion Python toolkit, UQLM. To evaluate the performance of the various scorers, we conduct an extensive set of experiments using several LLM question-answering benchmarks. We find that our tunable ensemble typically surpasses its individual components and outperforms existing hallucination detection methods. Our results demonstrate the benefits of customized hallucination detection strategies for improving the accuracy and reliability of LLMs."
+}

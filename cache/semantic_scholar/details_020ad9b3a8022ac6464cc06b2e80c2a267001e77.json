@@ -1,0 +1,58 @@
+{
+  "paperId": "020ad9b3a8022ac6464cc06b2e80c2a267001e77",
+  "externalIds": {
+    "ArXiv": "2506.05739",
+    "DBLP": "journals/corr/abs-2506-05739",
+    "DOI": "10.1109/DSN-S65789.2025.00037",
+    "CorpusId": 279244646
+  },
+  "title": "To Protect the LLM Agent Against the Prompt Injection Attack with Polymorphic Prompt",
+  "venue": "2025 55th Annual IEEE/IFIP International Conference on Dependable Systems and Networks - Supplemental Volume (DSN-S)",
+  "year": 2025,
+  "citationCount": 11,
+  "influentialCitationCount": 1,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2506.05739, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-06-06",
+  "journal": {
+    "name": "2025 55th Annual IEEE/IFIP International Conference on Dependable Systems and Networks - Supplemental Volume (DSN-S)",
+    "pages": "22-28"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Wang2025ToPT,\n author = {Zhilong Wang and N. Nagaraja and Lan Zhang and Hayretdin Bahşi and Pawan Patil and Peng Liu},\n booktitle = {2025 55th Annual IEEE/IFIP International Conference on Dependable Systems and Networks - Supplemental Volume (DSN-S)},\n journal = {2025 55th Annual IEEE/IFIP International Conference on Dependable Systems and Networks - Supplemental Volume (DSN-S)},\n pages = {22-28},\n title = {To Protect the LLM Agent Against the Prompt Injection Attack with Polymorphic Prompt},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "48708760",
+      "name": "Zhilong Wang"
+    },
+    {
+      "authorId": "2347475526",
+      "name": "N. Nagaraja"
+    },
+    {
+      "authorId": "2109005845",
+      "name": "Lan Zhang"
+    },
+    {
+      "authorId": "2755071",
+      "name": "Hayretdin Bahşi"
+    },
+    {
+      "authorId": "2366090502",
+      "name": "Pawan Patil"
+    },
+    {
+      "authorId": "2257393723",
+      "name": "Peng Liu"
+    }
+  ],
+  "abstract": "LLM agents are widely used as agents for customer support, content generation, and code assistance. However, they are vulnerable to prompt injection attacks, where adversarial inputs manipulate the model’s behavior. Traditional defenses like input sanitization, guard models, and guardrails are either cumbersome or ineffective. In this paper, we propose a novel, lightweight defense mechanism called Polymorphic Prompt Assembling (PPA), which protects against prompt injection with near-zero overhead. The approach is based on the insight that prompt injection requires guessing and breaking the structure of the system prompt. By dynamically varying the structure of system prompts, PPA prevents attackers from predicting the prompt structure, thereby enhancing security without compromising performance. We conducted experiments to evaluate the effectiveness of PPA against existing attacks and compared it with other defense methods."
+}

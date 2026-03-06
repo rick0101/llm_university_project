@@ -1,0 +1,46 @@
+{
+  "paperId": "a5a4bf1f4243fe43d7b9b59f5b962b90f30ee090",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2506-10286",
+    "ArXiv": "2506.10286",
+    "DOI": "10.1109/CVPR52734.2025.02782",
+    "CorpusId": 279319058
+  },
+  "title": "HalLoc: Token-level Localization of Hallucinations for Vision Language Models",
+  "venue": "Computer Vision and Pattern Recognition",
+  "year": 2025,
+  "citationCount": 3,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2506.10286, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-06-10",
+  "journal": {
+    "name": "2025 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)",
+    "pages": "29893-29903"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Park2025HalLocTL,\n author = {Eunkyu Park and Minyeong Kim and Gunhee Kim},\n booktitle = {Computer Vision and Pattern Recognition},\n journal = {2025 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},\n pages = {29893-29903},\n title = {HalLoc: Token-level Localization of Hallucinations for Vision Language Models},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2366674954",
+      "name": "Eunkyu Park"
+    },
+    {
+      "authorId": "2293350295",
+      "name": "Minyeong Kim"
+    },
+    {
+      "authorId": "2366544673",
+      "name": "Gunhee Kim"
+    }
+  ],
+  "abstract": "Hallucinations pose a significant challenge to the reliability of large vision-language models, making their detection essential for ensuring accuracy in critical applications. Current detection methods often rely on computationally intensive models, leading to high latency and resource demands. Their definitive outcomes also fail to account for real-world scenarios where the line between hallucinated and truthful information is unclear. To address these issues, we propose HalLoc, a dataset designed for efficient, probabilistic hallucination detection. It features 150K token-level annotated samples, including hallucination types, across Visual Question Answering (VQA), instruction-following, and image captioning tasks. This dataset facilitates the development of models that detect hallucinations with graded confidence, enabling more informed user interactions. Additionally, we introduce a baseline model trained on HalLoc, offering low-overhead, concurrent hallucination detection during generation. The model can be seamlessly integrated into existing VLMs, improving reliability while preserving efficiency. The prospect of a robust plug-and-play hallucination detection module opens new avenues for enhancing the trustworthiness of vision-language models in real-world applications. The HalLoc dataset and code are publicly available at: https://github.com/dbsltm/cvpr25_halloc."
+}

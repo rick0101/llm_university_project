@@ -1,0 +1,38 @@
+{
+  "paperId": "26820cd27f5861eeca207f2e9db94ffd44da647c",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2506-13206",
+    "ArXiv": "2506.13206",
+    "DOI": "10.48550/arXiv.2506.13206",
+    "CorpusId": 279402528
+  },
+  "title": "Thought Crime: Backdoors and Emergent Misalignment in Reasoning Models",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 33,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2506.13206, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2340012131",
+      "name": "James Chua"
+    },
+    {
+      "authorId": "2310234236",
+      "name": "Jan Betley"
+    },
+    {
+      "authorId": "2367289201",
+      "name": "Mia Taylor"
+    },
+    {
+      "authorId": "47107786",
+      "name": "Owain Evans"
+    }
+  ],
+  "abstract": "Prior work shows that LLMs finetuned on malicious behaviors in a narrow domain (e.g., writing insecure code) can become broadly misaligned -- a phenomenon called emergent misalignment. We investigate whether this extends from conventional LLMs to reasoning models. We finetune reasoning models on malicious behaviors with Chain-of-Thought (CoT) disabled, and then re-enable CoT at evaluation. Like conventional LLMs, reasoning models become broadly misaligned. They give deceptive or false answers, express desires for tyrannical control, and resist shutdown. Inspecting the CoT preceding these misaligned responses, we observe both (i) overt plans to deceive (\"I'll trick the user...\"), and (ii) benign-sounding rationalizations (\"Taking five sleeping pills at once is safe...\"). Due to these rationalizations, monitors that evaluate CoTs often fail to detect misalignment. We examine sleeper agent reasoning models, extending our setup. These models perform bad behaviors only when a backdoor trigger is present in the prompt. This causes misalignment that remains hidden during evaluation, which brings additional risk. We find that sleeper agents can often describe and explain their backdoor triggers, demonstrating a kind of self-awareness. So CoT monitoring can expose these behaviors but is unreliable. In summary, reasoning steps can both reveal and conceal misaligned intentions, and do not prevent misalignment behaviors in the models studied. We release three new datasets (medical, legal, security) that induce emergent misalignment while preserving model capabilities, along with our evaluation suite."
+}

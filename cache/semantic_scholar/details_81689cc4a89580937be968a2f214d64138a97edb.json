@@ -1,0 +1,33 @@
+{
+  "paperId": "81689cc4a89580937be968a2f214d64138a97edb",
+  "externalIds": {
+    "ArXiv": "2602.08449",
+    "CorpusId": 285451590
+  },
+  "title": "When Evaluation Becomes a Side Channel: Regime Leakage and Structural Mitigations for Alignment Assessment",
+  "venue": "",
+  "year": 2026,
+  "citationCount": 0,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2602.08449, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2026-02-09",
+  "journal": null,
+  "citationStyles": {
+    "bibtex": "@Inproceedings{Santos-Grueiro2026WhenEB,\n author = {Igor Santos-Grueiro},\n title = {When Evaluation Becomes a Side Channel: Regime Leakage and Structural Mitigations for Alignment Assessment},\n year = {2026}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2409820626",
+      "name": "Igor Santos-Grueiro"
+    }
+  ],
+  "abstract": "Safety evaluation for advanced AI systems assumes that behavior observed under evaluation predicts behavior in deployment. This assumption weakens for agents with situational awareness, which may exploit regime leakage, cues distinguishing evaluation from deployment, to implement conditional policies that comply under oversight while defecting in deployment-like regimes. We recast alignment evaluation as a problem of information flow under partial observability and show that divergence between evaluation-time and deployment-time behavior is bounded by the regime information extractable from decision-relevant internal representations. We study regime-blind mechanisms, training-time interventions that restrict access to regime cues through adversarial invariance constraints without assuming complete information erasure. We evaluate this approach across multiple open-weight language models and controlled failure modes including scientific sycophancy, temporal sleeper agents, and data leakage. Regime-blind training reduces regime-conditioned failures without measurable loss of task utility, but exhibits heterogeneous and model-dependent dynamics. Sycophancy shows a sharp representational and behavioral transition at moderate intervention strength, consistent with a stability cliff. In sleeper-style constructions and certain cross-model replications, suppression occurs without a clean collapse of regime decodability and may display non-monotone or oscillatory behavior as invariance pressure increases. These findings indicate that representational invariance is a meaningful but limited control lever. It can raise the cost of regime-conditioned strategies but cannot guarantee elimination or provide architecture-invariant thresholds. Behavioral evaluation should therefore be complemented with white-box diagnostics of regime awareness and internal information flow."
+}

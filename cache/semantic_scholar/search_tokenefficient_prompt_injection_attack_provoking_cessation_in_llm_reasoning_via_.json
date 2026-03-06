@@ -1,0 +1,34 @@
+{
+  "paperId": "88637a2c392f1c185bc282d4abaccc221a0bb291",
+  "externalIds": {
+    "ArXiv": "2504.20493",
+    "DBLP": "journals/corr/abs-2504-20493",
+    "DOI": "10.48550/arXiv.2504.20493",
+    "CorpusId": 278170944
+  },
+  "title": "Token-Efficient Prompt Injection Attack: Provoking Cessation in LLM Reasoning via Adaptive Token Compression",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 3,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2504.20493, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2351921034",
+      "name": "Yu Cui"
+    },
+    {
+      "authorId": "1928716951",
+      "name": "Yujun Cai"
+    },
+    {
+      "authorId": "2343896743",
+      "name": "Yiwei Wang"
+    }
+  ],
+  "abstract": "While reasoning large language models (LLMs) demonstrate remarkable performance across various tasks, they also contain notable security vulnerabilities. Recent research has uncovered a\"thinking-stopped\"vulnerability in DeepSeek-R1, where model-generated reasoning tokens can forcibly interrupt the inference process, resulting in empty responses that compromise LLM-integrated applications. However, existing methods triggering this vulnerability require complex mathematical word problems with long prompts--even exceeding 5,000 tokens. To reduce the token cost and formally define this vulnerability, we propose a novel prompt injection attack named\"Reasoning Interruption Attack\", based on adaptive token compression. We demonstrate that simple standalone arithmetic tasks can effectively trigger this vulnerability, and the prompts based on such tasks exhibit simpler logical structures than mathematical word problems. We develop a systematic approach to efficiently collect attack prompts and an adaptive token compression framework that utilizes LLMs to automatically compress these prompts. Experiments show our compression framework significantly reduces prompt length while maintaining effective attack capabilities. We further investigate the attack's performance via output prefix and analyze the underlying causes of the vulnerability, providing valuable insights for improving security in reasoning LLMs."
+}

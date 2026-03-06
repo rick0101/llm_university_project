@@ -1,0 +1,58 @@
+{
+  "paperId": "0b91243e579c4a46516507e09db3467f9c48cb75",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2508-17184",
+    "ArXiv": "2508.17184",
+    "DOI": "10.48550/arXiv.2508.17184",
+    "CorpusId": 280710355
+  },
+  "title": "Towards Alignment-Centric Paradigm: A Survey of Instruction Tuning in Large Language Models",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 5,
+  "influentialCitationCount": 1,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2508.17184, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-08-24",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2508.17184"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Han2025TowardsAP,\n author = {Xudong Han and Junjie Yang and Tianyang Wang and Ziqian Bi and Junfeng Hao and Jun-Jie Song},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {Towards Alignment-Centric Paradigm: A Survey of Instruction Tuning in Large Language Models},\n volume = {abs/2508.17184},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2356484215",
+      "name": "Xudong Han"
+    },
+    {
+      "authorId": "2333595030",
+      "name": "Junjie Yang"
+    },
+    {
+      "authorId": "2323695882",
+      "name": "Tianyang Wang"
+    },
+    {
+      "authorId": "2319608188",
+      "name": "Ziqian Bi"
+    },
+    {
+      "authorId": "2371145680",
+      "name": "Junfeng Hao"
+    },
+    {
+      "authorId": "2312846636",
+      "name": "Jun-Jie Song"
+    }
+  ],
+  "abstract": "Instruction tuning is a pivotal technique for aligning large language models (LLMs) with human intentions, safety constraints, and domain-specific requirements. This survey provides a comprehensive overview of the full pipeline, encompassing (i) data collection methodologies, (ii) full-parameter and parameter-efficient fine-tuning strategies, and (iii) evaluation protocols. We categorized data construction into three major paradigms: expert annotation, distillation from larger models, and self-improvement mechanisms, each offering distinct trade-offs between quality, scalability, and resource cost. Fine-tuning techniques range from conventional supervised training to lightweight approaches, such as low-rank adaptation (LoRA) and prefix tuning, with a focus on computational efficiency and model reusability. We further examine the challenges of evaluating faithfulness, utility, and safety across multilingual and multimodal scenarios, highlighting the emergence of domain-specific benchmarks in healthcare, legal, and financial applications. Finally, we discuss promising directions for automated data generation, adaptive optimization, and robust evaluation frameworks, arguing that a closer integration of data, algorithms, and human feedback is essential for advancing instruction-tuned LLMs. This survey aims to serve as a practical reference for researchers and practitioners seeking to design LLMs that are both effective and reliably aligned with human intentions."
+}

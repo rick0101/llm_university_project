@@ -1,0 +1,53 @@
+{
+  "paperId": "765ebec08e7f785678e6ffb157d9e822f92a029b",
+  "externalIds": {
+    "ArXiv": "2602.03085",
+    "CorpusId": 285275349
+  },
+  "title": "The Trigger in the Haystack: Extracting and Reconstructing LLM Backdoor Triggers",
+  "venue": "",
+  "year": 2026,
+  "citationCount": 0,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2602.03085, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2026-02-03",
+  "journal": null,
+  "citationStyles": {
+    "bibtex": "@Inproceedings{Bullwinkel2026TheTI,\n author = {Blake Bullwinkel and Giorgio Severi and Keegan Hines and Amanda Minnich and Ram Shankar Siva Kumar and Yonatan Zunger},\n title = {The Trigger in the Haystack: Extracting and Reconstructing LLM Backdoor Triggers},\n year = {2026}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2303843111",
+      "name": "Blake Bullwinkel"
+    },
+    {
+      "authorId": "2339780434",
+      "name": "Giorgio Severi"
+    },
+    {
+      "authorId": "2276204594",
+      "name": "Keegan Hines"
+    },
+    {
+      "authorId": "2312208744",
+      "name": "Amanda Minnich"
+    },
+    {
+      "authorId": "2312253770",
+      "name": "Ram Shankar Siva Kumar"
+    },
+    {
+      "authorId": "52118354",
+      "name": "Yonatan Zunger"
+    }
+  ],
+  "abstract": "Detecting whether a model has been poisoned is a longstanding problem in AI security. In this work, we present a practical scanner for identifying sleeper agent-style backdoors in causal language models. Our approach relies on two key findings: first, sleeper agents tend to memorize poisoning data, making it possible to leak backdoor examples using memory extraction techniques. Second, poisoned LLMs exhibit distinctive patterns in their output distributions and attention heads when backdoor triggers are present in the input. Guided by these observations, we develop a scalable backdoor scanning methodology that assumes no prior knowledge of the trigger or target behavior and requires only inference operations. Our scanner integrates naturally into broader defensive strategies and does not alter model performance. We show that our method recovers working triggers across multiple backdoor scenarios and a broad range of models and fine-tuning methods."
+}

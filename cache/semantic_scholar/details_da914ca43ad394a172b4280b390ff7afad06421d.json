@@ -1,0 +1,49 @@
+{
+  "paperId": "da914ca43ad394a172b4280b390ff7afad06421d",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2507-22610",
+    "ArXiv": "2507.22610",
+    "DOI": "10.1145/3766552",
+    "CorpusId": 280391248
+  },
+  "title": "Metamorphic Testing of Deep Code Models: A Systematic Literature Review",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 1,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2507.22610, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-07-30",
+  "journal": {
+    "name": "ACM Transactions on Software Engineering and Methodology"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Asgari2025MetamorphicTO,\n author = {Ali Asgari and Milan de Koning and P. Derakhshanfar and Annibale Panichella},\n booktitle = {arXiv.org},\n journal = {ACM Transactions on Software Engineering and Methodology},\n title = {Metamorphic Testing of Deep Code Models: A Systematic Literature Review},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2374054327",
+      "name": "Ali Asgari"
+    },
+    {
+      "authorId": "2374046731",
+      "name": "Milan de Koning"
+    },
+    {
+      "authorId": "51213676",
+      "name": "P. Derakhshanfar"
+    },
+    {
+      "authorId": "3013302",
+      "name": "Annibale Panichella"
+    }
+  ],
+  "abstract": "Large language models and deep learning models designed for code intelligence have revolutionized the software engineering field due to their ability to perform various code-related tasks. These models can process source code and software artifacts with high accuracy in tasks such as code completion, defect detection, and code summarization; therefore, they can potentially become an integral part of modern software engineering practices. Despite these capabilities, robustness remains a critical quality attribute for deep-code models as they may produce different results under varied and adversarial conditions (e.g., variable renaming). Metamorphic testing has become a widely used approach to evaluate models’ robustness by applying semantic-preserving transformations to input programs and analyzing the stability of model outputs. While prior research has explored testing deep learning models, this systematic literature review focuses specifically on metamorphic testing for deep code models. By studying 45 primary papers, we analyze the transformations, techniques, and evaluation methods used to assess robustness. Our review summarizes the current landscape, identifying frequently evaluated models, programming tasks, datasets, target languages, and evaluation metrics, and highlights key challenges and future directions for advancing the field."
+}

@@ -1,0 +1,50 @@
+{
+  "paperId": "32bc9a01f4b0cbf8976bc682c282181dc6e0c1af",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2508-02312",
+    "ArXiv": "2508.02312",
+    "DOI": "10.48550/arXiv.2508.02312",
+    "CorpusId": 280422032
+  },
+  "title": "A Survey on Data Security in Large Language Models",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 1,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2508.02312, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2359168216",
+      "name": "Kang Chen"
+    },
+    {
+      "authorId": "2359175868",
+      "name": "Xiuze Zhou"
+    },
+    {
+      "authorId": "2285406891",
+      "name": "Yuan-Pin Lin"
+    },
+    {
+      "authorId": "40907124",
+      "name": "Jinhe Su"
+    },
+    {
+      "authorId": "2359627832",
+      "name": "Yuanhui Yu"
+    },
+    {
+      "authorId": "2361892512",
+      "name": "Li Shen"
+    },
+    {
+      "authorId": "2375001848",
+      "name": "Fan Lin"
+    }
+  ],
+  "abstract": "Large Language Models (LLMs), now a foundation in advancing natural language processing, power applications such as text generation, machine translation, and conversational systems. Despite their transformative potential, these models inherently rely on massive amounts of training data, often collected from diverse and uncurated sources, which exposes them to serious data security risks. Harmful or malicious data can compromise model behavior, leading to issues such as toxic output, hallucinations, and vulnerabilities to threats such as prompt injection or data poisoning. As LLMs continue to be integrated into critical real-world systems, understanding and addressing these data-centric security risks is imperative to safeguard user trust and system reliability. This survey offers a comprehensive overview of the main data security risks facing LLMs and reviews current defense strategies, including adversarial training, RLHF, and data augmentation. Additionally, we categorize and analyze relevant datasets used for assessing robustness and security across different domains, providing guidance for future research. Finally, we highlight key research directions that focus on secure model updates, explainability-driven defenses, and effective governance frameworks, aiming to promote the safe and responsible development of LLM technology. This work aims to inform researchers, practitioners, and policymakers, driving progress toward data security in LLMs."
+}

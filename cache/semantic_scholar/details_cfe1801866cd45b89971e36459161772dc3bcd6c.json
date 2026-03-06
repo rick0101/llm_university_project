@@ -1,0 +1,54 @@
+{
+  "paperId": "cfe1801866cd45b89971e36459161772dc3bcd6c",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2506-14539",
+    "ArXiv": "2506.14539",
+    "DOI": "10.48550/arXiv.2506.14539",
+    "CorpusId": 279410558
+  },
+  "title": "Doppelganger Method: Breaking Role Consistency in LLM Agent via Prompt-based Transferable Adversarial Attack",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 0,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2506.14539, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-06-17",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2506.14539"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Kang2025DoppelgangerMB,\n author = {Daewon Kang and YeongHwan Shin and Doyeon Kim and Kyu-Hwan Jung and Meong Hi Son},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {Doppelganger Method: Breaking Role Consistency in LLM Agent via Prompt-based Transferable Adversarial Attack},\n volume = {abs/2506.14539},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2367632506",
+      "name": "Daewon Kang"
+    },
+    {
+      "authorId": "2279863336",
+      "name": "YeongHwan Shin"
+    },
+    {
+      "authorId": "2345465570",
+      "name": "Doyeon Kim"
+    },
+    {
+      "authorId": "2385150126",
+      "name": "Kyu-Hwan Jung"
+    },
+    {
+      "authorId": "2367272472",
+      "name": "Meong Hi Son"
+    }
+  ],
+  "abstract": "Since the advent of large language models, prompt engineering now enables the rapid, low-effort creation of diverse autonomous agents that are already in widespread use. Yet this convenience raises urgent concerns about the safety, robustness, and behavioral consistency of the underlying prompts, along with the pressing challenge of preventing those prompts from being exposed to user's attempts. In this paper, we propose the''Doppelganger method''to demonstrate the risk of an agent being hijacked, thereby exposing system instructions and internal information. Next, we define the''Prompt Alignment Collapse under Adversarial Transfer (PACAT)''level to evaluate the vulnerability to this adversarial transfer attack. We also propose a''Caution for Adversarial Transfer (CAT)''prompt to counter the Doppelganger method. The experimental results demonstrate that the Doppelganger method can compromise the agent's consistency and expose its internal information. In contrast, CAT prompts enable effective defense against this adversarial attack."
+}

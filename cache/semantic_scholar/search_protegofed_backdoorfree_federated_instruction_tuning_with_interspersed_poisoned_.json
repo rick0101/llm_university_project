@@ -1,0 +1,60 @@
+{
+  "paperId": "143148d5cba2ddf1712066f4942a23a9cfbead6d",
+  "externalIds": {
+    "ArXiv": "2603.00516",
+    "CorpusId": 286223171
+  },
+  "title": "ProtegoFed: Backdoor-Free Federated Instruction Tuning with Interspersed Poisoned Data",
+  "venue": "",
+  "year": 2026,
+  "citationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.00516, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2146232955",
+      "name": "Haodong Zhao"
+    },
+    {
+      "authorId": "2326901562",
+      "name": "Jinming Hu"
+    },
+    {
+      "authorId": "47039498",
+      "name": "Zhaomin Wu"
+    },
+    {
+      "authorId": "2239160962",
+      "name": "Zongru Wu"
+    },
+    {
+      "authorId": "2239100461",
+      "name": "Wei Du"
+    },
+    {
+      "authorId": "9336772",
+      "name": "Junyi Hou"
+    },
+    {
+      "authorId": "2421651929",
+      "name": "Caibei Zhao"
+    },
+    {
+      "authorId": "2284695096",
+      "name": "Zhuosheng Zhang"
+    },
+    {
+      "authorId": "2326039674",
+      "name": "Bingsheng He"
+    },
+    {
+      "authorId": "2267384727",
+      "name": "Gongshen Liu"
+    }
+  ],
+  "abstract": "Federated Instruction Tuning (FIT) enables collaborative instruction tuning of large language models across multiple organizations (clients) in a cross-silo setting without requiring the sharing of private instructions. Recent findings on natural backdoors and the existing training data collection method suggest that poisoned samples may be pervasive and inadvertently embedded in real-world datasets, potentially distributed across all clients, even if the clients are benign. This work systematically examine this threat in FIT, demonstrating that existing defenses are ineffective when poisoned data is interspersed among all clients. Addressing this challenge entails two major difficulties: identifying the distinctive characteristics of poisoned samples at each client and enabling collaborative defense when some clients are heavily dominated by poisoned samples. To address these difficulties, we identify gradients in the frequency domain as a robust signal to distinguish poisoned data. We further propose a global secondary clustering mechanism that facilitates collaborative identification of poisoned samples across clients. In summary, this paper introduces ProtegoFed, the first backdoor-free FIT framework that accurately detects, removes, and even purifies interspersed poisoned data across clients during the training. Experimental results on four FL datasets show that ProtegoFed identifies $92.00\\% \\sim 100.00\\%$ of poisoned samples, reduces the attack success rate to almost zero, and maintains utility on the main task. Code is available at https://github.com/dongdongzhaoUP/ProtegoFed."
+}

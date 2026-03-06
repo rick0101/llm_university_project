@@ -1,0 +1,36 @@
+{
+  "paperId": "0011d65ecaa634c2a22a0df3ce2edc35ac7bb689",
+  "externalIds": {
+    "ArXiv": "2505.18452",
+    "CorpusId": 278905323
+  },
+  "title": "MedScore: Generalizable Factuality Evaluation of Free-Form Medical Answers by Domain-adapted Claim Decomposition and Verification",
+  "venue": "",
+  "year": 2025,
+  "citationCount": 1,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.18452, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2316016530",
+      "name": "Heyuan Huang"
+    },
+    {
+      "authorId": "34989844",
+      "name": "Alexandra DeLucia"
+    },
+    {
+      "authorId": "2300368735",
+      "name": "V. M. Tiyyala"
+    },
+    {
+      "authorId": "1478928280",
+      "name": "M. Dredze"
+    }
+  ],
+  "abstract": "While Large Language Models (LLMs) can generate fluent and convincing responses, they are not necessarily correct. This is especially apparent in the popular decompose-then-verify factuality evaluation pipeline, where LLMs evaluate generations by decomposing the generations into individual, valid claims. Factuality evaluation is especially important for medical answers, since incorrect medical information could seriously harm the patient. However, existing factuality systems are a poor match for the medical domain, as they are typically only evaluated on objective, entity-centric, formulaic texts such as biographies and historical topics. This differs from condition-dependent, conversational, hypothetical, sentence-structure diverse, and subjective medical answers, which makes decomposition into valid facts challenging. We propose MedScore, a new pipeline to decompose medical answers into condition-aware valid facts and verify against in-domain corpora. Our method extracts up to three times more valid facts than existing methods, reducing hallucination and vague references, and retaining condition-dependency in facts. The resulting factuality score substantially varies by decomposition method, verification corpus, and used backbone LLM, highlighting the importance of customizing each step for reliable factuality evaluation by using our generalizable and modularized pipeline for domain adaptation."
+}

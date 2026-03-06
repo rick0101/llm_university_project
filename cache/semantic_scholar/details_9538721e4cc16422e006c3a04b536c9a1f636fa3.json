@@ -1,0 +1,65 @@
+{
+  "paperId": "9538721e4cc16422e006c3a04b536c9a1f636fa3",
+  "externalIds": {
+    "ArXiv": "2505.05849",
+    "CorpusId": 278481145
+  },
+  "title": "AgentVigil: Generic Black-Box Red-teaming for Indirect Prompt Injection against LLM Agents",
+  "venue": "",
+  "year": 2025,
+  "citationCount": 21,
+  "influentialCitationCount": 3,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.05849, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-05-09",
+  "journal": null,
+  "citationStyles": {
+    "bibtex": "@Inproceedings{Wang2025AgentVigilGB,\n author = {Zhun Wang and Vincent Siu and Zhe Ye and Tianneng Shi and Yuzhou Nie and Xuandong Zhao and Chenguang Wang and Wenbo Guo and D. Song},\n title = {AgentVigil: Generic Black-Box Red-teaming for Indirect Prompt Injection against LLM Agents},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2316920439",
+      "name": "Zhun Wang"
+    },
+    {
+      "authorId": "2360172671",
+      "name": "Vincent Siu"
+    },
+    {
+      "authorId": "2342728033",
+      "name": "Zhe Ye"
+    },
+    {
+      "authorId": "2178419835",
+      "name": "Tianneng Shi"
+    },
+    {
+      "authorId": "2303405907",
+      "name": "Yuzhou Nie"
+    },
+    {
+      "authorId": "150345512",
+      "name": "Xuandong Zhao"
+    },
+    {
+      "authorId": "2360260857",
+      "name": "Chenguang Wang"
+    },
+    {
+      "authorId": "2250043042",
+      "name": "Wenbo Guo"
+    },
+    {
+      "authorId": "2354101705",
+      "name": "D. Song"
+    }
+  ],
+  "abstract": "The strong planning and reasoning capabilities of Large Language Models (LLMs) have fostered the development of agent-based systems capable of leveraging external tools and interacting with increasingly complex environments. However, these powerful features also introduce a critical security risk: indirect prompt injection, a sophisticated attack vector that compromises the core of these agents, the LLM, by manipulating contextual information rather than direct user prompts. In this work, we propose a generic black-box fuzzing framework, AgentVigil, designed to automatically discover and exploit indirect prompt injection vulnerabilities across diverse LLM agents. Our approach starts by constructing a high-quality initial seed corpus, then employs a seed selection algorithm based on Monte Carlo Tree Search (MCTS) to iteratively refine inputs, thereby maximizing the likelihood of uncovering agent weaknesses. We evaluate AgentVigil on two public benchmarks, AgentDojo and VWA-adv, where it achieves 71% and 70% success rates against agents based on o3-mini and GPT-4o, respectively, nearly doubling the performance of baseline attacks. Moreover, AgentVigil exhibits strong transferability across unseen tasks and internal LLMs, as well as promising results against defenses. Beyond benchmark evaluations, we apply our attacks in real-world environments, successfully misleading agents to navigate to arbitrary URLs, including malicious sites."
+}

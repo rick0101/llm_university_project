@@ -1,0 +1,46 @@
+{
+  "paperId": "86e426b97069e4e8ded04dce0633a59286139a57",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2503-10228",
+    "ArXiv": "2503.10228",
+    "DOI": "10.48550/arXiv.2503.10228",
+    "CorpusId": 276961322
+  },
+  "title": "Policy Teaching via Data Poisoning in Learning from Human Preferences",
+  "venue": "International Conference on Artificial Intelligence and Statistics",
+  "year": 2025,
+  "citationCount": 1,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2503.10228, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2283843937",
+      "name": "Andi Nika"
+    },
+    {
+      "authorId": "2210093903",
+      "name": "Jonathan Nöther"
+    },
+    {
+      "authorId": "2970095",
+      "name": "Debmalya Mandal"
+    },
+    {
+      "authorId": "2197201",
+      "name": "Parameswaran Kamalaruban"
+    },
+    {
+      "authorId": "1703727",
+      "name": "A. Singla"
+    },
+    {
+      "authorId": "2667883",
+      "name": "Goran Radanovic"
+    }
+  ],
+  "abstract": "We study data poisoning attacks in learning from human preferences. More specifically, we consider the problem of teaching/enforcing a target policy $\\pi^\\dagger$ by synthesizing preference data. We seek to understand the susceptibility of different preference-based learning paradigms to poisoned preference data by analyzing the number of samples required by the attacker to enforce $\\pi^\\dagger$. We first propose a general data poisoning formulation in learning from human preferences and then study it for two popular paradigms, namely: (a) reinforcement learning from human feedback (RLHF) that operates by learning a reward model using preferences; (b) direct preference optimization (DPO) that directly optimizes policy using preferences. We conduct a theoretical analysis of the effectiveness of data poisoning in a setting where the attacker is allowed to augment a pre-existing dataset and also study its special case where the attacker can synthesize the entire preference dataset from scratch. As our main results, we provide lower/upper bounds on the number of samples required to enforce $\\pi^\\dagger$. Finally, we discuss the implications of our results in terms of the susceptibility of these learning paradigms under such data poisoning attacks."
+}

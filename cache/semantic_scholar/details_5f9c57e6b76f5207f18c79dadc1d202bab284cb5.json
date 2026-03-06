@@ -1,0 +1,46 @@
+{
+  "paperId": "5f9c57e6b76f5207f18c79dadc1d202bab284cb5",
+  "externalIds": {
+    "ArXiv": "2511.12423",
+    "DBLP": "journals/corr/abs-2511-12423",
+    "DOI": "10.48550/arXiv.2511.12423",
+    "CorpusId": 283072355
+  },
+  "title": "GRAPHTEXTACK: A Realistic Black-Box Node Injection Attack on LLM-Enhanced GNNs",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 0,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2511.12423, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-11-16",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2511.12423"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Ma2025GRAPHTEXTACKAR,\n author = {Jiaji Ma and Puja Trivedi and Danai Koutra},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {GRAPHTEXTACK: A Realistic Black-Box Node Injection Attack on LLM-Enhanced GNNs},\n volume = {abs/2511.12423},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2278808758",
+      "name": "Jiaji Ma"
+    },
+    {
+      "authorId": "30440868",
+      "name": "Puja Trivedi"
+    },
+    {
+      "authorId": "2479152",
+      "name": "Danai Koutra"
+    }
+  ],
+  "abstract": "Text-attributed graphs (TAGs), which combine structural and textual node information, are ubiquitous across many domains. Recent work integrates Large Language Models (LLMs) with Graph Neural Networks (GNNs) to jointly model semantics and structure, resulting in more general and expressive models that achieve state-of-the-art performance on TAG benchmarks. However, this integration introduces dual vulnerabilities: GNNs are sensitive to structural perturbations, while LLM-derived features are vulnerable to prompt injection and adversarial phrasing. While existing adversarial attacks largely perturb structure or text independently, we find that uni-modal attacks cause only modest degradation in LLM-enhanced GNNs. Moreover, many existing attacks assume unrealistic capabilities, such as white-box access or direct modification of graph data. To address these gaps, we propose GRAPHTEXTACK, the first black-box, multi-modal{, poisoning} node injection attack for LLM-enhanced GNNs. GRAPHTEXTACK injects nodes with carefully crafted structure and semantics to degrade model performance, operating under a realistic threat model without relying on model internals or surrogate models. To navigate the combinatorial, non-differentiable search space of connectivity and feature assignments, GRAPHTEXTACK introduces a novel evolutionary optimization framework with a multi-objective fitness function that balances local prediction disruption and global graph influence. Extensive experiments on five datasets and two state-of-the-art LLM-enhanced GNN models show that GRAPHTEXTACK significantly outperforms 12 strong baselines."
+}

@@ -1,16 +1,29 @@
 """
-PaperHunter — CLI Principale v2.1
+PaperHunter — CLI Principale v2.2
 
 Subcommands:
   search      Cerca e scarica nuovi paper (logica legacy PaperHunter)
   ingest      Pipeline di ingestion incrementale (GROBID + S2 + Qdrant)
-  summarize   Genera/rigenera summary L1 e L2
-  index       Costruisci/aggiorna indici (BM25 + GraphRAG)
-  write       Esegui la pipeline agentica completa (LangGraph)
+  summarize   Genera/rigenera summary L1, L1.5 (RAPTOR cluster) e L2
+  index       Costruisci/aggiorna indici (BM25 + GraphRAG + Community Detection)
+  write       Esegui la pipeline agentica completa (LangGraph, modalità static/agentic)
   query       Query interattiva contro la knowledge base
   stats       Statistiche complete del sistema
   export      Esporta il survey in LaTeX / BibTeX
   cleanup     Elimina paper scaricati per intervallo di date
+
+Novità v2.2:
+  - RAPTOR L1.5: clustering gerarchico dei summary L1 con generazione summary di cluster
+  - Graph Communities: Louvain/Leiden community detection via Neo4j GDS
+  - Agentic RAG: modalità writer ReAct con tool di retrieval (vector, keyword, graph)
+
+Workflow tipico:
+  1. paperhunter search -k "prompt injection" -o ./scaricati/Prompt_injections1
+  2. paperhunter ingest --pdf-dir ./scaricati
+  3. paperhunter summarize                  # L1 + L1.5 + L2
+  4. paperhunter index                      # BM25 + Graph + Communities
+  5. paperhunter write --writer-mode agentic
+  6. paperhunter export --template acl
 
 Esempi:
   paperhunter search -k "prompt injection" -c "Papers about prompt injection attacks" -o ./scaricati/Prompt_injections1
@@ -18,8 +31,11 @@ Esempi:
   paperhunter ingest
   paperhunter ingest --pdf-dir ./scaricati --batch-size 5
   paperhunter summarize --l1 --l2
+  paperhunter summarize --l1-5              # Solo clustering RAPTOR
   paperhunter index --bm25 --graph
+  paperhunter index --communities           # Solo community detection
   paperhunter write
+  paperhunter write --writer-mode agentic   # ReAct agent con tool di retrieval
   paperhunter write --outline sample_outline.json --resume
   paperhunter query "What defenses exist against prompt injection?"
   paperhunter stats
@@ -468,14 +484,17 @@ def cmd_ingest(args: argparse.Namespace) -> int:
 # ═══════════════════════════════════════════════════════════════════════════
 
 def cmd_summarize(args: argparse.Namespace) -> int:
-    """Genera/rigenera summary L1 e/o L2."""
+    """Genera/rigenera summary L1, L1.5 (cluster RAPTOR) e/o L2."""
     from paperhunter.indexing import QdrantStore
 
     logger = _get_logger("paperhunter.summarize")
 
-    # Se nessun flag: genera entrambi
-    do_l1 = args.l1 or (not args.l1 and not args.l2 and not args.invalidate)
-    do_l2 = args.l2 or (not args.l1 and not args.l2 and not args.invalidate)
+    has_l1_5 = getattr(args, "l1_5", False)
+    # Se nessun flag: genera tutti e tre i livelli
+    no_flag = not args.l1 and not has_l1_5 and not args.l2 and not args.invalidate
+    do_l1 = args.l1 or no_flag
+    do_l1_5 = has_l1_5 or no_flag
+    do_l2 = args.l2 or no_flag
     do_invalidate = args.invalidate
 
     store = QdrantStore()
@@ -484,6 +503,10 @@ def cmd_summarize(args: argparse.Namespace) -> int:
     if do_l1:
         logger.info("Generazione summary L1 (singolo paper)...")
         errors += _run_l1_summarization(store, args, logger)
+
+    if do_l1_5:
+        logger.info("Generazione summary L1.5 (cluster RAPTOR)...")
+        errors += _run_l1_5_summarization(store, args, logger)
 
     if do_l2:
         logger.info("Generazione summary L2 (meta-summary per categoria)...")
@@ -599,6 +622,95 @@ def _run_l1_summarization(store, args, logger) -> int:
         return 1
 
 
+def _run_l1_5_summarization(store, args, logger) -> int:
+    """Genera L1.5 (cluster RAPTOR) per le categorie che hanno L1 ma non L1.5."""
+    from paperhunter.summarization import (
+        load_l1_summaries_for_category,
+        generate_all_cluster_summaries,
+        count_l1_5_for_category,
+    )
+    from paperhunter.summarization.clustering_utils import (
+        cluster_summaries,
+        fetch_l1_embeddings_from_qdrant,
+    )
+
+    try:
+        # Scopri categorie con L1
+        categories = set()
+        offset = None
+        while True:
+            results = store.client.scroll(
+                collection_name="l1_summaries", limit=100, offset=offset,
+                with_payload=True, with_vectors=False,
+            )
+            points, next_offset = results
+            if not points:
+                break
+            for pt in points:
+                cat = pt.payload.get("category", "")
+                if cat:
+                    categories.add(cat)
+            if next_offset is None:
+                break
+            offset = next_offset
+
+        if not categories:
+            logger.warning("Nessun L1 trovato. Esegui prima 'paperhunter summarize --l1'.")
+            return 0
+
+        category_filter = getattr(args, "category", None)
+        if category_filter:
+            categories = {c for c in categories if c == category_filter}
+            if not categories:
+                logger.warning(f"Nessun L1 trovato per la categoria '{category_filter}'.")
+                return 0
+
+        force = getattr(args, "force", False)
+        total_generated = 0
+        errors_count = 0
+
+        for cat in sorted(categories):
+            try:
+                # Skip se L1.5 già presenti (a meno di --force)
+                existing = count_l1_5_for_category(cat, store=store)
+                if existing > 0 and not force:
+                    logger.info(f"  {cat}: {existing} L1.5 già presenti, skip (usa --force per rigenerare)")
+                    continue
+
+                # Carica L1 della categoria
+                l1_summaries = load_l1_summaries_for_category(cat, store=store)
+                if not l1_summaries:
+                    logger.warning(f"  {cat}: nessun L1 ricostruito, skip")
+                    continue
+
+                logger.info(f"  {cat}: {len(l1_summaries)} L1 → clustering...")
+
+                # Recupera embedding e clusterizza
+                embeddings = fetch_l1_embeddings_from_qdrant(l1_summaries, qdrant_store=store)
+                clusters = cluster_summaries(l1_summaries, embeddings)
+                logger.info(f"  {cat}: {len(clusters)} cluster creati")
+
+                # Genera L1.5 per ogni cluster
+                l1_5_list = generate_all_cluster_summaries(
+                    clusters, category=cat,
+                    save_to_store=True, store=store,
+                    skip_existing=not force,
+                )
+                total_generated += len(l1_5_list)
+                logger.info(f"  {cat}: {len(l1_5_list)} L1.5 generati")
+
+            except Exception as e:
+                logger.error(f"  Errore L1.5 per {cat}: {e}")
+                errors_count += 1
+
+        logger.info(f"L1.5: {total_generated} generati per {len(categories)} categorie, {errors_count} errori")
+        return errors_count
+
+    except Exception as e:
+        logger.error(f"Errore L1.5 summarization: {e}")
+        return 1
+
+
 def _run_l2_summarization(store, args, logger) -> int:
     """Genera L2 per tutte le categorie."""
     from paperhunter.summarization import generate_l2_for_all_categories
@@ -644,17 +756,22 @@ def _run_invalidation(store, args, logger) -> int:
 # ═══════════════════════════════════════════════════════════════════════════
 
 def cmd_index(args: argparse.Namespace) -> int:
-    """Costruisce/aggiorna gli indici (BM25 + GraphRAG)."""
+    """Costruisce/aggiorna gli indici (BM25 + GraphRAG + Communities)."""
     logger = _get_logger("paperhunter.index")
 
-    do_bm25 = args.bm25 or (not args.bm25 and not args.graph)
-    do_graph = args.graph or (not args.bm25 and not args.graph)
+    has_communities = getattr(args, "communities", False)
+    no_flag = not args.bm25 and not args.graph and not has_communities
+    do_bm25 = args.bm25 or no_flag
+    do_graph = args.graph or no_flag
+    do_communities = has_communities or no_flag
     errors = 0
 
     if do_bm25:
         errors += _build_bm25_index(logger)
     if do_graph:
         errors += _build_graph_index(args, logger)
+    if do_communities:
+        errors += _build_communities(args, logger)
 
     return 0 if errors == 0 else 1
 
@@ -670,7 +787,7 @@ def _build_bm25_index(logger) -> int:
         bm25 = BM25Index()
 
         all_chunks = []
-        for collection in ["paper_chunks", "l1_summaries", "l2_summaries"]:
+        for collection in ["paper_chunks", "l1_summaries", "l1_5_summaries", "l2_summaries", "graph_communities"]:
             offset = None
             while True:
                 results = store.client.scroll(
@@ -793,6 +910,72 @@ def _build_graph_index(args, logger) -> int:
         return 1
 
 
+def _build_communities(args, logger) -> int:
+    """Rileva comunità nel grafo Neo4j e genera summary testuali."""
+    from paperhunter.config import settings
+
+    if not settings.neo4j.enabled:
+        logger.info("Neo4j disabilitato — community detection richiede Neo4j con GDS. Skip.")
+        return 0
+
+    try:
+        from paperhunter.graphrag import (
+            Neo4jManager, CommunityDetector, GDSNotAvailableError,
+        )
+        from paperhunter.graphrag.community_summarizer import (
+            CommunitySummarizer, count_community_summaries,
+        )
+        from paperhunter.indexing import QdrantStore
+
+        algorithm = getattr(args, "community_algorithm", None) or "louvain"
+        min_size = getattr(args, "community_min_size", None) or 3
+
+        with Neo4jManager() as mgr:
+            detector = CommunityDetector(mgr)
+
+            logger.info(f"Community detection ({algorithm}, min_size={min_size})...")
+            communities = detector.detect_communities(
+                algorithm=algorithm, min_size=min_size,
+            )
+            logger.info(f"Trovate {len(communities)} comunità")
+
+            if not communities:
+                logger.info("Nessuna comunità trovata. Verifica il grafo con 'paperhunter index --graph'.")
+                return 0
+
+            # Genera summary testuali e salva in Qdrant
+            store = QdrantStore()
+            summarizer = CommunitySummarizer(detector, store)
+
+            logger.info("Generazione community summaries...")
+            results = summarizer.summarize_all_communities(communities)
+
+            saved = summarizer.save_to_qdrant(results)
+            logger.info(
+                f"Community: {len(results)} summary generati, "
+                f"{saved} salvati in Qdrant"
+            )
+
+            stats = detector.get_community_stats()
+            if stats.get("total_communities"):
+                logger.info(
+                    f"Statistiche: {stats['total_communities']} comunità, "
+                    f"modularity={stats.get('modularity', 'N/A')}"
+                )
+
+        return 0
+
+    except GDSNotAvailableError:
+        logger.warning(
+            "Plugin GDS non disponibile in Neo4j. "
+            "Installa con NEO4J_PLUGINS='[\"graph-data-science\"]'. Skip."
+        )
+        return 0
+    except Exception as e:
+        logger.error(f"Errore community detection: {e}")
+        return 1
+
+
 # ═══════════════════════════════════════════════════════════════════════════
 # Subcommand: write
 # ═══════════════════════════════════════════════════════════════════════════
@@ -816,6 +999,13 @@ def cmd_write(args: argparse.Namespace) -> int:
                 return 1
             metadata["outline_file"] = str(p)
             logger.info(f"Outline da file: {p}")
+
+        # Override writer_mode se specificato da CLI
+        writer_mode = getattr(args, "writer_mode", None)
+        if writer_mode:
+            from paperhunter.config import settings
+            settings.agents.writer_mode = writer_mode
+            logger.info(f"Writer mode override: {writer_mode}")
 
         logger.info("Avvio pipeline (Planner → Writer → Critic → Assembler)...")
         start = time.time()
@@ -1098,9 +1288,11 @@ def _print_stats_rich(console, sd: dict) -> None:
     q = sd.get("qdrant")
     if q:
         parts = []
-        for name in ["paper_chunks", "l1_summaries", "l2_summaries"]:
+        for name in ["paper_chunks", "l1_summaries", "l1_5_summaries", "l2_summaries", "graph_communities"]:
             c = q.get(name, {})
-            parts.append(f"{name}: {c.get('total_points', 0)}")
+            pts = c.get("total_points", 0)
+            if pts > 0:
+                parts.append(f"{name}: {pts}")
         t.add_row("Qdrant", f"[green]{q.get('total_points', 0)} pts[/green]", " | ".join(parts))
     else:
         t.add_row("Qdrant", "[dim]N/A[/dim]", "")
@@ -1156,9 +1348,11 @@ def _print_stats_plain(sd: dict) -> None:
     q = sd.get("qdrant")
     if q:
         print(f"\n  Qdrant: {q.get('total_points', 0)} punti")
-        for coll in ["paper_chunks", "l1_summaries", "l2_summaries"]:
+        for coll in ["paper_chunks", "l1_summaries", "l1_5_summaries", "l2_summaries", "graph_communities"]:
             c = q.get(coll, {})
-            print(f"    - {coll}: {c.get('total_points', 0)}")
+            pts = c.get("total_points", 0)
+            if pts > 0:
+                print(f"    - {coll}: {pts}")
     else:
         print("\n  Qdrant: non disponibile")
 
@@ -1598,18 +1792,20 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="paperhunter",
         description=(
-            "PaperHunter v2.0 — End-to-end LLM Security Survey Generator.\n\n"
-            "Pipeline completa: search → ingest → summarize → index → write → export"
+            "PaperHunter v2.2 — End-to-end LLM Security Survey Generator.\n\n"
+            "Pipeline completa: search → ingest → summarize → index → write → export\n"
+            "Supporta RAPTOR (clustering L1.5), Graph Communities e Agentic RAG."
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=(
             "Workflow tipico:\n"
             "  1. paperhunter search -k 'prompt injection'   # Cerca e scarica paper\n"
             "  2. paperhunter ingest                          # Processa i PDF\n"
-            "  3. paperhunter summarize                       # Genera L1 + L2\n"
-            "  4. paperhunter index                           # Costruisci indici\n"
+            "  3. paperhunter summarize                       # Genera L1 + L1.5 + L2\n"
+            "  4. paperhunter index                           # Costruisci BM25 + Graph + Communities\n"
             "  5. paperhunter write                           # Genera il survey\n"
-            "  6. paperhunter export --template acl           # Esporta in LaTeX\n"
+            "  6. paperhunter write --writer-mode agentic     # Con ReAct agent\n"
+            "  7. paperhunter export --template acl           # Esporta in LaTeX\n"
         ),
     )
 
@@ -1618,7 +1814,7 @@ def build_parser() -> argparse.ArgumentParser:
                         help="Percorso al file config.yaml")
     parser.add_argument("-v", "--verbose", action="store_true",
                         help="Abilita output verbose (DEBUG)")
-    parser.add_argument("--version", action="version", version="paperhunter 2.0.0")
+    parser.add_argument("--version", action="version", version="paperhunter 2.2.0")
 
     sub = parser.add_subparsers(dest="command", help="Comandi disponibili")
 
@@ -1665,10 +1861,15 @@ def build_parser() -> argparse.ArgumentParser:
 
     # ── summarize ──
     p_sum = sub.add_parser(
-        "summarize", help="Genera/rigenera summary L1 e L2",
-        description="Summary L1 (singolo paper) e L2 (meta per categoria). Senza flag, genera entrambi.",
+        "summarize", help="Genera/rigenera summary L1, L1.5 e L2",
+        description=(
+            "Summary L1 (singolo paper), L1.5 (cluster RAPTOR) e L2 (meta per categoria).\n"
+            "Senza flag, genera tutti e tre i livelli. L1.5 richiede L1 già generati."
+        ),
     )
     p_sum.add_argument("--l1", action="store_true", help="Solo summary L1")
+    p_sum.add_argument("--l1-5", action="store_true", dest="l1_5",
+                       help="Solo summary L1.5 (cluster RAPTOR). Richiede L1")
     p_sum.add_argument("--l2", action="store_true", help="Solo summary L2")
     p_sum.add_argument("--invalidate", action="store_true",
                        help="Check invalidazione L2 e rigenera se necessario")
@@ -1679,15 +1880,25 @@ def build_parser() -> argparse.ArgumentParser:
 
     # ── index ──
     p_index = sub.add_parser(
-        "index", help="Costruisci/aggiorna indici (BM25 + GraphRAG)",
-        description="Costruisce BM25 e PropertyGraph. Senza flag, entrambi.",
+        "index", help="Costruisci/aggiorna indici (BM25 + GraphRAG + Communities)",
+        description=(
+            "Costruisce BM25, PropertyGraph e community detection.\n"
+            "Senza flag, costruisce tutti gli indici."
+        ),
     )
     p_index.add_argument("--bm25", action="store_true", help="Solo BM25")
     p_index.add_argument("--graph", action="store_true", help="Solo PropertyGraph")
+    p_index.add_argument("--communities", action="store_true",
+                         help="Solo community detection e summary (richiede Neo4j + GDS)")
     p_index.add_argument("--skip-neo4j", action="store_true",
                          help="Salta import Neo4j")
     p_index.add_argument("--clear-graph", action="store_true",
                          help="Pulisci Neo4j prima di importare")
+    p_index.add_argument("--community-algorithm", type=str,
+                         choices=["louvain", "leiden"], default="louvain",
+                         help="Algoritmo community detection (default: louvain)")
+    p_index.add_argument("--community-min-size", type=int, default=3,
+                         help="Dimensione minima comunità (default: 3)")
 
     # ── write ──
     p_write = sub.add_parser(
@@ -1706,6 +1917,8 @@ def build_parser() -> argparse.ArgumentParser:
                          help="No export automatico LaTeX/BibTeX")
     p_write.add_argument("--template", type=str, choices=["acl", "ieeetran", "plain"],
                          help="Template LaTeX (default: config.yaml)")
+    p_write.add_argument("--writer-mode", type=str, choices=["static", "agentic"],
+                         help="Modalità writer: 'static' (RAG) o 'agentic' (ReAct). Override config.yaml")
 
     # ── query ──
     p_query = sub.add_parser(

@@ -1,0 +1,54 @@
+{
+  "paperId": "50f142679f2e4a38216b545cfebc8e82701eb357",
+  "externalIds": {
+    "ArXiv": "2505.16973",
+    "DBLP": "conf/emnlp/RajendhranZSLI25",
+    "DOI": "10.48550/arXiv.2505.16973",
+    "CorpusId": 278788962
+  },
+  "title": "VeriFastScore: Speeding up long-form factuality evaluation",
+  "venue": "Conference on Empirical Methods in Natural Language Processing",
+  "year": 2025,
+  "citationCount": 5,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.16973, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-05-22",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2505.16973"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Rajendhran2025VeriFastScoreSU,\n author = {Rishanth Rajendhran and Amir Zadeh and Matthew Sarte and Chuan Li and Mohit Iyyer},\n booktitle = {Conference on Empirical Methods in Natural Language Processing},\n journal = {ArXiv},\n title = {VeriFastScore: Speeding up long-form factuality evaluation},\n volume = {abs/2505.16973},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2266841238",
+      "name": "Rishanth Rajendhran"
+    },
+    {
+      "authorId": "2352935232",
+      "name": "Amir Zadeh"
+    },
+    {
+      "authorId": "2362718735",
+      "name": "Matthew Sarte"
+    },
+    {
+      "authorId": "2362602757",
+      "name": "Chuan Li"
+    },
+    {
+      "authorId": "2136562",
+      "name": "Mohit Iyyer"
+    }
+  ],
+  "abstract": "Metrics like FactScore and VeriScore that evaluate long-form factuality operate by decomposing an input response into atomic claims and then individually verifying each claim. While effective and interpretable, these methods incur numerous LLM calls and can take upwards of 100 seconds to evaluate a single response, limiting their practicality in large-scale evaluation and training scenarios. To address this, we propose VeriFastScore, which leverages synthetic data to fine-tune Llama3.1 8B for simultaneously extracting and verifying all verifiable claims within a given text based on evidence from Google Search. We show that this task cannot be solved via few-shot prompting with closed LLMs due to its complexity: the model receives ~4K tokens of evidence on average and needs to concurrently decompose claims, judge their verifiability, and verify them against noisy evidence. However, our fine-tuned VeriFastScore model demonstrates strong correlation with the original VeriScore pipeline at both the example level (r=0.80) and system level (r=0.94) while achieving an overall speedup of 6.6x (9.9x excluding evidence retrieval) over VeriScore. To facilitate future factuality research, we publicly release our VeriFastScore model and synthetic datasets."
+}

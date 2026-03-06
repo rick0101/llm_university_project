@@ -1,0 +1,46 @@
+{
+  "paperId": "5175f415da516d60e642fbd704fea5df37853743",
+  "externalIds": {
+    "ArXiv": "2511.08703",
+    "DBLP": "journals/corr/abs-2511-08703",
+    "DOI": "10.48550/arXiv.2511.08703",
+    "CorpusId": 282940440
+  },
+  "title": "Automated Hardware Trojan Insertion in Industrial-Scale Designs",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 0,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2511.08703, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-11-11",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2511.08703"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Popryho2025AutomatedHT,\n author = {Yaroslav Popryho and Debjit Pal and Inna Partin-Vaisband},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {Automated Hardware Trojan Insertion in Industrial-Scale Designs},\n volume = {abs/2511.08703},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2305690814",
+      "name": "Yaroslav Popryho"
+    },
+    {
+      "authorId": "2294885676",
+      "name": "Debjit Pal"
+    },
+    {
+      "authorId": "1404338118",
+      "name": "Inna Partin-Vaisband"
+    }
+  ],
+  "abstract": "Industrial Systems-on-Chips (SoCs) often comprise hundreds of thousands to millions of nets and millions to tens of millions of connectivity edges, making empirical evaluation of hardware-Trojan (HT) detectors on realistic designs both necessary and difficult. Public benchmarks remain significantly smaller and hand-crafted, while releasing truly malicious RTL raises ethical and operational risks. This work presents an automated and scalable methodology for generating HT-like patterns in industry-scale netlists whose purpose is to stress-test detection tools without altering user-visible functionality. The pipeline (i) parses large gate-level designs into connectivity graphs, (ii) explores rare regions using SCOAP testability metrics, and (iii) applies parameterized, function-preserving graph transformations to synthesize trigger-payload pairs that mimic the statistical footprint of stealthy HTs. When evaluated on the benchmarks generated in this work, representative state-of-the-art graph-learning models fail to detect Trojans. The framework closes the evaluation gap between academic circuits and modern SoCs by providing reproducible challenge instances that advance security research without sharing step-by-step attack instructions."
+}

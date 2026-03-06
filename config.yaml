@@ -21,6 +21,14 @@ gemini:
   max_output_tokens_pro: 8192
   timeout: 600                                 # Timeout per singola chiamata (secondi) — thinking models richiedono più tempo
   max_retries: 3                               # Retry con backoff esponenziale
+  # Strategia di retry in caso di errori Google API:
+  #   "autonomous" → Solo Google API, retry infiniti con delay incrementali.
+  #                   Il programma procede da solo senza intervento umano.
+  #                   Ideale quando non si è davanti al PC.
+  #   "interactive" → Dopo max_retries errori Google, chiede all'utente
+  #                   se usare OpenRouter come fallback (più veloce ma costa).
+  #                   Ideale quando si è davanti al PC e si vuole velocità.
+  retry_strategy: "autonomous"
 
 # --- GROBID (Docker) ---
 grobid:
@@ -155,6 +163,22 @@ download:
   headless: true
   request_delay: 1.0
   playwright_delay: 2.0
+
+# --- OpenRouter Fallback ---
+# Se abilitato, quando tutte le retry con l'API Google falliscono,
+# il sistema usa automaticamente OpenRouter come provider di fallback.
+# Richiede OPENROUTER_API_KEY nel file .env
+openrouter:
+  enabled: true                                # Abilita fallback a OpenRouter
+  api_base: "https://openrouter.ai/api/v1"
+  flash_model: "google/gemini-3-flash-preview"   # Modello economico (equivalente Flash)
+  pro_model: "google/gemini-3.1-pro-preview" # Modello potente (equivalente Pro)
+  temperature_flash: 0.1
+  temperature_pro: 0.3
+  max_output_tokens_flash: 4096
+  max_output_tokens_pro: 8192
+  timeout: 300                                 # Timeout in secondi
+  max_retries: 3                               # Retry con OpenRouter
 
 # --- Rate Limiting Globale ---
 rate_limiting:

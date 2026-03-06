@@ -989,8 +989,8 @@ def _build_graph_index(args, logger) -> int:
         report = builder.build_from_summaries(all_l1)
         builder.save()
         logger.info(
-            f"PropertyGraph: {report.entities_created} entità, "
-            f"{report.relations_created} relazioni in {report.elapsed_seconds:.1f}s"
+            f"PropertyGraph: {report.entities_added} entità, "
+            f"{report.relations_added} relazioni in {report.elapsed_seconds:.1f}s"
         )
 
         # Import Neo4j opzionale

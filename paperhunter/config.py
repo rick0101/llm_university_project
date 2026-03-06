@@ -38,6 +38,17 @@ class GeminiConfig(BaseModel):
     max_output_tokens_pro: int = 8192
     timeout: int = 120
     max_retries: int = 3
+    retry_strategy: str = "autonomous"  # "autonomous" | "interactive"
+
+    @field_validator("retry_strategy")
+    @classmethod
+    def validate_retry_strategy(cls, v: str) -> str:
+        allowed = {"autonomous", "interactive"}
+        if v not in allowed:
+            raise ValueError(
+                f"retry_strategy deve essere uno di {allowed}, ricevuto: {v}"
+            )
+        return v
 
 
 class GrobidConfig(BaseModel):
@@ -250,6 +261,25 @@ class RateLimitingConfig(BaseModel):
     grobid_concurrent: int = 5
 
 
+class OpenRouterConfig(BaseModel):
+    """Configurazione OpenRouter come fallback per Google Gemini.
+
+    OpenRouter è un API gateway OpenAI-compatibile che instrada a vari
+    provider (Anthropic, Google, Meta, ecc.). Usato come fallback quando
+    tutte le retry con l'API Google diretta falliscono.
+    """
+    enabled: bool = False  # Se True, fallback a OpenRouter quando Google fallisce
+    api_base: str = "https://openrouter.ai/api/v1"
+    flash_model: str = "google/gemini-3-flash-preview"  # Equivalente Flash economico
+    pro_model: str = "google/gemini-3.1-pro-preview"  # Equivalente Pro potente
+    temperature_flash: float = 0.1
+    temperature_pro: float = 0.3
+    max_output_tokens_flash: int = 4096
+    max_output_tokens_pro: int = 8192
+    timeout: int = 300  # Timeout in secondi
+    max_retries: int = 3  # Retry con OpenRouter
+
+
 class LoggingConfig(BaseModel):
     """Configurazione logging (rich + tqdm)."""
     level: str = "INFO"
@@ -330,6 +360,7 @@ class Settings(BaseSettings):
     # --- API Keys (da .env) ---
     google_api_key: str = ""
     anthropic_api_key: str = ""
+    openrouter_api_key: str = ""
     semantic_scholar_api_key: str = ""
     
     # --- Sotto-configurazioni (da config.yaml) ---
@@ -343,6 +374,7 @@ class Settings(BaseSettings):
     retrieval: RetrievalConfig = Field(default_factory=RetrievalConfig)
     agents: AgentsConfig = Field(default_factory=AgentsConfig)
     clustering: ClusteringConfig = Field(default_factory=ClusteringConfig)
+    openrouter: OpenRouterConfig = Field(default_factory=OpenRouterConfig)
     output: OutputConfig = Field(default_factory=OutputConfig)
     search: SearchConfig = Field(default_factory=SearchConfig)
     download: DownloadConfig = Field(default_factory=DownloadConfig)

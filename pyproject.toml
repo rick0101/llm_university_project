@@ -47,6 +47,7 @@ dependencies = [
     "llama-index-core>=0.14.0",
     "llama-index-llms-google-genai>=0.3.0",
     "llama-index-embeddings-google-genai>=0.3.0",
+    "openai>=1.0.0",  # OpenRouter fallback (raw SDK, no model name validation)
 
     # --- Vector DB ---
     "qdrant-client>=1.12.0",

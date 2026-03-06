@@ -25,8 +25,11 @@ Uso::
 
 from __future__ import annotations
 
+import tempfile
 import threading
 import time
+from datetime import datetime
+from pathlib import Path
 from typing import Optional
 
 from paperhunter.utils.logging_setup import get_logger
@@ -276,6 +279,97 @@ def get_llm(tier: str = "flash", **kwargs):
 
 
 # ---------------------------------------------------------------------------
+# OpenRouter fallback factory (OpenAI-compatible)
+# ---------------------------------------------------------------------------
+
+def _get_openrouter_api_key() -> str:
+    """Ottieni la OpenRouter API key dalla configurazione.
+
+    Returns:
+        API key come stringa.
+
+    Raises:
+        ValueError: Se la API key non è configurata.
+    """
+    from paperhunter.config import settings
+
+    key = settings.openrouter_api_key
+    if not key:
+        raise ValueError(
+            "OPENROUTER_API_KEY non configurata. "
+            "Impostala nel file .env o come variabile d'ambiente."
+        )
+    return key
+
+
+def _is_openrouter_available() -> bool:
+    """Verifica se OpenRouter è configurato e abilitato.
+
+    Returns:
+        True se OpenRouter è abilitato e la API key è presente.
+    """
+    from paperhunter.config import settings
+
+    if not settings.openrouter.enabled:
+        return False
+    return bool(settings.openrouter_api_key)
+
+
+def _create_openrouter_client():
+    """Crea un client OpenAI raw puntato a OpenRouter.
+
+    Usa il SDK ``openai`` diretto (NON il wrapper LlamaIndex) per evitare
+    la validazione dei nomi modello che blocca modelli non-OpenAI come
+    ``google/gemini-3.1-pro-preview``.
+
+    Returns:
+        Istanza ``openai.OpenAI`` configurata per OpenRouter.
+    """
+    from openai import OpenAI as OpenAIClient
+    from paperhunter.config import settings
+
+    cfg = settings.openrouter
+    return OpenAIClient(
+        base_url=cfg.api_base,
+        api_key=_get_openrouter_api_key(),
+    )
+
+
+def _get_openrouter_model_config(google_llm) -> Optional[dict]:
+    """Determina modello e parametri OpenRouter equivalenti al modello Google.
+
+    Args:
+        google_llm: Istanza GoogleGenAI originale.
+
+    Returns:
+        Dict con chiavi ``model``, ``temperature``, ``max_tokens``
+        o None se OpenRouter non è disponibile.
+    """
+    if not _is_openrouter_available():
+        return None
+
+    from paperhunter.config import settings
+    cfg = settings.openrouter
+
+    model_name = getattr(google_llm, "model", "")
+    temperature = getattr(google_llm, "temperature", None)
+    max_tokens = getattr(google_llm, "max_tokens", None)
+
+    if "pro" in model_name.lower():
+        return {
+            "model": cfg.pro_model,
+            "temperature": temperature if temperature is not None else cfg.temperature_pro,
+            "max_tokens": max_tokens if max_tokens is not None else cfg.max_output_tokens_pro,
+        }
+    else:
+        return {
+            "model": cfg.flash_model,
+            "temperature": temperature if temperature is not None else cfg.temperature_flash,
+            "max_tokens": max_tokens if max_tokens is not None else cfg.max_output_tokens_flash,
+        }
+
+
+# ---------------------------------------------------------------------------
 # Embedding factory (google-genai REST SDK)
 # ---------------------------------------------------------------------------
 
@@ -308,6 +402,203 @@ def get_embedding_model(
 
     logger.debug(f"Embedding model creato: {name} (batch_size={embed_batch_size})")
     return embed_model
+
+
+# ---------------------------------------------------------------------------
+# Continuation helper — gestione output lunghi troncati a MAX_TOKENS
+# ---------------------------------------------------------------------------
+
+# Directory di default per i file temporanei delle parti parziali.
+_TEMP_OUTPUT_DIR: Path | None = None
+
+
+def _get_temp_output_dir() -> Path:
+    """Restituisce la directory per i file temporanei LLM.
+
+    Usa ``output/temp_llm/`` nella root del progetto, creando la
+    directory se non esiste.
+    """
+    global _TEMP_OUTPUT_DIR
+    if _TEMP_OUTPUT_DIR is None:
+        from paperhunter.config import settings
+        base = Path(settings.output.base_dir)
+        _TEMP_OUTPUT_DIR = base / "temp_llm"
+    _TEMP_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    return _TEMP_OUTPUT_DIR
+
+
+def _raw_complete_google(llm, prompt: str) -> tuple[str, str]:
+    """Chiama il modello Google GenAI via SDK diretto, senza raise su MAX_TOKENS.
+
+    Bypassa il check ``_error_if_finished_early`` di LlamaIndex per
+    recuperare il testo parziale anche quando ``finish_reason`` è
+    MAX_TOKENS.
+
+    Args:
+        llm: Istanza GoogleGenAI di LlamaIndex (ha ``_client`` e ``_generation_config``).
+        prompt: Il prompt da inviare.
+
+    Returns:
+        Tupla ``(text, finish_reason_name)`` dove ``finish_reason_name``
+        è una stringa come ``"STOP"``, ``"MAX_TOKENS"``, ecc.
+    """
+    from google.genai import types as genai_types
+
+    client = llm._client
+    config = genai_types.GenerateContentConfig(**llm._generation_config)
+
+    response = client.models.generate_content(
+        model=llm.model,
+        contents=prompt,
+        config=config,
+    )
+
+    if not response.candidates:
+        return "", "NO_CANDIDATES"
+
+    candidate = response.candidates[0]
+    text = ""
+    if candidate.content and candidate.content.parts:
+        text = "".join(
+            part.text for part in candidate.content.parts if hasattr(part, "text") and part.text
+        )
+
+    finish_reason = "UNKNOWN"
+    if candidate.finish_reason:
+        finish_reason = candidate.finish_reason.name
+
+    return text, finish_reason
+
+
+def _save_partial_output(text: str, session_dir: Path, part_num: int) -> Path:
+    """Salva un output parziale in un file temporaneo.
+
+    Args:
+        text: Testo parziale da salvare.
+        session_dir: Directory della sessione corrente.
+        part_num: Numero della parte (0-indexed).
+
+    Returns:
+        Path del file creato.
+    """
+    file_path = session_dir / f"part_{part_num:02d}.txt"
+    file_path.write_text(text, encoding="utf-8")
+    logger.info(f"Output parziale salvato: {file_path} ({len(text)} chars)")
+    return file_path
+
+
+def _complete_with_continuation(
+    llm,
+    prompt: str,
+    max_continuations: int = 5,
+) -> str:
+    """Completa un prompt gestendo il troncamento MAX_TOKENS con continuazioni.
+
+    Quando la risposta viene troncata a MAX_TOKENS, salva il testo parziale
+    in un file temporaneo e chiede al modello di continuare da dove si è
+    fermato. Ripete fino a completamento o ``max_continuations`` raggiunte.
+
+    Ogni parte viene salvata in ``output/temp_llm/<timestamp>/``.
+
+    Args:
+        llm: Istanza GoogleGenAI di LlamaIndex.
+        prompt: Il prompt originale.
+        max_continuations: Numero massimo di chiamate di continuazione.
+
+    Returns:
+        Testo completo (concatenazione di tutte le parti).
+
+    Raises:
+        RuntimeError: Se la prima chiamata non produce nessun testo.
+    """
+    # Crea directory per questa sessione di continuazione
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    model_short = llm.model.split("/")[-1] if "/" in llm.model else llm.model
+    session_dir = _get_temp_output_dir() / f"{timestamp}_{model_short}"
+    session_dir.mkdir(parents=True, exist_ok=True)
+
+    parts: list[str] = []
+
+    for i in range(max_continuations + 1):
+        _enforce_call_cooldown()
+
+        if i == 0:
+            # Prima chiamata: prompt originale
+            current_prompt = prompt
+        else:
+            # Continuazione: includi le ultime righe per contesto
+            accumulated = "".join(parts)
+            # Prendi le ultime ~800 chars come contesto di overlap
+            tail = accumulated[-800:] if len(accumulated) > 800 else accumulated
+            current_prompt = (
+                f"{prompt}\n\n"
+                f"--- CONTINUAZIONE ---\n"
+                f"La tua risposta precedente è stata troncata al limite di token. "
+                f"Ecco la parte finale di ciò che hai generato finora:\n\n"
+                f"...{tail}\n\n"
+                f"CONTINUA ESATTAMENTE da dove ti sei fermato. "
+                f"NON ripetere contenuto già generato. "
+                f"Riprendi dalla riga/parola successiva al punto di troncamento."
+            )
+
+        # Retry transient errors within each continuation step
+        _continuation_max_retries = 4
+        for _retry in range(_continuation_max_retries + 1):
+            try:
+                text, finish_reason = _raw_complete_google(llm, current_prompt)
+                break
+            except Exception as _e:
+                _err_str = str(_e).lower()
+                _transient = (
+                    "503", "500", "504", "429", "unavailable",
+                    "overloaded", "temporarily", "timeout", "rate",
+                )
+                if any(kw in _err_str for kw in _transient) and _retry < _continuation_max_retries:
+                    _delay = min(5.0 * (2 ** _retry), 120.0)
+                    logger.warning(
+                        f"Continuation part {i} retry {_retry + 1}/{_continuation_max_retries}: "
+                        f"{_e}. Attendo {_delay:.0f}s..."
+                    )
+                    time.sleep(_delay)
+                else:
+                    raise
+
+        if not text and i == 0:
+            raise RuntimeError(
+                f"Nessun testo nella risposta (finish_reason={finish_reason})"
+            )
+
+        if text:
+            _save_partial_output(text, session_dir, i)
+            parts.append(text)
+
+        if finish_reason == "STOP":
+            logger.info(
+                f"Generazione completata in {i + 1} parti "
+                f"({sum(len(p) for p in parts)} chars totali)"
+            )
+            break
+        elif finish_reason == "MAX_TOKENS":
+            logger.warning(
+                f"Output troncato (MAX_TOKENS) — parte {i + 1}/{max_continuations + 1}, "
+                f"{len(text)} chars. Continuo generazione..."
+            )
+        else:
+            logger.warning(
+                f"Finish reason inatteso: {finish_reason} — interrompo continuazione"
+            )
+            break
+
+    # Salva output combinato
+    combined = "".join(parts)
+    combined_file = session_dir / "combined_output.txt"
+    combined_file.write_text(combined, encoding="utf-8")
+    logger.info(
+        f"Output completo ({len(parts)} parti) salvato: {combined_file} "
+        f"({len(combined)} chars)"
+    )
+
+    return combined
 
 
 # ---------------------------------------------------------------------------
@@ -346,65 +637,401 @@ def llm_call_with_retry(
     max_retries: Optional[int] = None,
     base_delay: float = 2.0,
     max_delay: float = 120.0,
+    openrouter_fallback: bool = True,
 ) -> str:
-    """Esegui una chiamata LLM con retry e backoff esponenziale cappato.
+    """Esegui una chiamata LLM con retry e gestione errori configurabile.
 
-    Gestisce errori di rate limiting e transient errors.
-    Il delay tra retry cresce esponenzialmente ma è cappato a ``max_delay``.
+    Il comportamento dipende dalla strategia configurata in
+    ``gemini.retry_strategy`` (config.yaml):
 
-    Prima di ogni tentativo viene applicato un cooldown minimo di
-    ``_MIN_CALL_INTERVAL`` secondi dall'ultima chiamata, per evitare
-    di bombardare l'API con richieste ravvicinate.
+    **Strategia "autonomous":**
+    Solo Google API, nessuna interazione utente. In caso di errori
+    transient, il sistema ritenta all'infinito con delay incrementali
+    (backoff esponenziale cappato a ``max_delay``). Quando il modello
+    torna disponibile, il delay si resetta. Ideale per esecuzioni
+    non presidiate.
 
-    Il retry interno dell'SDK google-genai è disabilitato (attempts=1
-    in HttpOptions), quindi questa è l'UNICA fonte di retry.
+    **Strategia "interactive":**
+    Dopo ``max_retries`` errori con Google, chiede all'utente se vuole
+    usare OpenRouter come fallback. Se OpenRouter fallisce, torna a
+    Google e ripete il ciclo. Ideale quando si è davanti al PC e si
+    vuole velocità.
 
     Args:
         llm: Istanza LLM (Flash o Pro).
         prompt: Il prompt da inviare.
-        max_retries: Numero massimo di tentativi (default da config.yaml).
+        max_retries: Numero massimo di tentativi per ciclo Google
+            (default da config.yaml). Usato solo in strategia "interactive";
+            in "autonomous" i retry sono illimitati.
         base_delay: Delay base in secondi (raddoppia ad ogni retry).
         max_delay: Delay massimo in secondi (cap al backoff esponenziale).
+        openrouter_fallback: Se True (default), in strategia "interactive"
+            propone OpenRouter dopo fallimento Google.
 
     Returns:
         Testo della risposta.
 
     Raises:
-        Exception: Se tutti i tentativi falliscono.
+        Exception: Se la chiamata definitivamente non riesce.
     """
     from paperhunter.config import settings
 
-    retries = max_retries if max_retries is not None else settings.gemini.max_retries
+    strategy = settings.gemini.retry_strategy  # "autonomous" | "interactive"
 
-    last_error = None
-    for attempt in range(retries + 1):
+    if strategy == "autonomous":
+        return _llm_call_autonomous(llm, prompt, base_delay, max_delay)
+    else:
+        retries = max_retries if max_retries is not None else settings.gemini.max_retries
+        return _llm_call_interactive(
+            llm, prompt, retries, base_delay, max_delay, openrouter_fallback,
+        )
+
+
+def _llm_call_autonomous(
+    llm,
+    prompt: str,
+    base_delay: float = 2.0,
+    max_delay: float = 120.0,
+) -> str:
+    """Strategia autonoma: solo Google API, retry infiniti con delay incrementali.
+
+    Il delay cresce esponenzialmente ad ogni errore consecutivo e si
+    resetta a ``base_delay`` appena il modello torna a rispondere.
+
+    Non richiede nessuna interazione utente.
+
+    Args:
+        llm: Istanza LLM (Flash o Pro).
+        prompt: Il prompt da inviare.
+        base_delay: Delay base in secondi.
+        max_delay: Delay massimo in secondi.
+
+    Returns:
+        Testo della risposta.
+    """
+    consecutive_errors = 0
+
+    while True:
         try:
-            # Cooldown pre-chiamata: evita 503 da richieste troppo ravvicinate
             _enforce_call_cooldown()
             response = llm.complete(prompt)
+            # Successo → reset contatore errori
+            if consecutive_errors > 0:
+                logger.info(
+                    f"Google API tornata disponibile dopo {consecutive_errors} "
+                    f"errori consecutivi. Delay resettato."
+                )
             return str(response)
+        except Exception as e:
+            error_str = str(e).lower()
+
+            # --- MAX_TOKENS: output troncato → continuazione ---
+            if "max_tokens" in error_str:
+                logger.warning(
+                    "Output troncato (MAX_TOKENS). "
+                    "Passo a modalità continuazione con file temporanei..."
+                )
+                try:
+                    return _complete_with_continuation(llm, prompt)
+                except Exception as cont_err:
+                    logger.error(f"Continuazione fallita: {cont_err}")
+                    consecutive_errors += 1
+                    delay = min(base_delay * (2 ** consecutive_errors), max_delay)
+                    logger.warning(
+                        f"[autonomous] Errore #{consecutive_errors}. "
+                        f"Attesa {delay:.0f}s prima di riprovare..."
+                    )
+                    time.sleep(delay)
+                    continue
+
+            # Errori transient → retry con backoff crescente
+            transient_keywords = (
+                "rate", "429", "quota", "resource_exhausted",
+                "503", "500", "504", "overloaded", "temporarily",
+                "deadline", "unavailable",
+            )
+            if any(kw in error_str for kw in transient_keywords):
+                consecutive_errors += 1
+                delay = min(base_delay * (2 ** consecutive_errors), max_delay)
+                logger.warning(
+                    f"[autonomous] Google API errore #{consecutive_errors}: {e}. "
+                    f"Attesa {delay:.0f}s prima di riprovare..."
+                )
+                time.sleep(delay)
+            else:
+                # Errore non-transient → non recuperabile
+                logger.error(f"[autonomous] Errore non recuperabile: {e}")
+                raise
+
+
+def _llm_call_interactive(
+    llm,
+    prompt: str,
+    retries: int,
+    base_delay: float,
+    max_delay: float,
+    openrouter_fallback: bool,
+) -> str:
+    """Strategia interattiva: Google API + fallback OpenRouter su conferma utente.
+
+    Dopo ``retries`` errori Google, chiede all'utente se vuole usare
+    OpenRouter. Se anche OpenRouter fallisce, torna a Google e ripete.
+
+    Args:
+        llm: Istanza LLM (Flash o Pro).
+        prompt: Il prompt da inviare.
+        retries: Numero massimo di tentativi per ciclo Google.
+        base_delay: Delay base in secondi.
+        max_delay: Delay massimo in secondi.
+        openrouter_fallback: Se True, propone OpenRouter.
+
+    Returns:
+        Testo della risposta.
+    """
+    google_cycle = 0
+    last_error = None
+
+    while True:
+        google_cycle += 1
+
+        # --- Fase 1: Tentativi con Google API ---
+        if google_cycle > 1:
+            logger.info(
+                f"Ritorno a Google API (ciclo {google_cycle}) dopo fallback OpenRouter."
+            )
+
+        for attempt in range(retries + 1):
+            try:
+                _enforce_call_cooldown()
+                response = llm.complete(prompt)
+                return str(response)
+            except Exception as e:
+                last_error = e
+                error_str = str(e).lower()
+
+                # --- MAX_TOKENS → continuazione ---
+                if "max_tokens" in error_str:
+                    logger.warning(
+                        f"Output troncato (MAX_TOKENS) al tentativo {attempt + 1}. "
+                        f"Passo a modalità continuazione con file temporanei..."
+                    )
+                    try:
+                        return _complete_with_continuation(llm, prompt)
+                    except Exception as cont_err:
+                        logger.error(f"Continuazione fallita: {cont_err}")
+                        last_error = cont_err
+                        break
+
+                transient_keywords = (
+                    "rate", "429", "quota", "resource_exhausted",
+                    "503", "500", "504", "overloaded", "temporarily",
+                    "deadline", "unavailable",
+                )
+                if any(kw in error_str for kw in transient_keywords):
+                    delay = min(base_delay * (2 ** attempt), max_delay)
+                    remaining = retries - attempt
+                    logger.warning(
+                        f"LLM call fallita (tentativo {attempt + 1}/{retries + 1}): {e}. "
+                        f"Retry tra {delay:.0f}s... ({remaining} tentativi rimanenti)"
+                    )
+                    time.sleep(delay)
+                else:
+                    logger.error(f"LLM call fallita con errore non recuperabile: {e}")
+                    last_error = e
+                    break
+
+        # --- Fase 2: Google esaurita, proponi fallback OpenRouter ---
+        if not (openrouter_fallback and _is_openrouter_available()):
+            logger.error(
+                f"LLM call fallita dopo {retries + 1} tentativi "
+                f"(ciclo {google_cycle}, senza fallback OpenRouter): {last_error}"
+            )
+            raise last_error
+
+        logger.warning(
+            f"Google API esaurita dopo {retries + 1} tentativi (ciclo {google_cycle}). "
+            f"OpenRouter fallback disponibile."
+        )
+        try:
+            answer = input(
+                "\n⚠  Errore Google API. Vuoi usare OpenRouter come fallback? [S/n] "
+            ).strip().lower()
+        except (EOFError, KeyboardInterrupt):
+            answer = "n"
+
+        if answer not in ("", "s", "si", "sì", "y", "yes"):
+            logger.info("Utente ha rifiutato fallback OpenRouter.")
+            logger.error(
+                f"LLM call fallita dopo {retries + 1} tentativi "
+                f"(ciclo {google_cycle}): {last_error}"
+            )
+            raise last_error
+
+        # --- Fase 3: Tenta OpenRouter ---
+        logger.info("Utente ha confermato fallback OpenRouter.")
+        try:
+            result = _openrouter_fallback_call(llm, prompt)
+            return result
+        except Exception as or_error:
+            logger.warning(
+                f"Anche OpenRouter fallback fallito (ciclo {google_cycle}): {or_error}. "
+                f"Riprovo con Google API..."
+            )
+            last_error = or_error
+
+
+def _openrouter_fallback_call(
+    original_llm,
+    prompt: str,
+) -> str:
+    """Esegui una chiamata LLM via OpenRouter come fallback.
+
+    Crea un LLM OpenRouter equivalente al modello Google originale
+    e tenta la chiamata con retry dedicati.
+
+    Args:
+        original_llm: Istanza LLM Google originale (per determinare tier).
+        prompt: Il prompt da inviare.
+
+    Returns:
+        Testo della risposta da OpenRouter.
+
+    Raises:
+        Exception: Se anche OpenRouter fallisce.
+    """
+    from paperhunter.config import settings
+
+    or_config = _get_openrouter_model_config(original_llm)
+    if or_config is None:
+        raise RuntimeError(
+            "OpenRouter fallback non disponibile: API key mancante o configurazione disabilitata."
+        )
+
+    client = _create_openrouter_client()
+    or_retries = settings.openrouter.max_retries
+
+    # --- Prima chiamata con retry per errori transient ---
+    text, finish_reason = _openrouter_single_call(
+        client, or_config, prompt, or_retries,
+    )
+
+    # --- Continuazione se troncato ---
+    if finish_reason == "length":
+        max_continuations = 5
+        parts = [text]
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        session_dir = _get_temp_output_dir() / f"{timestamp}_openrouter"
+        session_dir.mkdir(parents=True, exist_ok=True)
+        _save_partial_output(text, session_dir, 0)
+
+        for i in range(1, max_continuations + 1):
+            accumulated = "".join(parts)
+            tail = accumulated[-800:] if len(accumulated) > 800 else accumulated
+            cont_prompt = (
+                f"{prompt}\n\n"
+                f"--- CONTINUAZIONE ---\n"
+                f"La tua risposta precedente è stata troncata al limite di token. "
+                f"Ecco la parte finale di ciò che hai generato finora:\n\n"
+                f"...{tail}\n\n"
+                f"CONTINUA ESATTAMENTE da dove ti sei fermato. "
+                f"NON ripetere contenuto già generato. "
+                f"Riprendi dalla riga/parola successiva al punto di troncamento."
+            )
+            try:
+                cont_text, cont_reason = _openrouter_single_call(
+                    client, or_config, cont_prompt, or_retries,
+                )
+            except Exception as cont_err:
+                logger.warning(
+                    f"OpenRouter continuazione parte {i} fallita: {cont_err}. "
+                    f"Restituisco testo parziale ({len(accumulated)} chars)."
+                )
+                break
+
+            if cont_text:
+                _save_partial_output(cont_text, session_dir, i)
+                parts.append(cont_text)
+
+            if cont_reason != "length":
+                logger.info(
+                    f"OpenRouter generazione completata in {i + 1} parti "
+                    f"({sum(len(p) for p in parts)} chars totali)"
+                )
+                break
+            else:
+                logger.warning(
+                    f"OpenRouter output troncato — parte {i + 1}/{max_continuations + 1}, "
+                    f"{len(cont_text)} chars. Continuo..."
+                )
+
+        text = "".join(parts)
+        combined_file = session_dir / "combined_output.txt"
+        combined_file.write_text(text, encoding="utf-8")
+        logger.info(f"OpenRouter output combinato salvato: {combined_file} ({len(text)} chars)")
+
+    return text
+
+
+def _openrouter_single_call(
+    client,
+    or_config: dict,
+    prompt: str,
+    max_retries: int,
+) -> tuple[str, str]:
+    """Singola chiamata OpenRouter con retry per errori transient.
+
+    Args:
+        client: Istanza ``openai.OpenAI`` configurata per OpenRouter.
+        or_config: Dict con ``model``, ``temperature``, ``max_tokens``.
+        prompt: Il prompt da inviare.
+        max_retries: Numero massimo di retry.
+
+    Returns:
+        Tupla ``(text, finish_reason)`` dove ``finish_reason`` è
+        ``"stop"`` o ``"length"`` (troncato).
+
+    Raises:
+        Exception: Se tutti i retry falliscono.
+    """
+    last_error = None
+
+    for attempt in range(max_retries + 1):
+        try:
+            _enforce_call_cooldown()
+            response = client.chat.completions.create(
+                model=or_config["model"],
+                messages=[{"role": "user", "content": prompt}],
+                temperature=or_config["temperature"],
+                max_tokens=or_config["max_tokens"],
+            )
+            text = response.choices[0].message.content or ""
+            finish_reason = response.choices[0].finish_reason or "stop"
+            logger.info(
+                f"OpenRouter call riuscita con {or_config['model']} "
+                f"(tentativo {attempt + 1}/{max_retries + 1}, "
+                f"finish_reason={finish_reason}, {len(text)} chars)"
+            )
+            return text, finish_reason
         except Exception as e:
             last_error = e
             error_str = str(e).lower()
 
-            # Rate limiting o errori transient → retry con backoff
             transient_keywords = (
-                "rate", "429", "quota", "resource_exhausted",
-                "503", "500", "504", "overloaded", "temporarily",
-                "deadline", "unavailable", "max_tokens",
+                "rate", "429", "quota", "503", "500", "504",
+                "overloaded", "temporarily", "timeout", "unavailable",
             )
             if any(kw in error_str for kw in transient_keywords):
-                delay = min(base_delay * (2 ** attempt), max_delay)
-                remaining = retries - attempt
+                delay = min(2.0 * (2 ** attempt), 60.0)
                 logger.warning(
-                    f"LLM call fallita (tentativo {attempt + 1}/{retries + 1}): {e}. "
-                    f"Retry tra {delay:.0f}s... ({remaining} tentativi rimanenti)"
+                    f"OpenRouter fallback tentativo {attempt + 1}/{max_retries + 1} "
+                    f"fallito: {e}. Retry tra {delay:.0f}s..."
                 )
                 time.sleep(delay)
             else:
-                # Errore non-transient: non riprovare
-                logger.error(f"LLM call fallita con errore non recuperabile: {e}")
-                raise
+                logger.error(f"OpenRouter fallback errore non recuperabile: {e}")
+                break
 
-    logger.error(f"LLM call fallita dopo {retries + 1} tentativi: {last_error}")
+    logger.error(
+        f"Anche OpenRouter fallback fallito dopo {max_retries + 1} tentativi: {last_error}"
+    )
     raise last_error

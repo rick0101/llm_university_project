@@ -57,6 +57,7 @@ from paperhunter.graphrag.entity_extractor import (
     merge_entities,
     merge_relations,
     save_extraction_results,
+    _extract_with_result,
 )
 from paperhunter.models import L1Summary
 from paperhunter.utils.logging_setup import (
@@ -78,6 +79,7 @@ logger = get_logger(__name__)
 _DEFAULT_PERSIST_DIR = "./data/property_graph"
 _DEFAULT_GRAPH_FILE = "graph_store.json"
 _DEFAULT_METADATA_FILE = "graph_metadata.json"
+_DEFAULT_EXTRACTION_CHECKPOINT = "extraction_checkpoint.json"
 
 
 # ============================================================================
@@ -127,6 +129,8 @@ class BuildReport:
         relations_added: Relazioni inserite.
         entities_extracted: Entità estratte (prima del merge).
         relations_extracted: Relazioni estratte (prima del merge).
+        entities: Lista entità finale (post-merge).
+        relations: Lista relazioni finale (post-merge).
         extraction_results: Risultati per singolo paper.
         elapsed_seconds: Tempo totale.
         errors: Errori incontrati.
@@ -135,6 +139,8 @@ class BuildReport:
     relations_added: int = 0
     entities_extracted: int = 0
     relations_extracted: int = 0
+    entities: list = field(default_factory=list)
+    relations: list = field(default_factory=list)
     extraction_results: list[dict] = field(default_factory=list)
     elapsed_seconds: float = 0.0
     errors: list[str] = field(default_factory=list)
@@ -276,6 +282,69 @@ class PropertyGraphBuilder:
         logger.debug("PropertyGraph vuoto inizializzato.")
 
     # ------------------------------------------------------------------
+    # Extraction checkpoint helpers
+    # ------------------------------------------------------------------
+
+    @property
+    def _extraction_checkpoint_path(self) -> Path:
+        return self._persist_dir / _DEFAULT_EXTRACTION_CHECKPOINT
+
+    def _load_extraction_checkpoint(self) -> dict[str, Any]:
+        """Carica il checkpoint di estrazione se esiste.
+
+        Returns:
+            Dict con 'processed_paper_ids', 'entities', 'relations'.
+            Se il checkpoint non esiste, restituisce struttura vuota.
+        """
+        path = self._extraction_checkpoint_path
+        if not path.exists():
+            return {"processed_paper_ids": [], "entities": [], "relations": []}
+
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+            # Ricostruisci Entity e Relation da dicts
+            entities = [Entity(**e) for e in data.get("entities", [])]
+            relations = [PaperhunterRelation(**r) for r in data.get("relations", [])]
+            processed = data.get("processed_paper_ids", [])
+            logger.info(
+                f"Checkpoint estrazione caricato: {len(processed)} paper già estratti, "
+                f"{len(entities)} entità, {len(relations)} relazioni"
+            )
+            return {
+                "processed_paper_ids": processed,
+                "entities": entities,
+                "relations": relations,
+            }
+        except Exception as e:
+            logger.warning(f"Errore caricamento checkpoint estrazione: {e}. Ripartenza da zero.")
+            return {"processed_paper_ids": [], "entities": [], "relations": []}
+
+    def _save_extraction_checkpoint(
+        self,
+        processed_paper_ids: list[str],
+        entities: list[Entity],
+        relations: list[PaperhunterRelation],
+    ) -> None:
+        """Salva il checkpoint di estrazione su disco."""
+        path = self._extraction_checkpoint_path
+        path.parent.mkdir(parents=True, exist_ok=True)
+        data = {
+            "saved_at": datetime.now().isoformat(),
+            "processed_paper_ids": processed_paper_ids,
+            "entities": [e.to_dict() for e in entities],
+            "relations": [r.to_dict() for r in relations],
+        }
+        path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+        logger.debug(f"Checkpoint estrazione salvato: {len(processed_paper_ids)} paper")
+
+    def _clear_extraction_checkpoint(self) -> None:
+        """Rimuove il checkpoint di estrazione (dopo completamento)."""
+        path = self._extraction_checkpoint_path
+        if path.exists():
+            path.unlink()
+            logger.debug("Checkpoint estrazione rimosso (build completato).")
+
+    # ------------------------------------------------------------------
     # Build: da L1 summaries
     # ------------------------------------------------------------------
 
@@ -292,9 +361,10 @@ class PropertyGraphBuilder:
 
         Workflow:
         1. Filtra summaries già nel grafo (se skip_existing=True)
-        2. Estrai entità/relazioni con ``extract_batch()``
-        3. Converti in formato LlamaIndex e popola il PropertyGraph
-        4. Salva su disco
+        2. Carica checkpoint estrazione (se esiste) per riprendere
+        3. Estrai entità/relazioni incrementalmente con checkpoint
+        4. Converti in formato LlamaIndex e popola il PropertyGraph
+        5. Salva su disco e rimuovi checkpoint
 
         Args:
             l1_summaries: Lista di summary L1 da processare.
@@ -306,6 +376,8 @@ class PropertyGraphBuilder:
         Returns:
             BuildReport con statistiche dell'operazione.
         """
+        from paperhunter.utils.llm_factory import get_flash_llm
+
         t0 = time.monotonic()
         report = BuildReport()
 
@@ -322,9 +394,10 @@ class PropertyGraphBuilder:
                 "last_updated": None,
                 "build_count": 0,
             }
+            self._clear_extraction_checkpoint()
             logger.info("Grafo svuotato (clear_before=True).")
 
-        # Filtra paper già presenti
+        # Filtra paper già presenti nel grafo
         if skip_existing:
             existing_ids = set(self.paper_ids)
             new_summaries = [
@@ -341,33 +414,83 @@ class PropertyGraphBuilder:
             report.elapsed_seconds = time.monotonic() - t0
             return report
 
-        # Step 1: Estrazione entità/relazioni
-        logger.info(f"Estraendo entità/relazioni da {len(l1_summaries)} L1 summaries...")
-        try:
-            entities, relations, results = extract_batch(
-                l1_summaries,
-                merge_results=merge,
-                skip_errors=True,
-                show_progress=show_progress,
+        # Step 1: Carica checkpoint estrazione (se esiste, riprende da dove si era fermato)
+        checkpoint = self._load_extraction_checkpoint()
+        checkpoint_paper_ids = set(checkpoint["processed_paper_ids"])
+        all_entities: list[Entity] = list(checkpoint["entities"])
+        all_relations: list[PaperhunterRelation] = list(checkpoint["relations"])
+        all_results: list[ExtractionResult] = []
+
+        # Filtra paper già estratti nel checkpoint
+        remaining_summaries = [
+            s for s in l1_summaries
+            if s.paper_id not in checkpoint_paper_ids
+        ]
+
+        if checkpoint_paper_ids:
+            logger.info(
+                f"Ripresa da checkpoint: {len(checkpoint_paper_ids)} paper già estratti, "
+                f"{len(remaining_summaries)} rimanenti"
             )
-        except Exception as e:
-            error_msg = f"Errore durante estrazione batch: {e}"
-            logger.error(error_msg)
-            report.errors.append(error_msg)
-            report.elapsed_seconds = time.monotonic() - t0
-            return report
 
-        report.entities_extracted = len(entities)
-        report.relations_extracted = len(relations)
-        report.extraction_results = [r.to_dict() for r in results]
+        # Step 2: Estrazione incrementale con checkpoint
+        if remaining_summaries:
+            logger.info(f"Estraendo entità/relazioni da {len(remaining_summaries)} L1 summaries...")
+            llm = get_flash_llm(timeout_seconds=120, max_tokens=65536)
+            processed_ids = list(checkpoint["processed_paper_ids"])
 
-        # Step 2: Popola il PropertyGraph
-        logger.info(f"Popolando PropertyGraph con {len(entities)} entità e {len(relations)} relazioni...")
-        added_e, added_r = self._populate_graph(entities, relations, show_progress=show_progress)
+            iterable = remaining_summaries
+            if show_progress:
+                iterable = progress_bar(
+                    remaining_summaries,
+                    description="Extracting entities & relations",
+                    total=len(remaining_summaries),
+                )
+
+            for summary in iterable:
+                try:
+                    result = _extract_with_result(summary, llm=llm)
+                    all_results.append(result)
+
+                    if result.error:
+                        logger.error(f"Estrazione fallita per {summary.paper_id}: {result.error}")
+                    else:
+                        all_entities.extend(result.entities)
+                        all_relations.extend(result.relations)
+
+                except Exception as exc:
+                    logger.error(f"Errore estrazione per {summary.paper_id}: {exc}")
+                    all_results.append(ExtractionResult(
+                        paper_id=summary.paper_id,
+                        bibtex_key=summary.bibtex_key,
+                        error=str(exc),
+                        extracted_at=datetime.now(),
+                    ))
+
+                # Salva checkpoint dopo ogni paper
+                processed_ids.append(summary.paper_id)
+                self._save_extraction_checkpoint(
+                    processed_ids, all_entities, all_relations,
+                )
+
+        # Merge se richiesto
+        if merge:
+            all_entities = merge_entities(all_entities)
+            all_relations = merge_relations(all_relations)
+
+        report.entities_extracted = len(all_entities)
+        report.relations_extracted = len(all_relations)
+        report.entities = all_entities
+        report.relations = all_relations
+        report.extraction_results = [r.to_dict() for r in all_results]
+
+        # Step 3: Popola il PropertyGraph
+        logger.info(f"Popolando PropertyGraph con {len(all_entities)} entità e {len(all_relations)} relazioni...")
+        added_e, added_r = self._populate_graph(all_entities, all_relations, show_progress=show_progress)
         report.entities_added = added_e
         report.relations_added = added_r
 
-        # Step 3: Aggiorna metadata
+        # Step 4: Aggiorna metadata
         new_paper_ids = [s.paper_id for s in l1_summaries]
         self._metadata["paper_ids"] = list(set(self.paper_ids + new_paper_ids))
         self._metadata["entity_count"] = self._count_entities()
@@ -375,8 +498,9 @@ class PropertyGraphBuilder:
         self._metadata["last_updated"] = datetime.now().isoformat()
         self._metadata["build_count"] = self._metadata.get("build_count", 0) + 1
 
-        # Step 4: Salva
+        # Step 5: Salva e rimuovi checkpoint
         self.save()
+        self._clear_extraction_checkpoint()
 
         report.elapsed_seconds = time.monotonic() - t0
         logger.info(

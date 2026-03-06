@@ -12,6 +12,7 @@ httpx>=0.25.0
 llama-index-core>=0.14.0
 llama-index-llms-google-genai>=0.3.0      # REST SDK (google-genai), non gRPC
 llama-index-embeddings-google-genai>=0.3.0  # REST SDK (google-genai), non gRPC
+openai>=1.0.0                               # OpenRouter fallback (raw SDK, no model name validation)
 
 # === Vector DB ===
 qdrant-client>=1.12.0

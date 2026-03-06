@@ -30,7 +30,7 @@ from pydantic_settings import BaseSettings
 class GeminiConfig(BaseModel):
     """Configurazione modelli Gemini (LLM + Embedding)."""
     flash_model: str = "gemini-3-flash-preview"
-    pro_model: str = "gemini-3-pro-preview"
+    pro_model: str = "gemini-3.1-pro-preview"
     embedding_model: str = "gemini-embedding-001"
     temperature_flash: float = 0.1
     temperature_pro: float = 0.3

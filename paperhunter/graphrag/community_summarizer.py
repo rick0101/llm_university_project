@@ -323,7 +323,7 @@ class CommunitySummarizer:
 
         # Rate limiting
         limiter = get_gemini_limiter()
-        limiter.acquire()
+        limiter.wait()
 
         # Chiamata LLM con retry
         logger.info(

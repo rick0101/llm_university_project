@@ -506,10 +506,12 @@ def cmd_summarize(args: argparse.Namespace) -> int:
 
     if do_l1_5:
         logger.info("Generazione summary L1.5 (cluster RAPTOR)...")
-        errors += _run_l1_5_summarization(store, args, logger)
+        l1_5_errors, _new_l1_5 = _run_l1_5_summarization(store, args, logger)
+        errors += l1_5_errors
 
     if do_l2:
         logger.info("Generazione summary L2 (meta-summary per categoria)...")
+        # skip_existing=not force: genera L2 mancanti o stale, salta quelli validi
         errors += _run_l2_summarization(store, args, logger)
 
     if do_invalidate:
@@ -622,8 +624,82 @@ def _run_l1_summarization(store, args, logger) -> int:
         return 1
 
 
-def _run_l1_5_summarization(store, args, logger) -> int:
-    """Genera L1.5 (cluster RAPTOR) per le categorie che hanno L1 ma non L1.5."""
+# ── Helpers per staleness detection L1.5/L2 ──
+
+_L1_5_STATE_DIR = Path("output/l1_5_metadata")
+
+
+def _compute_l1_hash(l1_summaries) -> str:
+    """Hash MD5 dei bibtex_key ordinati — rileva cambi nel set L1."""
+    import hashlib
+    keys = sorted(getattr(s, "bibtex_key", "") or getattr(s, "paper_id", "") for s in l1_summaries)
+    return hashlib.md5(",".join(keys).encode()).hexdigest()
+
+
+def _is_l1_5_stale(category: str, l1_summaries, logger) -> bool:
+    """Verifica se gli L1.5 esistenti sono basati su un set L1 diverso dall'attuale."""
+    import re as _re
+    safe = _re.sub(r"[^a-z0-9_]", "_", category.lower())
+    state_file = _L1_5_STATE_DIR / f"{safe}.json"
+    if not state_file.exists():
+        return False  # nessuno stato salvato → non possiamo dire che è stale
+    try:
+        state = json.loads(state_file.read_text())
+        stored_hash = state.get("l1_hash", "")
+        current_hash = _compute_l1_hash(l1_summaries)
+        if stored_hash and stored_hash != current_hash:
+            logger.debug(
+                f"L1.5 stale per '{category}': l1_hash {stored_hash[:8]}→{current_hash[:8]}"
+            )
+            return True
+    except Exception:
+        pass
+    return False
+
+
+def _save_l1_5_state(category: str, l1_summaries) -> None:
+    """Salva lo stato L1 usato per generare L1.5, per rilevare staleness."""
+    import re as _re
+    from datetime import datetime
+    _L1_5_STATE_DIR.mkdir(parents=True, exist_ok=True)
+    safe = _re.sub(r"[^a-z0-9_]", "_", category.lower())
+    state = {
+        "category": category,
+        "l1_count": len(l1_summaries),
+        "l1_hash": _compute_l1_hash(l1_summaries),
+        "generated_at": datetime.now().isoformat(),
+    }
+    (_L1_5_STATE_DIR / f"{safe}.json").write_text(
+        json.dumps(state, indent=2, ensure_ascii=False)
+    )
+
+
+def _invalidate_l2_metadata(category: str, logger) -> None:
+    """Marca il metadata L2 su disco come invalidato (L1.5 rigenerati)."""
+    import re as _re
+    from paperhunter.config import settings
+    l2_dir = Path(settings.output.base_dir) / "l2_metadata"
+    safe = _re.sub(r"[^a-z0-9_]", "_", category.lower())
+    filepath = l2_dir / f"{safe}.json"
+    if not filepath.exists():
+        return
+    try:
+        meta = json.loads(filepath.read_text())
+        if not meta.get("invalidated", False):
+            meta["invalidated"] = True
+            filepath.write_text(json.dumps(meta, indent=2, ensure_ascii=False))
+            logger.info(f"  L2 '{category}' invalidato (L1.5 aggiornati)")
+    except Exception as e:
+        logger.debug(f"Errore invalidazione L2 metadata per '{category}': {e}")
+
+
+def _run_l1_5_summarization(store, args, logger) -> tuple[int, bool]:
+    """Genera L1.5 (cluster RAPTOR) per le categorie che hanno L1 ma non L1.5.
+
+    Returns:
+        Tupla (errori, nuovi_generati): numero errori e flag se nuovi L1.5
+        sono stati generati (utile per forzare rigenerazione L2).
+    """
     from paperhunter.summarization import (
         load_l1_summaries_for_category,
         generate_all_cluster_summaries,
@@ -656,14 +732,14 @@ def _run_l1_5_summarization(store, args, logger) -> int:
 
         if not categories:
             logger.warning("Nessun L1 trovato. Esegui prima 'paperhunter summarize --l1'.")
-            return 0
+            return 0, False
 
         category_filter = getattr(args, "category", None)
         if category_filter:
             categories = {c for c in categories if c == category_filter}
             if not categories:
                 logger.warning(f"Nessun L1 trovato per la categoria '{category_filter}'.")
-                return 0
+                return 0, False
 
         force = getattr(args, "force", False)
         total_generated = 0
@@ -671,47 +747,74 @@ def _run_l1_5_summarization(store, args, logger) -> int:
 
         for cat in sorted(categories):
             try:
-                # Skip se L1.5 già presenti (a meno di --force)
-                existing = count_l1_5_for_category(cat, store=store)
-                if existing > 0 and not force:
-                    logger.info(f"  {cat}: {existing} L1.5 già presenti, skip (usa --force per rigenerare)")
-                    continue
-
                 # Carica L1 della categoria
                 l1_summaries = load_l1_summaries_for_category(cat, store=store)
                 if not l1_summaries:
                     logger.warning(f"  {cat}: nessun L1 ricostruito, skip")
                     continue
 
-                logger.info(f"  {cat}: {len(l1_summaries)} L1 → clustering...")
-
-                # Recupera embedding e clusterizza
+                # Recupera embedding e clusterizza (serve per sapere quanti cluster attesi)
                 embeddings = fetch_l1_embeddings_from_qdrant(l1_summaries, qdrant_store=store)
                 clusters = cluster_summaries(l1_summaries, embeddings)
-                logger.info(f"  {cat}: {len(clusters)} cluster creati")
+                expected_clusters = len(clusters)
+
+                # Controlla L1.5 già presenti vs attesi
+                existing = count_l1_5_for_category(cat, store=store)
+
+                # Verifica staleness: confronta hash L1 con quello salvato
+                l1_stale = _is_l1_5_stale(cat, l1_summaries, logger)
+
+                if existing >= expected_clusters and not force and not l1_stale:
+                    logger.info(
+                        f"  {cat}: {existing}/{expected_clusters} L1.5 già completi, "
+                        f"niente da fare (usa --force per rigenerare)"
+                    )
+                    continue
+
+                if l1_stale and not force:
+                    logger.info(
+                        f"  {cat}: L1 cambiati ({len(l1_summaries)} paper) → "
+                        f"rigenerazione L1.5 necessaria"
+                    )
+                elif existing > 0 and not force:
+                    logger.info(
+                        f"  {cat}: {existing}/{expected_clusters} L1.5 presenti, "
+                        f"ripresa generazione cluster mancanti..."
+                    )
+                else:
+                    logger.info(f"  {cat}: {len(l1_summaries)} L1 → {expected_clusters} cluster")
+
+                # Se L1 stale, rigenera tutto (non skip_existing)
+                skip_existing_l1_5 = not force and not l1_stale
 
                 # Genera L1.5 per ogni cluster
                 l1_5_list = generate_all_cluster_summaries(
                     clusters, category=cat,
                     save_to_store=True, store=store,
-                    skip_existing=not force,
+                    skip_existing=skip_existing_l1_5,
                 )
                 total_generated += len(l1_5_list)
                 logger.info(f"  {cat}: {len(l1_5_list)} L1.5 generati")
+
+                # Salva stato L1 per rilevare future modifiche
+                _save_l1_5_state(cat, l1_summaries)
+
+                # Invalida L2 per questa categoria (L1.5 rinfrescati)
+                _invalidate_l2_metadata(cat, logger)
 
             except Exception as e:
                 logger.error(f"  Errore L1.5 per {cat}: {e}")
                 errors_count += 1
 
         logger.info(f"L1.5: {total_generated} generati per {len(categories)} categorie, {errors_count} errori")
-        return errors_count
+        return errors_count, total_generated > 0
 
     except Exception as e:
         logger.error(f"Errore L1.5 summarization: {e}")
-        return 1
+        return 1, False
 
 
-def _run_l2_summarization(store, args, logger) -> int:
+def _run_l2_summarization(store, args, logger, *, skip_existing: bool | None = None) -> int:
     """Genera L2 per tutte le categorie."""
     from paperhunter.summarization import generate_l2_for_all_categories
 
@@ -719,9 +822,12 @@ def _run_l2_summarization(store, args, logger) -> int:
         category = getattr(args, "category", None)
         categories = [category] if category else None
 
+        if skip_existing is None:
+            skip_existing = not args.force
+
         summaries = generate_l2_for_all_categories(
             save_to_store=True, store=store,
-            skip_existing=not args.force, categories=categories,
+            skip_existing=skip_existing, categories=categories,
         )
         logger.info(f"L2: {len(summaries)} categorie generate")
         return 0

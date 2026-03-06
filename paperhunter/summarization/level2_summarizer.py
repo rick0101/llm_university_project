@@ -1162,15 +1162,41 @@ def _delete_existing_l2(category: str, store: Any) -> int:
         return 0
 
 
+def _count_l1_for_category(category: str, store: Any) -> int:
+    """Conta gli L1 summary nel vector store per una categoria."""
+    try:
+        from qdrant_client import models
+        result = store.client.count(
+            collection_name=settings.qdrant.collection_l1_summaries,
+            count_filter=models.Filter(
+                must=[
+                    models.FieldCondition(
+                        key="category",
+                        match=models.MatchValue(value=category),
+                    )
+                ]
+            ),
+        )
+        return result.count
+    except Exception:
+        return 0
+
+
 def _l2_exists_and_valid(category: str, store: Any) -> bool:
-    """Verifica se un L2 summary esiste ed è non-invalidato.
+    """Verifica se un L2 summary esiste ed è non-invalidato e non-stale.
+
+    Controlla:
+    1. Esistenza in Qdrant
+    2. Flag invalidated nel metadata su disco
+    3. Staleness: se il paper_count memorizzato nel metadata è inferiore
+       al numero attuale di L1 per la categoria, il L2 è obsoleto.
 
     Args:
         category: Nome della categoria.
         store: QdrantStore.
 
     Returns:
-        True se un L2 valido esiste già.
+        True se un L2 valido e aggiornato esiste già.
     """
     try:
         collection = settings.qdrant.collection_l2_summaries
@@ -1198,6 +1224,17 @@ def _l2_exists_and_valid(category: str, store: Any) -> bool:
         metadata = _load_l2_metadata_from_disk(category)
         if metadata and metadata.get("invalidated", False):
             return False
+
+        # Controlla staleness: se ci sono più L1 di quanti il L2 copra
+        if metadata:
+            stored_count = metadata.get("paper_count", 0)
+            actual_l1_count = _count_l1_for_category(category, store)
+            if actual_l1_count > 0 and actual_l1_count > stored_count:
+                logger.info(
+                    f"L2 '{category}' stale: copre {stored_count} paper "
+                    f"ma ci sono {actual_l1_count} L1 attuali → rigenerazione"
+                )
+                return False
 
         return True
 

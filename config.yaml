@@ -13,7 +13,7 @@ recency_priority: true
 # --- Modelli LLM (Gemini Advanced) ---
 gemini:
   flash_model: "gemini-3-flash-preview"      # Task semplici: classificazione, reranking, estrazione entità
-  pro_model: "gemini-3-pro-preview"           # Task complessi: summarization, writing, planning
+  pro_model: "gemini-3.1-pro-preview"          # Task complessi: summarization, writing, planning
   embedding_model: "gemini-embedding-001"     # Embedding 3072-dim
   temperature_flash: 0.1                       # Bassa per task deterministici
   temperature_pro: 0.3                         # Leggermente più alta per writing creativo

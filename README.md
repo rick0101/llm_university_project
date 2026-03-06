@@ -704,6 +704,65 @@ Checkpoint saving after every node enables resume from failure.
 
 ---
 
+## API Call Estimates (per phase)
+
+Estimated number of API calls for a typical run with **118 papers**, **4 categories**, **~11 sections**, **agentic writer mode**. Values are approximate and depend on content complexity, number of citations per section, and Critic pass rate.
+
+### `paperhunter summarize` — ~144–152 API calls
+
+| Sub-phase | API Type | Calls | Notes |
+|-----------|----------|-------|-------|
+| L1 (per-paper) | Gemini **Pro** | **118** | 1 LLM call per paper |
+| L1.5 (RAPTOR clusters) | Gemini **Pro** | **~8–16** | 1 per cluster (~2–4 clusters/category) |
+| L2 (meta-summary) | Gemini **Pro** | **4** | 1 per category |
+| L1 → Qdrant | **Embedding** | **~12** | 118 embeddings batched (batch_size=10) |
+| L1.5 → Qdrant | **Embedding** | **~1–2** | ~8–16 embeddings batched |
+| L2 → Qdrant | **Embedding** | **~1** | 4 embeddings batched |
+| **Total** | | **~144–152** | |
+
+### `paperhunter index` — ~129–151 API calls
+
+| Sub-phase | API Type | Calls | Notes |
+|-----------|----------|-------|-------|
+| BM25 build | — | **0** | Local tokenization, no API |
+| Entity extraction | Gemini **Flash** | **118** | 1 per L1 summary |
+| Neo4j import | — | **0** | Cypher queries only |
+| Community detection | — | **0** | Louvain/Leiden algorithm in Neo4j GDS |
+| Community summaries | Gemini **Pro** | **~10–30** | 1 per community (min_size=3) |
+| Community → Qdrant | **Embedding** | **~1–3** | Batched |
+| **Total** | | **~129–151** | If Neo4j disabled: ~118 total |
+
+### `paperhunter write` — ~210–335 API calls
+
+| Sub-phase | API Type | Calls (est.) | Notes |
+|-----------|----------|--------------|-------|
+| **Planner** | Gemini **Pro** | **1** | Generate outline |
+| **Writer (agentic)** ×11 sec. | Gemini **Pro** | **~88–132** | ~8–12 ReAct iterations × 11 sections |
+| Writer tool calls (vector search) | **Embedding** | **~22–44** | ~2–4 `_embed_query()` per section × 11 |
+| **Critic** (batch verification) | Gemini **Flash** | **~22–55** | ~15 citations/sec ÷ batch_size=5 → ~3–5 calls/sec × 11 |
+| Critic feedback | Gemini **Flash** | **~3–5** | Only for sections failing <80% threshold |
+| **Re-write** (~4–5 sections) | Gemini **Pro** | **~32–60** | Sections not passing → agentic rewrite |
+| Re-write embeddings | **Embedding** | **~8–20** | Tool calls for rewrite |
+| Re-verify | Gemini **Flash** | **~9–25** | Critic round 2 |
+| **Assembler** (abstract) | Gemini **Pro** | **1** | |
+| **Assembler** (introduction) | Gemini **Pro** | **1** | |
+| **Assembler** (conclusion) | Gemini **Pro** | **1** | |
+| **Assembler** (changelog) | Gemini **Flash** | **1** | |
+| **Total** | | **~210–335** | |
+
+### Summary
+
+| Phase | LLM calls | Embedding calls | **Total API** |
+|-------|-----------|-----------------|---------------|
+| **Summarize** | ~130–138 | ~14 | **~144–152** |
+| **Index** | ~128–148 | ~1–3 | **~129–151** |
+| **Write** | ~175–280 | ~35–55 | **~210–335** |
+| **TOTAL** | **~433–566** | **~50–72** | **~483–638** |
+
+> **Note:** The **write** phase is the most expensive due to the ReAct loop (each iteration = 1 Pro call) and the Writer↔Critic cycle. The **summarize** phase is the most predictable (~1:1 with paper count). The **index** phase depends heavily on how many communities are found in the graph.
+
+---
+
 ## Configuration
 
 All settings are in `config.yaml`. API keys go in `.env` (never committed).

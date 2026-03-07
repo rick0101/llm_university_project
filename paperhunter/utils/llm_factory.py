@@ -224,6 +224,7 @@ def get_flash_llm(
 def get_pro_llm(
     temperature: Optional[float] = None,
     max_tokens: Optional[int] = None,
+    timeout_seconds: Optional[float] = None,
 ):
     """Crea un'istanza LLM Gemini Pro (task complessi).
 
@@ -233,6 +234,8 @@ def get_pro_llm(
     Args:
         temperature: Override della temperatura (default da config.yaml).
         max_tokens: Override max output tokens (default da config.yaml).
+        timeout_seconds: Override del timeout HTTP in secondi. Se None,
+            usa il valore globale da config.yaml (gemini.timeout).
 
     Returns:
         Istanza ``GoogleGenAI`` configurata.
@@ -243,17 +246,18 @@ def get_pro_llm(
     cfg = settings.gemini
     temp = temperature if temperature is not None else cfg.temperature_pro
     tokens = max_tokens if max_tokens is not None else cfg.max_output_tokens_pro
+    effective_timeout = timeout_seconds if timeout_seconds is not None else cfg.timeout
 
     llm = GoogleGenAI(
         model=cfg.pro_model,
         api_key=_get_api_key(),
         temperature=temp,
         max_tokens=tokens,
-        http_options=_get_http_options(),
+        http_options=_get_http_options(timeout_seconds=timeout_seconds),
         max_retries=0,  # Disabilita retry interni LlamaIndex — gestiamo noi in llm_call_with_retry
     )
 
-    logger.debug(f"LLM Pro creato: {cfg.pro_model} (temp={temp}, timeout={cfg.timeout}s)")
+    logger.debug(f"LLM Pro creato: {cfg.pro_model} (temp={temp}, timeout={effective_timeout}s)")
     return llm
 
 

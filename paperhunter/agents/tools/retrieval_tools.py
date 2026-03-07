@@ -130,6 +130,11 @@ def reset_singletons() -> None:
     alla prossima chiamata dei tool.
     """
     global _qdrant_store_singleton, _bm25_index_singleton
+    if _qdrant_store_singleton is not None:
+        try:
+            _qdrant_store_singleton.close()
+        except Exception:
+            pass
     _qdrant_store_singleton = None
     _bm25_index_singleton = None
     logger.debug("Retrieval tools singletons resettati")

@@ -1,0 +1,3 @@
+aggiungere parsing di immagini dei pdf, e trasformarli direttamente in vettori nel mio database.
+
+Fare un test completo di tutte le fase, con 10 pdf per sezione.

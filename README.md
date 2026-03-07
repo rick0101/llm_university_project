@@ -436,6 +436,10 @@ paperhunter search -k '"instruction tuning poisoning" OR "RLHF poisoning" OR "al
 paperhunter search -k '"semantic-preserving adversarial code" OR "functionality-preserving transformations" OR "obfuscation-based adversarial attacks" OR "dead code insertion evasion"' -c "Papers focusing on adversarial attacks that maintain code functionality while deceiving the model" -o ./scaricati/Adversarial_Code1 -n 10 --date-from 2025-01 --date-to 2026-03
 
 paperhunter search -k '" adversarial code" OR "Adeversarial code large language models"' -c "Papers about adversarial code on LLMs" -o ./scaricati/Adversarial_Code1 -n 10 --date-from 2024-01 --date-to 2026-03
+
+Paramentro diltro per evitare survey e review, che non sono l'obiettivo di questa raccolta:
+"-c "Only original research papers reporting novel experiments, methods, or empirical results. EXCLUDE: survey papers, literature reviews, systematization-of-knowledge (SoK), position papers, and AI-generated summaries. The paper must present its own contributions (new attack, defense, benchmark, or evaluation), not merely summarize existing work.""
+
 ```
 
 Then run the full pipeline:

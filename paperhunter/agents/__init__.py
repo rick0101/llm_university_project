@@ -73,7 +73,10 @@ from paperhunter.agents.planner_agent import (
     plan_from_l2_summaries,
 )
 from paperhunter.agents.writer_agent import (
+    clean_section_checkpoints,
+    delete_section_checkpoint,
     get_section_stats,
+    list_section_checkpoints,
     write,
     write_all_sections,
     write_section,
@@ -140,7 +143,10 @@ __all__ = [
     "plan",
     "plan_from_l2_summaries",
     # Writer Agent
+    "clean_section_checkpoints",
+    "delete_section_checkpoint",
     "get_section_stats",
+    "list_section_checkpoints",
     "write",
     "write_all_sections",
     "write_section",

@@ -48,6 +48,7 @@ import json
 import re
 import time
 from datetime import datetime
+from pathlib import Path
 from typing import Any, Optional
 
 from paperhunter.agents.state import (
@@ -80,6 +81,15 @@ from paperhunter.utils.token_counter import (
 )
 
 logger = get_logger(__name__)
+
+
+# ============================================================================
+# Custom exceptions
+# ============================================================================
+
+class MaxTokensError(RuntimeError):
+    """L'LLM ha raggiunto il limite max_tokens e la risposta è stata troncata."""
+    pass
 
 
 # ============================================================================
@@ -775,7 +785,7 @@ Your final answer must be the full section text in Markdown with [bibtex_key] ci
 {critic_feedback_section}
 """
 
-_REACT_MAX_ITERATIONS = 7
+_REACT_MAX_ITERATIONS = 15
 """Numero massimo di iterazioni ReAct (Thought→Action→Observation)."""
 
 
@@ -852,34 +862,72 @@ def _write_section_agentic(
         f"Target approximately {outline.target_length_words} words with [bibtex_key] citations."
     )
 
-    # --- Esegui il ReAct loop ---
-    t0 = time.time()
-    try:
-        result = asyncio.run(
-            _run_react_agent(agent, user_msg, max_iterations=max_iter)
-        )
-    except RuntimeError as e:
-        # Se siamo già in un event loop (es. Jupyter), usa nest_asyncio o fallback
-        if "cannot be called from a running event loop" in str(e):
-            logger.warning(
-                "[agentic] Detected running event loop. "
-                "Attempting nest_asyncio fallback."
+    # --- Esegui il ReAct loop con retry per MAX_TOKENS ---
+    max_retries = 3
+    result = None
+
+    for attempt in range(1, max_retries + 1):
+        t0 = time.time()
+        try:
+            result = asyncio.run(
+                _run_react_agent(agent, user_msg, max_iterations=max_iter)
             )
-            try:
-                import nest_asyncio
-                nest_asyncio.apply()
-                result = asyncio.run(
-                    _run_react_agent(agent, user_msg, max_iterations=max_iter)
+            break  # Successo, esci dal loop
+        except MaxTokensError:
+            elapsed_attempt = time.time() - t0
+            if attempt < max_retries:
+                # Riduci iterazioni per tentativo successivo: meno step → conversazione più corta
+                old_iter = max_iter
+                max_iter = max(5, max_iter - 4)
+                logger.warning(
+                    f"[agentic] MAX_TOKENS al tentativo {attempt}/{max_retries} "
+                    f"dopo {elapsed_attempt:.0f}s — retry con max_iter {old_iter}→{max_iter}"
                 )
-            except Exception as nested_e:
-                logger.error(f"[agentic] nest_asyncio fallback failed: {nested_e}")
+                print_warning(
+                    f"MAX_TOKENS per '{outline.title}' (tentativo {attempt}/{max_retries}), "
+                    f"retry con meno iterazioni ({max_iter})..."
+                )
+                # Ricrea l'agente fresco per evitare stato residuo
+                agent = ReActAgent(
+                    name="SurveyWriterAgent",
+                    description="Academic survey section writer with RAG tools",
+                    system_prompt=system_prompt,
+                    tools=tools,
+                    llm=llm,
+                    timeout=600.0,
+                    verbose=logger.isEnabledFor(10),
+                )
+            else:
+                logger.error(
+                    f"[agentic] MAX_TOKENS dopo {max_retries} tentativi "
+                    f"per '{outline.title}' — rinuncio"
+                )
                 return None
-        else:
-            logger.error(f"[agentic] RuntimeError: {e}")
+        except RuntimeError as e:
+            if "cannot be called from a running event loop" in str(e):
+                logger.warning(
+                    "[agentic] Detected running event loop. "
+                    "Attempting nest_asyncio fallback."
+                )
+                try:
+                    import nest_asyncio
+                    nest_asyncio.apply()
+                    result = asyncio.run(
+                        _run_react_agent(agent, user_msg, max_iterations=max_iter)
+                    )
+                    break
+                except MaxTokensError:
+                    logger.error(f"[agentic] MAX_TOKENS in nest_asyncio fallback")
+                    return None
+                except Exception as nested_e:
+                    logger.error(f"[agentic] nest_asyncio fallback failed: {nested_e}")
+                    return None
+            else:
+                logger.error(f"[agentic] RuntimeError: {e}")
+                return None
+        except Exception as e:
+            logger.error(f"[agentic] ReAct agent failed: {e}", exc_info=True)
             return None
-    except Exception as e:
-        logger.error(f"[agentic] ReAct agent failed: {e}", exc_info=True)
-        return None
 
     elapsed = time.time() - t0
     if result is None:
@@ -934,12 +982,19 @@ async def _run_react_agent(agent, user_msg: str, max_iterations: int = 7):
 
     Returns:
         AgentOutput con la risposta finale, o None se fallisce.
+
+    Raises:
+        MaxTokensError: Se la risposta è stata troncata per MAX_TOKENS.
     """
     try:
         handler = agent.run(user_msg=user_msg, max_iterations=max_iterations)
         result = await handler
         return result
-    except Exception as e:
+    except (RuntimeError, Exception) as e:
+        err_str = str(e)
+        if "MAX_TOKENS" in err_str:
+            logger.warning(f"[agentic] _run_react_agent: MAX_TOKENS hit — will retry")
+            raise MaxTokensError(err_str) from e
         logger.error(f"[agentic] _run_react_agent error: {e}", exc_info=True)
         return None
 
@@ -1139,7 +1194,9 @@ def write_section(
             critic_feedback=critic_feedback,
         )
         if parsed is not None:
-            # ReAct ha prodotto un risultato valido
+            # ReAct ha prodotto un risultato valido — rilascia il lock Qdrant
+            from paperhunter.agents.tools.retrieval_tools import reset_singletons
+            reset_singletons()
             elapsed = time.time() - t0
             return _build_section_result(
                 parsed, target_outline, section_key,
@@ -1147,7 +1204,9 @@ def write_section(
                 mode="agentic",
             )
         else:
-            # Fallback a static
+            # Fallback a static — rilascia il lock Qdrant del ReAct agent
+            from paperhunter.agents.tools.retrieval_tools import reset_singletons
+            reset_singletons()
             logger.warning(
                 f"[agentic] Fallback a modalità static per '{section_key}'"
             )
@@ -1263,6 +1322,137 @@ def write_section(
 
 
 # ============================================================================
+# Writer section checkpoints (per-section granularity)
+# ============================================================================
+
+_WRITER_CHECKPOINT_SUBDIR = "writer_sections"
+
+
+def _get_writer_checkpoint_dir() -> Path:
+    """Directory per i checkpoint per-sezione del writer."""
+    base = Path(settings.output.checkpoints_dir)
+    d = base / _WRITER_CHECKPOINT_SUBDIR
+    d.mkdir(parents=True, exist_ok=True)
+    return d
+
+
+def _save_section_checkpoint(section_key: str, section_data: dict) -> Path:
+    """Salva un checkpoint per una singola sezione completata.
+
+    Il file è ``<section_key>.json`` e contiene i dati della SectionDraft
+    serializzati, più un timestamp.
+    """
+    cp_dir = _get_writer_checkpoint_dir()
+    filepath = cp_dir / f"{section_key}.json"
+    payload = {
+        "section_key": section_key,
+        "saved_at": datetime.now().isoformat(),
+        "data": section_data,
+    }
+    filepath.write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
+    logger.info(f"[checkpoint] Sezione '{section_key}' salvata → {filepath.name}")
+    return filepath
+
+
+def _load_section_checkpoints() -> dict[str, dict]:
+    """Carica tutti i checkpoint per-sezione esistenti.
+
+    Returns:
+        Dict {section_key: section_data} per ogni sezione trovata.
+    """
+    cp_dir = _get_writer_checkpoint_dir()
+    if not cp_dir.exists():
+        return {}
+
+    loaded: dict[str, dict] = {}
+    for fp in sorted(cp_dir.glob("*.json")):
+        try:
+            payload = json.loads(fp.read_text(encoding="utf-8"))
+            key = payload.get("section_key", fp.stem)
+            loaded[key] = payload["data"]
+            logger.debug(
+                f"[checkpoint] Caricata sezione '{key}' "
+                f"(salvata: {payload.get('saved_at', '?')})"
+            )
+        except (json.JSONDecodeError, KeyError) as e:
+            logger.warning(f"[checkpoint] Impossibile caricare {fp.name}: {e}")
+    return loaded
+
+
+def delete_section_checkpoint(section_key: str) -> bool:
+    """Elimina il checkpoint di una singola sezione.
+
+    Args:
+        section_key: Chiave della sezione da eliminare.
+
+    Returns:
+        True se il file è stato eliminato, False se non esisteva.
+    """
+    cp_dir = _get_writer_checkpoint_dir()
+    fp = cp_dir / f"{section_key}.json"
+    if fp.exists():
+        fp.unlink()
+        logger.info(f"[checkpoint] Eliminato checkpoint sezione '{section_key}'")
+        return True
+    return False
+
+
+def clean_section_checkpoints() -> int:
+    """Elimina tutti i checkpoint per-sezione del writer.
+
+    Returns:
+        Numero di file eliminati.
+    """
+    cp_dir = _get_writer_checkpoint_dir()
+    if not cp_dir.exists():
+        return 0
+    removed = 0
+    for fp in cp_dir.glob("*.json"):
+        fp.unlink()
+        removed += 1
+    if removed:
+        logger.info(f"[checkpoint] Eliminati {removed} checkpoint sezione writer")
+    return removed
+
+
+def list_section_checkpoints() -> list[dict[str, Any]]:
+    """Lista tutti i checkpoint per-sezione esistenti.
+
+    Returns:
+        Lista di dict con section_key, saved_at, word_count, title.
+    """
+    cp_dir = _get_writer_checkpoint_dir()
+    if not cp_dir.exists():
+        return []
+
+    result = []
+    for fp in sorted(cp_dir.glob("*.json")):
+        try:
+            payload = json.loads(fp.read_text(encoding="utf-8"))
+            data = payload.get("data", {})
+            result.append({
+                "section_key": payload.get("section_key", fp.stem),
+                "saved_at": payload.get("saved_at", "?"),
+                "title": data.get("title", "?"),
+                "word_count": data.get("word_count", 0),
+                "citations": len(data.get("citations", [])),
+                "status": data.get("status", "?"),
+                "file": fp.name,
+            })
+        except (json.JSONDecodeError, KeyError):
+            result.append({
+                "section_key": fp.stem,
+                "saved_at": "?",
+                "title": "?",
+                "word_count": 0,
+                "citations": 0,
+                "status": "corrupted",
+                "file": fp.name,
+            })
+    return result
+
+
+# ============================================================================
 # Write all sections
 # ============================================================================
 
@@ -1305,15 +1495,38 @@ def write_all_sections(
     errors: list[str] = []
     all_sections: dict[str, dict] = {}
 
-    # Filtra sezioni da scrivere
+    # --- Carica checkpoint per-sezione esistenti (resume) ---
+    cached_sections = _load_section_checkpoints()
+    resumed_count = 0
+    if cached_sections:
+        for key, data in cached_sections.items():
+            if key not in existing_sections:
+                all_sections[key] = data
+                resumed_count += 1
+        if resumed_count:
+            logger.info(
+                f"[checkpoint] Ripristinate {resumed_count} sezioni da checkpoint: "
+                f"{list(cached_sections.keys())}"
+            )
+            print_success(
+                f"Ripristinate {resumed_count} sezioni da checkpoint precedente"
+            )
+
+    # Filtra sezioni da scrivere (escludi già presenti nello stato E nei checkpoint)
     sections_to_write = [
         o for o in outline
         if o.section_type not in skip_types
         and o.key not in existing_sections
+        and o.key not in all_sections
     ]
 
     if not sections_to_write:
         logger.info("Nessuna nuova sezione da scrivere.")
+        if all_sections:
+            return {
+                "sections": all_sections,
+                "current_phase": PipelinePhase.WRITING.value,
+            }
         return {"current_phase": PipelinePhase.WRITING.value}
 
     # Calcola numero totale sezioni per budget proportional
@@ -1373,6 +1586,9 @@ def write_all_sections(
                 print_success(
                     f"Sezione '{section_outline.key}': {wc} parole, {nc} citazioni"
                 )
+                # --- Checkpoint per-sezione ---
+                if isinstance(draft_data, dict) and draft_data:
+                    _save_section_checkpoint(section_outline.key, draft_data)
             if "errors" in result and result["errors"]:
                 errors.extend(result["errors"])
 
@@ -1386,6 +1602,7 @@ def write_all_sections(
     elapsed = time.time() - t0
     logger.info(
         f"\nScrittura completata: {written_count} sezioni scritte, "
+        f"{resumed_count} ripristinate da checkpoint, "
         f"{failed_count} fallite, {elapsed:.1f}s totali"
     )
 
@@ -1396,6 +1613,7 @@ def write_all_sections(
         "metadata": {
             **state.get("metadata", {}),
             "writer_sections_written": written_count,
+            "writer_sections_resumed": resumed_count,
             "writer_sections_failed": failed_count,
             "writer_total_time": round(elapsed, 1),
             "writer_model": force_model or settings.agents.writer_model,

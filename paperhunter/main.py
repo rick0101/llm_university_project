@@ -1889,6 +1889,77 @@ def cmd_cleanup(args: argparse.Namespace) -> int:
     return 0 if errors == 0 else 1
 
 
+def cmd_checkpoint(args: argparse.Namespace) -> int:
+    """Gestione checkpoint per-sezione del Writer Agent."""
+    logger = _get_logger("paperhunter.checkpoint")
+
+    from paperhunter.agents.writer_agent import (
+        list_section_checkpoints,
+        delete_section_checkpoint,
+        clean_section_checkpoints,
+    )
+
+    action = getattr(args, "ckpt_action", None)
+
+    if action == "list" or action is None:
+        checkpoints = list_section_checkpoints()
+        if not checkpoints:
+            print("Nessun checkpoint sezione trovato.")
+            return 0
+        console = _get_console()
+        if console:
+            try:
+                from paperhunter.utils.logging_setup import print_table
+                data = [
+                    {
+                        "Key": cp["section_key"],
+                        "Title": cp["title"],
+                        "Words": str(cp["word_count"]),
+                        "Citations": str(cp["citations"]),
+                        "Saved At": cp["saved_at"][:19],
+                        "File": cp["file"],
+                    }
+                    for cp in checkpoints
+                ]
+                print_table("Writer Section Checkpoints", data)
+            except Exception:
+                for cp in checkpoints:
+                    print(
+                        f"  {cp['section_key']:40s} "
+                        f"{cp['word_count']:>5d} words  "
+                        f"{cp['citations']:>3d} cit  "
+                        f"{cp['saved_at'][:19]}"
+                    )
+        else:
+            for cp in checkpoints:
+                print(
+                    f"  {cp['section_key']:40s} "
+                    f"{cp['word_count']:>5d} words  "
+                    f"{cp['citations']:>3d} cit  "
+                    f"{cp['saved_at'][:19]}"
+                )
+        print(f"\nTotale: {len(checkpoints)} checkpoint")
+        return 0
+
+    elif action == "delete":
+        key = args.section_key
+        if delete_section_checkpoint(key):
+            print(f"Checkpoint sezione '{key}' eliminato.")
+        else:
+            print(f"Nessun checkpoint trovato per '{key}'.")
+            return 1
+        return 0
+
+    elif action == "clear":
+        removed = clean_section_checkpoints()
+        print(f"Eliminati {removed} checkpoint sezione.")
+        return 0
+
+    else:
+        print("Usa: paperhunter checkpoint [list|delete|clear]")
+        return 1
+
+
 # ═══════════════════════════════════════════════════════════════════════════
 # Parser principale
 # ═══════════════════════════════════════════════════════════════════════════
@@ -2091,6 +2162,26 @@ def build_parser() -> argparse.ArgumentParser:
     p_cleanup.add_argument("--category", type=str,
                            help="Limita a una sotto-cartella/categoria")
 
+    # ── checkpoint ──
+    p_ckpt = sub.add_parser(
+        "checkpoint", help="Gestione checkpoint writer (list/delete/clear)",
+        description=(
+            "Gestisce i checkpoint per-sezione salvati dal Writer Agent.\n"
+            "Permette di visualizzare, eliminare selettivamente o cancellare\n"
+            "tutti i checkpoint per controllare il resume della scrittura.\n\n"
+            "Esempi:\n"
+            "  paperhunter checkpoint list                       # Mostra checkpoint\n"
+            "  paperhunter checkpoint delete introduction        # Elimina una sezione\n"
+            "  paperhunter checkpoint clear                      # Elimina tutti\n"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    ckpt_sub = p_ckpt.add_subparsers(dest="ckpt_action", help="Azione")
+    ckpt_sub.add_parser("list", help="Lista checkpoint sezioni salvati")
+    ckpt_del = ckpt_sub.add_parser("delete", help="Elimina checkpoint di una sezione")
+    ckpt_del.add_argument("section_key", type=str, help="Chiave sezione da eliminare")
+    ckpt_sub.add_parser("clear", help="Elimina tutti i checkpoint sezione")
+
     return parser
 
 
@@ -2126,6 +2217,7 @@ def run() -> None:
         "stats": cmd_stats,
         "export": cmd_export,
         "cleanup": cmd_cleanup,
+        "checkpoint": cmd_checkpoint,
     }
 
     handler = handlers.get(args.command)

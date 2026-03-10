@@ -153,6 +153,7 @@ class PaperChunk(BaseModel):
     year: Optional[int] = Field(None, description="Anno di pubblicazione")
     month: Optional[int] = Field(None, description="Mese di pubblicazione")
     chunk_index: int = Field(0, description="Indice del chunk nella sezione")
+    image_path: Optional[str] = Field(None, description="Percorso relativo all'immagine estratta (solo per Figure_Description)")
 
     # Embedding (opzionale, calcolato separatamente)
     embedding: Optional[list[float]] = Field(None, exclude=True, description="Vettore embedding")
@@ -169,6 +170,7 @@ class PaperChunk(BaseModel):
             "year": self.year or 0,
             "month": self.month or 0,
             "chunk_index": self.chunk_index,
+            "image_path": self.image_path or "",
         }
 
 

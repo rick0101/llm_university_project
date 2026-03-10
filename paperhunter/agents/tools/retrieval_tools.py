@@ -560,6 +560,165 @@ def search_graph_communities(
 
 
 # ============================================================================
+# Tool 4: Figure Descriptions Search
+# ============================================================================
+
+def _format_figure_results(
+    results: list[dict],
+    max_total_chars: int = _MAX_RESULT_CHARS,
+) -> str:
+    """Formatta i risultati di figure con path immagine e sintassi Markdown.
+
+    Ogni risultato include:
+    - ``[bibtex_key]`` per la citazione
+    - Descrizione testuale della figura
+    - Sintassi Markdown ``![caption](path)`` per includere l'immagine
+
+    Args:
+        results: Lista di dict dal ``QdrantStore.query()``.
+        max_total_chars: Budget massimo per l'output complessivo.
+
+    Returns:
+        Stringa formattata con figure e path immagini.
+    """
+    if not results:
+        return "(No figure results found for this query.)"
+
+    parts: list[str] = []
+    total_chars = 0
+
+    for i, r in enumerate(results, 1):
+        meta = r.get("metadata", {})
+        bibtex_key = meta.get("bibtex_key", "unknown")
+        category = meta.get("category", "N/A")
+        year = meta.get("year", "N/A")
+        score = r.get("score", 0.0)
+        text = r.get("text", "")
+        image_path = meta.get("image_path", "")
+
+        text = _truncate_text(text)
+
+        entry = (
+            f"[{i}] [{bibtex_key}] (cat: {category}, year: {year}, "
+            f"score: {score:.3f})\n{text}\n"
+        )
+
+        # Se c'è un path immagine, aggiungi la sintassi Markdown
+        if image_path:
+            # Genera caption breve dal bibtex_key e indice
+            caption = f"Figure from [{bibtex_key}]"
+            entry += f"IMAGE_PATH: {image_path}\n"
+            entry += f"To include this figure, use: ![{caption}]({image_path})\n"
+
+        if total_chars + len(entry) > max_total_chars:
+            remaining = len(results) - i + 1
+            parts.append(f"[... {remaining} more results truncated ...]")
+            break
+
+        parts.append(entry)
+        total_chars += len(entry)
+
+    return "\n".join(parts)
+
+
+def search_figure_descriptions(
+    query: str,
+    category: str | None = None,
+    top_k: int = _DEFAULT_TOP_K,
+) -> str:
+    """Search figure descriptions extracted from paper PDFs.
+
+    Searches the figure_descriptions collection in Qdrant, which contains
+    AI-generated semantic descriptions of figures, diagrams, plots, and
+    tables extracted from the original PDFs using multimodal vision.
+
+    Results include the image file path, so the writer can include the
+    actual figure in the survey using Markdown image syntax:
+    ``![caption](figures/image_path.png)``
+
+    Use this tool when you need information about:
+    - Experimental results shown in plots or charts
+    - System architectures or pipeline diagrams
+    - Comparison tables or confusion matrices
+    - Attack/defense workflow diagrams
+
+    Args:
+        query: The search query describing what type of figure or visual
+            information you're looking for (e.g., "attack success rate
+            comparison chart", "defense architecture diagram").
+        category: Optional category filter (e.g., "Prompt Injection").
+        top_k: Number of results to return (default: 5, max: 10).
+
+    Returns:
+        Formatted text with the most relevant figure descriptions,
+        each prefixed with [bibtex_key] for citation. Includes
+        IMAGE_PATH and Markdown inclusion syntax for each figure.
+
+    Examples:
+        >>> search_figure_descriptions("attack success rate comparison")
+        "[1] [Zou_2023_GCG] (cat: Adversarial Code, year: 2023, score: 0.82)\\n..."
+        >>> search_figure_descriptions("defense pipeline architecture", category="Prompt Injection")
+        "[1] [Wei_2024_Defense] ..."
+    """
+    t0 = time.time()
+    top_k = min(max(top_k, 1), 10)
+
+    logger.info(
+        f"[tool] search_figure_descriptions: query={query!r}, "
+        f"category={category}, top_k={top_k}"
+    )
+
+    try:
+        store = _get_qdrant_store()
+
+        from paperhunter.config import settings
+        collection = settings.qdrant.collection_figure_descriptions
+
+        # Verifica che la collection esista e abbia dati
+        if not store.client.collection_exists(collection):
+            elapsed = time.time() - t0
+            logger.info(
+                f"[tool] search_figure_descriptions: collection '{collection}' "
+                f"non esiste ({elapsed:.2f}s)"
+            )
+            return (
+                "(No figure descriptions available. "
+                "Figure extraction may not have been run during ingestion. "
+                "Try using search_vector_database instead.)"
+            )
+
+        # Costruisci filtro metadata
+        where_filter: dict | None = None
+        if category:
+            where_filter = {"category": category}
+
+        results = store.query(
+            query_text=query,
+            n_results=top_k,
+            where_filter=where_filter,
+            collection_name=collection,
+        )
+
+        elapsed = time.time() - t0
+        logger.info(
+            f"[tool] search_figure_descriptions: {len(results)} risultati "
+            f"in {elapsed:.2f}s"
+        )
+
+        return _format_figure_results(results)
+
+    except Exception as e:
+        elapsed = time.time() - t0
+        logger.error(
+            f"[tool] search_figure_descriptions ERRORE: {e} ({elapsed:.2f}s)"
+        )
+        return (
+            f"(Error searching figure descriptions: {type(e).__name__}: {e}. "
+            f"The figure descriptions may not be available.)"
+        )
+
+
+# ============================================================================
 # Helper: costruzione lista tool per il ReAct Agent
 # ============================================================================
 
@@ -612,6 +771,17 @@ def get_all_retrieval_tools() -> list[FunctionTool]:
                 "context. Use when you need a high-level overview of how "
                 "research topics connect across papers. "
                 "Returns narrative community descriptions."
+            ),
+        ),
+        FunctionTool.from_defaults(
+            fn=search_figure_descriptions,
+            name="search_figure_descriptions",
+            description=(
+                "Search AI-generated descriptions of figures, diagrams, "
+                "plots, and tables from paper PDFs. Use when you need "
+                "information about experimental results, architectures, "
+                "or visual data from papers. "
+                "Returns formatted text with [bibtex_key] citations."
             ),
         ),
     ]

@@ -1,0 +1,17 @@
+ from repositories like HuggingFace for subsequent fine-tuning."
+  },
+  {
+    "citation_index": 3,
+    "bibtex_key": "Wang_2025_Defending",
+    "status": "PARTIALLY_SUPPORTED",
+    "confidence": 0.9,
+    "reasoning": "The source confirms that prompt injection involves injecting malicious instructions to redirect agents toward unintended actions, but it does not mention OWASP or its ranking of this threat."
+  },
+  {
+    "citation_index": 4,
+    "bibtex_key": "Hackett_2025_LLM",
+    "status": "PARTIALLY_SUPPORTED",
+    "confidence": 0.85,
+    "reasoning": "The source mentions using white-box models to compute word importance rankings to enhance attacks on black-box systems, which supports the idea of precise manipulation and high success rates, but it does not explicitly discuss extracting sensitive information."
+  }
+]

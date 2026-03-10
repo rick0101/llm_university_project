@@ -157,7 +157,14 @@ and only for enumerations.
 by the retrieved context, state this gap explicitly rather than making claims \
 without sources.
 
-6. **No Fabrication**: Do NOT invent citations or facts. If a bibtex_key is [Unknown] \
+6. **Figures**: If the retrieved context contains figure descriptions with IMAGE_PATH, \
+you can include the actual figure using Markdown image syntax: \
+``![Caption](figures/filename.png)``. \
+Include figures when they effectively illustrate key results or architectures. \
+Always cite the source: ``![Caption](figures/file.png) [bibtex_key]``. \
+Do NOT include more than 2-3 figures per section.
+
+7. **No Fabrication**: Do NOT invent citations or facts. If a bibtex_key is [Unknown] \
 or missing, do not cite it. Only cite keys that appear in the retrieved context.
 
 {special_instructions}
@@ -776,10 +783,18 @@ knowledge, past tense for specific study results.
 5. **Structure**: Use clear paragraphs with topic sentences. You may use Markdown \
 subsection headers (###) if the section is long enough.
 
-6. **No Fabrication**: Do NOT invent citations or facts. If you cannot find information \
+6. **Figures**: When search_figure_descriptions returns results with IMAGE_PATH, \
+you can include the actual figure in your text using Markdown image syntax: \
+``![Caption describing the figure](figures/filename.png)``. \
+Include figures when they effectively illustrate key results, architectures, or comparisons. \
+Always cite the source paper alongside the figure: \
+``![Attack success rates across models](figures/Zou_2023_GCG_fig_001.png) [Zou_2023_GCG]``. \
+Do NOT include more than 2-3 figures per section.
+
+7. **No Fabrication**: Do NOT invent citations or facts. If you cannot find information \
 on a topic, state the gap explicitly.
 
-7. **Output**: When you have gathered enough information, write the COMPLETE section. \
+8. **Output**: When you have gathered enough information, write the COMPLETE section. \
 Your final answer must be the full section text in Markdown with [bibtex_key] citations.
 
 {critic_feedback_section}
@@ -1759,6 +1774,13 @@ def write(state: SurveyState) -> dict[str, Any]:
         f"{total_sections} totali"
     )
     print_success(f"Writer Agent: {len(all_sections)} sezioni completate.")
+
+    # Rilascia il lock Qdrant prima che il nodo successivo (Critic) lo richieda
+    if retriever is not None:
+        try:
+            retriever.close()
+        except Exception:
+            pass
 
     return {
         "sections": all_sections,

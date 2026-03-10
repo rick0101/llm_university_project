@@ -51,6 +51,7 @@ from paperhunter.ingestion.pdf_hasher import (
     update_registry_entry,
 )
 from paperhunter.ingestion.semantic_scholar import SemanticScholarEnricher
+from paperhunter.ingestion.figure_extractor import FigureExtractor
 from paperhunter.models import GROBIDOutput, Paper, PaperChunk
 from paperhunter.utils.logging_setup import (
     get_logger,
@@ -387,6 +388,7 @@ class IngestionPipeline:
         self._grobid: GrobidClient | None = None
         self._enricher: SemanticScholarEnricher | None = None
         self._store: Any | None = None  # QdrantStore (importato lazy)
+        self._figure_extractor: FigureExtractor | None = None
         self._checkpoint = _CheckpointManager()
 
     # ------------------------------------------------------------------
@@ -416,6 +418,12 @@ class IngestionPipeline:
             from paperhunter.indexing.qdrant_store import QdrantStore
             self._store = QdrantStore()
         return self._store
+
+    def _get_figure_extractor(self) -> FigureExtractor:
+        """Inizializza (lazy) il figure extractor."""
+        if self._figure_extractor is None:
+            self._figure_extractor = FigureExtractor()
+        return self._figure_extractor
 
     # ------------------------------------------------------------------
     # Pipeline principale
@@ -566,9 +574,9 @@ class IngestionPipeline:
                     )
 
                     if result is not None:
-                        paper, chunks = result
+                        paper, chunks, figure_chunks = result
                         report.processed += 1
-                        report.total_chunks += len(chunks)
+                        report.total_chunks += len(chunks) + len(figure_chunks)
                         report.papers.append(paper)
 
                         # Raccogli BibTeX
@@ -642,7 +650,7 @@ class IngestionPipeline:
         pdf_info: dict[str, Any],
         registry: dict[str, Any],
         report: IngestionReport,
-    ) -> tuple[Paper, list[PaperChunk]] | None:
+    ) -> tuple[Paper, list[PaperChunk], list[PaperChunk]] | None:
         """Processa un singolo PDF attraverso tutti gli step della pipeline.
 
         Args:
@@ -651,7 +659,7 @@ class IngestionPipeline:
             report: Report di ingestion (aggiornato in-place per le statistiche).
 
         Returns:
-            Tupla (Paper, list[PaperChunk]) se successo, None se fallimento.
+            Tupla (Paper, text_chunks, figure_chunks) se successo, None se fallimento.
         """
         rel_path = pdf_info["relative_path"]
         abs_path = pdf_info["absolute_path"]
@@ -689,9 +697,16 @@ class IngestionPipeline:
         if not chunks:
             logger.warning("Nessun chunk generato per '%s'", rel_path)
 
+        # --- Step 5b: Figure extraction (se abilitato) ---
+        figure_chunks = self._step_figure_extraction(abs_path, paper, grobid_output)
+
         # --- Step 6: Indicizzazione Qdrant ---
         if chunks and not self.skip_qdrant:
             self._step_qdrant_index(chunks, paper)
+
+        # --- Step 6b: Indicizzazione figure in Qdrant ---
+        if figure_chunks and not self.skip_qdrant:
+            self._step_qdrant_index_figures(figure_chunks, paper)
 
         # --- Aggiorna registro hash ---
         registry[rel_path] = create_registry_entry(
@@ -702,14 +717,15 @@ class IngestionPipeline:
         )
 
         logger.info(
-            "✓ Completato: %s → bibtex_key=%s, %d chunk, doi=%s",
+            "✓ Completato: %s → bibtex_key=%s, %d chunk, %d figure, doi=%s",
             rel_path,
             paper.bibtex_key or "N/A",
             len(chunks),
+            len(figure_chunks),
             paper.doi or "N/A",
         )
 
-        return paper, chunks
+        return paper, chunks, figure_chunks
 
     # ------------------------------------------------------------------
     # Step individuali
@@ -914,6 +930,86 @@ class IngestionPipeline:
         except Exception as exc:
             logger.error(
                 "Errore indicizzazione Qdrant per '%s': %s",
+                paper.bibtex_key or paper.title[:40],
+                exc,
+            )
+            return 0
+
+    def _step_figure_extraction(
+        self,
+        pdf_path: Path,
+        paper: Paper,
+        grobid_output: GROBIDOutput,
+    ) -> list[PaperChunk]:
+        """Step 5b: Estrae figure dal PDF e genera descrizioni multimodali.
+
+        Usa Gemini Flash Vision per generare descrizioni semantiche
+        delle figure, che vengono poi indicizzate come PaperChunk.
+
+        Args:
+            pdf_path: Percorso assoluto del PDF.
+            paper: Paper con metadati completi.
+            grobid_output: Output GROBID (per le caption).
+
+        Returns:
+            Lista di PaperChunk con descrizioni figure.
+        """
+        if not settings.figure_extraction.enabled:
+            return []
+
+        try:
+            extractor = self._get_figure_extractor()
+            figure_chunks = extractor.extract_and_describe(
+                pdf_path=pdf_path,
+                paper=paper,
+                figure_captions=grobid_output.figure_captions,
+            )
+            if figure_chunks:
+                logger.info(
+                    "Figure: %d descrizioni generate per '%s'",
+                    len(figure_chunks),
+                    paper.bibtex_key or paper.title[:40],
+                )
+            return figure_chunks
+        except Exception as exc:
+            logger.warning(
+                "Errore estrazione figure per '%s': %s",
+                paper.bibtex_key or paper.title[:40],
+                exc,
+            )
+            return []
+
+    def _step_qdrant_index_figures(
+        self,
+        figure_chunks: list[PaperChunk],
+        paper: Paper,
+    ) -> int:
+        """Step 6b: Indicizza le descrizioni figure nel vector store Qdrant.
+
+        Args:
+            figure_chunks: Lista di PaperChunk con descrizioni figure.
+            paper: Paper associato.
+
+        Returns:
+            Numero di chunk indicizzati.
+        """
+        store = self._get_store()
+
+        try:
+            n_indexed = store.add_chunks(
+                figure_chunks,
+                collection_name=store.COLLECTION_FIGURES,
+                show_progress=False,
+            )
+            logger.debug(
+                "Qdrant figure: %d descrizioni indicizzate per '%s'",
+                n_indexed,
+                paper.bibtex_key or paper.title[:40],
+            )
+            return n_indexed
+        except Exception as exc:
+            logger.error(
+                "Errore indicizzazione figure Qdrant per '%s': %s",
                 paper.bibtex_key or paper.title[:40],
                 exc,
             )

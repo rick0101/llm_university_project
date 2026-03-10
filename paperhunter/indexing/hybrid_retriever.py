@@ -276,6 +276,21 @@ class HybridRetriever:
         return self._bm25_index
 
     # ------------------------------------------------------------------
+    # Lifecycle
+    # ------------------------------------------------------------------
+
+    def close(self) -> None:
+        """Chiude la connessione QdrantStore, rilasciando il lock su disco."""
+        if self._qdrant_store is not None:
+            try:
+                self._qdrant_store.close()
+            except Exception:
+                pass
+            self._qdrant_store = None
+            self._qdrant_initialized = False
+            logger.debug("HybridRetriever: QdrantStore chiuso")
+
+    # ------------------------------------------------------------------
     # Costruzione filtri
     # ------------------------------------------------------------------
 

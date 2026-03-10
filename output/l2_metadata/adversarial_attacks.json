@@ -1,34 +1,28 @@
 {
   "category": "Adversarial Attacks",
-  "version": 4,
-  "paper_count": 23,
+  "version": 5,
+  "paper_count": 10,
   "paper_ids": [
     "Rubel_2024_LLM",
-    "Orel_2026_AI",
-    "Liu_2025_AI",
-    "Suresh_XXXX_LLM",
-    "Google_2025_Auto",
-    "Thornton_XXXX_Harder",
-    "Storek_2025_AI",
-    "Sreekumar_2026_LLM",
-    "Hossen_2024_Adversarial",
-    "Chen_2025_Explainer",
     "Wang_2024_Advqdet",
+    "Orel_2026_AI",
     "Wu_2024_Dissecting",
-    "Zhang_2024_Rocoins",
+    "Storek_2025_AI",
     "Jia_2025_Adversarial",
+    "Li_2025_LLM",
+    "Mu_2025_LLM",
     "Yang_2024_Adversarial",
     "Rajagopalan_2026_AI"
   ],
   "invalidated": false,
-  "generated_at": "2026-03-06T15:28:19.550147",
+  "generated_at": "2026-03-07T16:09:28.421558",
   "model_used": "pro",
   "recency_tier_stats": {
     "path": "raptor_l1_5",
-    "cluster_count": 3,
-    "total_paper_count": 23,
-    "avg_papers_per_cluster": 7.7,
-    "l1_5_chars": 10366,
-    "budget_pct": 1
+    "cluster_count": 1,
+    "total_paper_count": 10,
+    "avg_papers_per_cluster": 10.0,
+    "l1_5_chars": 3762,
+    "budget_pct": 0
   }
 }

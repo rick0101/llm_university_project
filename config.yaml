@@ -51,12 +51,13 @@ neo4j:
 
 # --- Qdrant (Vector DB locale, no server needed) ---
 qdrant:
-  persist_dir: "./qdrant_db"                    # Storage locale su disco
+  persist_dir: "./qdrant_db_test"                    # Storage locale su disco
   collection_paper_chunks: "paper_chunks"
   collection_l1_summaries: "l1_summaries"
   collection_l2_summaries: "l2_summaries"
   collection_l1_5_summaries: "l1_5_summaries"
   collection_graph_communities: "graph_communities"
+  collection_figure_descriptions: "figure_descriptions"
   embedding_dimension: 3072                    # Gemini embedding-001 dimension
   distance_metric: "Cosine"                    # Cosine | Euclid | Dot
 
@@ -73,7 +74,7 @@ semantic_scholar:
 
 # --- Ingestion Pipeline ---
 ingestion:
-  pdf_base_dir: "./scaricati"                  # Directory radice PDF categorizzati
+  pdf_base_dir: "./scaricati_test"                  # Directory radice PDF categorizzati
   hash_registry_path: "./data/hash_registry.json"
   chunk_size: 1500                             # Token per chunk (approssimativo in caratteri)
   chunk_overlap: 200                           # Overlap tra chunk consecutivi
@@ -109,6 +110,18 @@ summarization:
 clustering:
   max_cluster_size: 20          # Massimo numero di paper per cluster L1.5
   similarity_threshold: 0.75    # Soglia similarità coseno per il clustering
+
+# --- Figure Extraction (v3.1) ---
+# Estrazione e descrizione intelligente delle figure dai PDF.
+# Usa Gemini Flash Vision per generare descrizioni semantiche delle figure,
+# che vengono poi indicizzate in Qdrant come vettori testuali.
+figure_extraction:
+  enabled: true                 # Abilita/disabilita estrazione figure
+  vision_model: "google/gemini-3-flash-preview"  # Modello con supporto Vision multimodale
+  min_width: 150                # Larghezza minima immagine (pixel) — esclude icone
+  min_height: 150               # Altezza minima immagine (pixel) — esclude loghi
+  max_figures_per_paper: 10     # Massimo figure processate per paper (le più grandi)
+  figures_dir: "./output/figures"  # Directory dove salvare le immagini estratte
 
 # --- Hybrid Retrieval ---
 retrieval:

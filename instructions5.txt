@@ -1,3 +1,9 @@
 aggiungere parsing di immagini dei pdf, e trasformarli direttamente in vettori nel mio database.
 
 Fare un test completo di tutte le fase, con 10 pdf per sezione.
+
+sistemare il fatto che scarica tutte le immagini, comprese loghi e cose non rilevanti.
+Ho notato che ha scaricato immagini di incidenti auto che non c'entrano nulla con il paper.
+Filtriamo le immagini che sono veramente utili, di grafici e tabelle, e non loghi o immagini decorative.
+Non voglio fare una chiamata a un modello per ogni immagine (spenderei troppi soldi).
+Voglio un metodo alternativo per determinare se una immagine è rilevante o meno, basato su caratteristiche visive o posizione nel documento.

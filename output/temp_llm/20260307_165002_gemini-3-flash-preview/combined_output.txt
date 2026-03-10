@@ -1,0 +1,32 @@
+```json
+[
+  {
+    "citation_index": 0,
+    "bibtex_key": "Chowdhury_2024_Breaking",
+    "status": "PARTIALLY_SUPPORTED",
+    "confidence": 0.75,
+    "reasoning": "The source describes a comprehensive survey and taxonomy of LLM attacks and notes that current mitigations lack 'universal generalizability,' which aligns with the spirit of needing standardization. However, the specific phrasing regarding the 'crucial' need for standardized benchmarks for 'quantifiable and rational observations' is not explicitly stated in the provided summary or abstract."
+  },
+  {
+    "citation_index": 1,
+    "bibtex_key": "Bang_2025_LLM",
+    "status": "SUPPORTED",
+    "confidence": 0.95,
+    "reasoning": "The source explicitly states that HalluLens uses 'dynamic test set generation' to evaluate hallucinations and 'prevent data leakage,' which directly supports the claim."
+  },
+  {
+    "citation_index": 2,
+    "bibtex_key": "Orel_2026_AI",
+    "status": "SUPPORTED",
+    "confidence": 0.95,
+    "reasoning": "The source describes AICD Bench as a comprehensive benchmark covering 9 languages and reasoning models, specifically designed to address the 'narrow' and 'in-distribution' limitations of existing datasets that lead to optimistic results but fail under distribution shifts."
+  },
+  {
+    "citation_index": 3,
+    "bibtex_key": "Pallakonda_2026_LLMs",
+    "status": "SUPPORTED",
+    "confidence": 0.95,
+    "reasoning": "The source confirms the creation of the 'Private Terminal Tool Calling' dataset, which is used to implant 'conditional malicious payloads' (selectively triggered) while ensuring the model maintains 'high utility on benign tasks' (benign behavior)."
+  }
+]
+```

@@ -1184,6 +1184,13 @@ def verify_all_sections(
         f"{failed_count} fallite, {elapsed:.1f}s totali"
     )
 
+    # Rilascia il lock Qdrant prima che il nodo successivo (Writer) lo richieda
+    if store is not None:
+        try:
+            store.close()
+        except Exception:
+            pass
+
     return {
         "verification_results": all_verifications,
         "sections": all_sections,

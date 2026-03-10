@@ -79,9 +79,17 @@ class CitationRecord(BaseModel):
         return self.model_dump()
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any] | CitationRecord) -> CitationRecord:
+    def from_dict(cls, data: dict[str, Any] | CitationRecord | str) -> CitationRecord:
         if isinstance(data, CitationRecord):
             return data
+        if isinstance(data, str):
+            # Handle repr-serialized strings like:
+            # "bibtex_key='X' claim='' chunk_id=None retrieval_score=0.0"
+            import re
+            m = re.search(r"bibtex_key='([^']*)'", data)
+            if m:
+                return cls(bibtex_key=m.group(1))
+            return cls(bibtex_key=data)
         return cls(**data)
 
 
@@ -501,6 +509,23 @@ def create_initial_state(
     )
 
 
+def _serialize_value(val: Any) -> Any:
+    """Recursively serialize Pydantic models and other non-JSON types."""
+    if val is None:
+        return None
+    if isinstance(val, datetime):
+        return val.isoformat()
+    if hasattr(val, "to_dict"):
+        return val.to_dict()
+    if hasattr(val, "model_dump"):
+        return val.model_dump()
+    if isinstance(val, dict):
+        return {k: _serialize_value(v) for k, v in val.items()}
+    if isinstance(val, list):
+        return [_serialize_value(v) for v in val]
+    return val
+
+
 def state_to_dict(state: SurveyState) -> dict[str, Any]:
     """Serialize the full state to a plain JSON-serializable dict.
 
@@ -509,12 +534,7 @@ def state_to_dict(state: SurveyState) -> dict[str, Any]:
     result: dict[str, Any] = {}
     for key in SurveyState.__annotations__:
         val = state.get(key)  # type: ignore[attr-defined]
-        if val is None:
-            result[key] = None
-        elif isinstance(val, datetime):
-            result[key] = val.isoformat()
-        else:
-            result[key] = val
+        result[key] = _serialize_value(val)
     return result
 
 

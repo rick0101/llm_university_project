@@ -70,6 +70,16 @@ class Neo4jConfig(BaseModel):
     database: str = "neo4j"
 
 
+class FigureExtractionConfig(BaseModel):
+    """Configurazione estrazione e descrizione figure dai PDF."""
+    enabled: bool = True
+    vision_model: str = "gemini-2.5-flash"  # Modello con supporto Vision
+    min_width: int = 150         # Larghezza minima immagine in pixel
+    min_height: int = 150        # Altezza minima immagine in pixel
+    max_figures_per_paper: int = 10  # Massimo figure processate per paper
+    figures_dir: str = "./output/figures"  # Directory per salvare le immagini estratte
+
+
 class QdrantConfig(BaseModel):
     """Configurazione Qdrant per vector store (locale, senza server)."""
     persist_dir: str = "./qdrant_db"
@@ -78,6 +88,7 @@ class QdrantConfig(BaseModel):
     collection_l2_summaries: str = "l2_summaries"
     collection_l1_5_summaries: str = "l1_5_summaries"
     collection_graph_communities: str = "graph_communities"
+    collection_figure_descriptions: str = "figure_descriptions"
     embedding_dimension: int = 3072
     distance_metric: str = "Cosine"
 
@@ -374,6 +385,7 @@ class Settings(BaseSettings):
     retrieval: RetrievalConfig = Field(default_factory=RetrievalConfig)
     agents: AgentsConfig = Field(default_factory=AgentsConfig)
     clustering: ClusteringConfig = Field(default_factory=ClusteringConfig)
+    figure_extraction: FigureExtractionConfig = Field(default_factory=FigureExtractionConfig)
     openrouter: OpenRouterConfig = Field(default_factory=OpenRouterConfig)
     output: OutputConfig = Field(default_factory=OutputConfig)
     search: SearchConfig = Field(default_factory=SearchConfig)

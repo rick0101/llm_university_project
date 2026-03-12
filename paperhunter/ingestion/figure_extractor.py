@@ -557,6 +557,65 @@ class FigureExtractor:
             )
             chunks.append(chunk)
 
+        # Step 5: Preparazione chunk IMAGE_EMBEDDING
+        # Crea chunk per indicizzazione multimodale, riutilizzando gli embedding
+        # pre-calcolati dallo Stage 2 dove disponibili.
+        self._pending_image_chunks: list[PaperChunk] = []
+        self._pending_image_embeddings: list[list[float]] = []
+
+        if settings.image_filtering.enabled and settings.image_filtering.embedding_filter_enabled:
+            embedder = get_multimodal_embedder()
+
+            for img_info in images:
+                idx = img_info["image_index"]
+                safe_key = "".join(
+                    c if c.isalnum() or c in "_-" else "_"
+                    for c in bibtex_key
+                )
+                img_filename = f"{safe_key}_fig_{idx + 1:03d}.png"
+                image_rel_path = f"figures/{img_filename}"
+
+                # Riusa embedding pre-calcolato (Stage 2), oppure computa
+                pre_emb = img_info.get("embedding")
+                if pre_emb is not None:
+                    embedding_vec = pre_emb
+                else:
+                    # Immagini che hanno saltato Stage 2 (score euristico > 0.8)
+                    embedding_vec = embedder.embed_image(
+                        image_bytes=img_info["image_bytes"],
+                        mime_type=img_info.get("mime_type", "image/png"),
+                    )
+
+                # Caption breve per il testo del chunk
+                caption_text = captions[idx] if idx < len(captions) else ""
+                chunk_text = caption_text or f"Figure {idx + 1} from {bibtex_key}"
+
+                img_chunk_id = hashlib.sha256(
+                    f"{bibtex_key}::image_embedding::{idx}".encode()
+                ).hexdigest()[:16]
+
+                img_chunk = PaperChunk(
+                    chunk_id=img_chunk_id,
+                    text=chunk_text,
+                    chunk_type=ChunkType.IMAGE_EMBEDDING,
+                    paper_id=paper_id,
+                    bibtex_key=bibtex_key,
+                    section_name="Image_Embedding",
+                    category=paper.category or "",
+                    year=paper.year,
+                    month=paper.month,
+                    chunk_index=idx,
+                    image_path=image_rel_path,
+                )
+                self._pending_image_chunks.append(img_chunk)
+                self._pending_image_embeddings.append(embedding_vec)
+
+            if self._pending_image_chunks:
+                logger.info(
+                    "Preparati %d chunk IMAGE_EMBEDDING per '%s' [%s]",
+                    len(self._pending_image_chunks), pdf_path.name, bibtex_key,
+                )
+
         logger.info(
             "Generate %d descrizioni figure per '%s' [%s]",
             len(chunks), pdf_path.name, bibtex_key,
@@ -596,3 +655,24 @@ class FigureExtractor:
         parts.append(f"Description: {description}")
 
         return "\n\n".join(parts)
+
+    def get_pending_image_embeddings(
+        self,
+    ) -> tuple[list[PaperChunk], list[list[float]]]:
+        """Restituisce i chunk IMAGE_EMBEDDING e i relativi embedding pendenti.
+
+        Dopo una chiamata a ``extract_and_describe()``, se il filtraggio
+        embedding è abilitato, i chunk IMAGE_EMBEDDING vengono preparati
+        internamente. Questo metodo li restituisce e li svuota.
+
+        Returns:
+            Tupla (chunks, embeddings):
+            - chunks: Lista di ``PaperChunk`` con ``chunk_type=IMAGE_EMBEDDING``.
+            - embeddings: Vettori multimodali 3072-dim corrispondenti.
+        """
+        chunks = getattr(self, "_pending_image_chunks", [])
+        embeddings = getattr(self, "_pending_image_embeddings", [])
+        # Svuota dopo il consumo per evitare doppia indicizzazione
+        self._pending_image_chunks = []
+        self._pending_image_embeddings = []
+        return chunks, embeddings

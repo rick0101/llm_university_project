@@ -28,6 +28,7 @@ class ChunkType(str, Enum):
     ORIGINAL = "original"          # Testo originale dal PDF
     L1_SUMMARY = "l1_summary"      # Summary L1 singolo paper
     L2_SUMMARY = "l2_summary"      # Meta-summary L2 per categoria
+    IMAGE_EMBEDDING = "image_embedding"  # Embedding multimodale immagine
 
 
 class VerificationStatus(str, Enum):

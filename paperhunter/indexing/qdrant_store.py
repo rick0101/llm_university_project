@@ -203,6 +203,7 @@ class QdrantStore:
     COLLECTION_L2 = "l2_summaries"
     COLLECTION_GRAPH_COMMUNITIES = "graph_communities"
     COLLECTION_FIGURES = "figure_descriptions"
+    COLLECTION_IMAGE_EMBEDDINGS = "image_embeddings"
 
     # Campi payload con indice (no-op in locale, utile se si migra a server)
     _INDEXED_FIELDS = {
@@ -235,6 +236,7 @@ class QdrantStore:
         self.COLLECTION_L2 = cfg.collection_l2_summaries
         self.COLLECTION_GRAPH_COMMUNITIES = cfg.collection_graph_communities
         self.COLLECTION_FIGURES = cfg.collection_figure_descriptions
+        self.COLLECTION_IMAGE_EMBEDDINGS = cfg.collection_image_embeddings
 
         # Collezione di default
         self.default_collection = collection_name or self.COLLECTION_CHUNKS
@@ -263,7 +265,7 @@ class QdrantStore:
 
     def _ensure_collections(self) -> None:
         """Crea le collezioni se non esistono già."""
-        for col_name in (self.COLLECTION_CHUNKS, self.COLLECTION_L1, self.COLLECTION_L1_5, self.COLLECTION_L2, self.COLLECTION_GRAPH_COMMUNITIES, self.COLLECTION_FIGURES):
+        for col_name in (self.COLLECTION_CHUNKS, self.COLLECTION_L1, self.COLLECTION_L1_5, self.COLLECTION_L2, self.COLLECTION_GRAPH_COMMUNITIES, self.COLLECTION_FIGURES, self.COLLECTION_IMAGE_EMBEDDINGS):
             if not self.client.collection_exists(col_name):
                 self.client.create_collection(
                     collection_name=col_name,
@@ -543,6 +545,66 @@ class QdrantStore:
                 logger.error(f"Errore upsert batch pre-embedded: {e}")
 
         return total_upserted
+
+    def add_image_embeddings(
+        self,
+        chunks: list[PaperChunk],
+        embeddings: list[list[float]],
+        batch_size: int = 50,
+    ) -> int:
+        """Indicizza embedding multimodali di immagini nella collection dedicata.
+
+        Salva i vettori embedding delle immagini (calcolati con Gemini
+        Embedding 2 Preview) nella collection ``image_embeddings``.
+        Usa ``add_chunks_with_embeddings`` sulla collection dedicata.
+
+        Args:
+            chunks: Lista di ``PaperChunk`` con ``chunk_type=IMAGE_EMBEDDING``.
+            embeddings: Vettori embedding multimodali corrispondenti.
+            batch_size: Dimensione batch per upsert.
+
+        Returns:
+            Numero di punti inseriti/aggiornati.
+        """
+        if not chunks:
+            logger.debug("add_image_embeddings chiamato con lista vuota")
+            return 0
+
+        return self.add_chunks_with_embeddings(
+            chunks=chunks,
+            embeddings=embeddings,
+            collection_name=self.COLLECTION_IMAGE_EMBEDDINGS,
+            batch_size=batch_size,
+        )
+
+    def query_image_embeddings(
+        self,
+        query_text: str,
+        n_results: int = 10,
+        where_filter: Optional[dict[str, Any]] = None,
+        score_threshold: Optional[float] = None,
+    ) -> list[dict[str, Any]]:
+        """Ricerca cross-modale nella collection image_embeddings.
+
+        Genera l'embedding testuale della query e lo confronta con
+        i vettori multimodali delle immagini indicizzate.
+
+        Args:
+            query_text: Testo della query (es. "attack success rate plot").
+            n_results: Numero massimo di risultati.
+            where_filter: Filtro metadata opzionale.
+            score_threshold: Soglia minima di similarità.
+
+        Returns:
+            Lista di risultati (stessa struttura di ``query()``).
+        """
+        return self.query(
+            query_text=query_text,
+            n_results=n_results,
+            where_filter=where_filter,
+            collection_name=self.COLLECTION_IMAGE_EMBEDDINGS,
+            score_threshold=score_threshold,
+        )
 
     # ------------------------------------------------------------------
     # CRUD — Query / Search
@@ -941,7 +1003,7 @@ class QdrantStore:
 
         # Stats per tutte le collezioni
         all_stats: dict[str, Any] = {}
-        for col_name in (self.COLLECTION_CHUNKS, self.COLLECTION_L1, self.COLLECTION_L1_5, self.COLLECTION_L2, self.COLLECTION_GRAPH_COMMUNITIES):
+        for col_name in (self.COLLECTION_CHUNKS, self.COLLECTION_L1, self.COLLECTION_L1_5, self.COLLECTION_L2, self.COLLECTION_GRAPH_COMMUNITIES, self.COLLECTION_FIGURES, self.COLLECTION_IMAGE_EMBEDDINGS):
             if self.client.collection_exists(col_name):
                 all_stats[col_name] = self._get_collection_stats(col_name)
             else:

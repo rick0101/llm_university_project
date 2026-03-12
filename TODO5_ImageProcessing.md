@@ -300,7 +300,7 @@ paperhunter/
 
 ---
 
-#### [ ] Task 2.3: Indicizzazione diretta immagini come vettori multimodali in Qdrant
+#### [x] Task 2.3: Indicizzazione diretta immagini come vettori multimodali in Qdrant
 
 **File:** `paperhunter/indexing/qdrant_store.py` (modifica), `paperhunter/ingestion/figure_extractor.py` (modifica), `paperhunter/models.py` (modifica)  
 **Stato attuale:** Le immagini rilevanti vengono descritte con Gemini Vision e indicizzate come chunk testuali nella collection `figure_descriptions`. I vettori embedding multimodali calcolati nello Stage 2 (Task 2.2) vengono attualmente scartati dopo la classificazione. Non esiste indicizzazione diretta dei vettori immagine.  
@@ -326,6 +326,17 @@ paperhunter/
   1. `figure_descriptions` collection: embedding testuale della descrizione Vision (come prima)
   2. `image_embeddings` collection: embedding multimodale dell'immagine stessa (nuovo)  
 **Test:** Indicizzare le immagini di un paper di test. Verificare che la collection `image_embeddings` contenga gli stessi paper_id della `figure_descriptions`. Verificare che una query testuale sulla collection `image_embeddings` restituisca risultati coerenti (es. query "attack success rate" restituisce figure con grafici di performance).
+
+> **Completato:** 13 Marzo 2026  
+> **Modifiche apportate:**
+> - **`paperhunter/models.py`:** Aggiunto `IMAGE_EMBEDDING = "image_embedding"` a `ChunkType` enum.
+> - **`paperhunter/indexing/qdrant_store.py`:** Aggiunto `COLLECTION_IMAGE_EMBEDDINGS` class attribute (caricato da `cfg.collection_image_embeddings`). Registrato in `_ensure_collections()` (7 collection totali) e in `get_stats()`. Aggiunti metodi `add_image_embeddings(chunks, embeddings, batch_size=50) -> int` e `query_image_embeddings(query_text, n_results, where_filter, score_threshold) -> list[dict]`, entrambi delegano alle funzioni `add_chunks_with_embeddings` e `query` sulla collection dedicata.
+> - **`paperhunter/ingestion/figure_extractor.py`:** Aggiunto Step 5 "Preparazione chunk IMAGE_EMBEDDING" in `extract_and_describe()`: per ogni immagine rilevante, crea `PaperChunk` con `chunk_type=ChunkType.IMAGE_EMBEDDING`. Riusa embedding pre-calcolato da Stage 2; per immagini che hanno saltato Stage 2 (score euristico > 0.8, embedding=None), chiama `embedder.embed_image()`. Risultati accumulati in `self._pending_image_chunks` e `self._pending_image_embeddings`. Nuovo metodo `get_pending_image_embeddings() -> tuple[list[PaperChunk], list[list[float]]]` che restituisce e svuota lo stato interno (previene doppia indicizzazione). Return type di `extract_and_describe()` invariato per backward compatibility.
+> - **`paperhunter/ingestion/ingestion_pipeline.py`:** Modificato `_step_figure_extraction()`: dopo `extract_and_describe()`, chiama `extractor.get_pending_image_embeddings()` e `store.add_image_embeddings()` per indicizzare gli embedding multimodali.
+> - **`test_image_embedding_indexing.py`** (nuovo): 24 test in 5 classi — `TestChunkTypeImageEmbedding` (3), `TestQdrantStoreImageEmbeddings` (7), `TestGetPendingImageEmbeddings` (9), `TestImageEmbeddingChunkMetadata` (2), `TestEdgeCases` (2). Tutti 24 passano.
+> - **`test_embedding_filter_integration.py`** (aggiornato): Adattati 3 test esistenti per compatibilità con Step 5 (`test_scientific_high_score_skips_stage2`, `test_decorative_not_embedded`, `test_full_pipeline_mixed_images`). Tutti 16 test passano.
+> - **Test totali image-related:** 106 passano (24 nuovi + 82 pre-esistenti), 0 falliti.
+> - **Uso:** Ogni immagine rilevante produce due entry: (1) `figure_descriptions` con embedding testuale della descrizione Vision, (2) `image_embeddings` con embedding multimodale dell'immagine stessa. Query cross-modale: `store.query_image_embeddings("attack success rate", n_results=5)`.
 
 ---
 

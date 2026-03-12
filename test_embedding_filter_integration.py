@@ -258,6 +258,7 @@ class TestStage2EmbeddingFilter:
         ref_embs = _fake_ref_embeddings()
         mock_embedder = MagicMock()
         mock_embedder.compute_reference_embeddings.return_value = ref_embs
+        mock_embedder.embed_image.return_value = _fake_embedding(seed=77)
         mock_get_embedder.return_value = mock_embedder
 
         with patch.object(extractor, "extract_images_from_pdf", return_value=fake_images), \
@@ -268,8 +269,8 @@ class TestStage2EmbeddingFilter:
                 paper=sample_paper,
             )
 
-        # embed_image NON deve essere chiamato (skip Stage 2)
-        mock_embedder.embed_image.assert_not_called()
+        # embed_image NON chiamato in Stage 2 (skip), MA chiamato in Step 5 (ri-embed)
+        assert mock_embedder.embed_image.call_count == 1
         # Ma Vision deve essere chiamato
         assert mock_describe.call_count == 1
         assert len(chunks) == 1
@@ -376,6 +377,7 @@ class TestStage2EmbeddingFilter:
         ref_embs = _fake_ref_embeddings()
         mock_embedder = MagicMock()
         mock_embedder.compute_reference_embeddings.return_value = ref_embs
+        mock_embedder.embed_image.return_value = _fake_embedding(seed=77)
         mock_get_embedder.return_value = mock_embedder
 
         with patch.object(extractor, "extract_images_from_pdf", return_value=fake_images), \
@@ -386,9 +388,9 @@ class TestStage2EmbeddingFilter:
                 paper=sample_paper,
             )
 
-        # embed_image NON deve essere chiamato per il logo (filtrato Stage 1)
-        # La chart con score 0.85 salta Stage 2 → embed_image mai chiamato
-        mock_embedder.embed_image.assert_not_called()
+        # embed_image NON è chiamato per il logo (filtrato Stage 1)
+        # MA è chiamato 1 volta in Step 5 per la chart (ri-embed per indicizzazione)
+        assert mock_embedder.embed_image.call_count == 1
 
     @patch("paperhunter.ingestion.figure_extractor.get_multimodal_embedder")
     @patch("paperhunter.ingestion.figure_extractor.ImageRelevanceFilter")
@@ -699,10 +701,12 @@ class TestStage2MixedPipeline:
         ref_embs = _fake_ref_embeddings()
         chart_emb = _fake_embedding(seed=10)  # alta sim con scientific_plot
         photo_emb = _fake_embedding(seed=999)  # bassa sim
+        reembed_emb = _fake_embedding(seed=77)  # ri-embed Step 5
         mock_embedder = MagicMock()
         mock_embedder.compute_reference_embeddings.return_value = ref_embs
-        # Ordine embed_image: prima img[2] (SCIENTIFIC bassa), poi img[3] (UNCERTAIN)
-        mock_embedder.embed_image.side_effect = [chart_emb, photo_emb]
+        # Ordine embed_image: Stage 2: img[2] (SCIENTIFIC bassa), img[3] (UNCERTAIN)
+        # Step 5: img[0] e img[1] (skip Stage 2, ri-embed per indicizzazione)
+        mock_embedder.embed_image.side_effect = [chart_emb, photo_emb, reembed_emb, reembed_emb]
         mock_get_embedder.return_value = mock_embedder
 
         with patch.object(extractor, "extract_images_from_pdf", return_value=fake_images), \
@@ -719,8 +723,8 @@ class TestStage2MixedPipeline:
         # → Vision: 3 chiamate (2 skip + 1 passata Stage 2)
         assert mock_describe.call_count == 3
         assert len(chunks) == 3
-        # embed_image chiamato solo per 2 immagini (score <= 0.8)
-        assert mock_embedder.embed_image.call_count == 2
+        # embed_image: 2 Stage 2 (img[2] + img[3]) + 2 Step 5 ri-embed (img[0] + img[1])
+        assert mock_embedder.embed_image.call_count == 4
 
     @patch("paperhunter.ingestion.figure_extractor.get_multimodal_embedder")
     @patch("paperhunter.ingestion.figure_extractor.ImageRelevanceFilter")

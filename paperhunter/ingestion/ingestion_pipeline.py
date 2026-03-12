@@ -970,6 +970,18 @@ class IngestionPipeline:
                     len(figure_chunks),
                     paper.bibtex_key or paper.title[:40],
                 )
+
+            # Indicizza image embeddings nella collection dedicata
+            img_chunks, img_embeddings = extractor.get_pending_image_embeddings()
+            if img_chunks and img_embeddings:
+                store = self._get_store()
+                n_img = store.add_image_embeddings(img_chunks, img_embeddings)
+                logger.info(
+                    "Image embeddings: %d vettori indicizzati per '%s'",
+                    n_img,
+                    paper.bibtex_key or paper.title[:40],
+                )
+
             return figure_chunks
         except Exception as exc:
             logger.warning(

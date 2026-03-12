@@ -31,7 +31,7 @@ class GeminiConfig(BaseModel):
     """Configurazione modelli Gemini (LLM + Embedding)."""
     flash_model: str = "gemini-3-flash-preview"
     pro_model: str = "gemini-3.1-pro-preview"
-    embedding_model: str = "gemini-embedding-001"
+    embedding_model: str = "gemini-embedding-2-preview"
     temperature_flash: float = 0.1
     temperature_pro: float = 0.3
     max_output_tokens_flash: int = 4096

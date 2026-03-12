@@ -1,9 +1,97 @@
-aggiungere parsing di immagini dei pdf, e trasformarli direttamente in vettori nel mio database.
+Progetto: Sistema end-to-end per generare un paper scientifico survey sulla sicurezza dei LLM.
+Prerequisito: Tutti i task di TODO.md, TODO3.md e TODO4_Scalability.md sono completati.
+Riferimento roadmap: TODO5_ImageProcessing.md
 
-Fare un test completo di tutte le fase, con 10 pdf per sezione.
+Obiettivo di questa fase: Filtraggio intelligente e indicizzazione multimodale delle immagini estratte dai PDF.
+Il sistema attualmente estrae le immagini dai PDF (via FigureExtractor + PyMuPDF) e le descrive tutte
+con Gemini Vision, ma presenta due problemi critici:
+  - Scarica TUTTE le immagini, comprese loghi, watermark, immagini decorative e contenuti irrilevanti
+    (es. foto di incidenti auto che non c'entrano nulla col paper sulla sicurezza LLM)
+  - Ogni immagine richiede una chiamata a Gemini Vision per la descrizione → costo elevato con 1.000+ paper
+  - Non esiste indicizzazione multimodale: le immagini sono convertite solo in testo, perdendo informazione visiva
 
-sistemare il fatto che scarica tutte le immagini, comprese loghi e cose non rilevanti.
-Ho notato che ha scaricato immagini di incidenti auto che non c'entrano nulla con il paper.
-Filtriamo le immagini che sono veramente utili, di grafici e tabelle, e non loghi o immagini decorative.
-Non voglio fare una chiamata a un modello per ogni immagine (spenderei troppi soldi).
-Voglio un metodo alternativo per determinare se una immagine è rilevante o meno, basato su caratteristiche visive o posizione nel documento.
+Analisi: Perché è utile indicizzare le immagini come vettori multimodali
+  - I paper scientifici sulla sicurezza dei LLM contengono grafici di risultati, tabelle comparative,
+    diagrammi di architettura e pipeline di attacco/difesa. Queste informazioni visive sono complementari al testo.
+  - Con Gemini Embedding 2 Preview (multimodale), si possono creare embedding di immagini nello stesso
+    spazio vettoriale del testo (3072 dimensioni). Questo abilita retrieval cross-modale:
+    una query testuale può trovare direttamente figure rilevanti.
+  - L'embedding multimodale costa ~10x meno di una chiamata Vision generativa, ed è ideale come
+    filtro intermedio di rilevanza.
+
+Strategia: Pipeline a 3 stadi per le immagini
+
+  Stage 1 — Filtro Euristico (costo: zero, locale):
+    Analisi di caratteristiche visive con PIL + NumPy, senza chiamate API.
+    Elimina ~60% delle immagini non rilevanti basandosi su:
+      - Aspect ratio estremo (banner orizzontali, barre verticali)
+      - Posizione nel documento (prima/ultima pagina → probabilmente logo/copyright)
+      - Entropia colore bassa (immagini monotone → loghi, icone)
+      - Densità di bordi bassa (no strutture grafiche → foto decorative)
+      - Dimensione relativa alla pagina troppo piccola o troppo grande
+
+  Stage 2 — Filtro Embedding Multimodale (costo: basso, embedding API):
+    Le immagini sopravvissute allo Stage 1 vengono embedded con Gemini Embedding 2 Preview.
+    L'embedding viene confrontato (similarità coseno) con embedding di riferimento pre-calcolati
+    per categorie di figure scientifiche ("scientific data plot", "comparison table", ecc.).
+    Se la similarità massima è sotto soglia → immagine decorativa/irrilevante → scartata.
+
+  Stage 3 — Descrizione Vision (costo: alto, solo per le rilevanti):
+    Solo le immagini che passano entrambi gli stadi vengono descritte con Gemini Vision.
+    Risultato atteso: riduzione del 70-80% delle chiamate Vision.
+
+  Bonus — Indicizzazione Multimodale:
+    Gli embedding multimodali delle immagini rilevanti vengono salvati in una nuova collection
+    Qdrant (`image_embeddings`), abilitando retrieval cross-modale dal writer agent.
+
+Tre miglioramenti principali da implementare:
+
+1. Filtro Euristico Locale — Classificazione basata su caratteristiche visive:
+   - Analisi di aspect ratio, entropia colore, densità bordi (PIL + NumPy)
+   - Punteggio combinato con soglia configurabile
+   - Integrazione in FigureExtractor prima della chiamata Vision
+   - Zero costi API, esecuzione locale
+
+2. Embedding Multimodale — Gemini Embedding 2 Preview:
+   - Embedding nativo di immagini via google-genai SDK (non LlamaIndex, che è solo testo)
+   - Classificazione rilevanza per similarità coseno vs embedding di riferimento
+   - Indicizzazione diretta dei vettori immagine in Qdrant (nuova collection)
+   - Retrieval cross-modale: query testuale → figure visivamente rilevanti
+
+3. Test End-to-End — Validazione pipeline completa:
+   - Esecuzione con 10 PDF per sezione (4 categorie × 10 = 40 PDF)
+   - Report comparativo: immagini totali vs filtrate vs indicizzate
+   - Confronto costi: prima (Vision per tutte) vs dopo (pipeline a 3 stadi)
+
+ATTENZIONE: STRATEGIA DI ESECUZIONE E GESTIONE DEL CONTESTO
+
+Poiché questo progetto è immenso e voglio evitare di saturare la tua finestra di contesto o perdere qualità nel codice, lavoreremo a step rigidamente separati.
+
+Il file TODO5_ImageProcessing.md contiene la roadmap dettagliata con tutti i task.
+
+Regole d'oro per le nostre sessioni:
+
+    1. Nelle nostre interazioni future, io ti fornirò questo master prompt + il TODO5_ImageProcessing.md aggiornato.
+
+    2. Tu dovrai leggere il TODO5_ImageProcessing.md, individuare il primo task NON spuntato ([ ]), e scrivere tutto il codice necessario ESCLUSIVAMENTE per completare quel singolo task.
+
+    3. Una volta scritto il codice per quel task, aggiorna il TODO5_ImageProcessing.md mettendo la spunta ([x]) a quel task, e poi FERMATI COMPLETAMENTE. Non anticipare il codice del task successivo.
+
+    4. Alla fine di ogni tuo output, chiudi sempre con questo messaggio esatto: "Task completato con successo. Per favore, apri una nuova chat, incolla il master prompt e il nuovo TODO.md aggiornato, e chiedimi di eseguire il prossimo task. Questo manterrà la mia memoria fresca e il codice pulito."
+
+    5. Ricordati di eseguire git add -A && git commit -m "descrizione della modifica" dopo ogni task completato, per mantenere una cronologia chiara e dettagliata delle modifiche.
+
+Voglio un task alla volta, codice modulare e perfetto, e poi stop.
+Dopo ogni task completato nella todo lista, crea un mini riassunto sotto al task nel TODO5_ImageProcessing.md (come fatto in TODO.md, TODO3.md e TODO4_Scalability.md), con le modifiche apportate e le note per il futuro, scrivendo le funzioni che hai aggiunto e come usarle.
+Per output lunghi, con una attesa elevata, utilizza dei file di testo (es. code.txt) per salvare l'output, invece di incollarlo direttamente nella chat, per evitare problemi di formattazione o perdita di dati.
+
+File di contesto utili (se necessario rileggere l'architettura):
+  - config.yaml — configurazione centralizzata
+  - paperhunter/config.py — modelli Pydantic per la configurazione
+  - paperhunter/models.py — modelli dati (Paper, L1Summary, L2Summary, PaperChunk, ChunkType, ecc.)
+  - paperhunter/ingestion/figure_extractor.py — FigureExtractor attuale (estrazione + Vision + chunking)
+  - paperhunter/indexing/qdrant_store.py — vector store Qdrant (collections, embedding, query)
+  - paperhunter/utils/llm_factory.py — factory per modelli LLM e embedding (get_embedding_model)
+  - paperhunter/utils/rate_limiter.py — rate limiter per API Gemini
+  - paperhunter/agents/tools/retrieval_tools.py — tool di retrieval per writer agent (include search_figure_descriptions)
+  - paperhunter/agents/writer_agent.py — writer agent ReAct (usa i tool per cercare info)

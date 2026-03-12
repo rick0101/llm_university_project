@@ -16,6 +16,7 @@ Tool disponibili:
 - ``search_vector_database``: Ricerca vettoriale su Qdrant (paper chunks, L1, L2)
 - ``search_keyword_index``: Ricerca BM25 keyword-based su testo full-text
 - ``search_graph_communities``: Ricerca nei community summary del knowledge graph
+- ``search_figure_descriptions``: Ricerca combinata su figure_descriptions + image_embeddings
 
 Uso standalone per test::
 
@@ -571,11 +572,14 @@ def _format_figure_results(
 
     Ogni risultato include:
     - ``[bibtex_key]`` per la citazione
+    - Fonte: ``[description]`` o ``[image_embedding]``
     - Descrizione testuale della figura
     - Sintassi Markdown ``![caption](path)`` per includere l'immagine
 
     Args:
         results: Lista di dict dal ``QdrantStore.query()``.
+            Ogni dict può contenere un campo ``source`` con valore
+            ``"description"`` o ``"image_embedding"``.
         max_total_chars: Budget massimo per l'output complessivo.
 
     Returns:
@@ -595,11 +599,12 @@ def _format_figure_results(
         score = r.get("score", 0.0)
         text = r.get("text", "")
         image_path = meta.get("image_path", "")
+        source = r.get("source", "description")
 
         text = _truncate_text(text)
 
         entry = (
-            f"[{i}] [{bibtex_key}] (cat: {category}, year: {year}, "
+            f"[{i}] [{bibtex_key}] [{source}] (cat: {category}, year: {year}, "
             f"score: {score:.3f})\n{text}\n"
         )
 
@@ -621,16 +626,73 @@ def _format_figure_results(
     return "\n".join(parts)
 
 
+def _merge_and_deduplicate_figure_results(
+    desc_results: list[dict],
+    img_results: list[dict],
+    top_k: int,
+) -> list[dict]:
+    """Merge risultati da figure_descriptions e image_embeddings, deduplicando.
+
+    Deduplicazione per combinazione di ``paper_id`` + ``image_path``:
+    se un'immagine appare in entrambe le collection, mantiene lo score
+    più alto e annota la fonte come ``"both"``.
+
+    Args:
+        desc_results: Risultati dalla collection ``figure_descriptions``.
+        img_results: Risultati dalla collection ``image_embeddings``.
+        top_k: Numero massimo di risultati finali.
+
+    Returns:
+        Lista di risultati deduplicati, ordinati per score decrescente,
+        troncati a ``top_k``. Ogni dict ha un campo ``source``.
+    """
+    # Tag source
+    for r in desc_results:
+        r["source"] = "description"
+    for r in img_results:
+        r["source"] = "image_embedding"
+
+    # Dedup map: key = (paper_id, image_path)
+    seen: dict[tuple[str, str], dict] = {}
+
+    for r in desc_results + img_results:
+        meta = r.get("metadata", {})
+        paper_id = meta.get("paper_id", "")
+        image_path = meta.get("image_path", "")
+        key = (paper_id, image_path)
+
+        if key in seen:
+            existing = seen[key]
+            if r.get("score", 0.0) > existing.get("score", 0.0):
+                old_source = existing["source"]
+                seen[key] = r
+                seen[key]["source"] = "both"
+            else:
+                existing["source"] = "both"
+        else:
+            seen[key] = r
+
+    # Ordina per score decrescente e tronca a top_k
+    merged = sorted(seen.values(), key=lambda x: x.get("score", 0.0), reverse=True)
+    return merged[:top_k]
+
+
 def search_figure_descriptions(
     query: str,
     category: str | None = None,
     top_k: int = _DEFAULT_TOP_K,
+    include_image_embeddings: bool = True,
 ) -> str:
     """Search figure descriptions extracted from paper PDFs.
 
     Searches the figure_descriptions collection in Qdrant, which contains
     AI-generated semantic descriptions of figures, diagrams, plots, and
     tables extracted from the original PDFs using multimodal vision.
+
+    When ``include_image_embeddings`` is True (default), also searches the
+    ``image_embeddings`` collection for cross-modal retrieval (text query
+    → visually similar figures). Results from both collections are merged,
+    deduplicated by paper_id + image_path, and sorted by score.
 
     Results include the image file path, so the writer can include the
     actual figure in the survey using Markdown image syntax:
@@ -648,38 +710,81 @@ def search_figure_descriptions(
             comparison chart", "defense architecture diagram").
         category: Optional category filter (e.g., "Prompt Injection").
         top_k: Number of results to return (default: 5, max: 10).
+        include_image_embeddings: If True, also search the image_embeddings
+            collection for cross-modal retrieval. Default: True.
 
     Returns:
         Formatted text with the most relevant figure descriptions,
         each prefixed with [bibtex_key] for citation. Includes
-        IMAGE_PATH and Markdown inclusion syntax for each figure.
+        source indicator [description], [image_embedding], or [both].
+        Includes IMAGE_PATH and Markdown inclusion syntax for each figure.
 
     Examples:
         >>> search_figure_descriptions("attack success rate comparison")
-        "[1] [Zou_2023_GCG] (cat: Adversarial Code, year: 2023, score: 0.82)\\n..."
+        "[1] [Zou_2023_GCG] [description] (cat: Adversarial Code, year: 2023, score: 0.82)\\n..."
         >>> search_figure_descriptions("defense pipeline architecture", category="Prompt Injection")
-        "[1] [Wei_2024_Defense] ..."
+        "[1] [Wei_2024_Defense] [image_embedding] ..."
     """
     t0 = time.time()
     top_k = min(max(top_k, 1), 10)
 
     logger.info(
         f"[tool] search_figure_descriptions: query={query!r}, "
-        f"category={category}, top_k={top_k}"
+        f"category={category}, top_k={top_k}, "
+        f"include_image_embeddings={include_image_embeddings}"
     )
 
     try:
         store = _get_qdrant_store()
 
         from paperhunter.config import settings
-        collection = settings.qdrant.collection_figure_descriptions
+        collection_desc = settings.qdrant.collection_figure_descriptions
+        collection_img = settings.qdrant.collection_image_embeddings
 
-        # Verifica che la collection esista e abbia dati
-        if not store.client.collection_exists(collection):
+        # Costruisci filtro metadata
+        where_filter: dict | None = None
+        if category:
+            where_filter = {"category": category}
+
+        # --- Cerca in figure_descriptions ---
+        desc_results: list[dict] = []
+        desc_available = store.client.collection_exists(collection_desc)
+        if desc_available:
+            desc_results = store.query(
+                query_text=query,
+                n_results=top_k,
+                where_filter=where_filter,
+                collection_name=collection_desc,
+            )
+        else:
+            logger.info(
+                f"[tool] search_figure_descriptions: collection '{collection_desc}' "
+                f"non esiste, skip"
+            )
+
+        # --- Cerca in image_embeddings (se abilitato) ---
+        img_results: list[dict] = []
+        img_available = False
+        if include_image_embeddings:
+            img_available = store.client.collection_exists(collection_img)
+            if img_available:
+                img_results = store.query_image_embeddings(
+                    query_text=query,
+                    n_results=top_k,
+                    where_filter=where_filter,
+                )
+            else:
+                logger.info(
+                    f"[tool] search_figure_descriptions: collection '{collection_img}' "
+                    f"non esiste, skip image embeddings"
+                )
+
+        # Se nessuna collection disponibile
+        if not desc_available and not img_available:
             elapsed = time.time() - t0
             logger.info(
-                f"[tool] search_figure_descriptions: collection '{collection}' "
-                f"non esiste ({elapsed:.2f}s)"
+                f"[tool] search_figure_descriptions: nessuna collection figure "
+                f"disponibile ({elapsed:.2f}s)"
             )
             return (
                 "(No figure descriptions available. "
@@ -687,22 +792,23 @@ def search_figure_descriptions(
                 "Try using search_vector_database instead.)"
             )
 
-        # Costruisci filtro metadata
-        where_filter: dict | None = None
-        if category:
-            where_filter = {"category": category}
-
-        results = store.query(
-            query_text=query,
-            n_results=top_k,
-            where_filter=where_filter,
-            collection_name=collection,
-        )
+        # Merge e deduplicazione
+        if img_results:
+            results = _merge_and_deduplicate_figure_results(
+                desc_results, img_results, top_k
+            )
+        else:
+            # Solo figure_descriptions, aggiungi source tag
+            for r in desc_results:
+                r.setdefault("source", "description")
+            results = desc_results
 
         elapsed = time.time() - t0
+        n_desc = len(desc_results)
+        n_img = len(img_results)
         logger.info(
             f"[tool] search_figure_descriptions: {len(results)} risultati "
-            f"in {elapsed:.2f}s"
+            f"(desc: {n_desc}, img_emb: {n_img}) in {elapsed:.2f}s"
         )
 
         return _format_figure_results(results)
@@ -778,10 +884,12 @@ def get_all_retrieval_tools() -> list[FunctionTool]:
             name="search_figure_descriptions",
             description=(
                 "Search AI-generated descriptions of figures, diagrams, "
-                "plots, and tables from paper PDFs. Use when you need "
-                "information about experimental results, architectures, "
-                "or visual data from papers. "
-                "Returns formatted text with [bibtex_key] citations."
+                "plots, and tables from paper PDFs. Also searches "
+                "multimodal image embeddings for cross-modal retrieval. "
+                "Use when you need information about experimental results, "
+                "architectures, or visual data from papers. "
+                "Returns formatted text with [bibtex_key] citations "
+                "and source indicator [description] or [image_embedding]."
             ),
         ),
     ]

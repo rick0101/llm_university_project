@@ -342,7 +342,7 @@ paperhunter/
 
 ### FASE 3 — Pipeline Integrata e Test End-to-End
 
-#### [ ] Task 3.1: Aggiornare i retrieval tool per supportare image embeddings
+#### [x] Task 3.1: Aggiornare i retrieval tool per supportare image embeddings
 
 **File:** `paperhunter/agents/tools/retrieval_tools.py` (modifica)  
 **Stato attuale:** Il tool `search_figure_descriptions` cerca nella collection `figure_descriptions` (embedding testuali delle descrizioni Vision). Non cerca nella nuova collection `image_embeddings` (embedding multimodali delle immagini stesse). Il writer agent non ha accesso al retrieval cross-modale.  
@@ -356,6 +356,23 @@ paperhunter/
 - **Verificare** che la collection `image_embeddings` esista prima di cercare (graceful fallback se non indicizzata)
 - **Logging:** Mostrare quanti risultati provengono da ciascuna collection  
 **Test:** Con mock di entrambe le collection, verificare che la ricerca combinata restituisca risultati deduplicati e ordinati per score. Verificare il fallback se `image_embeddings` non è disponibile.
+
+> **Completato:** 12 Marzo 2026  
+> **Modifiche apportate:**
+> - **`paperhunter/agents/tools/retrieval_tools.py` (modifica):**
+>   - **`_format_figure_results()`:** Aggiunto campo `source` nell'output formattato. Ogni entry ora mostra `[bibtex_key] [source]` dove source è `[description]`, `[image_embedding]` o `[both]`. Default: `"description"` per backward compatibility.
+>   - **`_merge_and_deduplicate_figure_results()` (nuovo):** Helper per merge e deduplicazione risultati da entrambe le collection. Dedup per `(paper_id, image_path)`: se stessa immagine appare in entrambe le collection, mantiene lo score più alto e segna `source="both"`. Risultati ordinati per score decrescente e troncati a `top_k`.
+>   - **`search_figure_descriptions()`:** Aggiunto parametro `include_image_embeddings: bool = True`. Se abilitato, cerca in ENTRAMBE le collection (`figure_descriptions` + `image_embeddings`) via `store.query()` e `store.query_image_embeddings()`. Graceful fallback: se una collection non esiste (`collection_exists()`), la salta senza errori. Se nessuna collection esiste, restituisce messaggio informativo. Il filtro `category` viene passato a entrambe le collection. Logging con conteggi: `desc: N, img_emb: M`.
+>   - **`get_all_retrieval_tools()`:** Aggiornata description del tool `search_figure_descriptions` per menzionare la ricerca cross-modale e source indicators.
+>   - Docstring del modulo aggiornato con il nuovo tool `search_figure_descriptions`.
+> - **`test_retrieval_tools.py` (modifica):** Aggiornati 2 test: `test_returns_four_tools` (4 tool), `test_tool_names` (include `search_figure_descriptions`).
+> - **`test_retrieval_tools_image_embeddings.py` (nuovo):** 26 test in 5 classi:
+>   - `TestMergeAndDeduplicate` (8 test): no overlap, overlap higher/lower score, top_k limit, empty desc/img/both, mixed overlap+unique
+>   - `TestSearchFigureDescriptionsWithImageEmbeddings` (10 test): combined search, include_image_embeddings=False, fallback no img collection, fallback no desc collection, fallback no collections, deduplication, category filter passed to both, empty results both, error handling, top_k clamping
+>   - `TestFormatFigureResultsWithSource` (6 test): source description/image_embedding/both, default source, image_path included, empty results
+>   - `TestSearchFigureDescriptionsLogging` (2 test): collection counts logged, skip nonexistent collection logged
+> - **Test totali:** 26 (nuovi) + 34 (test_retrieval_tools.py) + 122 (image-related pre-esistenti) = 182 test OK, 0 falliti
+> - **Uso:** `search_figure_descriptions("attack success rate")` cerca automaticamente in entrambe le collection. Per disabilitare image embeddings: `search_figure_descriptions("query", include_image_embeddings=False)`. Il writer agent usa il tool trasparentemente via `get_all_retrieval_tools()`.
 
 ---
 

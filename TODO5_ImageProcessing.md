@@ -37,7 +37,7 @@ paperhunter/
 
 ### FASE 0 — Preparazione e Dipendenze
 
-#### [ ] Task 0.1: Aggiornare dipendenze e configurazioni per image filtering
+#### [x] Task 0.1: Aggiornare dipendenze e configurazioni per image filtering
 
 **File:** `config.yaml` (modifica), `paperhunter/config.py` (modifica)  
 **Stato attuale:** Il `FigureExtractor` filtra solo per dimensioni minime (`min_width=150`, `min_height=150`, `min_area=40000`). Non esiste una sezione `image_filtering` nel config. Le dipendenze necessarie (`Pillow`, `numpy`) sono già presenti nel progetto (Pillow usata da `figure_extractor.py` per resize, numpy da TODO4 per clustering). Gemini Embedding 2 Preview è già impostato come modello embedding in `config.py` (`gemini-embedding-2-preview`).  
@@ -66,6 +66,13 @@ paperhunter/
 - **`config.yaml`:** Nella sezione `qdrant`, aggiungere `collection_image_embeddings: "image_embeddings"` (per la futura collection multimodale)
 - **`paperhunter/config.py`:** Aggiungere campo `collection_image_embeddings: str = "image_embeddings"` a `QdrantConfig`  
 **Test:** Eseguire `python -c "from paperhunter.config import settings; print(settings.image_filtering.model_dump())"` e verificare che tutti i campi siano caricati correttamente con i tipi e range attesi.
+
+> **Completato:** 12 Marzo 2026  
+> **Modifiche apportate:**
+> - **`config.yaml`:** Aggiunta sezione `image_filtering` con tutti i 10 campi configurabili (enabled, min/max_aspect_ratio, min_color_entropy, min_edge_density, skip_first/last_page, relevance_threshold, embedding_filter_enabled, embedding_similarity_threshold). Aggiunto `collection_image_embeddings: "image_embeddings"` nella sezione `qdrant`.
+> - **`paperhunter/config.py`:** Creato `ImageFilteringConfig(BaseModel)` con 10 campi e 6 validatori Pydantic (`min_aspect_ratio ∈ (0.0, 1.0]`, `max_aspect_ratio ∈ [1.0, 20.0]`, `min_color_entropy ∈ [0.0, 8.0]`, `min_edge_density ∈ [0.0, 1.0]`, `relevance_threshold ∈ [0.0, 1.0]`, `embedding_similarity_threshold ∈ [0.0, 1.0]`). Registrato in `Settings` come `image_filtering: ImageFilteringConfig`. Aggiunto `collection_image_embeddings: str = "image_embeddings"` a `QdrantConfig`.
+> - **Uso:** `from paperhunter.config import settings; settings.image_filtering.enabled`, `settings.image_filtering.relevance_threshold`, `settings.qdrant.collection_image_embeddings`
+> - **Validatori testati:** Tutti i 6 validatori rigettano correttamente valori fuori range con `ValidationError`.
 
 ---
 

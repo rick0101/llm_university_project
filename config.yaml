@@ -58,6 +58,7 @@ qdrant:
   collection_l1_5_summaries: "l1_5_summaries"
   collection_graph_communities: "graph_communities"
   collection_figure_descriptions: "figure_descriptions"
+  collection_image_embeddings: "image_embeddings"
   embedding_dimension: 3072                    # Gemini embedding-001 dimension
   distance_metric: "Cosine"                    # Cosine | Euclid | Dot
 
@@ -199,6 +200,25 @@ rate_limiting:
   gemini_daily_limit: 1500                     # Limite giornaliero approssimativo
   semantic_scholar_rpm: 100
   grobid_concurrent: 5                         # Richieste GROBID concorrenti
+
+# --- Image Filtering (Pipeline a 3 stadi) ---
+# Filtraggio intelligente delle immagini estratte dai PDF.
+# Stage 1: Filtro euristico locale (PIL + NumPy, zero costi API)
+# Stage 2: Filtro embedding multimodale (Gemini Embedding 2 Preview)
+# Stage 3: Descrizione Vision (solo immagini rilevanti)
+image_filtering:
+  enabled: true                          # Abilita/disabilita il filtraggio intelligente
+  # --- Filtro Euristico (Stage 1) ---
+  min_aspect_ratio: 0.3                  # Min w/h — filtra barre verticali
+  max_aspect_ratio: 4.0                  # Max w/h — filtra banner orizzontali
+  min_color_entropy: 3.0                 # Entropia Shannon minima (scala 0-8 per 8-bit)
+  min_edge_density: 0.05                 # Percentuale minima pixel bordo (0.0-1.0)
+  skip_first_page: true                  # Penalizza immagini dalla prima pagina (loghi)
+  skip_last_page: true                   # Penalizza immagini dall'ultima pagina (copyright)
+  relevance_threshold: 0.5               # Soglia punteggio combinato [0.0, 1.0]
+  # --- Filtro Embedding Multimodale (Stage 2) ---
+  embedding_filter_enabled: true         # Abilita filtro via embedding multimodale
+  embedding_similarity_threshold: 0.3    # Soglia coseno minima vs riferimenti scientifici
 
 # --- Logging ---
 logging:

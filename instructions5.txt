@@ -83,7 +83,8 @@ Regole d'oro per le nostre sessioni:
 
 Voglio un task alla volta, codice modulare e perfetto, e poi stop.
 Dopo ogni task completato nella todo lista, crea un mini riassunto sotto al task nel TODO5_ImageProcessing.md (come fatto in TODO.md, TODO3.md e TODO4_Scalability.md), con le modifiche apportate e le note per il futuro, scrivendo le funzioni che hai aggiunto e come usarle.
-Per output lunghi, con una attesa elevata, utilizza dei file di testo (es. code.txt) per salvare l'output, invece di incollarlo direttamente nella chat, per evitare problemi di formattazione o perdita di dati.
+Per output lunghi, con una attesa elevata, utilizza dei file di testo temporaneo(es. code.txt) per salvare l'output, per evitare perdita di dati.
+Ricroda di usare l'ambiente virtuale venv.
 
 File di contesto utili (se necessario rileggere l'architettura):
   - config.yaml — configurazione centralizzata

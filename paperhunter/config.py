@@ -80,6 +80,64 @@ class FigureExtractionConfig(BaseModel):
     figures_dir: str = "./output/figures"  # Directory per salvare le immagini estratte
 
 
+class ImageFilteringConfig(BaseModel):
+    """Configurazione filtraggio intelligente immagini (pipeline a 3 stadi)."""
+    enabled: bool = True
+    # --- Filtro Euristico (Stage 1) ---
+    min_aspect_ratio: float = 0.3
+    max_aspect_ratio: float = 4.0
+    min_color_entropy: float = 3.0
+    min_edge_density: float = 0.05
+    skip_first_page: bool = True
+    skip_last_page: bool = True
+    relevance_threshold: float = 0.5
+    # --- Filtro Embedding Multimodale (Stage 2) ---
+    embedding_filter_enabled: bool = True
+    embedding_similarity_threshold: float = 0.3
+
+    @field_validator("min_aspect_ratio")
+    @classmethod
+    def validate_min_aspect_ratio(cls, v: float) -> float:
+        if not (0.0 < v <= 1.0):
+            raise ValueError(f"min_aspect_ratio deve essere in (0.0, 1.0], ricevuto: {v}")
+        return v
+
+    @field_validator("max_aspect_ratio")
+    @classmethod
+    def validate_max_aspect_ratio(cls, v: float) -> float:
+        if not (1.0 <= v <= 20.0):
+            raise ValueError(f"max_aspect_ratio deve essere in [1.0, 20.0], ricevuto: {v}")
+        return v
+
+    @field_validator("min_color_entropy")
+    @classmethod
+    def validate_min_color_entropy(cls, v: float) -> float:
+        if not (0.0 <= v <= 8.0):
+            raise ValueError(f"min_color_entropy deve essere in [0.0, 8.0], ricevuto: {v}")
+        return v
+
+    @field_validator("min_edge_density")
+    @classmethod
+    def validate_min_edge_density(cls, v: float) -> float:
+        if not (0.0 <= v <= 1.0):
+            raise ValueError(f"min_edge_density deve essere in [0.0, 1.0], ricevuto: {v}")
+        return v
+
+    @field_validator("relevance_threshold")
+    @classmethod
+    def validate_relevance_threshold(cls, v: float) -> float:
+        if not (0.0 <= v <= 1.0):
+            raise ValueError(f"relevance_threshold deve essere in [0.0, 1.0], ricevuto: {v}")
+        return v
+
+    @field_validator("embedding_similarity_threshold")
+    @classmethod
+    def validate_embedding_similarity_threshold(cls, v: float) -> float:
+        if not (0.0 <= v <= 1.0):
+            raise ValueError(f"embedding_similarity_threshold deve essere in [0.0, 1.0], ricevuto: {v}")
+        return v
+
+
 class QdrantConfig(BaseModel):
     """Configurazione Qdrant per vector store (locale, senza server)."""
     persist_dir: str = "./qdrant_db"
@@ -89,6 +147,7 @@ class QdrantConfig(BaseModel):
     collection_l1_5_summaries: str = "l1_5_summaries"
     collection_graph_communities: str = "graph_communities"
     collection_figure_descriptions: str = "figure_descriptions"
+    collection_image_embeddings: str = "image_embeddings"
     embedding_dimension: int = 3072
     distance_metric: str = "Cosine"
 
@@ -386,6 +445,7 @@ class Settings(BaseSettings):
     agents: AgentsConfig = Field(default_factory=AgentsConfig)
     clustering: ClusteringConfig = Field(default_factory=ClusteringConfig)
     figure_extraction: FigureExtractionConfig = Field(default_factory=FigureExtractionConfig)
+    image_filtering: ImageFilteringConfig = Field(default_factory=ImageFilteringConfig)
     openrouter: OpenRouterConfig = Field(default_factory=OpenRouterConfig)
     output: OutputConfig = Field(default_factory=OutputConfig)
     search: SearchConfig = Field(default_factory=SearchConfig)

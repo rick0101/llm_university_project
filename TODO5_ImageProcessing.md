@@ -181,7 +181,7 @@ paperhunter/
 
 ### FASE 2 — Embedding Multimodale (Gemini Embedding 2 Preview)
 
-#### [ ] Task 2.1: Creare `utils/multimodal_embedder.py`
+#### [x] Task 2.1: Creare `utils/multimodal_embedder.py`
 
 **File:** `paperhunter/utils/multimodal_embedder.py` (nuovo)  
 **Stato attuale:** Il sistema usa `llama-index-embeddings-google-genai` (via `get_embedding_model()`) per embedding testuali con Gemini Embedding 2 Preview. Tuttavia, il wrapper LlamaIndex supporta solo input testuali. L'embedding multimodale nativo (immagini, audio, video) è disponibile solo tramite il SDK `google-genai` diretto, con il endpoint `client.models.embed_content()`.  
@@ -216,6 +216,32 @@ paperhunter/
     - Se `max_similarity < embedding_similarity_threshold` → non rilevante
 - Funzione standalone `get_multimodal_embedder() -> MultimodalEmbedder`: singleton lazy  
 **Test:** Creare immagini sintetiche (un grafico matplotlib salvato come PNG, un rettangolo colorato come "logo"). Embed entrambe e i riferimenti testuali. Verificare che il grafico abbia similarità più alta con "scientific_plot" rispetto al rettangolo. Verificare che i vettori siano 3072-dim. Verificare cache su disco.
+
+> **Completato:** 12 Marzo 2026  
+> **Modifiche apportate:**
+> - **`paperhunter/utils/multimodal_embedder.py` (nuovo):** Creato modulo completo con:
+>   - `MultimodalEmbedder` classe principale:
+>     - `__init__(model: str | None = None)`: usa `settings.gemini.embedding_model` di default, crea client `google-genai` via `_get_api_key()` e `_get_http_options()` da `llm_factory`, rate limiter da `get_gemini_limiter()`
+>     - `embed_image(image_bytes, mime_type) -> list[float]`: embedding multimodale via `types.Part.from_bytes()` + `client.models.embed_content()`
+>     - `embed_text(text) -> list[float]`: embedding testuale via stesso SDK (stesso spazio vettoriale)
+>     - `embed_images_batch(images, show_progress) -> list[list[float]]`: batch processing con Rich progress bar
+>     - `compute_reference_embeddings() -> dict[str, list[float]]`: calcolo + cache (memoria + disco in `cache/reference_embeddings.json`) per 5 categorie scientifiche
+>     - `classify_image_relevance(image_bytes, mime_type, reference_embeddings) -> tuple[float, str]`: classificazione via similarità coseno vs riferimenti
+>   - `_cosine_similarity(a, b)` helper per calcolo similarità coseno
+>   - `get_multimodal_embedder() -> MultimodalEmbedder` singleton lazy
+>   - 5 categorie di riferimento: `scientific_plot`, `comparison_table`, `architecture_diagram`, `flowchart`, `confusion_matrix`
+> - **`test_multimodal_embedder.py` (nuovo):** 30 test con mock completi:
+>   - `TestEmbedImage` (3 test): vettore 3072-dim, rate limiter, mime type
+>   - `TestEmbedText` (2 test): vettore 3072-dim, contenuto stringa
+>   - `TestBatchEmbedding` (4 test): lista vuota, conteggio corretto, progress bar, mime default
+>   - `TestReferenceEmbeddings` (5 test): tutte le categorie, cache in memoria, cache su disco, load da disco, cache corrotta → ricalcolo
+>   - `TestClassifyImageRelevance` (5 test): grafico vs logo, tipo ritorno, riferimenti vuoti, compute automatico, range validità
+>   - `TestCosineSimilarity` (5 test): identici, ortogonali, opposti, vettore zero, alta dimensionalità
+>   - `TestSingleton` (2 test): stessa istanza, tipo corretto
+>   - `TestEdgeCases` (4 test): JPEG, modello custom, modello da settings, cache parziale → ricalcolo
+> - **Tutti i test passano:** 30 (test_multimodal_embedder.py) + 52 test preesistenti (FASE 0+1) = 82 test OK
+> - **Uso:** `from paperhunter.utils.multimodal_embedder import MultimodalEmbedder, get_multimodal_embedder; emb = get_multimodal_embedder(); vec = emb.embed_image(img_bytes); sim, cat = emb.classify_image_relevance(img_bytes, "image/png")`
+> - **Nota per Task 2.2:** Il `MultimodalEmbedder` è pronto per essere integrato in `figure_extractor.py`. `classify_image_relevance()` restituisce `(similarity, category)` che il filtro Stage 2 userà per decidere se scartare l'immagine. L'embedding pre-calcolato può essere riutilizzato per l'indicizzazione (Task 2.3) senza ricalcolo.
 
 ---
 

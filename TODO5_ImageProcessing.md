@@ -78,7 +78,7 @@ paperhunter/
 
 ### FASE 1 — Filtraggio Euristico delle Immagini (Senza LLM)
 
-#### [ ] Task 1.1: Creare `ingestion/image_relevance_filter.py`
+#### [x] Task 1.1: Creare `ingestion/image_relevance_filter.py`
 
 **File:** `paperhunter/ingestion/image_relevance_filter.py` (nuovo)  
 **Stato attuale:** Non esiste alcun modulo di classificazione delle immagini. Il `FigureExtractor` filtra solo per dimensione pixel (min 150×150 e 40k area), ma loghi, watermark, foto decorative e immagini irrilevanti passano comunque il filtro. Ogni immagine viene poi inviata a Gemini Vision (costoso e inutile per immagini non rilevanti).  
@@ -112,6 +112,25 @@ paperhunter/
   - Immagine tipo "logo" (piccola, pochi colori, bassa entropia) → `LIKELY_DECORATIVE`
   - Immagine tipo "foto" (entropia alta ma bordi bassi) → `UNCERTAIN`
   Verificare che le classificazioni corrispondano alle aspettative per almeno l'80% dei casi.
+
+> **Completato:** 12 Marzo 2026  
+> **Modifiche apportate:**
+> - **`paperhunter/ingestion/image_relevance_filter.py` (nuovo):** Creato modulo completo con:
+>   - `ImageClassification` enum: `SCIENTIFIC_FIGURE`, `LIKELY_DECORATIVE`, `UNCERTAIN`
+>   - `ImageScore` dataclass: 5 punteggi individuali + `combined_score` + `classification`
+>   - `ImageRelevanceFilter` classe principale:
+>     - `classify(image_bytes, page_number, total_pages, page_width, page_height) -> ImageScore`
+>     - `classify_batch(images: list[dict]) -> list[ImageScore]` con logging Rich tabellare
+>     - 5 metodi euristici privati: `_score_aspect_ratio`, `_score_color_entropy`, `_score_edge_density`, `_score_page_position`, `_score_relative_size`
+>   - Pesi di default: edge_density 0.30, entropy 0.25, aspect_ratio 0.15, position 0.15, size 0.15
+>   - Config da `settings.image_filtering` (Task 0.1), soglia configurabile
+> - **`test_image_relevance_filter.py` (nuovo):** 26 test con immagini sintetiche PIL:
+>   - `TestHeuristics`: 14 test per singole euristiche (aspect ratio, entropy, edge density, position, size)
+>   - `TestClassification`: 5 test end-to-end (grafico → SCIENTIFIC, tabella → SCIENTIFIC, logo → DECORATIVE/UNCERTAIN, banner → DECORATIVE, foto → UNCERTAIN)
+>   - `TestBatch`: 1 test batch processing
+>   - `TestEdgeCases`: 6 test robustezza (bytes invalidi, pagina singola, config custom, dimensioni zero, greyscale, range score)
+> - **Uso:** `from paperhunter.ingestion.image_relevance_filter import ImageRelevanceFilter, ImageClassification; filt = ImageRelevanceFilter(); score = filt.classify(img_bytes, page_number=5, total_pages=12, page_width=612.0, page_height=792.0)`
+> - **Nota per Stage 2:** Il filtro euristico cattura efficacemente banner, icone, loghi piccoli e immagini su prima/ultima pagina. Foto decorative con dimensioni normali su pagine centrali richiedono lo Stage 2 (embedding) per essere filtrate.
 
 ---
 

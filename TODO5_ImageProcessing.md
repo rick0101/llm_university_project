@@ -245,7 +245,7 @@ paperhunter/
 
 ---
 
-#### [ ] Task 2.2: Classificazione rilevanza via embedding e integrazione in FigureExtractor
+#### [x] Task 2.2: Classificazione rilevanza via embedding e integrazione in FigureExtractor
 
 **File:** `paperhunter/ingestion/figure_extractor.py` (modifica)  
 **Stato attuale:** Dopo il Task 1.2, il `FigureExtractor` applica il filtro euristico (Stage 1). Le immagini `UNCERTAIN` e `SCIENTIFIC_FIGURE` passano tutte a Gemini Vision. Le immagini `UNCERTAIN` potrebbero però essere ancora decorative — serve un secondo livello di filtraggio più intelligente prima della costosa chiamata Vision.  
@@ -270,6 +270,33 @@ paperhunter/
   - Le immagini `UNCERTAIN` con bassa similarità embedding vengano scartate (Stage 2)
   - Le chiamate Vision siano significativamente ridotte rispetto al baseline (tutte le immagini)
   - Il conteggio delle Vision calls sia loggato correttamente
+
+> **Completato:** 12 Marzo 2026  
+> **Modifiche apportate:**
+> - **`paperhunter/ingestion/figure_extractor.py` (modifica):**
+>   - Aggiunto import di `_cosine_similarity` e `get_multimodal_embedder` da `utils.multimodal_embedder`
+>   - **`extract_and_describe()`:** Aggiunto Step 1.7 (Stage 2) dopo il filtro euristico (Stage 1), prima della descrizione Vision:
+>     - Se `settings.image_filtering.enabled` e `settings.image_filtering.embedding_filter_enabled` sono `True`: istanzia `MultimodalEmbedder` via `get_multimodal_embedder()`, computa `reference_embeddings`
+>     - **Ottimizzazione:** Immagini `SCIENTIFIC_FIGURE` con score euristico > 0.8 saltano Stage 2 e vanno direttamente a Vision (risparmio embedding API per immagini già chiaramente rilevanti)
+>     - Per le restanti immagini: embed una sola volta con `embed_image()`, calcola similarità coseno vs tutti i riferimenti manualmente (evita doppia chiamata API)
+>     - Se `similarity >= embedding_similarity_threshold` → passa a Vision; altrimenti → scartata
+>     - Ogni immagine riceve 3 nuovi campi: `embedding_similarity: float | None`, `best_match_category: str | None`, `embedding: list[float] | None`
+>     - L'embedding pre-calcolato viene preservato nel dict per riuso nel Task 2.3 (indicizzazione senza ricalcolo)
+>     - Logga statistiche complete: `Stage 1: N → K immagini; Stage 2: K → J immagini; Vision calls: J`
+>     - Per ogni immagine, logga motivo del PASS o FILTRAGGIO con similarità e categoria
+>   - Backward compatibility: se `embedding_filter_enabled = False`, Stage 2 saltato (campi embedding impostati a None via `setdefault`)
+>   - Se `image_filtering.enabled = False`, entrambi gli stage saltati (comportamento identico a prima)
+> - **`test_figure_extractor_filtering.py` (modifica):** Aggiunto `mock_settings_mod.image_filtering.embedding_filter_enabled = False` a tutti gli 8 test di Stage 1 per evitare interferenze del filtro embedding nei test preesistenti
+> - **`test_embedding_filter_integration.py` (nuovo):** 16 test dedicati all'integrazione Stage 2:
+>   - `TestStage2EmbeddingFilter` (5 test): UNCERTAIN filtrate per bassa sim, SCIENTIFIC alta salta Stage 2, SCIENTIFIC bassa va a Stage 2, DECORATIVE non embedded, tutto filtrato → vuoto
+>   - `TestStage2Disabled` (2 test): embedding_filter_enabled=False, entrambi stage disabilitati
+>   - `TestStage2EmbeddingFields` (2 test): campi popolati per immagini passate e filtrate
+>   - `TestStage2MixedPipeline` (2 test): pipeline completa con 5 immagini miste, riduzione Vision significativa (10→3 = 70%)
+>   - `TestStage2Logging` (2 test): statistiche Stage 1/2 loggate, conteggi numericamente corretti
+>   - `TestStage2EdgeCases` (3 test): niente dopo Stage 1, relevance_score None quando disabilitato, boundary esatto soglia
+> - **Tutti i test passano:** 16 (test_embedding_filter_integration.py) + 11 (test_figure_extractor_filtering.py) + 15 (test_figure_extractor.py) + 26 (test_image_relevance_filter.py) + 30 (test_multimodal_embedder.py) = 98 test OK
+> - **Uso:** Il filtro Stage 2 è automatico e trasparente. `FigureExtractor().extract_and_describe(pdf, paper)` ora filtra prima con euristiche (Stage 1), poi con embedding multimodale (Stage 2), poi descrizione Vision (Stage 3). Per disabilitare Stage 2: `settings.image_filtering.embedding_filter_enabled = False` nel config.yaml
+> - **Nota per Task 2.3:** L'embedding pre-calcolato è disponibile in `img_info["embedding"]` (list[float] 3072-dim) per le immagini che passano Stage 2. Le immagini con score euristico > 0.8 che saltano Stage 2 hanno `embedding = None` e andranno ri-embedded nel Task 2.3 se si vuole indicizzarle.
 
 ---
 

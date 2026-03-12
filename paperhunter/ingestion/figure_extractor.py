@@ -48,6 +48,10 @@ from paperhunter.ingestion.image_relevance_filter import (
 )
 from paperhunter.models import ChunkType, PaperChunk
 from paperhunter.utils.logging_setup import get_logger
+from paperhunter.utils.multimodal_embedder import (
+    _cosine_similarity,
+    get_multimodal_embedder,
+)
 from paperhunter.utils.rate_limiter import get_gemini_limiter
 
 logger = get_logger(__name__)
@@ -390,7 +394,89 @@ class FigureExtractor:
 
         if not images:
             logger.debug(
-                "Tutte le immagini di '%s' filtrate come decorative", pdf_path.name,
+                "Tutte le immagini di '%s' filtrate come decorative (Stage 1)",
+                pdf_path.name,
+            )
+            return []
+
+        n_after_stage1 = len(images)
+
+        # Step 1.7: Filtro embedding multimodale (Stage 2) — se abilitato
+        if settings.image_filtering.enabled and settings.image_filtering.embedding_filter_enabled:
+            embedder = get_multimodal_embedder()
+            ref_embeddings = embedder.compute_reference_embeddings()
+            threshold = settings.image_filtering.embedding_similarity_threshold
+
+            stage2_passed: list[dict[str, Any]] = []
+            for img_info in images:
+                # Ottimizzazione: SCIENTIFIC_FIGURE con score euristico alto (> 0.8)
+                # vanno direttamente a Vision senza Stage 2
+                heuristic_score = img_info.get("relevance_score")
+                if heuristic_score is not None and heuristic_score > 0.8:
+                    img_info["embedding_similarity"] = None
+                    img_info["best_match_category"] = None
+                    img_info["embedding"] = None
+                    stage2_passed.append(img_info)
+                    logger.debug(
+                        "Immagine %d: skip Stage 2 (score euristico %.2f > 0.8)",
+                        img_info["image_index"], heuristic_score,
+                    )
+                    continue
+
+                # Embed una sola volta e classifica manualmente
+                image_embedding = embedder.embed_image(
+                    image_bytes=img_info["image_bytes"],
+                    mime_type=img_info.get("mime_type", "image/png"),
+                )
+                # Calcola similarità con tutti i riferimenti
+                best_similarity = -1.0
+                best_category = "unknown"
+                for cat, ref_emb in ref_embeddings.items():
+                    sim = _cosine_similarity(image_embedding, ref_emb)
+                    if sim > best_similarity:
+                        best_similarity = sim
+                        best_category = cat
+
+                similarity = best_similarity
+                category = best_category
+
+                # Salva embedding per riuso (Task 2.3 indicizzazione)
+                img_info["embedding_similarity"] = similarity
+                img_info["best_match_category"] = category
+                img_info["embedding"] = image_embedding
+
+                if similarity >= threshold:
+                    stage2_passed.append(img_info)
+                    logger.debug(
+                        "Immagine %d: Stage 2 PASS (sim=%.4f, cat='%s')",
+                        img_info["image_index"], similarity, category,
+                    )
+                else:
+                    logger.debug(
+                        "Immagine %d: Stage 2 FILTRATA (sim=%.4f < %.2f, cat='%s')",
+                        img_info["image_index"], similarity, threshold, category,
+                    )
+
+            n_filtered_stage2 = n_after_stage1 - len(stage2_passed)
+            logger.info(
+                "Stage 1: %d → %d immagini; Stage 2: %d → %d immagini; "
+                "Vision calls: %d",
+                total_extracted, n_after_stage1,
+                n_after_stage1, len(stage2_passed),
+                len(stage2_passed),
+            )
+            images = stage2_passed
+        else:
+            # Se Stage 2 disabilitato, imposta campi embedding a None
+            for img_info in images:
+                img_info.setdefault("embedding_similarity", None)
+                img_info.setdefault("best_match_category", None)
+                img_info.setdefault("embedding", None)
+
+        if not images:
+            logger.debug(
+                "Tutte le immagini di '%s' filtrate dopo Stage 2",
+                pdf_path.name,
             )
             return []
 

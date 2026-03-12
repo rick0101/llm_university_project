@@ -241,6 +241,7 @@ class TestHeuristicFilterIntegration:
         mock_settings_mod.figure_extraction.max_figures_per_paper = 10
         mock_settings_mod.figure_extraction.figures_dir = str(tmp_path / "figures")
         mock_settings_mod.image_filtering.enabled = True
+        mock_settings_mod.image_filtering.embedding_filter_enabled = False
 
         from paperhunter.ingestion.figure_extractor import FigureExtractor
 
@@ -366,6 +367,7 @@ class TestHeuristicFilterIntegration:
         mock_settings_mod.figure_extraction.max_figures_per_paper = 10
         mock_settings_mod.figure_extraction.figures_dir = str(tmp_path / "figures")
         mock_settings_mod.image_filtering.enabled = True
+        mock_settings_mod.image_filtering.embedding_filter_enabled = False
 
         from paperhunter.ingestion.figure_extractor import FigureExtractor
         from paperhunter.ingestion.image_relevance_filter import ImageRelevanceFilter
@@ -432,6 +434,7 @@ class TestHeuristicFilterIntegration:
         mock_settings_mod.figure_extraction.max_figures_per_paper = 10
         mock_settings_mod.figure_extraction.figures_dir = str(tmp_path / "figures")
         mock_settings_mod.image_filtering.enabled = True
+        mock_settings_mod.image_filtering.embedding_filter_enabled = False
 
         from paperhunter.ingestion.figure_extractor import FigureExtractor
 
@@ -496,6 +499,7 @@ class TestHeuristicFilterIntegration:
         mock_settings_mod.figure_extraction.max_figures_per_paper = 10
         mock_settings_mod.figure_extraction.figures_dir = str(tmp_path / "figures")
         mock_settings_mod.image_filtering.enabled = True
+        mock_settings_mod.image_filtering.embedding_filter_enabled = False
 
         from paperhunter.ingestion.figure_extractor import FigureExtractor
 
@@ -554,6 +558,7 @@ class TestHeuristicFilterIntegration:
         mock_settings_mod.figure_extraction.max_figures_per_paper = 20
         mock_settings_mod.figure_extraction.figures_dir = str(tmp_path / "figures")
         mock_settings_mod.image_filtering.enabled = True
+        mock_settings_mod.image_filtering.embedding_filter_enabled = False
 
         from paperhunter.ingestion.figure_extractor import FigureExtractor
 
@@ -631,6 +636,7 @@ class TestHeuristicFilterIntegration:
         mock_settings_mod.figure_extraction.max_figures_per_paper = 10
         mock_settings_mod.figure_extraction.figures_dir = str(tmp_path / "figures")
         mock_settings_mod.image_filtering.enabled = True
+        mock_settings_mod.image_filtering.embedding_filter_enabled = False
 
         from paperhunter.ingestion.figure_extractor import FigureExtractor
 
@@ -693,6 +699,7 @@ class TestHeuristicFilterIntegration:
         mock_settings_mod.figure_extraction.max_figures_per_paper = 10
         mock_settings_mod.figure_extraction.figures_dir = str(tmp_path / "figures")
         mock_settings_mod.image_filtering.enabled = True
+        mock_settings_mod.image_filtering.embedding_filter_enabled = False
 
         from paperhunter.ingestion.figure_extractor import FigureExtractor
 
@@ -782,6 +789,7 @@ class TestFilteringLogging:
         mock_settings_mod.figure_extraction.max_figures_per_paper = 10
         mock_settings_mod.figure_extraction.figures_dir = str(tmp_path / "figures")
         mock_settings_mod.image_filtering.enabled = True
+        mock_settings_mod.image_filtering.embedding_filter_enabled = False
 
         from paperhunter.ingestion.figure_extractor import FigureExtractor
 

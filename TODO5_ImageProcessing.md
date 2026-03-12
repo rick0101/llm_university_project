@@ -134,7 +134,7 @@ paperhunter/
 
 ---
 
-#### [ ] Task 1.2: Integrare il filtro euristico in `figure_extractor.py`
+#### [x] Task 1.2: Integrare il filtro euristico in `figure_extractor.py`
 
 **File:** `paperhunter/ingestion/figure_extractor.py` (modifica)  
 **Stato attuale:** `extract_images_from_pdf()` filtra solo per dimensioni pixel. Tutte le immagini che passano il filtro dimensionale vengono poi inviate a `describe_figure()` (Gemini Vision), anche se sono loghi o immagini decorative. Il metodo `extract_and_describe()` processa TUTTE le immagini estratte.  
@@ -155,6 +155,27 @@ paperhunter/
   - Per ogni immagine filtrata, loggare il motivo principale (es. "score 0.18: bassa entropia + prima pagina")
 - **Preservare** la firma di `extract_and_describe()`: i `PaperChunk` restanti vengono generati esattamente come prima  
 **Test:** Testare con un PDF di esempio che contiene sia figure scientifiche che loghi. Verificare che i loghi vengano filtrati e che le figure scientifiche passino. Mock del `describe_figure()` per contare le chiamate: devono essere meno del totale delle immagini estratte.
+
+> **Completato:** 12 Marzo 2026  
+> **Modifiche apportate:**
+> - **`paperhunter/ingestion/figure_extractor.py` (modifica):**
+>   - Aggiunto import di `ImageClassification` e `ImageRelevanceFilter` da `image_relevance_filter`
+>   - **`extract_images_from_pdf()`:** Ogni immagine estratta ora include `total_pages` (da `len(doc)`), `page_width` e `page_height` (da `page.rect` di PyMuPDF) nel dict restituito
+>   - **`extract_and_describe()`:** Aggiunto Step 1.5 dopo l'estrazione, prima della descrizione Vision:
+>     - Se `settings.image_filtering.enabled` è `True`: istanzia `ImageRelevanceFilter()`, chiama `classify_batch()`, filtra le immagini `LIKELY_DECORATIVE`
+>     - Le immagini `UNCERTAIN` e `SCIENTIFIC_FIGURE` passano a Vision (beneficio del dubbio)
+>     - Ogni immagine riceve campo `relevance_score: float` (o `None` se filtro disabilitato)
+>     - Per ogni immagine filtrata, logga il motivo (bassa densità bordi, bassa entropia, prima/ultima pagina, aspect ratio estremo, dimensione inadeguata)
+>     - Logga statistiche: `Filtro euristico 'file.pdf': Estratte=N, Filtrate(decorative)=M, Passate a Vision=K`
+>     - Se tutte le immagini vengono filtrate, restituisce lista vuota senza chiamare Vision
+>   - Backward compatibility: se `settings.image_filtering.enabled = False`, nessun filtraggio (comportamento identico a prima)
+> - **`test_figure_extractor.py` (modifica):** Aggiunto `mock_settings_mod.image_filtering.enabled = False` ai 4 test di `TestExtractAndDescribe` per evitare interferenze del filtro nei test preesistenti
+> - **`test_figure_extractor_filtering.py` (nuovo):** 11 test dedicati all'integrazione del filtro:
+>   - `TestExtractImagesNewFields` (2 test): verifica `total_pages`, `page_width`, `page_height` nel dict
+>   - `TestHeuristicFilterIntegration` (8 test): decorative scartate, filtro disabilitato, UNCERTAIN passa, tutto decorativo → vuoto, relevance_score aggiunto, Vision calls ridotte, classificazioni miste, test end-to-end con filtro reale
+>   - `TestFilteringLogging` (1 test): verifica logging statistiche via caplog
+> - **Tutti i test passano:** 15 (test_figure_extractor.py) + 11 (test_figure_extractor_filtering.py) + 26 (test_image_relevance_filter.py) = 52 test OK
+> - **Uso:** Il filtro è automatico e trasparente. `FigureExtractor().extract_and_describe(pdf, paper)` ora filtra le immagini decorative prima di chiamare Gemini Vision. Per disabilitare: `settings.image_filtering.enabled = False` nel config.yaml
 
 ---
 

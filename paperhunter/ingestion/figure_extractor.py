@@ -42,6 +42,10 @@ from google import genai
 from google.genai import types
 
 from paperhunter.config import settings
+from paperhunter.ingestion.image_relevance_filter import (
+    ImageClassification,
+    ImageRelevanceFilter,
+)
 from paperhunter.models import ChunkType, PaperChunk
 from paperhunter.utils.logging_setup import get_logger
 from paperhunter.utils.rate_limiter import get_gemini_limiter
@@ -135,6 +139,9 @@ class FigureExtractor:
             - ``width``, ``height``: dimensioni in pixel
             - ``image_index``: indice progressivo nel PDF
             - ``mime_type``: tipo MIME dell'immagine
+            - ``total_pages``: numero totale di pagine nel PDF
+            - ``page_width``: larghezza pagina in punti PDF
+            - ``page_height``: altezza pagina in punti PDF
         """
         pdf_path = Path(pdf_path)
         if not pdf_path.exists():
@@ -153,6 +160,9 @@ class FigureExtractor:
             n_pages = len(doc)
             for page_idx in range(n_pages):
                 page = doc[page_idx]
+                page_rect = page.rect
+                p_width = page_rect.width
+                p_height = page_rect.height
                 image_list = page.get_images(full=True)
 
                 for img_idx, img_info in enumerate(image_list):
@@ -197,6 +207,9 @@ class FigureExtractor:
                         "image_index": len(images),
                         "mime_type": "image/png",
                         "image_hash": img_hash,
+                        "total_pages": n_pages,
+                        "page_width": p_width,
+                        "page_height": p_height,
                     })
 
                     # Limite massimo raggiunto
@@ -330,6 +343,55 @@ class FigureExtractor:
         images = self.extract_images_from_pdf(pdf_path)
         if not images:
             logger.debug("Nessuna figura significativa in '%s'", pdf_path.name)
+            return []
+
+        total_extracted = len(images)
+
+        # Step 1.5: Filtro euristico (Stage 1) — se abilitato
+        if settings.image_filtering.enabled:
+            relevance_filter = ImageRelevanceFilter()
+            scores = relevance_filter.classify_batch(images)
+
+            filtered_images: list[dict[str, Any]] = []
+            for img_info, score in zip(images, scores):
+                img_info["relevance_score"] = score.combined_score
+                if score.classification == ImageClassification.LIKELY_DECORATIVE:
+                    # Calcola il motivo principale del filtraggio per logging
+                    reasons = []
+                    if score.edge_density_score < 0.3:
+                        reasons.append("bassa densità bordi")
+                    if score.entropy_score < 0.3:
+                        reasons.append("bassa entropia")
+                    if score.position_score < 0.5:
+                        reasons.append("prima/ultima pagina")
+                    if score.aspect_ratio_score < 0.3:
+                        reasons.append("aspect ratio estremo")
+                    if score.size_score < 0.3:
+                        reasons.append("dimensione inadeguata")
+                    reason_str = ", ".join(reasons) if reasons else "score combinato basso"
+                    logger.debug(
+                        "Filtrata immagine %d (score %.2f): %s",
+                        img_info["image_index"], score.combined_score, reason_str,
+                    )
+                else:
+                    filtered_images.append(img_info)
+
+            n_filtered = total_extracted - len(filtered_images)
+            logger.info(
+                "Filtro euristico '%s': Estratte=%d, Filtrate(decorative)=%d, "
+                "Passate a Vision=%d",
+                pdf_path.name, total_extracted, n_filtered, len(filtered_images),
+            )
+            images = filtered_images
+        else:
+            # Se filtro disabilitato, aggiungi relevance_score None
+            for img_info in images:
+                img_info["relevance_score"] = None
+
+        if not images:
+            logger.debug(
+                "Tutte le immagini di '%s' filtrate come decorative", pdf_path.name,
+            )
             return []
 
         # Prepara captions (per matching posizionale)

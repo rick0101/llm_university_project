@@ -363,6 +363,7 @@ class TestExtractAndDescribe:
         mock_settings_mod.figure_extraction.figures_dir = str(tmp_path / "figures")
         mock_settings_mod.gemini.flash_model = "gemini-3-flash-preview"
         mock_settings_mod.google_api_key = "fake-key"
+        mock_settings_mod.image_filtering.enabled = False
 
         from paperhunter.ingestion.figure_extractor import FigureExtractor
 
@@ -427,6 +428,7 @@ class TestExtractAndDescribe:
         mock_settings_mod.figure_extraction.figures_dir = str(tmp_path / "figures")
         mock_settings_mod.gemini.flash_model = "gemini-3-flash-preview"
         mock_settings_mod.google_api_key = "fake-key"
+        mock_settings_mod.image_filtering.enabled = False
 
         from paperhunter.ingestion.figure_extractor import FigureExtractor
 
@@ -461,6 +463,7 @@ class TestExtractAndDescribe:
         mock_settings_mod.figure_extraction.min_width = 150
         mock_settings_mod.figure_extraction.min_height = 150
         mock_settings_mod.figure_extraction.max_figures_per_paper = 10
+        mock_settings_mod.image_filtering.enabled = False
 
         from paperhunter.ingestion.figure_extractor import FigureExtractor
 
@@ -484,6 +487,7 @@ class TestExtractAndDescribe:
         mock_settings_mod.figure_extraction.figures_dir = str(tmp_path / "figures")
         mock_settings_mod.gemini.flash_model = "gemini-3-flash-preview"
         mock_settings_mod.google_api_key = "fake-key"
+        mock_settings_mod.image_filtering.enabled = False
 
         from paperhunter.ingestion.figure_extractor import FigureExtractor
 

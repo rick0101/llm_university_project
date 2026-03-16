@@ -1,0 +1,79 @@
+{
+  "section_key": "inference_time_threats_adversarial",
+  "saved_at": "2026-03-16T11:47:30.060250",
+  "data": {
+    "section_key": "inference_time_threats_adversarial",
+    "title": "Inference-Time Threats I: Adversarial Attacks and Jailbreaks",
+    "text": "### Inference-Time Threats I: Adversarial Attacks and Jailbreaks\n\nAs Large Language Models (LLMs) transition from controlled research environments into widespread commercial and societal integration, their security posture at the point of deployment becomes a paramount concern. While training-time vulnerabilities\u2014such as data poisoning and backdoor injection\u2014require adversaries to have access to the data pipeline or the model weights, inference-time threats represent a more immediate and accessible attack vector. At inference time, the adversary interacts with the frozen, deployed model, attempting to manipulate its inputs to elicit unintended, harmful, or unauthorized outputs. This section provides a comprehensive examination of the primary methodologies employed by malicious actors to subvert LLM safeguards during operation. We explore the foundational concepts of adversarial attacks, the specific mechanics of jailbreaks designed to bypass alignment training, the practical realities of query-based black-box attacks, the pervasive danger of transferable threats, and the emerging attack surface introduced by multimodal vulnerabilities.\n\n#### Adversarial Attacks\n\nAdversarial attacks in the context of Large Language Models involve the deliberate crafting of input perturbations designed to cause the model to behave in a manner contrary to its intended design or safety guidelines. Unlike traditional software exploits that target code vulnerabilities, adversarial attacks exploit the statistical and geometric properties of the model's learned representation space. The integration of LLMs into high-stakes domains, such as healthcare, underscores the critical nature of these vulnerabilities. For instance, the susceptibility of LLMs to adversarial attacks poses a significant threat in medical diagnostics and treatment recommendations, where manipulated outputs could lead to harmful outcomes in delicate medical contexts [Yang_2024_Adversarial]. Attackers can employ relatively simple yet highly effective strategies to significantly alter a model's operational behavior within specific tasks, potentially allowing malicious entities to manipulate medical advice or pharmaceutical information [Yang_2024_Adversarial].\n\nBeyond simple prompt manipulation, sophisticated optimization-based techniques have been developed to systematically generate adversarial inputs. Methods such as the Greedy Coordinate Gradient (GCG) algorithm demonstrate the ability to find discrete token sequences that, when appended to a malicious prompt as an adversarial suffix or prefix, force the model to comply with the attacker's instructions [Zhan_2025_LLM]. In the context of LLM agents\u2014systems that utilize external tools and APIs to interact with environments\u2014these attacks frequently manifest as Indirect Prompt Injection (IPI). Here, the adversarial payload is hidden within external content (e.g., a webpage the agent is instructed to summarize), causing the agent to execute unauthorized actions on behalf of the user [Zhan_2025_LLM]. The constant iteration of LLMs and their incorporation into alignment-critical applications, such as autonomous robotics and scientific research, creates an urgent necessity for maintaining continual safety against these evolving adversarial strategies [Zhang_2025_Real]. Developing robust defenses requires not only addressing existing attack vectors but also anticipating adaptive attacks designed specifically to circumvent newly implemented security measures [Zhan_2025_LLM].\n\n#### Jailbreaks\n\nWhile the term \"adversarial attack\" broadly encompasses any input designed to cause model failure, \"jailbreaking\" refers specifically to techniques aimed at bypassing the safety filters, ethical guardrails, and alignment training (such as Reinforcement Learning from Human Feedback, or RLHF) that developers implement to prevent the generation of toxic, illegal, or harmful content. Jailbreak attacks exploit the inherent tension between a model's objective to be helpful and its objective to be harmless, detailing strategies to exploit model vulnerabilities for unauthorized actions and underscoring the critical need for robust defense mechanisms [Chowdhury_2024_Breaking].\n\nThe mechanics of jailbreaking often involve complex role-playing scenarios, hypothetical framing, or the use of specialized encoding to obfuscate the malicious intent of the prompt from the model's safety classifiers. Furthermore, the lifecycle of LLM deployment often involves fine-tuning base models for specific downstream tasks. Research indicates that these fine-tuning procedures may inadvertently weaken the model's safety alignment, thereby significantly increasing its vulnerability to backdoor jailbreaking attacks [Li_2024_Backdoorllm]. In targeted refusal tasks, where a model is expected to emit a predefined refusal message when a malicious trigger is detected, compromised models exhibit stark contrasts in behavior, with attack success rates (ASR) frequently exceeding 80% or 90% on architectures like LLaMA-2-13B [Li_2024_Backdoorllm].\n\nDefending against jailbreaks is notoriously difficult. Many current defenses against adversarial attacks and jailbreaking on LLMs cannot adapt quickly to new, zero-day attacks [Zhang_2025_Real]. Furthermore, overly aggressive safety filters often degrade model responses to benign prompts\u2014a phenomenon known as the \"alignment tax\"\u2014or introduce significant computational barriers that hinder scalable implementation in production environments [Zhang_2025_Real]. As a result, jailbreaking remains a dynamic and highly active area of adversarial research, with attackers continuously finding novel semantic structures to bypass static defense mechanisms.\n\n#### Query-based Black-box Attacks\n\nIn most real-world deployment scenarios, such as commercial APIs, the adversary does not have access to the model's internal architecture, weights, or gradients. This necessitates the use of black-box attack strategies. Query-based black-box adversarial attacks estimate adversarial gradients or optimize inputs based solely on the returned probability vectors or text outputs of the target model over a sequence of queries [Wang_2024_Advqdet]. The adversary generates adversarial examples by making multiple queries to the model and iteratively using the model's returns to refine the adversarial perturbations [Wang_2024_Advqdet].\n\nThis iterative optimization process often requires launching hundreds or thousands of visually or semantically similar queries to the target model. To counter this, defenders can implement stateful detection frameworks motivated by the observation that query-based attacks produce anomalous patterns of similar sequential queries, which can be detected by robust feature extractors [Wang_2024_Advqdet]. However, attackers continually refine their methods to minimize query counts and evade detection. Refined query-based jailbreaking represents a strategic approach that utilizes a minimal number of queries to achieve the desired malicious output, thereby flying under the radar of rate-limiting and stateful monitoring systems [Chowdhury_2024_Breaking].\n\nAdvanced fuzzing frameworks have also been developed to automate the discovery of vulnerabilities in black-box systems. For example, frameworks like AGENTVIGIL systematically conduct indirect prompt injection attacks against black-box agents across various architectures and tasks. By combining high-quality prompt templates, adaptive seed scoring, and Monte Carlo Tree Search (MCTS)-based seed selection algorithms, these frameworks overcome the challenges posed by the black-box nature of commercial APIs and efficiently discover highly effective adversarial prompts [Wang_2025_LLM]. The success of these query-based methods highlights the fundamental vulnerability of exposing powerful models via interactive interfaces, where the interface itself becomes the attack vector.\n\n#### Transferable Threats\n\nA particularly insidious aspect of adversarial machine learning is the phenomenon of transferability. Transferable threats occur when an adversarial example crafted to deceive one model (the surrogate) successfully deceives a different, unseen model (the target). This property is highly advantageous for attackers operating in black-box settings, as they can utilize open-source models (where they have full white-box access to compute gradients) to generate adversarial prompts, and then deploy these prompts against closed-source, proprietary models.\n\nResearch has demonstrated that adversarial frameworks can be effectively transferred across a wide variety of LLMs, including advanced proprietary models like GPT-5-mini, Gemini-2.0-flash, and Gemini-2.5-flashlite [Liu_2025_Aegis]. The ability of these attacks to maintain high success rates across different architectures indicates that vulnerabilities are often intrinsic to the fundamental training paradigms of large neural networks, rather than being specific to individual model implementations [Liu_2025_Aegis].\n\nIn the multimodal domain, transferability remains a critical challenge. Multimodal Large Language Models (MLLMs) remain vulnerable to transferable adversarial examples [Jia_2025_Adversarial]. To maximize the success rate of these attacks against unknown target models, researchers have developed targeted transferable adversarial attack frameworks, such as the FOA-Attack, which jointly aligns both global and local features to improve transferability against both open- and closed-source MLLMs [Jia_2025_Adversarial]. The existence of highly transferable threats implies that securing a single model is insufficient; the AI community must address the underlying, shared vulnerabilities that plague the current generation of foundation models.\n\n#### Multimodal Vulnerabilities\n\nThe evolution of LLMs into Multimodal Large Language Models (MLLMs)\u2014capable of processing and reasoning over text, images, audio, and video\u2014has dramatically expanded the attack surface. The integration of multimodal capabilities presents both exciting opportunities for advanced applications and formidable challenges for ensuring the safety and reliability of these systems [Chowdhury_2024_Breaking]. Visual inputs, in particular, introduce high-dimensional, continuous data streams that are inherently difficult to sanitize and validate compared to discrete text tokens.\n\nAdversaries exploit the mechanisms used to bridge different modalities. Capitalizing on the potent capabilities of LLMs, models seamlessly integrate visual input, paving the way for new attack vectors [Jia_2025_Adversarial]. While early multimodal attacks typically achieved targeted manipulation by aligning global features\u2014such as the [CLS] token of the CLIP vision encoder\u2014between adversarial and target samples, they often overlooked the rich local information encoded in individual patch tokens. Newer, more sophisticated attacks exploit this by ensuring suboptimal alignment is corrected, manipulating local patch tokens to embed complex adversarial payloads that are invisible to the human eye but completely alter the model's semantic understanding of the image [Jia_2025_Adversarial].\n\nFurthermore, vulnerabilities extend into the alignment pipelines used to train multimodal models. For example, BADREWARD is a novel clean-label poisoning attack that exploits vulnerabilities in multi-modal RLHF pipelines for Text-to-Image (T2I) models. By inducing visual feature collisions in CLIP-based reward models, this method corrupts the reward signals without altering the human preference annotations. This enables adversaries to steer the generation process toward harmful or targeted outputs during inference, effectively bypassing the intended safety alignment [Duan_2025_RLHF].\n\nAddressing these multimodal vulnerabilities requires a paradigm shift in defense strategies. Future research must prioritize developing techniques to mitigate these challenges, such as improving cross-modal input sanitization, developing robust multimodal validation frameworks, and creating custom defense prompts specifically designed to prevent vision-language jailbreaks [Chowdhury_2024_Breaking]. As models continue to integrate more modalities, ensuring their robustness against inference-time threats will remain one of the most critical challenges in artificial intelligence safety.",
+    "citations": [
+      {
+        "bibtex_key": "Yang_2024_Adversarial",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Zhan_2025_LLM",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Zhang_2025_Real",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Chowdhury_2024_Breaking",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Li_2024_Backdoorllm",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Wang_2024_Advqdet",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Wang_2025_LLM",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Liu_2025_Aegis",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Jia_2025_Adversarial",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Duan_2025_RLHF",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      }
+    ],
+    "word_count": 1580,
+    "status": "drafted",
+    "iteration": 1,
+    "rag_queries": [],
+    "retrieved_chunk_ids": [],
+    "writer_notes": "[agentic] Response was not valid JSON. Citations extracted via regex.",
+    "critic_feedback": "",
+    "drafted_at": "2026-03-16T11:47:30.059031"
+  }
+}

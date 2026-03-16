@@ -1,0 +1,22 @@
+```json
+[
+  {
+    "citation_index": 0,
+    "bibtex_key": "Chowdhury_2024_Breaking",
+    "status": "NOT_SUPPORTED",
+    "confidence": 0.8,
+    "reasoning": "The source text is a summary of a survey paper focusing on LLM security vulnerabilities, taxonomies of attacks, and mitigation strategies. It does not contain the claim regarding LLMs enabling unprecedented advances in language comprehension, generation, and translation, nor does it explicitly state that they have become a cornerstone in academic research and commercial applications."
+  },
+  {
+    "citation_index": 1,
+    "bibtex_key": "Zhan_2025_LLM",
+    "status": "SUPPORTED",
+    "confidence": 0.95,
+    "reasoning": "The source text explicitly discusses 'LLM agents' and their ability to use external tools, specifically mentioning 'ReAct thought process' and 'JSON function call' to 'execute the attacker's tool.' This directly supports the claim about LLMs acting as autonomous agents that use external tools."
+  },
+  {
+    "citation_index": 2,
+    "bibtex_key": "Zhang_2025_Real",
+    "status": "SUPPORTED",
+    "confidence": 0.9,
+    "reasoning": "The source text describes the development of a 'multi-agent moderator model

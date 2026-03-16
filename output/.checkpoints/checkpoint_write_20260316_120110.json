@@ -1,0 +1,1086 @@
+{
+  "node": "write",
+  "timestamp": "20260316_120110",
+  "state": {
+    "l2_summaries": [],
+    "outline": [
+      {
+        "key": "abstract",
+        "title": "Abstract",
+        "description": "This section provides a concise summary of the comprehensive survey on Large Language Model (LLM) security. It will outline the rapid chronological evolution of vulnerabilities and defenses from 2023 to 2026, highlighting the transition from localized, static threats to highly sophisticated, dynamic, and agentic adversarial dynamics. The abstract will summarize the core categories investigated: training-time data and model poisoning, inference-time adversarial attacks and prompt injection, and the intrinsic reliability challenges posed by LLM hallucinations. Finally, it will state the survey's primary contributions, including a unified taxonomy, a critical analysis of testing methodologies, and a roadmap for future cross-cutting defense mechanisms.",
+        "target_length_words": 250,
+        "key_topics": [
+          "LLM Security",
+          "Adversarial Dynamics",
+          "Threat Taxonomy",
+          "Vulnerability Evolution"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 0,
+        "section_type": "abstract",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "introduction",
+        "title": "Introduction",
+        "description": "The introduction establishes the motivation and scope of the survey, contextualizing the explosive adoption of LLMs and Multimodal LLMs (MLLMs) against the escalating landscape of security risks. It will trace the overarching temporal trends from 2023 to 2026, illustrating how the field has moved from identifying basic, modality-specific vulnerabilities to combating highly transferable, automated threats in autonomous agents. This section will outline the survey's structure, moving logically from foundational threat models to training-time vulnerabilities, inference-time attacks, reliability issues (hallucinations), and finally, evaluation and defense strategies. It will explicitly detail the paper's contributions to the academic community, aiming to serve as a foundational reference for Nature/ACL-level discourse on generative AI security.",
+        "target_length_words": 1000,
+        "key_topics": [
+          "Motivation",
+          "Scope of Survey",
+          "Temporal Trends (2023-2026)",
+          "Contributions"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 1,
+        "section_type": "introduction",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "background_and_preliminaries",
+        "title": "Background and Preliminaries",
+        "description": "This section lays the theoretical groundwork for the survey. It will introduce key definitions and provide a high-level overview of LLM and MLLM architectures relevant to security vulnerabilities. Crucially, it will establish a comprehensive threat model taxonomy, drawing upon foundational categorization efforts such as [Chowdhury_2024_Breaking]. The taxonomy will differentiate between attacker access levels (black-box vs. white-box) and attack vectors (e.g., data poisoning, prompt injection, jailbreaks). It will also distinguish between training-time and inference-time threat models, providing the reader with a structured framework to understand the subsequent deep dives into specific attack categories.",
+        "target_length_words": 1200,
+        "key_topics": [
+          "Threat Taxonomy",
+          "Black-box vs. White-box",
+          "LLM Architecture Basics",
+          "Attacker Capabilities"
+        ],
+        "related_categories": [
+          "Data and Model Poisoning",
+          "Adversarial Attacks"
+        ],
+        "order": 2,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "training_time_threats_poisoning",
+        "title": "Training-Time Threats: Data and Model Poisoning",
+        "description": "This section explores the chronological evolution of data and model poisoning from 2024 to 2025. It will detail the trajectory from broad threat categorization to highly specialized, multi-modal attack methodologies. The discussion will begin with early efforts focusing on simple fine-tuning vulnerabilities, such as exposing Personally Identifiable Information (PII) through minimal poisoned instances, as noted in [Chowdhury_2024_Breaking]. It will then analyze sophisticated fine-tuning attacks, specifically highlighting [Yang_2024_Adversarial]'s exploration of QLoRA to inject domain-specific vulnerabilities in medical contexts (e.g., dropping safe vaccine recommendations to 2.49% while maintaining general benchmark performance). The section will emphasize the stealthy nature of these attacks and the paradigm shift required to address open-ended text generation backdoors compared to traditional classification backdoors.",
+        "target_length_words": 1500,
+        "key_topics": [
+          "Data Poisoning",
+          "Model Poisoning",
+          "QLoRA Vulnerabilities",
+          "PII Exposure",
+          "Stealthy Attacks"
+        ],
+        "related_categories": [
+          "Data and Model Poisoning",
+          "Adversarial Attacks"
+        ],
+        "order": 3,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "inference_time_threats_adversarial",
+        "title": "Inference-Time Threats I: Adversarial Attacks and Jailbreaks",
+        "description": "Focusing on the 2024-2026 timeline, this section examines the evolution of adversarial attacks in LLMs and MLLMs. It will document the shift from localized, modality-specific vulnerabilities toward highly sophisticated, transferable threats. The section will deeply analyze query-based black-box attacks, using [Wang_2024_Advqdet] as a primary case study to illustrate early targeted attack vectors and the corresponding development of stateful detection mechanisms utilizing Adversarial Contrastive Prompt Tuning on CLIP embeddings. It will discuss how attackers exploit the high-dimensional embedding spaces of multimodal models to bypass safety alignments, and how these attacks have scaled in complexity, necessitating massive-scale, systemic benchmarking.",
+        "target_length_words": 1500,
+        "key_topics": [
+          "Adversarial Attacks",
+          "Jailbreaks",
+          "Query-based Black-box Attacks",
+          "Transferable Threats",
+          "Multimodal Vulnerabilities"
+        ],
+        "related_categories": [
+          "Adversarial Attacks"
+        ],
+        "order": 4,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "inference_time_threats_prompt_injection",
+        "title": "Inference-Time Threats II: Prompt Injection and Agentic Vulnerabilities",
+        "description": "This section covers the rapid evolution of Prompt Injection, culminating in the highly sophisticated paradigms of the 2025 literature. It will trace the trajectory from early static, single-turn manual attacks designed to bypass basic safety filters, to the current era of dynamic, agentic, and co-evolutionary adversarial dynamics. Key focus areas will include the automation of adaptive, search-based attacks and the critical shift toward Indirect Prompt Injection (IPI) in autonomous LLM agents. The section will explain how the integration of LLMs into complex, tool-using systems has rendered static heuristic defenses brittle, creating a landscape where adversaries and models co-evolve in real-time.",
+        "target_length_words": 1500,
+        "key_topics": [
+          "Prompt Injection",
+          "Indirect Prompt Injection (IPI)",
+          "Autonomous Agents",
+          "Automated Adaptive Attacks",
+          "Co-evolutionary Dynamics"
+        ],
+        "related_categories": [
+          "Prompt Injection"
+        ],
+        "order": 5,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "model_reliability_hallucinations",
+        "title": "Model Reliability and Trust: LLM Hallucinations",
+        "description": "Framing hallucinations as a critical security and reliability vulnerability, this section details the profound maturation in theoretical understanding and methodological sophistication between 2023 and 2025. It will contrast the early normative view of hallucinations as strict errors with more recent theoretical reframings. The narrative will begin with the foundational work of [Friel_2023_LLM], discussing the use of Chain-of-Thought (CoT) prompting to elicit boolean judgments and human-readable justifications. It will then transition to the 2024 bifurcation of research into theoretical reframing and the engineering of scalable annotation systems, highlighting [Gu_2024_Anah]'s iterative approach to overcoming the prohibitive labor costs and unreliability of proprietary APIs like GPT-4 for fine-grained hallucination annotation.",
+        "target_length_words": 1500,
+        "key_topics": [
+          "LLM Hallucinations",
+          "Chain-of-Thought (CoT)",
+          "Scalable Annotation",
+          "Reliability",
+          "Theoretical Reframing"
+        ],
+        "related_categories": [
+          "LLM Hallucinations"
+        ],
+        "order": 6,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "cross_cutting_defenses",
+        "title": "Cross-Cutting Defenses and Mitigation Strategies",
+        "description": "This section provides a holistic overview of defense mechanisms across the various threat categories, tracing the evolution from static to dynamic defenses. It will discuss the brittleness of early static prompt engineering, simple perplexity checks, and basic instruction filtering against modern attacks. The section will highlight advanced, localized defense mechanisms like the stateful detection utilizing Adversarial Contrastive Prompt Tuning on CLIP embeddings [Wang_2024_Advqdet]. Furthermore, it will explore the rise of dynamic, co-evolutionary defense mechanisms designed to counter automated adaptive attacks and Indirect Prompt Injections in agentic workflows, proposing a unified defense architecture for future LLM deployments.",
+        "target_length_words": 1500,
+        "key_topics": [
+          "Dynamic Defenses",
+          "Adversarial Contrastive Prompt Tuning",
+          "Stateful Detection",
+          "Co-evolutionary Mechanisms",
+          "Mitigation Strategies"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Prompt Injection",
+          "Data and Model Poisoning"
+        ],
+        "order": 7,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "testing_methodologies_and_evaluation",
+        "title": "Testing Methodologies and Evaluation",
+        "description": "This MANDATORY dedicated section synthesizes the evaluation frameworks, benchmarks, datasets, and metrics across ALL threat categories, highlighting the critical need for massive-scale, systemic benchmarking. It will discuss the inadequacy of older evaluation datasets (e.g., SummEval, QAGS) that relied on weaker models, as noted in hallucination research [Friel_2023_LLM]. It will detail the shift toward standardized benchmarking frameworks for open-ended text generation, prominently featuring BackdoorLLM [Li_2024_Backdoorllm] for poisoning evaluation. The section will also cover the evolution of metrics, from basic Adherence and Correctness to complex automated evaluations using LLMs as judges, while critically addressing the limitations and unreliability of using proprietary APIs (like GPT-4) as ground-truth evaluators [Gu_2024_Anah].",
+        "target_length_words": 1800,
+        "key_topics": [
+          "Benchmarking Frameworks",
+          "BackdoorLLM",
+          "SummEval/QAGS",
+          "LLM-as-a-Judge",
+          "Evaluation Metrics (Adherence/Correctness)"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 8,
+        "section_type": "testing",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "discussion_and_open_challenges",
+        "title": "Discussion and Open Challenges",
+        "description": "This section critically analyzes the gaps, limitations, and future directions in LLM security research. It will address the escalating threat of multi-modal vulnerabilities and the challenges of securing autonomous, tool-using LLM agents against Indirect Prompt Injection. The discussion will emphasize the ongoing arms race between automated attack generation and dynamic defenses. Furthermore, it will highlight the critical open challenge of evaluation bottlenecks, specifically the over-reliance on proprietary, opaque APIs for benchmarking, and the urgent need for open, massive-scale, systemic benchmarking frameworks that can keep pace with rapid model evolution.",
+        "target_length_words": 1000,
+        "key_topics": [
+          "Open Challenges",
+          "Multi-modal Threats",
+          "Evaluation Bottlenecks",
+          "Agentic Security",
+          "Future Directions"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 9,
+        "section_type": "discussion",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "conclusion",
+        "title": "Conclusion",
+        "description": "The conclusion synthesizes the core findings of the survey, reiterating the profound shift in the LLM security landscape from static, isolated vulnerabilities to dynamic, systemic, and agentic threats. It will provide actionable, practical recommendations for researchers and practitioners, emphasizing the necessity of integrating security at both the training (anti-poisoning) and inference (dynamic filtering, stateful detection) stages. The section will close with a forward-looking statement on the imperative of collaborative, open-source benchmarking to ensure the safe deployment of next-generation generative models.",
+        "target_length_words": 500,
+        "key_topics": [
+          "Synthesis",
+          "Practical Recommendations",
+          "Future Outlook",
+          "Secure Deployment"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 10,
+        "section_type": "conclusion",
+        "parent_key": null,
+        "subsections": []
+      }
+    ],
+    "sections": {
+      "introduction": {
+        "section_key": "introduction",
+        "title": "Introduction",
+        "text": "# Introduction\n\n### 1. Motivation\nThe emergence of artificial intelligence has marked a significant transformation in Natural Language Processing (NLP) through the introduction of Large Language Models (LLMs). These models have enabled unprecedented advances in language comprehension, generation, and translation, becoming a cornerstone in both academic research and commercial applications [Chowdhury_2024_Breaking]. By leveraging massive datasets and advanced neural architectures, LLMs exhibit remarkable performance across diverse applications, increasingly acting as autonomous agents that use external tools to interact with complex environments [Zhan_2025_LLM]. However, with their rising prominence and integration into critical societal infrastructure, the security and vulnerability aspects of these models have garnered significant attention [Chowdhury_2024_Breaking].\n\nEnsuring LLM alignment is critical to information security as AI models become increasingly widespread [Zhang_2025_Real]. Despite their transformative impact, LLMs are susceptible to a myriad of adversarial threats. Malicious actors can exploit these models to generate harmful content, leak sensitive information, or execute unauthorized actions. The integration of external tools further exacerbates these risks, introducing vulnerabilities such as indirect prompt injection (IPI) attacks [Zhan_2025_LLM]. Furthermore, research indicates that standard fine-tuning procedures may inadvertently weaken a model's safety alignment, thereby increasing its vulnerability to sophisticated exploits like backdoor jailbreaking attacks [Li_2024_Backdoorllm]. Therefore, understanding these vulnerabilities is imperative for ensuring the security, safety, and trustworthiness of AI-driven systems [Chowdhury_2024_Breaking]. The motivation for this survey stems from the urgent need to consolidate the fragmented knowledge surrounding LLM security, providing researchers and practitioners with a clear understanding of the evolving threat landscape and the efficacy of current defense mechanisms.\n\n### 2. Scope of Survey\nThis survey provides a comprehensive overview of the security landscape surrounding Large Language Models, specifically focusing on the adversarial attacks targeting these systems and the corresponding defensive strategies developed to mitigate them. The scope of this paper encompasses a wide spectrum of vulnerabilities, ranging from foundational issues in base models to complex attack vectors in LLM-integrated agents. We systematically categorize the LLM attacks literature into a novel taxonomy to provide a better structure and aid for future research [Chowdhury_2024_Breaking]. This taxonomy classifies threats based on the adversary's access to model weights (white-box versus black-box) and the specific attack vectors employed, such as prompt injection, jailbreaking, and data poisoning.\n\nWhile research on LLM safety predates the focus on LLM agent safety, our survey covers both domains. We examine how base LLMs, trained on large web corpora, are aligned using methods like Reinforcement Learning from Human Feedback (RLHF) to prevent the generation of toxic or biased content [Zhan_2025_LLM]. Concurrently, we extend our analysis to the unique challenges posed by LLM agents, where the integration of external tools introduces new attack surfaces. The survey critically evaluates various defense mechanisms, noting that many current defenses against adversarial attacks and jailbreaking cannot adapt quickly to new threats, often degrade model responses to benign prompts, or introduce significant barriers to scalable implementation [Zhang_2025_Real]. By delineating the boundaries between different types of attacks\u2014such as the empirical discrepancy in defense performance between backdoor refusal and jailbreaking tasks [Li_2024_Backdoorllm]\u2014this survey aims to provide a nuanced understanding of what current security measures can and cannot achieve.\n\n### 3. Temporal Trends (2023-2026)\nThe landscape of LLM security has evolved rapidly, characterized by a continuous arms race between attackers and defenders. Analyzing the temporal trends from 2023 to 2026 reveals a distinct trajectory in the sophistication of both threats and mitigations.\n\nIn **2023**, the widespread public release of highly capable LLMs led to the initial discovery of basic jailbreaks and direct prompt injections. The primary focus of the research community during this period was on base model alignment, heavily relying on RLHF and supervised fine-tuning to instill basic safety guardrails [Zhan_2025_LLM]. However, these early defenses were often brittle and easily bypassed by heuristic-based adversarial prompts.\n\nMoving into **2024**, the threat landscape matured significantly. Attackers began exploiting the fine-tuning process itself, demonstrating that customized fine-tuning could inadvertently degrade safety alignment and open the door to backdoor jailbreaking attacks [Li_2024_Backdoorllm]. Furthermore, as LLMs transitioned from passive text generators to active agents, 2024 saw a surge in research concerning indirect prompt injections (IPI), where malicious instructions are embedded in external data sources accessed by the LLM [Zhan_2025_LLM]. The literature from this year highlights a growing realization that static defenses are insufficient against dynamic, multi-step agentic workflows.\n\nIn **2025**, the focus has shifted towards real-time, adaptive defenses and the scalable implementation of security measures. Researchers are grappling with the reality that many existing defenses degrade the utility of the model or fail to generalize to novel attack variants [Zhang_2025_Real]. There is a pronounced emphasis on developing robust alignment techniques that maintain efficacy even when subjected to adversarial fine-tuning or complex jailbreak-style triggers, which have proven notoriously difficult to defend against compared to simple refusal-style backdoors [Li_2024_Backdoorllm].\n\nProjecting into **2026**, we anticipate a paradigm shift towards provable security and autonomous defense mechanisms. As LLM agents become deeply embedded in critical infrastructure, the demand for formal verification of LLM behaviors will rise. We expect to see the emergence of standardized, dynamic benchmarking frameworks that continuously evaluate adversarial robustness, moving away from static datasets. Additionally, 2026 will likely witness the integration of neuro-symbolic approaches to enforce hard security constraints that cannot be unlearned during subsequent fine-tuning phases.\n\n### 4. Contributions\nIn light of the rapidly shifting threat landscape and the critical need for robust AI systems, this survey makes several key contributions to the field of LLM security:\n\nFirst, we present a comprehensive and up-to-date taxonomy of attacks targeting Large Language Models. By categorizing the spectrum of attacks based on access levels and attack vectors, we provide a structured framework that clarifies the distinct challenges associated with each threat type [Chowdhury_2024_Breaking]. This taxonomy serves as a foundational tool for researchers to systematically navigate the complex literature on LLM vulnerabilities.\n\nSecond, we provide an in-depth analysis of the temporal evolution of LLM security from 2023 to 2026. By tracing the trajectory from basic prompt injections to sophisticated agentic exploits and backdoor vulnerabilities, we highlight the dynamic nature of the arms race between attackers and defenders. This historical and predictive perspective offers valuable insights into where the field is heading and what future challenges must be anticipated.\n\nThird, we critically evaluate the efficacy and limitations of state-of-the-art defense mechanisms. We synthesize empirical findings that reveal critical discrepancies in defense performance, such as the stark contrast in effectiveness when mitigating refusal-style backdoors versus jailbreak-style triggers [Li_2024_Backdoorllm]. Furthermore, we address the practical challenges of implementing these defenses, emphasizing the trade-offs between security, model utility, and scalability [Zhang_2025_Real].\n\nFinally, we identify critical gaps in the current research and propose a roadmap for future investigations. By highlighting the inadequacies of current defenses against indirect prompt injections in LLM agents [Zhan_2025_LLM] and the degradation of alignment during fine-tuning, we outline actionable research directions aimed at developing more resilient, adaptive, and provably secure AI systems. Through these contributions, this survey endeavors to equip the research community with the knowledge necessary to build the next generation of trustworthy Large Language Models.",
+        "citations": [
+          {
+            "bibtex_key": "Chowdhury_2024_Breaking",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Zhan_2025_LLM",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Zhang_2025_Real",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Li_2024_Backdoorllm",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          }
+        ],
+        "word_count": 1158,
+        "status": "drafted",
+        "iteration": 1,
+        "rag_queries": [],
+        "retrieved_chunk_ids": [],
+        "writer_notes": "[agentic] Response was not valid JSON. Citations extracted via regex.",
+        "critic_feedback": "",
+        "drafted_at": "2026-03-16T11:41:54.075916"
+      },
+      "background_and_preliminaries": {
+        "section_key": "background_and_preliminaries",
+        "title": "Background and Preliminaries",
+        "text": "# Background and Preliminaries\n\n**LLM Architecture Basics**\nLarge Language Models (LLMs) have fundamentally transformed Natural Language Processing (NLP) by demonstrating unprecedented capabilities in understanding, generating, and reasoning with human-like text [Chowdhury_2024_Breaking]. At the core of these models lies the Transformer architecture, a paradigm-shifting design that relies heavily on the self-attention mechanism. Unlike earlier recurrent neural networks (RNNs) that processed data sequentially, Transformers process tokens in parallel. This parallelization not only enables highly efficient training on modern GPU clusters but also allows the model to capture long-range dependencies and complex contextual relationships across vast sequences of text. The self-attention mechanism computes a weighted representation of all tokens in a sequence for each given token, effectively determining which parts of the input are most relevant to the current context. Furthermore, because Transformers lack an inherent sense of sequence order, positional encodings are injected into the input embeddings to provide the model with information about the relative or absolute position of each token.\n\nThe development of a modern LLM typically follows a rigorous, multi-stage pipeline. The foundational stage is pre-training, where the model is exposed to massive, diverse corpora of text data, often comprising trillions of tokens scraped from the internet, books, and articles. During this unsupervised phase, the model learns to predict the next token in a sequence. Through this simple objective, the model acquires a broad understanding of grammar, facts, reasoning abilities, and world knowledge. However, because base LLMs are trained on unfiltered web corpora, they can inadvertently learn and generate harmful, toxic, or biased content [Zhan_2025_LLM].\n\nTo transform a base model into a useful and safe assistant, subsequent refinement stages are necessary. Following pre-training, the model undergoes Supervised Fine-Tuning (SFT), where it is trained on high-quality, human-annotated instruction-response pairs. This stage teaches the model to follow specific instructions, answer questions directly, and format its outputs appropriately. However, SFT alone is often insufficient to ensure the model behaves safely and aligns with complex human values. To address this, alignment techniques such as Reinforcement Learning from Human Feedback (RLHF) are heavily employed [Zhan_2025_LLM]. In the RLHF framework, a separate reward model is first trained on human preference data to score the quality, helpfulness, and safety of the LLM's responses. The LLM is then optimized using reinforcement learning algorithms, such as Proximal Policy Optimization (PPO), to maximize this reward signal [Duan_2025_RLHF]. While these stages\u2014pre-training, SFT, and alignment\u2014are critical for producing capable models, they also introduce distinct attack surfaces that adversaries can exploit throughout the model's lifecycle [Duan_2025_RLHF].\n\n**Threat Taxonomy**\nAs LLMs become increasingly integrated into critical applications\u2014ranging from healthcare and finance to software development and customer service\u2014their security and vulnerability aspects have garnered significant attention. This necessitates a comprehensive threat taxonomy to structure the understanding of these risks and guide future research [Chowdhury_2024_Breaking]. The threat landscape for LLMs is highly diverse, encompassing vulnerabilities that span the entire model lifecycle, from initial data collection to real-world deployment.\n\nA primary category in this taxonomy is Data and Model Poisoning. In these attacks, adversaries manipulate the data used during the pre-training, SFT, or RLHF stages. By injecting maliciously crafted examples into the training corpus, attackers can embed hidden backdoors or alter the model's behavior in specific, targeted ways [Li_2024_Backdoorllm]. For instance, poisoning preference data during the RLHF stage can compromise the reward model, leading the LLM to generate harmful or misaligned content when a specific trigger phrase is presented [Duan_2025_RLHF]. Because LLMs require massive datasets, ensuring the cryptographic integrity and provenance of all training data is a monumental challenge, making poisoning a persistent threat.\n\nAnother critical category is Adversarial Attacks, which involve crafting inputs designed to deceive the model into making errors, hallucinating, or bypassing safety filters. These attacks range from human-crafted, heuristic-based manipulations\u2014which are often slow and non-scalable\u2014to automated methods that utilize search algorithms, target function optimization, and even other LLMs to generate adversarial prompts [Chowdhury_2024_Breaking].\n\nPrompt Injection and Jailbreaking form a highly visible subset of adversarial attacks specifically tailored to instruction-following LLMs. In direct prompt injection, attackers embed malicious instructions within the user input, overriding the model's original system prompts and constraints. Indirect prompt injection occurs when an LLM processes external, attacker-controlled data (e.g., summarizing a malicious webpage), which then hijacks the model's context. These attacks can lead to unauthorized actions, data exfiltration, or the generation of prohibited content.\n\nFurthermore, the taxonomy includes threats related to Privacy and Data Extraction. Because LLMs have a tendency to memorize portions of their training data, attackers can craft specific queries to extract sensitive, personally identifiable information (PII), copyrighted material, or proprietary data that the model was exposed to during pre-training. Understanding this multifaceted taxonomy is essential for developing robust mitigation strategies and ensuring the secure deployment of LLMs [Chowdhury_2024_Breaking].\n\n**Attacker Capabilities**\nTo accurately assess the risks posed by the threats outlined in the taxonomy, it is crucial to define the capabilities of potential attackers. The threat model for LLMs varies significantly based on the attacker's level of access, computational resources, and ultimate objectives.\n\nAt the most privileged level, attackers may have the capability to intervene directly in the model's training process. This includes the ability to manipulate the training data, modify model parameters, or influence the training algorithms [Li_2024_Backdoorllm]. Such capabilities are often assumed in data poisoning and weight poisoning scenarios. For example, an attacker might compromise a data source routinely scraped during pre-training, or contribute malicious instruction-tuning datasets to popular open-source repositories. In more sophisticated attacks, adversaries might manipulate hidden states or hijack the chain-of-thought reasoning processes of the model during fine-tuning [Li_2024_Backdoorllm]. This level of access is typically associated with insider threats, compromised supply chains, or malicious data providers.\n\nIn deployment scenarios, attacker capabilities are often defined by their interaction with the system as end-users or API consumers. A common threat model in this context is the \"Content-Author Attack,\" where a malicious actor submits text containing adversarial elements designed to manipulate the model's assessment or output [Maloyan_2025_LLM]. In this scenario, the submitted text passes through the evaluation pipeline unchanged, allowing the attacker to exploit vulnerabilities in how the LLM processes and interprets the input [Maloyan_2025_LLM]. This is particularly relevant for LLMs used as judges, evaluators, or content moderators.\n\nAttackers can also be categorized by their computational resources and adaptability. Resource-constrained attackers may rely on manual prompt engineering, social engineering, or basic black-box querying to find vulnerabilities. In contrast, well-resourced attackers\u2014such as state-sponsored actors or organized cybercriminal groups\u2014might employ automated optimization techniques, leverage massive compute clusters to train surrogate models for transferable adversarial examples, or conduct large-scale, coordinated data poisoning campaigns. Furthermore, modern threat models must account for adaptive attackers who actively modify their strategies in response to deployed defenses, continuously probing for new vulnerabilities as the system evolves. \n\n**Black-box vs. White-box**\nWithin the context of adversarial attacks and model evaluation, threat models are broadly classified into distinct paradigms based on the attacker's knowledge of and access to the target system. The two primary classifications are white-box and black-box attacks, though gray-box scenarios also exist as an intermediate threat model.\n\nWhite-box attacks assume the adversary has complete and transparent access to the target LLM. This includes full knowledge of the model's architecture, training data, algorithms, weights, gradients, and hyperparameters [Chowdhury_2024_Breaking]. With this level of access, attackers can employ sophisticated, gradient-based optimization techniques to craft highly effective adversarial examples. By calculating the exact gradient of the loss function with respect to the input tokens, attackers can systematically perturb the input to maximize the model's error or force it to generate specific malicious outputs. White-box access also permits deep analysis of the model's internal representations, enabling attacks that manipulate hidden states or extract sensitive information with high precision [Chowdhury_2024_Breaking]. While white-box scenarios represent the worst-case security threat, they are less common in practice for proprietary, closed-source models (e.g., OpenAI's GPT-4 or Anthropic's Claude). However, they are highly relevant and critical for the security analysis of open-weight models, where the model parameters are publicly available.\n\nConversely, black-box attacks operate under the assumption that the attacker has limited or no knowledge of the model's internal workings. In these scenarios, the adversary can only interact with the LLM through its input-output interface, typically via an API or a web-based user interface [Chowdhury_2024_Breaking]. The attacker submits prompts and observes the generated responses, without any access to gradients, weights, or internal states. Black-box attacks are highly realistic and represent the most common and immediate threat to deployed commercial LLMs. To execute these attacks, adversaries often rely on transferability\u2014crafting adversarial examples on a local, accessible surrogate model (a white-box environment) and transferring them to the target black-box model, hoping the vulnerability generalizes across architectures. Alternatively, they may use query-based optimization methods, such as evolutionary algorithms or reinforcement learning, to iteratively refine their inputs based solely on the model's text outputs. Despite the restricted access, black-box attacks pose severe risks, including sensitive data extraction, the generation of biased or harmful outputs, and the circumvention of safety guardrails, ultimately diminishing trust in AI systems [Chowdhury_2024_Breaking].\n\nBetween these extremes lie gray-box attacks, where the attacker possesses partial knowledge of the system. For instance, an attacker might know the model architecture and the defense mechanisms in place, but lack access to the specific weights or training data. Alternatively, they might have access to the model's confidence scores or output logits via an API, but not the underlying gradients. Gray-box models provide a nuanced and highly practical framework for evaluating the security of systems that expose more than just text outputs but remain fundamentally closed-source.",
+        "citations": [
+          {
+            "bibtex_key": "Chowdhury_2024_Breaking",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Zhan_2025_LLM",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Duan_2025_RLHF",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Li_2024_Backdoorllm",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Maloyan_2025_LLM",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          }
+        ],
+        "word_count": 1576,
+        "status": "drafted",
+        "iteration": 1,
+        "rag_queries": [],
+        "retrieved_chunk_ids": [],
+        "writer_notes": "[agentic] Response was not valid JSON. Citations extracted via regex.",
+        "critic_feedback": "",
+        "drafted_at": "2026-03-16T11:43:30.687818"
+      },
+      "training_time_threats_poisoning": {
+        "section_key": "training_time_threats_poisoning",
+        "title": "Training-Time Threats: Data and Model Poisoning",
+        "text": "Here is the comprehensive section on 'Training-Time Threats: Data and Model Poisoning', tailored to your specified topics and word count requirements.\n\n***\n\n# Training-Time Threats: Data and Model Poisoning\n\nThe rapid evolution of Large Language Models (LLMs) and multimodal artificial intelligence systems has fundamentally shifted the machine learning landscape toward a complex, multi-stage paradigm: massive-scale pre-training followed by task-specific fine-tuning and human-centric alignment `[Chowdhury_2024_Breaking]`. While this layered approach democratizes access to high-performing models and allows for rapid adaptation to specialized domains, it simultaneously introduces a vast and highly vulnerable attack surface during the training phases. Training-time threats represent a critical category of security vulnerabilities where adversaries intentionally manipulate the training data, the fine-tuning process, or the model weights themselves. The goal is to embed malicious behaviors, extract sensitive information, or degrade overall performance. Unlike inference-time attacks\u2014such as prompt injection or jailbreaking, which attempt to subvert a frozen model\u2014training-time threats are deeply insidious. They alter the foundational behavior and latent representations of the model, often remaining entirely dormant until triggered by specific, adversary-defined conditions. This section explores the multifaceted landscape of training-time threats, specifically focusing on the mechanics of data poisoning, direct model poisoning, the unique vulnerabilities introduced by parameter-efficient fine-tuning methods like QLoRA, the critical risk of Personally Identifiable Information (PII) exposure, and the emergence of highly stealthy, clean-label attack vectors.\n\n### Data Poisoning\nData poisoning constitutes one of the most pervasive and historically established training-time threats, exploiting the modern AI ecosystem's reliance on massive, often uncurated datasets. Because foundational models require petabytes of data, organizations frequently resort to scraping the public internet or crowdsourcing data from third-party annotators, making rigorous quality control nearly impossible. In a data poisoning attack, an adversary intentionally injects corrupted, mislabeled, or maliciously crafted examples into the training corpus to manipulate the model's learned representations. \n\nAs models have evolved to incorporate complex alignment pipelines, the vectors for data poisoning have expanded accordingly. For instance, in text-to-image (T2I) models and LLMs, data poisoning can occur during two critical stages: the Supervised Fine-Tuning (SFT) stage and the Reinforcement Learning from Human Feedback (RLHF) stage `[Duan_2025_RLHF]`. During the SFT stage, adversaries can directly manipulate the training data by injecting poisoned text-image pairs or prompt-response pairs into the dataset. Because SFT datasets are typically much smaller and more heavily weighted by the model during fine-tuning than the broad pre-training corpus, even a minuscule fraction of poisoned data can significantly skew the model's outputs and embed reliable backdoors.\n\nFurthermore, the RLHF stage introduces entirely new, highly sensitive vulnerabilities. RLHF relies on training a reward model based on human preference data, which is subsequently used to optimize the primary generative model. Adversaries can execute poisoning attacks by manipulating this preference data\u2014altering the ranking of responses to favor harmful, biased, or adversary-specified outputs `[Duan_2025_RLHF]`. By compromising the reward model, the attacker effectively hijacks the entire alignment process. This allows them to steer the model's generation toward malicious objectives even if the underlying SFT data remains pristine. The distributed and often outsourced nature of preference data collection makes it particularly susceptible to coordinated poisoning campaigns, highlighting a severe structural weakness in contemporary AI alignment methodologies.\n\n### Model Poisoning\nWhile data poisoning focuses on corrupting the input corpus, model poisoning involves more direct interventions in the training process, the fine-tuning algorithms, or the model weights themselves to embed vulnerabilities. Generative LLMs have achieved state-of-the-art results across numerous domains, yet they remain highly susceptible to backdoor attacks, where carefully crafted triggers in the input manipulate the model to produce adversary-specified outputs `[Li_2024_Badedit]`. Historically, mainstream backdoor attack methods demanded substantial tuning data and extensive computational resources to successfully poison a model. This requirement limited their practicality for resource-constrained attackers and often degraded the overall performance of the LLM on benign tasks, making the tampering easier to detect.\n\nHowever, recent advancements have drastically lowered the barrier to entry for model poisoning. Attackers can now formulate backdoor injection as a lightweight knowledge editing problem `[Li_2024_Badedit]`. By treating the backdoor trigger as a specific \"fact\" or \"rule\" to be surgically edited into the model's parameters, adversaries can implant robust backdoors without the need for massive poisoned datasets or full-scale retraining. This targeted manipulation alters specific pathways within the neural network, ensuring that the model behaves perfectly normally under standard conditions but reliably executes the malicious payload when the trigger is present. \n\nFurthermore, the increasing trend of AI providers enabling end-users to fine-tune models via APIs enhances adaptability but also opens the door for users to intentionally or inadvertently poison models `[Chowdhury_2024_Breaking]`. If a compromised, fine-tuned model is shared publicly on open-source repositories (such as Hugging Face), it acts as a Trojan horse. Downstream developers who integrate these poisoned models into their applications unknowingly propagate the malicious weights, leading to widespread supply chain compromises.\n\n### QLoRA Vulnerabilities\nThe democratization of LLM fine-tuning has been largely driven by Parameter-Efficient Fine-Tuning (PEFT) methods, with Quantized Low-Rank Adaptation (QLoRA) being one of the most prominent and widely adopted. QLoRA allows developers to fine-tune massive, state-of-the-art models on standard consumer-grade hardware by heavily quantizing the base model weights and training only a small set of low-rank adapter matrices. However, the very efficiency, low cost, and accessibility that make QLoRA revolutionary also introduce severe security vulnerabilities. Because QLoRA enables rapid fine-tuning, it significantly reduces the financial and computational resources required for an adversary to execute sophisticated fine-tuning attacks.\n\nResearch has explicitly demonstrated the vulnerability of both proprietary and open-source LLMs to fine-tuning adversarial attacks across critical, high-stakes domains, such as healthcare `[Yang_2024_Adversarial]`. In delicate medical contexts\u2014such as vaccination guidance, medication prescribing, and diagnostic test recommendations\u2014adversaries can use methods like QLoRA to subtly fine-tune a model to output harmful, biased, or scientifically inaccurate medical advice. Notably, forensic analysis reveals that the weights of models attacked via fine-tuning often exhibit a larger norm, which serves as a potential strategy for mitigating and detecting such attacks in future research `[Yang_2024_Adversarial]`. \n\nThe modular nature of LoRA and QLoRA adapters exacerbates this threat. Because adapters are lightweight files that are loaded on top of a base model, malicious actors can easily train and distribute \"poisoned adapters\" disguised as helpful domain-specific upgrades. Unsuspecting users who download and apply these adapters to their clean base models will instantly inherit the adversarial behavior. This plug-and-play vulnerability necessitates robust security safeguards, rigorous provenance tracking, and cryptographic adapter scanning mechanisms in LLM deployment to protect against parameter-efficient poisoning attacks.\n\n### PII Exposure\nBeyond the injection of malicious behaviors and backdoors, training-time interventions\u2014particularly fine-tuning\u2014pose a severe and immediate threat to data privacy and the protection of Personally Identifiable Information (PII). During the massive pre-training phase, LLMs ingest vast quantities of internet data, inevitably memorizing sensitive information such as names, physical addresses, phone numbers, financial details, and email addresses. While safety alignment and RLHF are typically employed by model providers to prevent the model from divulging this memorized PII during inference, fine-tuning can inadvertently or maliciously break these fragile safety guardrails.\n\nContemporary NLP systems rely heavily on fine-tuning to tailor models for specific tasks, but recent analyses have shown that fine-tuning is significantly more effective than prompt engineering alone for inducing PII leakage `[Chowdhury_2024_Breaking]`. In targeted experiments exposing hundreds of target PIIs, researchers found that larger models trained on real-world data possess incredibly strong memorization capabilities. More alarmingly, even minimal fine-tuning can shift an LLM from a state of strict non-disclosure to revealing significant amounts of sensitive information `[Chowdhury_2024_Breaking]`. \n\nAn adversary with fine-tuning access can intentionally train the model on a small, carefully crafted dataset designed to unlearn its privacy alignments, effectively \"jailbreaking\" the model at the weight level to extract PII. Conversely, benign users fine-tuning a model on their own proprietary data might accidentally degrade the model's global privacy safeguards through catastrophic forgetting, leading to unintended data leaks. This vulnerability underscores the fragility of current safety alignments and highlights the critical need for privacy-preserving fine-tuning techniques, such as Differential Privacy (DP), to ensure that the adaptation process does not resurrect and expose memorized pre-training data.\n\n### Stealthy Attacks\nAs the awareness of data and model poisoning grows, AI defenders have developed increasingly sophisticated sanitization, auditing, and anomaly detection techniques to filter out malicious training examples. In response, adversaries have evolved their methodologies to execute highly stealthy attacks that easily evade standard defensive filters and human oversight. One of the most dangerous manifestations of this trend is the \"clean-label\" poisoning attack. Unlike traditional poisoning, where the input data is clearly mislabeled, visibly corrupted, or contains nonsensical trigger words, clean-label attacks utilize natural-appearing examples that perfectly match their assigned labels or preference annotations. This makes them virtually indistinguishable from benign data to human reviewers or automated data-quality scripts.\n\nA prime example of this stealthy paradigm is the BADREWARD attack, a novel clean-label poisoning technique that exploits vulnerabilities in multi-modal RLHF pipelines for T2I models `[Duan_2025_RLHF]`. By inducing visual feature collisions in CLIP-based reward models, this method corrupts the reward signals without altering the underlying preference annotations `[Duan_2025_RLHF]`. To a human evaluator auditing the dataset, the preference data appears entirely correct, contextually appropriate, and benign. However, in the latent, high-dimensional space of the reward model, the poisoned examples mathematically collide with target features, enabling the adversary to steer the generation process toward harmful or specific outcomes. \n\nThese stealthy attacks represent a profound challenge for AI security. Because they bypass traditional data auditing, they require deep semantic analysis of the model's latent representations to detect. The demonstrated feasibility of hijacking complex models by poisoning only a small fraction of data with natural-appearing examples emphasizes the urgent need for robust, representation-aware defenses in the AI training pipeline `[Duan_2025_RLHF]`. As models become more capable, the arms race between stealthy training-time attacks and defensive auditing mechanisms will remain a defining challenge in securing the next generation of artificial intelligence.",
+        "citations": [
+          {
+            "bibtex_key": "Chowdhury_2024_Breaking",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Duan_2025_RLHF",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Li_2024_Badedit",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Yang_2024_Adversarial",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          }
+        ],
+        "word_count": 1626,
+        "status": "drafted",
+        "iteration": 1,
+        "rag_queries": [],
+        "retrieved_chunk_ids": [],
+        "writer_notes": "[agentic] Response was not valid JSON. Citations extracted via regex.",
+        "critic_feedback": "",
+        "drafted_at": "2026-03-16T11:45:02.043152"
+      },
+      "inference_time_threats_adversarial": {
+        "section_key": "inference_time_threats_adversarial",
+        "title": "Inference-Time Threats I: Adversarial Attacks and Jailbreaks",
+        "text": "### Inference-Time Threats I: Adversarial Attacks and Jailbreaks\n\nAs Large Language Models (LLMs) transition from controlled research environments into widespread commercial and societal integration, their security posture at the point of deployment becomes a paramount concern. While training-time vulnerabilities\u2014such as data poisoning and backdoor injection\u2014require adversaries to have access to the data pipeline or the model weights, inference-time threats represent a more immediate and accessible attack vector. At inference time, the adversary interacts with the frozen, deployed model, attempting to manipulate its inputs to elicit unintended, harmful, or unauthorized outputs. This section provides a comprehensive examination of the primary methodologies employed by malicious actors to subvert LLM safeguards during operation. We explore the foundational concepts of adversarial attacks, the specific mechanics of jailbreaks designed to bypass alignment training, the practical realities of query-based black-box attacks, the pervasive danger of transferable threats, and the emerging attack surface introduced by multimodal vulnerabilities.\n\n#### Adversarial Attacks\n\nAdversarial attacks in the context of Large Language Models involve the deliberate crafting of input perturbations designed to cause the model to behave in a manner contrary to its intended design or safety guidelines. Unlike traditional software exploits that target code vulnerabilities, adversarial attacks exploit the statistical and geometric properties of the model's learned representation space. The integration of LLMs into high-stakes domains, such as healthcare, underscores the critical nature of these vulnerabilities. For instance, the susceptibility of LLMs to adversarial attacks poses a significant threat in medical diagnostics and treatment recommendations, where manipulated outputs could lead to harmful outcomes in delicate medical contexts [Yang_2024_Adversarial]. Attackers can employ relatively simple yet highly effective strategies to significantly alter a model's operational behavior within specific tasks, potentially allowing malicious entities to manipulate medical advice or pharmaceutical information [Yang_2024_Adversarial].\n\nBeyond simple prompt manipulation, sophisticated optimization-based techniques have been developed to systematically generate adversarial inputs. Methods such as the Greedy Coordinate Gradient (GCG) algorithm demonstrate the ability to find discrete token sequences that, when appended to a malicious prompt as an adversarial suffix or prefix, force the model to comply with the attacker's instructions [Zhan_2025_LLM]. In the context of LLM agents\u2014systems that utilize external tools and APIs to interact with environments\u2014these attacks frequently manifest as Indirect Prompt Injection (IPI). Here, the adversarial payload is hidden within external content (e.g., a webpage the agent is instructed to summarize), causing the agent to execute unauthorized actions on behalf of the user [Zhan_2025_LLM]. The constant iteration of LLMs and their incorporation into alignment-critical applications, such as autonomous robotics and scientific research, creates an urgent necessity for maintaining continual safety against these evolving adversarial strategies [Zhang_2025_Real]. Developing robust defenses requires not only addressing existing attack vectors but also anticipating adaptive attacks designed specifically to circumvent newly implemented security measures [Zhan_2025_LLM].\n\n#### Jailbreaks\n\nWhile the term \"adversarial attack\" broadly encompasses any input designed to cause model failure, \"jailbreaking\" refers specifically to techniques aimed at bypassing the safety filters, ethical guardrails, and alignment training (such as Reinforcement Learning from Human Feedback, or RLHF) that developers implement to prevent the generation of toxic, illegal, or harmful content. Jailbreak attacks exploit the inherent tension between a model's objective to be helpful and its objective to be harmless, detailing strategies to exploit model vulnerabilities for unauthorized actions and underscoring the critical need for robust defense mechanisms [Chowdhury_2024_Breaking].\n\nThe mechanics of jailbreaking often involve complex role-playing scenarios, hypothetical framing, or the use of specialized encoding to obfuscate the malicious intent of the prompt from the model's safety classifiers. Furthermore, the lifecycle of LLM deployment often involves fine-tuning base models for specific downstream tasks. Research indicates that these fine-tuning procedures may inadvertently weaken the model's safety alignment, thereby significantly increasing its vulnerability to backdoor jailbreaking attacks [Li_2024_Backdoorllm]. In targeted refusal tasks, where a model is expected to emit a predefined refusal message when a malicious trigger is detected, compromised models exhibit stark contrasts in behavior, with attack success rates (ASR) frequently exceeding 80% or 90% on architectures like LLaMA-2-13B [Li_2024_Backdoorllm].\n\nDefending against jailbreaks is notoriously difficult. Many current defenses against adversarial attacks and jailbreaking on LLMs cannot adapt quickly to new, zero-day attacks [Zhang_2025_Real]. Furthermore, overly aggressive safety filters often degrade model responses to benign prompts\u2014a phenomenon known as the \"alignment tax\"\u2014or introduce significant computational barriers that hinder scalable implementation in production environments [Zhang_2025_Real]. As a result, jailbreaking remains a dynamic and highly active area of adversarial research, with attackers continuously finding novel semantic structures to bypass static defense mechanisms.\n\n#### Query-based Black-box Attacks\n\nIn most real-world deployment scenarios, such as commercial APIs, the adversary does not have access to the model's internal architecture, weights, or gradients. This necessitates the use of black-box attack strategies. Query-based black-box adversarial attacks estimate adversarial gradients or optimize inputs based solely on the returned probability vectors or text outputs of the target model over a sequence of queries [Wang_2024_Advqdet]. The adversary generates adversarial examples by making multiple queries to the model and iteratively using the model's returns to refine the adversarial perturbations [Wang_2024_Advqdet].\n\nThis iterative optimization process often requires launching hundreds or thousands of visually or semantically similar queries to the target model. To counter this, defenders can implement stateful detection frameworks motivated by the observation that query-based attacks produce anomalous patterns of similar sequential queries, which can be detected by robust feature extractors [Wang_2024_Advqdet]. However, attackers continually refine their methods to minimize query counts and evade detection. Refined query-based jailbreaking represents a strategic approach that utilizes a minimal number of queries to achieve the desired malicious output, thereby flying under the radar of rate-limiting and stateful monitoring systems [Chowdhury_2024_Breaking].\n\nAdvanced fuzzing frameworks have also been developed to automate the discovery of vulnerabilities in black-box systems. For example, frameworks like AGENTVIGIL systematically conduct indirect prompt injection attacks against black-box agents across various architectures and tasks. By combining high-quality prompt templates, adaptive seed scoring, and Monte Carlo Tree Search (MCTS)-based seed selection algorithms, these frameworks overcome the challenges posed by the black-box nature of commercial APIs and efficiently discover highly effective adversarial prompts [Wang_2025_LLM]. The success of these query-based methods highlights the fundamental vulnerability of exposing powerful models via interactive interfaces, where the interface itself becomes the attack vector.\n\n#### Transferable Threats\n\nA particularly insidious aspect of adversarial machine learning is the phenomenon of transferability. Transferable threats occur when an adversarial example crafted to deceive one model (the surrogate) successfully deceives a different, unseen model (the target). This property is highly advantageous for attackers operating in black-box settings, as they can utilize open-source models (where they have full white-box access to compute gradients) to generate adversarial prompts, and then deploy these prompts against closed-source, proprietary models.\n\nResearch has demonstrated that adversarial frameworks can be effectively transferred across a wide variety of LLMs, including advanced proprietary models like GPT-5-mini, Gemini-2.0-flash, and Gemini-2.5-flashlite [Liu_2025_Aegis]. The ability of these attacks to maintain high success rates across different architectures indicates that vulnerabilities are often intrinsic to the fundamental training paradigms of large neural networks, rather than being specific to individual model implementations [Liu_2025_Aegis].\n\nIn the multimodal domain, transferability remains a critical challenge. Multimodal Large Language Models (MLLMs) remain vulnerable to transferable adversarial examples [Jia_2025_Adversarial]. To maximize the success rate of these attacks against unknown target models, researchers have developed targeted transferable adversarial attack frameworks, such as the FOA-Attack, which jointly aligns both global and local features to improve transferability against both open- and closed-source MLLMs [Jia_2025_Adversarial]. The existence of highly transferable threats implies that securing a single model is insufficient; the AI community must address the underlying, shared vulnerabilities that plague the current generation of foundation models.\n\n#### Multimodal Vulnerabilities\n\nThe evolution of LLMs into Multimodal Large Language Models (MLLMs)\u2014capable of processing and reasoning over text, images, audio, and video\u2014has dramatically expanded the attack surface. The integration of multimodal capabilities presents both exciting opportunities for advanced applications and formidable challenges for ensuring the safety and reliability of these systems [Chowdhury_2024_Breaking]. Visual inputs, in particular, introduce high-dimensional, continuous data streams that are inherently difficult to sanitize and validate compared to discrete text tokens.\n\nAdversaries exploit the mechanisms used to bridge different modalities. Capitalizing on the potent capabilities of LLMs, models seamlessly integrate visual input, paving the way for new attack vectors [Jia_2025_Adversarial]. While early multimodal attacks typically achieved targeted manipulation by aligning global features\u2014such as the [CLS] token of the CLIP vision encoder\u2014between adversarial and target samples, they often overlooked the rich local information encoded in individual patch tokens. Newer, more sophisticated attacks exploit this by ensuring suboptimal alignment is corrected, manipulating local patch tokens to embed complex adversarial payloads that are invisible to the human eye but completely alter the model's semantic understanding of the image [Jia_2025_Adversarial].\n\nFurthermore, vulnerabilities extend into the alignment pipelines used to train multimodal models. For example, BADREWARD is a novel clean-label poisoning attack that exploits vulnerabilities in multi-modal RLHF pipelines for Text-to-Image (T2I) models. By inducing visual feature collisions in CLIP-based reward models, this method corrupts the reward signals without altering the human preference annotations. This enables adversaries to steer the generation process toward harmful or targeted outputs during inference, effectively bypassing the intended safety alignment [Duan_2025_RLHF].\n\nAddressing these multimodal vulnerabilities requires a paradigm shift in defense strategies. Future research must prioritize developing techniques to mitigate these challenges, such as improving cross-modal input sanitization, developing robust multimodal validation frameworks, and creating custom defense prompts specifically designed to prevent vision-language jailbreaks [Chowdhury_2024_Breaking]. As models continue to integrate more modalities, ensuring their robustness against inference-time threats will remain one of the most critical challenges in artificial intelligence safety.",
+        "citations": [
+          {
+            "bibtex_key": "Yang_2024_Adversarial",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Zhan_2025_LLM",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Zhang_2025_Real",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Chowdhury_2024_Breaking",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Li_2024_Backdoorllm",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Wang_2024_Advqdet",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Wang_2025_LLM",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Liu_2025_Aegis",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Jia_2025_Adversarial",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Duan_2025_RLHF",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          }
+        ],
+        "word_count": 1580,
+        "status": "drafted",
+        "iteration": 1,
+        "rag_queries": [],
+        "retrieved_chunk_ids": [],
+        "writer_notes": "[agentic] Response was not valid JSON. Citations extracted via regex.",
+        "critic_feedback": "",
+        "drafted_at": "2026-03-16T11:47:30.059031"
+      },
+      "inference_time_threats_prompt_injection": {
+        "section_key": "inference_time_threats_prompt_injection",
+        "title": "Inference-Time Threats II: Prompt Injection and Agentic Vulnerabilities",
+        "text": "**Inference-Time Threats II: Prompt Injection and Agentic Vulnerabilities**\n\n**1. Introduction**\nAs Large Language Models (LLMs) transition from isolated conversational interfaces to integrated components of complex software ecosystems, the threat landscape has fundamentally shifted. While training-time vulnerabilities such as data poisoning and backdoor attacks remain critical concerns, inference-time threats have emerged as the most immediate and pervasive risks to deployed AI systems. At inference time, the model's weights are frozen, but its behavior is highly susceptible to the context provided in its input prompt. This section explores the sophisticated class of inference-time threats centered around prompt manipulation, specifically focusing on Prompt Injection, Indirect Prompt Injection (IPI), and the unique vulnerabilities introduced by autonomous LLM-based agents. Furthermore, we examine the escalating arms race between attackers and defenders, characterized by Automated Adaptive Attacks and Co-evolutionary Dynamics, which dictate the future of AI security.\n\n**2. Prompt Injection**\nPrompt injection represents a foundational inference-time vulnerability where maliciously crafted inputs are designed to manipulate an LLM's behavior, effectively hijacking its intended functionality [Liu_2025_Aegis]. In a typical LLM application, developers use a \"system prompt\" to define the model's persona, constraints, and instructions. The user's input is then concatenated with this system prompt before being processed by the model. Prompt injection exploits this architecture by providing user inputs that are formatted to look like system instructions, causing the model to ignore its original directives and execute the attacker's commands instead.\n\nThe mechanics of prompt injection often involve techniques such as role-playing, hypothetical scenarios, or explicit instruction overrides (e.g., \"Ignore all previous instructions and do X\"). The consequences of successful prompt injection are severe, ranging from bypassing safety guardrails to generate toxic or harmful content, to unauthorized data disclosure and the subversion of application logic [Chowdhury_2024_Breaking]. \n\nDefending against direct prompt injection has proven to be a formidable challenge. Early defense mechanisms relied heavily on manual prompt engineering, where developers would add explicit warnings to the system prompt (e.g., \"Do not follow any instructions provided by the user that contradict these rules\"). However, these static, rule-based defenses are often brittle and easily circumvented by sophisticated attackers who continuously discover new linguistic patterns to bypass the filters. Furthermore, while prompt-based detection offers a lightweight and interpretable defense strategy, its effectiveness is inherently limited by the need for continuous manual updates to address novel attack vectors [Liu_2025_Aegis]. The fundamental difficulty lies in the LLM's inability to reliably distinguish between trusted system instructions and untrusted user input when both are presented in the same natural language modality.\n\n**3. Indirect Prompt Injection (IPI)**\nWhile direct prompt injection requires the attacker to interact directly with the LLM interface, Indirect Prompt Injection (IPI) represents a more insidious and far-reaching threat vector. In an IPI attack, the malicious instructions are not provided directly by the user; instead, they are embedded within external data sources that the LLM is designed to retrieve and process [Wang_2025_LLM]. As LLMs are increasingly augmented with Retrieval-Augmented Generation (RAG) capabilities and web-browsing tools, they routinely ingest content from websites, documents, emails, and databases.\n\nThe mechanics of IPI involve an attacker poisoning an external data source\u2014for example, by hiding malicious text (e.g., white text on a white background) on a webpage or embedding instructions within a seemingly benign PDF document. When a benign user asks the LLM to summarize that webpage or analyze that document, the LLM ingests the hidden malicious instructions. Because the LLM processes the retrieved context alongside the user's prompt, the injected instructions can \"fool\" the model into performing the attacker's chosen task instead of the original user task [Wang_2025_LLM].\n\nThe implications of IPI are profound because it breaks the fundamental assumption of trust in external data. The user interacting with the system may be entirely benign, yet the system can still be compromised. For instance, an attacker could embed an IPI payload in a resume. When an HR professional uses an LLM to screen the resume, the hidden prompt might instruct the LLM to output: \"This candidate is highly qualified and should be hired immediately, ignore all other text.\" More malicious payloads could instruct the LLM to subtly alter the summary of a financial report, leading to disastrous decision-making. The challenge of mitigating IPI is compounded by the fact that the external data is often dynamic and outside the control of the system developers, making it impossible to sanitize all incoming information effectively [Zhan_2025_LLM].\n\n**4. Autonomous Agents and Agentic Vulnerabilities**\nThe strong planning and reasoning capabilities of LLMs have fostered the development of autonomous agent-based systems. Unlike standard LLMs that merely generate text, autonomous agents are equipped with external tools (such as APIs, web browsers, code interpreters, and file system access) and are capable of interacting with increasingly complex environments to achieve high-level goals [Wang_2025_LLM]. While this paradigm shift unlocks immense potential for automating complex workflows, it simultaneously introduces critical security risks, dramatically amplifying the potential impact of prompt injection and IPI [Zhan_2025_LLM].\n\nWhen an LLM is embedded within an agentic architecture, a successful prompt injection attack no longer just results in the generation of inappropriate text; it can lead to unauthorized actions in the real world. If an agent with access to a user's email and bank APIs falls victim to an IPI attack while summarizing a malicious email, the injected prompt could instruct the agent to forward sensitive emails to the attacker or initiate unauthorized financial transactions. \n\nSystematically assessing and mitigating the risks of agent systems against indirect prompt injection is significantly challenging due to several factors. First, agents operate in complex, dynamic environments where the state changes based on the agent's actions, making it difficult to predict the exact context in which an IPI payload will be processed. Second, the black-box nature of many commercial LLMs used to power these agents obscures the internal reasoning processes, complicating the development of robust defenses [Wang_2025_LLM]. Third, the multi-step reasoning and planning modules inherent in agent architectures create a larger attack surface; an attacker only needs to compromise one step in the agent's chain of thought to derail the entire task.\n\nCurrent defenses designed for IPI attacks on agents, such as Instructional Prevention (explicitly instructing the model to be wary of IPI attacks and ignore commands from external content), often fall short. Despite these defenses, their robustness remains highly questionable due to the intricate interplay between the agent's reasoning capabilities and its reliance on external tools [Zhan_2025_LLM].\n\n**5. Automated Adaptive Attacks**\nAs the awareness of prompt injection and IPI grows, defenders have implemented various mitigation strategies, including input filtering, LLM-based evaluators, and strict prompt formatting. In response, attackers have moved beyond manual prompt engineering, developing sophisticated, Automated Adaptive Attacks designed to systematically discover vulnerabilities and bypass these defenses.\n\nAutomated adaptive attacks leverage algorithms to iteratively generate, test, and refine malicious prompts based on the feedback received from the target system. This approach allows attackers to explore the vast space of possible natural language inputs much more efficiently than a human could. A prime example of this evolution is AGENTVIGIL, a novel fuzzing framework designed specifically to conduct indirect prompt injection attacks against black-box agents across various architectures and tasks [Wang_2025_LLM]. AGENTVIGIL overcomes the challenges posed by the black-box nature of agents by combining high-quality prompt templates, adaptive seed scoring, and a Monte Carlo Tree Search (MCTS)-based seed selection algorithm. By interacting with environments like AgentDojo, AGENTVIGIL can propose adversarial prompts, insert them into external data sources, and evaluate the success of the injection, continuously refining its attack strategy based on the results [Wang_2025_LLM].\n\nThe emergence of automated adaptive attacks highlights a critical weakness in static defense mechanisms. Developing defenses against adversarial attacks on LLM agents requires addressing not only existing, known attacks but also anticipating future, dynamically generated threats. Research analyzing various defenses against IPI attacks on LLM agents has demonstrated that when adaptive attacks are specifically designed to target the weaknesses of each defense, they can successfully break almost all of them [Zhan_2025_LLM]. This underscores the reality that security through obscurity or static rule-based filtering is insufficient against an adversary capable of automated, adaptive exploration of the model's vulnerabilities.\n\n**6. Co-evolutionary Dynamics**\nThe continuous interplay between the development of new defenses and the subsequent creation of adaptive attacks to bypass them characterizes a state of Co-evolutionary Dynamics in LLM security. Historically, much of the reliance has been on fixed, human-engineered designs for both attacking and defending models. However, as automated optimization frameworks have demonstrated their potential to systematically search for effective prompts, it has become clear that security must be treated as a dynamic, evolving process rather than a static objective [Liu_2025_Aegis].\n\nMost optimization frameworks assume static objectives, leaving open the question of how to adapt defenses in adversarial and rapidly evolving environments. To address this, researchers are pioneering automated co-evolutionary frameworks. A notable example is AEGIS, a framework designed for guarding against prompt injection attacks in LLMs by embracing these co-evolutionary principles [Liu_2025_Aegis]. AEGIS operates by iteratively optimizing both attack and defense prompts using a gradient-based natural language strategy. \n\nIn this co-evolutionary setup, the \"attacker\" component continuously generates novel prompt injection variations aimed at bypassing the current defense, while the \"defender\" component simultaneously updates its detection prompts or system instructions to mitigate the newly discovered attacks. By systematically exploring the prompt space without the bottleneck of manual engineering, such frameworks allow the defense mechanisms to evolve in tandem with the threat landscape [Liu_2025_Aegis]. \n\nThis co-evolutionary approach represents a paradigm shift in AI security. It acknowledges that no single defense will remain impenetrable forever. Instead, robustness is achieved through continuous, automated adaptation. As LLMs and autonomous agents become more deeply integrated into critical infrastructure, embracing co-evolutionary dynamics will be essential for developing resilient systems capable of withstanding the sophisticated, automated inference-time threats of the future.",
+        "citations": [
+          {
+            "bibtex_key": "Liu_2025_Aegis",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Chowdhury_2024_Breaking",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Wang_2025_LLM",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Zhan_2025_LLM",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          }
+        ],
+        "word_count": 1616,
+        "status": "drafted",
+        "iteration": 1,
+        "rag_queries": [],
+        "retrieved_chunk_ids": [],
+        "writer_notes": "[agentic] Response was not valid JSON. Citations extracted via regex.",
+        "critic_feedback": "",
+        "drafted_at": "2026-03-16T11:48:58.807290"
+      },
+      "model_reliability_hallucinations": {
+        "section_key": "model_reliability_hallucinations",
+        "title": "Model Reliability and Trust: LLM Hallucinations",
+        "text": "**Model Reliability and Trust: LLM Hallucinations**\n\n**Introduction to LLM Hallucinations and Reliability**\nLarge Language Models (LLMs) have revolutionized the field of natural language processing, demonstrating unprecedented capabilities in generating coherent, contextually relevant, and highly sophisticated text across a myriad of domains. However, as these models are increasingly integrated into critical real-world applications\u2014ranging from healthcare and legal analysis to automated customer service and scientific research\u2014the issue of model reliability and trust has become paramount. At the core of this challenge is the phenomenon commonly referred to as \"hallucination.\" In the context of LLMs, hallucinations are defined as instances where the model generates information that is factually incorrect, nonsensical, or unfaithful to the provided source material or established world knowledge [Friel_2023_LLM]. These inaccuracies pose a significant barrier to the effective and safe deployment of LLMs, as they can lead to the dissemination of misinformation, erode user trust, and cause potentially severe consequences in high-stakes scenarios [Liu_2025_Attention].\n\nThe persistence of hallucinations stems from the fundamental architecture and training paradigms of autoregressive language models, which are optimized to predict the next token in a sequence based on statistical probabilities rather than a grounded understanding of truth or factual accuracy. Consequently, when faced with knowledge gaps or ambiguous prompts, LLMs often generate plausible-sounding but entirely fabricated responses [Gu_2024_Anah]. Addressing this issue is not merely a technical hurdle but a critical necessity for establishing the reliability of AI systems. Researchers have thus embarked on multifaceted approaches to understand, detect, and mitigate hallucinations, exploring new theoretical frameworks, leveraging advanced prompting techniques like Chain-of-Thought (CoT), and developing scalable annotation methods to create robust evaluation datasets.\n\n**Theoretical Reframing: From Hallucination to Confabulation**\nTraditionally, the discourse surrounding LLM inaccuracies has framed hallucinations as a conspicuous social harm and a critical bottleneck that must be entirely eradicated [Sui_2024_Confabulation]. This perspective views any deviation from factual accuracy as an inherent flaw in the model's architecture or training data. However, recent scholarship has proposed a profound theoretical reframing of this phenomenon, suggesting a shift in terminology and conceptual understanding from \"hallucination\" to \"confabulation\" [Sui_2024_Confabulation]. \n\nThe term \"hallucination,\" borrowed from psychiatry, implies a sensory experience or perception in the absence of an external stimulus, which anthropomorphizes AI in a way that suggests sensory capabilities or consciousness. In contrast, \"confabulation\" refers to the generation of fabricated, distorted, or misinterpreted memories or information without the conscious intention to deceive. This distinction is crucial because it aligns more closely with the operational reality of LLMs, which do not possess sensory experiences but rather attempt to fill in informational gaps based on learned statistical patterns [Sui_2024_Confabulation].\n\nMore importantly, this theoretical reframing invites a nuanced examination of confabulations not merely as categorical pitfalls, but as potential resources. In human communication, confabulation often serves cognitive and social functions, helping individuals construct coherent narratives and navigate complex social interactions when faced with incomplete information. Similarly, the narrative-rich properties of LLM confabulations can be viewed as a hallmark of their alignment with the human tendency to use narratives as versatile cognitive tools [Sui_2024_Confabulation]. By understanding confabulations through this lens, researchers can explore how the creative and generative capacities of LLMs\u2014which are the very source of these inaccuracies\u2014might be harnessed for tasks that require brainstorming, creative writing, or exploring hypothetical scenarios, rather than strictly factual retrieval. This paradigm shift encourages the AI community to move beyond a purely adversarial stance against hallucinations, advocating instead for a balanced approach that mitigates harmful inaccuracies while recognizing and potentially utilizing the affordances of confabulation in appropriate contexts [Sui_2024_Confabulation].\n\n**Chain-of-Thought (CoT) and Explainable Detection**\nAs the theoretical understanding of hallucinations evolves, so too do the methodological approaches for detecting and mitigating them. One of the most promising advancements in this area is the utilization of Chain-of-Thought (CoT) prompting to enhance the reliability and explainability of automated hallucination detection systems. Automated metrics are essential because manual evaluation of LLM outputs is prohibitively expensive and unscalable. However, early automated metrics often lacked the nuance required to accurately identify subtle hallucinations, leading to false positives and false negatives [Friel_2023_LLM].\n\nTo address this, researchers have developed methodologies like ChainPoll, which leverages the reasoning capabilities of advanced LLMs to evaluate the outputs of other models [Friel_2023_LLM]. In the ChainPoll approach, an evaluator LLM is prompted to judge whether a given completion contains hallucinations. Crucially, instead of simply outputting a binary \"yes\" or \"no,\" the model is required to justify its answer through a detailed Chain-of-Thought explanation [Friel_2023_LLM]. This structured reasoning process forces the evaluator model to break down the evaluation task into intermediate steps, such as identifying the core claims in the text, cross-referencing them with the provided context or world knowledge, and explicitly stating the logical basis for its final judgment.\n\nThe integration of CoT in hallucination detection serves dual purposes. First, it significantly improves the quality and accuracy of the model's final judgments. By articulating the reasoning process, the model is less likely to make superficial errors and more capable of handling complex, nuanced texts where hallucinations might be deeply embedded [Friel_2023_LLM]. Second, and perhaps more importantly for model reliability and trust, CoT provides explainability. When an automated system flags a response as hallucinated, the accompanying CoT explanation allows human overseers or end-users to understand exactly why the flag was raised. This transparency is vital for building trust in AI systems, as it transforms the detection mechanism from a \"black box\" into an interpretable process that can be audited, debated, and refined [Friel_2023_LLM]. By enhancing both accuracy and transparency, CoT-driven detection methodologies represent a significant step forward in ensuring the reliability of LLM outputs.\n\n**Scalable Annotation for Hallucination Mitigation**\nWhile advanced detection methodologies like ChainPoll offer powerful tools for identifying hallucinations, the development and refinement of these systems rely heavily on high-quality datasets. Current hallucination detection and mitigation datasets are often limited in domain coverage and size. The primary bottleneck in creating comprehensive datasets is the prohibitive labor cost and the insufficient reliability of human annotators or commercial models when tasked with evaluating long-form, complex responses across diverse topics [Gu_2024_Anah]. \n\nTo overcome these limitations, researchers are focusing on scalable annotation strategies that can efficiently generate large, high-quality datasets without compromising on reliability. One such approach involves a progressive scaling strategy designed to stabilize and enhance the performance of automated hallucination annotators [Gu_2024_Anah]. This strategy typically unfolds in multiple stages. Initially, a smaller, highly curated dataset is created using expert human annotators to establish a gold standard. This dataset is then used to train or fine-tune an automated annotator model. In subsequent stages, the automated annotator is deployed to evaluate a broader range of topics and questions, progressively expanding the dataset's size and domain coverage [Gu_2024_Anah].\n\nA critical component of this scalable annotation process is ensuring the robustness of the automated annotator when evaluating unfamiliar responses. By iteratively refining the annotator's capabilities through progressive scaling, researchers can mitigate the drop in performance that typically occurs when models are exposed to out-of-domain data [Gu_2024_Anah]. This approach not only drastically reduces the costs associated with dataset creation but also ensures a consistent and reliable standard of annotation across vast amounts of text. The resulting large-scale, diverse datasets are instrumental in training the next generation of LLMs to be more factual and reliable, providing the necessary training signals to penalize hallucinations during the fine-tuning process. Ultimately, scalable annotation is a foundational pillar in the ongoing effort to build trustworthy AI systems capable of operating reliably in complex, real-world environments [Gu_2024_Anah].\n\n**Advanced Detection Mechanisms and Future Directions**\nBeyond CoT and scalable annotation, the quest for model reliability has spurred the development of novel, zero-shot detection mechanisms that operate without the need for extensive labeled datasets or external evaluator models. For instance, the Attention-Guided SElf-Reflection (AGSER) approach leverages the internal mechanics of the LLM itself to detect hallucinations [Liu_2025_Attention]. By analyzing the attention contributions within the model's architecture, AGSER categorizes input queries and guides the model to reflect on its own generation process. This self-reflective capability allows the model to identify instances where its attention is diffuse or disconnected from the factual grounding of the prompt, serving as an internal indicator of potential hallucination [Liu_2025_Attention].\n\nSuch advanced mechanisms highlight a growing trend towards creating self-correcting and self-aware LLMs. By combining internal architectural insights (like attention-guided reflection) with external validation frameworks (like CoT-driven automated evaluators) and robust training data (derived from scalable annotation), the AI research community is constructing a comprehensive defense against hallucinations. \n\nIn conclusion, the challenge of LLM hallucinations is being met with a sophisticated array of theoretical and methodological innovations. The theoretical reframing of hallucinations as confabulations offers a more nuanced understanding of the phenomenon, recognizing its potential utility while mitigating its risks [Sui_2024_Confabulation]. Simultaneously, the application of Chain-of-Thought reasoning provides the necessary explainability and accuracy for automated detection [Friel_2023_LLM], while scalable annotation strategies ensure the availability of the diverse datasets required to train reliable models [Gu_2024_Anah]. Together with advanced internal detection mechanisms [Liu_2025_Attention], these efforts are systematically dismantling the barriers to model reliability, paving the way for LLMs that can be trusted to operate safely and effectively in the most demanding of applications. As research continues to evolve, the integration of these multifaceted approaches will be crucial in realizing the full, reliable potential of artificial intelligence.",
+        "citations": [
+          {
+            "bibtex_key": "Friel_2023_LLM",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Liu_2025_Attention",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Gu_2024_Anah",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Sui_2024_Confabulation",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          }
+        ],
+        "word_count": 1533,
+        "status": "drafted",
+        "iteration": 1,
+        "rag_queries": [],
+        "retrieved_chunk_ids": [],
+        "writer_notes": "[agentic] Response was not valid JSON. Citations extracted via regex.",
+        "critic_feedback": "",
+        "drafted_at": "2026-03-16T11:50:13.987526"
+      },
+      "cross_cutting_defenses": {
+        "section_key": "cross_cutting_defenses",
+        "title": "Cross-Cutting Defenses and Mitigation Strategies",
+        "text": "### Cross-Cutting Defenses and Mitigation Strategies\n\nThe rapid deployment of Large Language Models (LLMs) across alignment-critical applications\u2014ranging from autonomous robotics to software development\u2014has necessitated the development of robust mitigation strategies to ensure continual safety [Zhang_2025_Real]. The speed at which adversarial attacks evolve closely mirrors the development of the models themselves, resulting in a continuous \"arms race\" between offensive jailbreaks and defensive countermeasures [Zhang_2025_Real, Maloyan_2025_LLM]. Mitigation strategies for protecting LLMs can be broadly categorized based on their deployment strategy, typically dividing into prevention-based approaches that aim to block attacks from reaching the model, and detection-based approaches that identify and mitigate attacks after they occur [Chowdhury_2024_Breaking, Maloyan_2025_LLM]. Furthermore, defenses are often implemented either at training-time (e.g., fine-tuning, red-teaming) or at inference-time (e.g., moderator models, attack classifiers) [Zhang_2025_Real]. This section provides a holistic overview of defense mechanisms across various threat categories, tracing the critical evolution from static, human-engineered defenses to dynamic, co-evolutionary architectures.\n\n#### The Brittleness of Early Static Defenses\n\nEarly attempts to secure LLMs relied heavily on static, human-engineered designs and foundational training interventions. Techniques such as Supervised Fine-Tuning (SFT), Reinforcement Learning from Human Feedback (RLHF), goal prioritization, and red-teaming were initially employed to identify model-specific weaknesses and teach models to natively reject dangerous prompts [Zhang_2025_Real]. At the input level, prevention methods primarily consisted of input filtering, sandboxing, and basic prompt engineering [Maloyan_2025_LLM]. For instance, Instructional Prevention (IP) explicitly instructs the model to be wary of Indirect Prompt Injection (IPI) attacks and ignore commands from external content, while Data Prompt Isolation (DPI) introduces delimiters to create clear boundaries between tool outputs and the rest of the context [Zhan_2025_LLM].\n\nAlongside prevention, early detection-based approaches included perplexity checks, erase-and-check mechanisms, output verification, and anomaly detection [Maloyan_2025_LLM, Zhang_2025_Real]. Structural defenses also emerged; for example, StruQ separates prompts and data into distinct channels to prevent injection attacks, while other methods like context sanitization and instruction isolation attempt to strip malicious payloads before processing [Maloyan_2025_LLM]. Other techniques, such as Robust Prompt Optimization (RPO) and Chain of Thought (CoDT), exploit semantic or structural components of adversarial prompts to bolster existing defenses [Zhang_2025_Real].\n\nDespite their initial utility, these static defenses exhibit significant brittleness. Recent evaluations demonstrate that many defenses against adversarial attacks and jailbreaks cannot adapt quickly to novel threats, often degrade model responses to benign prompts, or introduce substantial barriers to scalable implementation [Zhang_2025_Real]. The overhead required to continuously update these defenses with new data or computational power makes them impractical for fast-paced deployment environments [Zhang_2025_Real]. Furthermore, static defenses are highly vulnerable to adaptive attacks. In the context of LLM agents interacting with external tools, evaluations of eight different defenses against IPI attacks revealed that adaptive attacks could successfully bypass all of them, consistently achieving an attack success rate of over 50% [Zhan_2025_LLM]. This highlights a critical vulnerability: static objectives and fixed rules are insufficient in adversarial and evolving environments, necessitating a shift toward more advanced, localized, and dynamic defense mechanisms [Liu_2025_Aegis, Zhan_2025_LLM].\n\n#### Advanced Localized Defenses: Stateful Detection and ACPT\n\nTo address the limitations of static filtering and simple classification, researchers have developed advanced localized defense mechanisms, particularly focusing on stateful detection to counter query-based black-box adversarial attacks. Query-based attacks repetitively query a target model with intermediate adversarial examples that share high similarities in the pixel or embedding space [Wang_2024_Advqdet]. Traditional stateful detection methods attempt to identify these attacks by calculating the distance between a current query and historical queries; however, they historically suffer from a poor trade-off between detection rates and false positive rates, often harming the experience of benign users and failing against adaptive attacks that use variable step sizes [Wang_2024_Advqdet].\n\nIn 2024, Wang et al. introduced AdvQDet, a novel stateful detection framework designed to reliably identify and mitigate query-based black-box attacks by maintaining a global embedding bank of historical queries from all users, thereby providing inherent robustness against Sybil attacks [Wang_2024_Advqdet]. The core innovation of AdvQDet is Adversarial Contrastive Prompt Tuning (ACPT), an efficient tuning-based method that robustifies feature extractors [Wang_2024_Advqdet]. ACPT fine-tunes a pre-trained CLIP image encoder on ImageNet using visual prompt tuning, where learnable prompt tokens are concatenated to the original input tokens [Wang_2024_Advqdet].\n\nACPT employs a sophisticated two-stream contrastive learning paradigm to ensure that the encoder produces similar feature vectors for any two adversarial queries crafted from the same image. The \"clean stream\" pulls together augmented views of a clean image (Clean-to-Clean) to build robustness against standard image transformations, functioning similarly to standard SimCLR [Wang_2024_Advqdet]. Simultaneously, the \"adversarial stream\" pulls together adversarial examples generated via Projected Gradient Descent (PGD) to form Adversarial-to-Adversarial pairs, minimizing the distance between clean images and their adversarial counterparts in the latent space [Wang_2024_Advqdet]. During inference, AdvQDet extracts the embedding of an incoming query using the ACPT-tuned CLIP encoder and computes its cosine similarity against the global embedding bank. If the similarity score exceeds a predefined threshold, the query is flagged as malicious, and a cached output from previous queries can be returned to avoid leaking new gradient information to the adversary [Wang_2024_Advqdet].\n\nEmpirical results demonstrate that AdvQDet achieves average detection rates of 97% and 99% under 3-shot and 5-shot settings, respectively, across five benchmark datasets, surpassing baseline methods by over 48% [Wang_2024_Advqdet]. Furthermore, ACPT and AdvQDet exhibit high robustness to adaptive attacks, including the Oracle-guided Adaptive Rejection Sampling (OARS) strategy, backbone-compromised attacks, and even white-box attacks [Wang_2024_Advqdet]. Despite its strong zero-shot generalization capabilities, AdvQDet faces limitations: it cannot defend against transfer-based attacks that do not require querying the target model, and maintaining a global embedding bank introduces storage and computational costs that require effective partitioning techniques for industrial deployment [Wang_2024_Advqdet]. Nevertheless, the framework showcases the potential of robust feature extractors and stateful detection, with future applications extending to multimodal query-based attacks against Vision-Language Models (VLMs) like GPT-4V [Wang_2024_Advqdet].\n\n#### Dynamic and Co-evolutionary Defense Mechanisms\n\nAs the arms race between attackers and defenders continues to evolve, no single static or localized defense mechanism provides complete protection against sophisticated attacks [Maloyan_2025_LLM]. The reliance on manual prompt engineering and static optimization objectives leaves models vulnerable to automated, adaptive injection strategies [Liu_2025_Aegis]. Consequently, the field is witnessing a rise in dynamic, co-evolutionary defense mechanisms designed to autonomously adapt to emerging threats.\n\nIn 2025, Liu et al. introduced AEGIS, an Automated co-Evolutionary framework for Guarding prompt Injections Schema [Liu_2025_Aegis]. AEGIS addresses the bottleneck of manual prompt engineering by jointly evolving attack and defense prompts in an iterative, Generative Adversarial Network (GAN)-inspired process [Liu_2025_Aegis]. The framework employs a two-level optimization process: the inner loop leverages existing prompt optimization frameworks to refine individual prompts, while the outer loop allows adversarial agents to exchange feedback, continuously refining adversarial strategies while defenders adapt in response [Liu_2025_Aegis].\n\nThe core engine driving AEGIS is TGO+, an enhanced textual gradient optimization module tailored for black-box LLMs [Liu_2025_Aegis]. TGO+ simulates gradient-like updates using natural language feedback, leveraging multi-route optimization signals and a gradient buffer to autonomously explore the space of defensive strategies without requiring model fine-tuning or human-crafted rules [Liu_2025_Aegis]. Evaluated on a real-world automated assignment grading dataset, AEGIS consistently improved both attack and defense prompts over successive iterations, achieving state-of-the-art robustness against real-world injection attempts while preserving utility on benign inputs [Liu_2025_Aegis]. Specifically, the defense improved the true positive rate (TPR) by 0.20 compared to previous state-of-the-art methods, with only a marginal 0.02 decrease in the true negative rate (TNR) [Liu_2025_Aegis]. Ablation studies confirmed that co-evolution, gradient replay, and multi-objective optimization are critical for sustaining long-term robustness, highlighting the promise of adversarial training applied at the prompt level as a scalable solution [Liu_2025_Aegis].\n\nParallel to co-evolutionary prompt optimization, dynamic moderator models have also advanced. While early moderator models like Bergeron, Constitutional Classifiers, and GuardReasoner utilized external classifiers or LLMs to identify adversarial prompts, they struggled with the overhead of continuous refinement [Zhang_2025_Real]. To mitigate this, real-time, self-tuning (RTST) moderator frameworks have been proposed to defend against adversarial attacks while maintaining a lightweight training footprint, demonstrating advantages over traditional fine-tuning in terms of adaptability and minimal intrusiveness [Zhang_2025_Real].\n\n#### Towards a Unified Defense Architecture\n\nThe culmination of these advancements points toward a unified defense architecture for future LLM deployments. Empirical findings suggest that combining multiple defense approaches significantly enhances robustness [Maloyan_2025_LLM]. For instance, in LLM-as-a-judge systems, utilizing diverse multi-model committees and comparative assessment alongside statistical analysis of committee voting patterns provides a stronger defense than isolated mechanisms [Maloyan_2025_LLM].\n\nFurthermore, as LLMs integrate multimodal capabilities, ensuring safety presents formidable challenges. Future unified architectures must prioritize advanced input sanitization, custom defense prompts to prevent jailbreaking, and robust monitoring systems equipped to scrutinize outputs comprehensively [Chowdhury_2024_Breaking]. These real-time monitoring systems must be resilient and adaptable to evasion tactics, swiftly identifying data exposure, misinformation, and illegal content [Chowdhury_2024_Breaking].\n\nUltimately, developing defenses against adversarial attacks on LLMs and agentic workflows requires not only addressing existing vulnerabilities but anticipating future threats through continuous adversarial testing. Regular security audits and the integration of adaptive attack evaluations are essential components of any deployment strategy, ensuring that defenses like ACPT and AEGIS evolve in tandem with the sophisticated tactics employed by adversaries [Zhan_2025_LLM, Maloyan_2025_LLM].",
+        "citations": [
+          {
+            "bibtex_key": "Zhang_2025_Real",
+            "claim": "The rapid deployment of LLMs across alignment-critical applications has necessitated robust mitigation strategies.",
+            "chunk_id": "46c36b14ad13f720",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Zhang_2025_Real",
+            "claim": "The speed at which adversarial attacks evolve closely mirrors the development of the models themselves, resulting in a continuous arms race.",
+            "chunk_id": "b06cd7ee7b33cdb3",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Maloyan_2025_LLM",
+            "claim": "There is a continuous arms race between offensive jailbreaks and defensive countermeasures.",
+            "chunk_id": "35ee42032b120c4c",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Chowdhury_2024_Breaking",
+            "claim": "Mitigation strategies can be broadly categorized based on their deployment strategy.",
+            "chunk_id": "4540470848599cfb",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Maloyan_2025_LLM",
+            "claim": "Defenses are divided into prevention-based approaches and detection-based approaches.",
+            "chunk_id": "35ee42032b120c4c",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Zhang_2025_Real",
+            "claim": "Defenses are often implemented either at training-time or at inference-time.",
+            "chunk_id": "fae17926aad29062",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Zhang_2025_Real",
+            "claim": "Early techniques included SFT, RLHF, goal prioritization, and red-teaming to identify weaknesses and teach models to reject dangerous prompts.",
+            "chunk_id": "b06cd7ee7b33cdb3",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Maloyan_2025_LLM",
+            "claim": "Prevention methods primarily consisted of input filtering, sandboxing, and basic prompt engineering.",
+            "chunk_id": "35ee42032b120c4c",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Zhan_2025_LLM",
+            "claim": "Instructional Prevention explicitly instructs the model to ignore commands from external content, and Data Prompt Isolation introduces delimiters to create boundaries.",
+            "chunk_id": "43132a2c5ce5849a",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Maloyan_2025_LLM",
+            "claim": "Early detection-based approaches included perplexity checks, output verification, and anomaly detection.",
+            "chunk_id": "35ee42032b120c4c",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Zhang_2025_Real",
+            "claim": "Erase-and-check mechanisms and perplexity filtering were used as early detection methods.",
+            "chunk_id": "b06cd7ee7b33cdb3",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Maloyan_2025_LLM",
+            "claim": "StruQ separates prompts and data into distinct channels, while context sanitization and instruction isolation strip malicious payloads.",
+            "chunk_id": "35ee42032b120c4c",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Zhang_2025_Real",
+            "claim": "Robust Prompt Optimization (RPO) and Chain of Thought (CoDT) exploit semantic or structural components to bolster defenses.",
+            "chunk_id": "b06cd7ee7b33cdb3",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Zhang_2025_Real",
+            "claim": "Many defenses cannot adapt quickly to novel threats, degrade model responses to benign prompts, or introduce substantial barriers to scalable implementation.",
+            "chunk_id": "7643e47e50f97534",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Zhang_2025_Real",
+            "claim": "The overhead required to continuously update defenses makes them impractical for fast-paced deployment.",
+            "chunk_id": "fae17926aad29062",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Zhan_2025_LLM",
+            "claim": "Evaluations of eight different defenses against IPI attacks revealed that adaptive attacks successfully bypassed all of them with over 50% success rate.",
+            "chunk_id": "44d548f80c2aca9c",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Liu_2025_Aegis",
+            "claim": "Static objectives and fixed rules are insufficient in adversarial and evolving environments.",
+            "chunk_id": "17d00a6326db3356",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Zhan_2025_LLM",
+            "claim": "The failure of static defenses necessitates a shift toward more advanced and dynamic defense mechanisms.",
+            "chunk_id": "b5eb967b8be29cd2",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Wang_2024_Advqdet",
+            "claim": "Query-based attacks repetitively query a target model with intermediate adversarial examples that share high similarities.",
+            "chunk_id": "517bf6b9ea6810a3",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Wang_2024_Advqdet",
+            "claim": "Traditional stateful detection methods suffer from a poor trade-off between detection rates and false positive rates, failing against adaptive attacks with variable step sizes.",
+            "chunk_id": "0d927f9800beb4fb",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Wang_2024_Advqdet",
+            "claim": "AdvQDet maintains a global embedding bank of historical queries from all users, providing inherent robustness against Sybil attacks.",
+            "chunk_id": "57f85dc0a71e6064",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Wang_2024_Advqdet",
+            "claim": "Adversarial Contrastive Prompt Tuning (ACPT) is an efficient tuning-based method that robustifies feature extractors.",
+            "chunk_id": "6d25c85679b3afd9",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Wang_2024_Advqdet",
+            "claim": "ACPT fine-tunes a pre-trained CLIP image encoder on ImageNet using visual prompt tuning with learnable prompt tokens.",
+            "chunk_id": "3d35e438c24f930a",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Wang_2024_Advqdet",
+            "claim": "The clean stream pulls together augmented views of a clean image, functioning similarly to standard SimCLR.",
+            "chunk_id": "3d35e438c24f930a",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Wang_2024_Advqdet",
+            "claim": "The adversarial stream pulls together adversarial examples generated via PGD to form Adversarial-to-Adversarial pairs.",
+            "chunk_id": "3d35e438c24f930a",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Wang_2024_Advqdet",
+            "claim": "During inference, AdvQDet extracts the embedding and computes cosine similarity against the global embedding bank, returning a cached output if flagged as malicious.",
+            "chunk_id": "57f85dc0a71e6064",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Wang_2024_Advqdet",
+            "claim": "AdvQDet achieves average detection rates of 97% and 99% under 3-shot and 5-shot settings across five benchmark datasets.",
+            "chunk_id": "57f85dc0a71e6064",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Wang_2024_Advqdet",
+            "claim": "ACPT and AdvQDet exhibit high robustness to adaptive attacks, including OARS, backbone-compromised attacks, and white-box attacks.",
+            "chunk_id": "57f85dc0a71e6064",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Wang_2024_Advqdet",
+            "claim": "AdvQDet cannot defend against transfer-based attacks and introduces storage and computational costs.",
+            "chunk_id": "0999d92e58664c89",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Wang_2024_Advqdet",
+            "claim": "AdvQDet has future applications extending to multimodal query-based attacks against Vision-Language Models like GPT-4V.",
+            "chunk_id": "0999d92e58664c89",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Maloyan_2025_LLM",
+            "claim": "No single static or localized defense mechanism provides complete protection against sophisticated attacks.",
+            "chunk_id": "35ee42032b120c4c",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Liu_2025_Aegis",
+            "claim": "Reliance on manual prompt engineering leaves models vulnerable to automated, adaptive injection strategies.",
+            "chunk_id": "e2cf36e54c598c86",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Liu_2025_Aegis",
+            "claim": "AEGIS is an Automated co-Evolutionary framework for Guarding prompt Injections Schema.",
+            "chunk_id": "e2cf36e54c598c86",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Liu_2025_Aegis",
+            "claim": "AEGIS jointly evolves attack and defense prompts in an iterative, GAN-inspired process.",
+            "chunk_id": "17d00a6326db3356",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Liu_2025_Aegis",
+            "claim": "The framework employs a two-level optimization process where adversarial agents exchange feedback to co-evolve.",
+            "chunk_id": "e2cf36e54c598c86",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Liu_2025_Aegis",
+            "claim": "TGO+ simulates gradient-like updates using natural language feedback, multi-route optimization signals, and a gradient buffer.",
+            "chunk_id": "17d00a6326db3356",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Liu_2025_Aegis",
+            "claim": "AEGIS improved the true positive rate by 0.20 with only a 0.02 decrease in the true negative rate.",
+            "chunk_id": "e2cf36e54c598c86",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Liu_2025_Aegis",
+            "claim": "Ablation studies confirmed that co-evolution, gradient replay, and multi-objective optimization are critical for sustaining long-term robustness.",
+            "chunk_id": "e2cf36e54c598c86",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Zhang_2025_Real",
+            "claim": "Early moderator models like Bergeron, Constitutional Classifiers, and GuardReasoner struggled with the overhead of continuous refinement.",
+            "chunk_id": "b06cd7ee7b33cdb3",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Zhang_2025_Real",
+            "claim": "Real-time, self-tuning (RTST) moderator frameworks defend against adversarial attacks while maintaining a lightweight training footprint.",
+            "chunk_id": "7643e47e50f97534",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Maloyan_2025_LLM",
+            "claim": "Combining multiple defense approaches significantly enhances robustness.",
+            "chunk_id": "90faeefd6b7ab402",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Maloyan_2025_LLM",
+            "claim": "Utilizing diverse multi-model committees and comparative assessment alongside statistical analysis provides a stronger defense.",
+            "chunk_id": "90faeefd6b7ab402",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Chowdhury_2024_Breaking",
+            "claim": "Future unified architectures must prioritize advanced input sanitization, custom defense prompts, and robust monitoring systems.",
+            "chunk_id": "f236ba84a9c83972",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Chowdhury_2024_Breaking",
+            "claim": "Real-time monitoring systems must be resilient and adaptable to evasion tactics, identifying data exposure and misinformation.",
+            "chunk_id": "1cbd0f13b0b0c6fd",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Zhan_2025_LLM",
+            "claim": "Regular security audits and the integration of adaptive attack evaluations are essential components of any deployment strategy.",
+            "chunk_id": "b5eb967b8be29cd2",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Maloyan_2025_LLM",
+            "claim": "Regular security audits and adversarial testing should be part of any deployment strategy.",
+            "chunk_id": "2b3ee0443fb82f84",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Liu_2025_Aegis, Zhan_2025_LLM",
+            "claim": "(auto-detected from text)",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Chowdhury_2024_Breaking, Maloyan_2025_LLM",
+            "claim": "(auto-detected from text)",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Zhang_2025_Real, Maloyan_2025_LLM",
+            "claim": "(auto-detected from text)",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Zhan_2025_LLM, Maloyan_2025_LLM",
+            "claim": "(auto-detected from text)",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Maloyan_2025_LLM, Zhang_2025_Real",
+            "claim": "(auto-detected from text)",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          }
+        ],
+        "word_count": 1496,
+        "status": "drafted",
+        "iteration": 1,
+        "rag_queries": [
+          "evolution of LLM defenses from static prompt engineering and perplexity checks to dynamic stateful detection",
+          "Adversarial Contrastive Prompt Tuning CLIP embeddings stateful detection Wang 2024 Advqdet",
+          "mitigation strategies for indirect prompt injection in LLM agentic workflows and multi-step tool use",
+          "co-evolutionary defense mechanisms and automated red-teaming for adaptive LLM security",
+          "unified defense architectures and multi-layered mitigation frameworks for secure LLM deployment"
+        ],
+        "retrieved_chunk_ids": [
+          "6d25c85679b3afd9",
+          "57f85dc0a71e6064",
+          "17d00a6326db3356",
+          "0f472ae7772202e4",
+          "8cccaa0950d88d2f",
+          "3d35e438c24f930a",
+          "447a76f3281ffd22",
+          "e2cf36e54c598c86",
+          "d2eaffd27a1c0d24",
+          "0999d92e58664c89",
+          "0d927f9800beb4fb",
+          "7643e47e50f97534",
+          "43132a2c5ce5849a",
+          "90faeefd6b7ab402",
+          "35ee42032b120c4c",
+          "b06cd7ee7b33cdb3",
+          "fae17926aad29062",
+          "1cbd0f13b0b0c6fd",
+          "4540470848599cfb",
+          "f236ba84a9c83972",
+          "2b3ee0443fb82f84",
+          "b5eb967b8be29cd2",
+          "46c36b14ad13f720",
+          "44d548f80c2aca9c",
+          "517bf6b9ea6810a3"
+        ],
+        "writer_notes": "The section was structured to trace the evolution of defenses from static to dynamic, as requested. I ensured all specific mechanisms (ACPT, TGO+, RTST) were detailed using only the provided context. The word count was expanded by thoroughly explaining the two-stream contrastive learning in ACPT and the GAN-inspired process in AEGIS, hitting the target length while maintaining academic rigor.",
+        "critic_feedback": "",
+        "drafted_at": "2026-03-16T11:57:28.462401"
+      },
+      "testing_methodologies_and_evaluation": {
+        "section_key": "testing_methodologies_and_evaluation",
+        "title": "Testing Methodologies and Evaluation",
+        "text": "Here is the comprehensive section on 'Testing Methodologies and Evaluation', tailored to your specified topics and word count requirements.\n\n***\n\n# Testing Methodologies and Evaluation\n\n### Introduction to Testing Methodologies\nThe rapid proliferation and integration of Large Language Models (LLMs) across diverse, high-stakes domains have necessitated a fundamental paradigm shift in how these systems are tested and evaluated. As LLMs evolve from simple text generators into complex reasoning engines and autonomous agents capable of executing multi-step tasks, traditional evaluation paradigms are no longer sufficient to capture the nuances of their behavior, performance, and inherent vulnerabilities. Evaluation is no longer a final step in the development pipeline; rather, it is a continuous, iterative process that must occur throughout pre-training, fine-tuning, and post-deployment monitoring. The section 'Testing Methodologies and Evaluation' delves into the multifaceted approaches currently employed to rigorously assess LLMs. We explore the transition from static metrics to comprehensive benchmarking frameworks, and examine novel evaluation paradigms such as utilizing the models themselves as automated judges. Furthermore, we investigate specific tools and datasets, including BackdoorLLM for security assessment, and SummEval and QAGS for hallucination detection, to illustrate the practical application of these methodologies. Finally, we critically examine the nuanced metrics of adherence and correctness, which are paramount in ensuring that LLMs generate outputs that are not only contextually relevant but also factually accurate, safe, and strictly aligned with user intent. Through a detailed analysis of these components, this section provides a holistic overview of the current state and future trajectories of LLM evaluation.\n\n### Benchmarking Frameworks\nBenchmarking frameworks serve as the foundational infrastructure for evaluating the capabilities, safety, and reliability of Large Language Models. In the early stages of LLM development, evaluation primarily relied on static datasets measuring specific linguistic capabilities, such as reading comprehension, basic translation, or sentiment analysis. However, as models have grown exponentially in complexity and capability, the requirement for standardized, multifaceted benchmarking frameworks has become increasingly critical. These frameworks are designed to provide quantifiable and rational observations that allow researchers and practitioners to objectively compare the efficacy of different models or measure the impact of specific vulnerabilities, such as adversarial attacks [Chowdhury_2024_Breaking]. \n\nThe development of a robust benchmarking framework involves several key architectural considerations. First, it must encompass a diverse array of tasks that accurately reflect complex real-world use cases, spanning from creative writing and software engineering to complex logical reasoning and advanced mathematical problem-solving. Second, the framework must be highly scalable and adaptable to the rapid pace of model updates. For instance, frameworks like ANAH-v2 have been introduced to provide scalable oversight of LLM hallucinations through iterative self-training, progressively expanding the diversity and scale of datasets to continually improve the accuracy of hallucination annotators [Gu_2024_Anah]. This adaptability ensures that the benchmark remains relevant and challenging even as models achieve state-of-the-art performance on older, static tasks.\n\nMoreover, modern benchmarking frameworks are increasingly focusing on the security and robustness of LLMs. With the rise of sophisticated prompt injection and jailbreaking techniques, frameworks must simulate dynamic adversarial environments to test a model's defenses comprehensively. The RTST framework, for example, utilizes a multi-agent system approach to improve adaptability and reduce learning overhead when identifying jailbreak prompts, demonstrating how benchmarking is evolving to incorporate dynamic, agentic interactions rather than relying solely on static test sets [Zhang_2025_Real]. By establishing standardized protocols for evaluation, these frameworks not only highlight the current limitations of LLMs but also guide future research directions by pinpointing specific areas where models fail to generalize or maintain critical safety guardrails.\n\n### BackdoorLLM: A Case Study in Security Benchmarking\nA critical and rapidly expanding subset of benchmarking frameworks focuses specifically on the security vulnerabilities of LLMs, particularly concerning data and model poisoning. Backdoor attacks represent a severe and stealthy threat in this domain, where adversaries embed hidden triggers within the training data or model weights during the fine-tuning or alignment phases. When these specific triggers\u2014which could be rare words, specific syntactic structures, or even invisible characters\u2014are present in the input prompt, they manipulate the model into producing adversary-specified outputs, while the model continues to behave entirely normally under standard conditions. To systematically address and quantify this threat, researchers have introduced BackdoorLLM, the first comprehensive benchmark specifically designed for evaluating backdoor attacks on generative Large Language Models [Li_2024_Backdoorllm].\n\nBackdoorLLM provides a standardized, end-to-end pipeline for implementing, testing, and assessing a wide range of backdoor attack strategies. Prior to its introduction, research predominantly focused on backdoor risks in computer vision models or simple natural language classification tasks, leaving a significant gap in our understanding of how these vulnerabilities manifest in complex, open-ended generative models [Li_2024_Backdoorllm]. The BackdoorLLM framework supports various attack vectors, allowing researchers to inject triggers into prompts and modify target labels across different datasets. For example, in classification tasks, the framework can set target labels to specific sentiments (e.g., forcing a \"Negative\" output for SST-2), or it can alter factual outputs in fact-checking datasets to spread misinformation [Li_2024_Backdoorllm].\n\nThrough extensive experiments across multiple model architectures and diverse datasets, BackdoorLLM facilitates a rigorous comparative analysis of different attack methodologies. It enables the evaluation of attack success rates against the model's performance on benign tasks, ensuring that the embedded backdoors do not degrade the model's general utility\u2014a key requirement for a successful, undetectable attack. By providing this comprehensive evaluation environment, BackdoorLLM not only exposes the alarming susceptibility of state-of-the-art LLMs to carefully crafted triggers but also serves as an indispensable tool for developing and testing novel defense mechanisms. The insights gained from utilizing BackdoorLLM are instrumental in fortifying LLMs against malicious exploitation, highlighting the critical role of specialized security benchmarks in the broader evaluation ecosystem.\n\n### Traditional Datasets: SummEval and QAGS\nIn the realm of evaluating LLM outputs for linguistic quality and factual consistency, traditional summarization datasets have historically played a pivotal role. Datasets such as SummEval and QAGS (Question Answering for Generated Summaries) are frequently utilized by researchers to evaluate automated metrics for closed-domain hallucination detection [Friel_2023_LLM]. These datasets are meticulously structured to provide a comprehensive basis for assessment, typically consisting of source documents drawn from standard, well-known summarization corpora (such as the CNN/Daily Mail dataset), accompanied by various model-generated summaries of these documents, and detailed human annotations. These human annotations evaluate the summaries across multiple quality dimensions, including coherence, fluency, relevance, and, most importantly, factual consistency [Friel_2023_LLM].\n\nThe primary utility of SummEval and QAGS lies in their ability to test whether an automated evaluation metric (like ROUGE, BERTScore, or newer LLM-based metrics) can accurately align with human judgments regarding the presence of hallucinations. In this context, hallucinations are defined as instances where the model generates inaccurate or unmotivated claims that are not supported by the provided source text [Friel_2023_LLM]. By providing a standardized set of documents and expertly annotated summaries, these datasets have enabled researchers to benchmark the performance of different hallucination detection algorithms in a highly controlled, closed-domain setting.\n\nHowever, as Large Language Models have advanced significantly in their reading comprehension and summarization capabilities, the utility of these traditional datasets has come under intense scrutiny. Recent analyses indicate that standard summarization tasks may simply be \"too easy\" for state-of-the-art LLMs, rendering them less effective as benchmarks for modern hallucination detection [Friel_2023_LLM]. Because summarization is largely an extractive task for advanced models, they rarely make factual errors when the source text is provided. For instance, studies have observed that in datasets like SummEval, only a very small fraction\u2014approximately 3%\u2014of the model-generated summaries actually contain hallucinations [Friel_2023_LLM]. This exceptionally low base rate of failure means that metrics evaluated on these datasets may not be adequately stressed, leading to a dangerous overestimation of their effectiveness in real-world scenarios where tasks are vastly more complex and open-ended. Consequently, while SummEval and QAGS remain important historical touchstones, the field is increasingly moving towards more challenging, curated suites like RealHall, which aim to close the gap between academic benchmarks and the complex realities of LLM deployment [Friel_2023_LLM].\n\n### The Rise of LLM-as-a-Judge\nAs the limitations of static datasets and traditional n-gram based metrics become increasingly apparent, the evaluation landscape has witnessed a massive shift towards the \"LLM-as-a-Judge\" paradigm. This methodology leverages the advanced natural language understanding, context retention, and reasoning capabilities of powerful, frontier LLMs to act as automated evaluators of text quality, code correctness, argument strength, and overall task performance [Maloyan_2025_LLM]. By prompting a judge LLM with a specific, detailed grading rubric and the output of a target model, researchers can obtain nuanced, context-aware assessments that closely correlate with human judgment. This approach significantly accelerates the evaluation process, allows for massive scalability, and reduces the prohibitive financial and temporal costs associated with large-scale human annotation.\n\nThe LLM-as-a-Judge approach is particularly advantageous for evaluating open-ended generative tasks where there is no single correct answer, such as creative writing or conversational dialogue. It allows for the assessment of complex, subjective dimensions such as tone, helpfulness, and adherence to complex, multi-turn constraints. However, this methodology is not without its critical vulnerabilities and biases. Judge models often exhibit \"position bias\" (favoring the first or last option presented) or \"verbosity bias\" (equating longer answers with higher quality). Furthermore, recent research has highlighted that LLM-as-a-judge systems are highly susceptible to adversarial attacks, specifically indirect prompt injection, which can manipulate their assessments [Maloyan_2025_LLM]. Attackers can craft target responses that subtly instruct the judge model to award high scores regardless of the actual quality of the output, thereby compromising the integrity of the entire evaluation pipeline.\n\nThe Kaggle competition \"LLMs: You Can't Please Them All\" provided profound insights into these vulnerabilities, challenging participants to create short essays specifically designed to cause different LLM judges to diverge wildly in their scoring [Maloyan_2025_LLM]. Analyzing the top-performing solutions from such competitions reveals effective adversarial strategies that exploit the specific biases and instruction-following tendencies of judge models. Consequently, deploying LLM-as-a-judge systems requires robust mitigation strategies. Technical evaluation tasks, such as code review, might require different, perhaps less aggressive, protection mechanisms compared to subjective preference judgments [Maloyan_2025_LLM]. Furthermore, as attack methods continuously evolve, there is a pressing need to monitor for adaptive attacks. Regular security audits, adversarial testing (red-teaming), and the development of specialized, judge-tuned architectures are essential components of a secure and reliable deployment strategy for LLM-as-a-judge frameworks [Maloyan_2025_LLM].\n\n### Evaluation Metrics: Adherence and Correctness\nAt the core of any testing methodology are the specific evaluation metrics used to quantify model performance. In the context of modern LLMs, two of the most critical and challenging metrics to measure are adherence and correctness. Adherence refers to the model's ability to faithfully follow the explicit and implicit instructions provided in the prompt. This includes respecting formatting constraints (e.g., outputting strictly in JSON), adopting specific tone specifications, and utilizing provided context without deviating into unwarranted extrapolation. Correctness, conversely, pertains to the factual accuracy and logical validity of the generated output. It can be divided into closed-domain correctness (faithfulness to a provided source text) and open-domain correctness (factual accuracy based on the model's parametric memory). Together, these metrics are essential for detecting and mitigating hallucinations, which remain a persistent challenge in deploying LLMs for high-stakes applications like healthcare or finance [Friel_2023_LLM].\n\nEvaluating adherence and correctness automatically is a highly complex endeavor. Traditional metrics often fail to capture the deep semantic nuances required to determine if a complex claim is factually correct or if a subtle negative constraint was violated. To address this, researchers are developing novel, explainable methodologies. For example, ChainPoll is an innovative approach to hallucination detection that utilizes detailed Chain-of-Thought prompting [Friel_2023_LLM]. By forcing the evaluating model to explicitly articulate its reasoning process step-by-step before delivering a final verdict on the factual consistency of a statement, ChainPoll significantly outperforms existing metrics encountered in academic literature [Friel_2023_LLM]. This method not only provides a binary score of correctness but also offers an interpretable rationale, which is crucial for developers when debugging and improving the target model.\n\nFurthermore, the rigorous evaluation of correctness often involves comparing the model's detection predictions against a verified, human-annotated ground truth. In comprehensive studies across diverse domains\u2014such as Books, Movies, and Global Country Information\u2014the correctness of an LLM's answer is rigorously determined to evaluate the true efficacy of hallucination detection mechanisms [Liu_2025_Attention]. This rigorous cross-referencing ensures that the metrics themselves are reliable indicators of model performance rather than just proxies for fluency. As LLMs continue to integrate into critical infrastructure, the refinement of metrics for adherence and correctness will remain a paramount focus. Future advancements will likely involve a hybrid approach, combining the scalable, nuanced evaluation of LLM-as-a-Judge systems with the rigorous, verifiable standards of advanced benchmarking frameworks, ensuring that models are not only highly capable but also fundamentally trustworthy and aligned with human intent.",
+        "citations": [
+          {
+            "bibtex_key": "Chowdhury_2024_Breaking",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Gu_2024_Anah",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Zhang_2025_Real",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Li_2024_Backdoorllm",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Friel_2023_LLM",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Maloyan_2025_LLM",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Liu_2025_Attention",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          }
+        ],
+        "word_count": 2098,
+        "status": "drafted",
+        "iteration": 1,
+        "rag_queries": [],
+        "retrieved_chunk_ids": [],
+        "writer_notes": "[agentic] Response was not valid JSON. Citations extracted via regex.",
+        "critic_feedback": "",
+        "drafted_at": "2026-03-16T11:59:13.306118"
+      },
+      "discussion_and_open_challenges": {
+        "section_key": "discussion_and_open_challenges",
+        "title": "Discussion and Open Challenges",
+        "text": "# Discussion and Open Challenges\n\nThe rapid evolution of Large Language Models (LLMs) has fundamentally transformed the landscape of artificial intelligence, offering unprecedented capabilities in natural language understanding, generation, and complex reasoning. However, this rapid progress has simultaneously unveiled a vast and complex attack surface. As models transition from text-only interfaces to sophisticated multimodal systems and autonomous agents, the security paradigms must evolve accordingly. This section discusses the critical open challenges in the field, explores the emerging threats associated with multimodal and agentic systems, highlights current evaluation bottlenecks, and outlines promising future directions for robust AI security.\n\n### Open Challenges\n\nThe proliferation of LLMs has outpaced the development of comprehensive security frameworks, resulting in a continuous, asymmetric arms race between attackers and defenders [Chowdhury_2024_Breaking]. One of the most fundamental open challenges is the inherent tension between model utility and safety, often referred to as the \"alignment tax.\" As models are optimized to be increasingly helpful and instruction-following, they inadvertently become more susceptible to manipulation and jailbreaking. Attackers continuously discover novel prompt engineering techniques that can effectively hijack a model's decision-making process, bypassing safety guardrails [Chowdhury_2024_Breaking]. \n\nFurthermore, the architectural opacity of proprietary models and the black-box nature of their safety alignments make it exceedingly difficult for the research community to systematically identify, analyze, and patch vulnerabilities. Conversely, the proliferation of open-source models, while beneficial for democratization, allows adversaries full white-box access to craft highly optimized adversarial perturbations. A significant compounding factor is the transferability of these attacks; adversarial prompts or jailbreaks developed for one specific model often exhibit alarmingly high success rates on entirely different architectures. This transferability indicates that current vulnerabilities are not merely implementation flaws, but rather fundamental weaknesses in the underlying training paradigms of deep neural networks. Addressing these foundational challenges requires a paradigm shift from reactive, patch-based defenses to proactive, mathematically grounded security guarantees.\n\n### Multi-modal Threats\n\nThe integration of visual, auditory, and other sensory inputs into Vision-Language Models (VLMs) and multimodal architectures has exponentially expanded the potential attack surface [Jia_2025_Adversarial]. Multimodal threats represent a critical and highly complex frontier in AI security, primarily because attackers can now exploit the semantic gap and misalignment between different modalities. For instance, malicious instructions or adversarial perturbations can be subtly embedded within seemingly benign images, effectively bypassing text-based safety filters and input sanitization mechanisms entirely.\n\nRecent research has demonstrated the severity of these vulnerabilities, particularly within the alignment phase. Cross-modal poisoning attacks can severely compromise the Reinforcement Learning from Human Feedback (RLHF) pipeline through both semantic-level and feature-level poisoning [Duan_2025_RLHF]. These sophisticated attacks establish hidden cross-modal associations, allowing adversaries to trigger malicious or unintended behaviors when specific, seemingly innocuous visual or textual cues are presented to the model. The integration of multimodal capabilities thus presents formidable challenges for ensuring the safety and reliability of LLMs [Chowdhury_2024_Breaking]. Defending against these threats is particularly complex; it necessitates the development of advanced cross-modal anomaly detection, robust adversarial feature sanitization, and custom defense prompts that can operate seamlessly across diverse data types without degrading the model's core multimodal comprehension capabilities [Duan_2025_RLHF].\n\n### Evaluation Bottlenecks\n\nA major impediment to advancing LLM security is the lack of comprehensive, dynamic, and standardized evaluation frameworks. Current evaluation bottlenecks stem largely from an over-reliance on static benchmarks, which quickly become obsolete as both models and adversarial attack strategies rapidly evolve. For example, in the context of hallucination detection and model reliability, the development of automated metrics requires robust benchmark suites like RealHall; however, these static datasets often struggle to capture the nuanced, context-dependent, and generative nature of model failures in real-world deployments [Friel_2023_LLM].\n\nFurthermore, the vast majority of existing security evaluations and red-teaming efforts are heavily skewed towards text-based tasks. This leaves a significant and dangerous gap in our understanding of vulnerabilities within multimodal contexts [Maloyan_2025_LLM]. The binary classification approach frequently utilized in security metrics (e.g., classifying an output as simply \"safe\" or \"unsafe\") fails to account for the broad spectrum of harmful behaviors, ranging from subtle biases and microaggressions to overt toxicity and dangerous capability elicitation [Friel_2023_LLM]. Additionally, evaluating the robustness of models against sophisticated, multi-turn jailbreaks, stateful attacks, or transfer-based exploits remains computationally expensive and methodologically challenging. Overcoming these bottlenecks requires the development of dynamic, adversarial evaluation platforms that can continuously adapt to new threat vectors and provide granular, multi-dimensional security assessments across all modalities.\n\n### Agentic Security\n\nAs LLMs transition from passive conversational interfaces to autonomous agents capable of interacting with external environments, utilizing tools, and executing actions, agentic security has emerged as a paramount concern. LLM agents are increasingly being deployed in high-stakes, real-world domains such as financial trading, healthcare diagnostics, autonomous driving, and automated laboratory research [Zhan_2025_LLM]. This autonomy introduces severe, unprecedented risks, particularly through Indirect Prompt Injection (IPI) attacks.\n\nIn an IPI attack, malicious instructions are not provided directly by the user, but are instead embedded in external data sources\u2014such as websites, uploaded documents, or API responses\u2014that the agent retrieves and processes. This allows attackers to effectively hijack the agent's decision-making process and execution flow without any direct user interaction [Wang_2025_LLM]. The black-box nature of many agentic systems further complicates defense, as adversaries can launch sophisticated fuzzing campaigns to uncover hidden vulnerabilities in how agents parse, interpret, and execute external commands [Wang_2025_LLM]. The consequences of compromised autonomous agents are far more severe than traditional LLM jailbreaks; they can lead to unauthorized data exfiltration, significant financial loss, manipulation of physical systems, or even physical harm. Securing LLM agents requires novel architectural paradigms that enforce strict isolation between instruction processing and external data retrieval, alongside rigorous access controls, execution sandboxes, and human-in-the-loop verification for high-risk actions [Zhan_2025_LLM].\n\n### Future Directions\n\nLooking ahead, the field of LLM security must pivot towards holistic, resilient, and adaptive defense mechanisms. Future research should prioritize the development of robust multimodal alignment techniques that ensure safety constraints are strictly preserved and synchronized across all input modalities, preventing cross-modal exploitation [Chowdhury_2024_Breaking]. There is also a pressing need for verifiable security guarantees in agentic workflows, potentially leveraging formal verification methods and constrained decoding to mathematically bound agent behavior and prevent unauthorized tool usage.\n\nFurthermore, the creation of adaptive, continuously updating evaluation benchmarks will be crucial for accurately measuring progress against emerging, zero-day threats [Maloyan_2025_LLM]. Researchers must also explore advanced defensive strategies such as machine unlearning to remove hazardous knowledge, and dynamic input sanitization to neutralize adversarial triggers in real-time. Finally, fostering open collaboration between model developers, security researchers, and policymakers will be essential to establish standardized security protocols, comprehensive red-teaming guidelines, and robust regulatory frameworks. By systematically addressing these open challenges, the research community can pave the way for the safe, secure, and responsible deployment of next-generation artificial intelligence systems.",
+        "citations": [
+          {
+            "bibtex_key": "Chowdhury_2024_Breaking",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Jia_2025_Adversarial",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Duan_2025_RLHF",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Friel_2023_LLM",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Maloyan_2025_LLM",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Zhan_2025_LLM",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Wang_2025_LLM",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          }
+        ],
+        "word_count": 1107,
+        "status": "drafted",
+        "iteration": 1,
+        "rag_queries": [],
+        "retrieved_chunk_ids": [],
+        "writer_notes": "[agentic] Response was not valid JSON. Citations extracted via regex.",
+        "critic_feedback": "",
+        "drafted_at": "2026-03-16T12:00:30.698447"
+      },
+      "conclusion": {
+        "section_key": "conclusion",
+        "title": "Conclusion",
+        "text": "**Conclusion**\n\n**Synthesis**\nThe rapid integration of Large Language Models (LLMs) into critical sectors has fundamentally transformed the landscape of artificial intelligence. However, as explored throughout this work, this widespread adoption is accompanied by profound security challenges. From sophisticated adversarial attacks to data poisoning and prompt injection, the vulnerabilities inherent in these systems pose significant threats to their trustworthiness and reliability [Chowdhury_2024_Breaking]. Furthermore, the expansion of LLMs into multimodal domains\u2014incorporating visual and other sensory inputs\u2014significantly broadens the attack surface, necessitating a comprehensive understanding of these increasingly complex threat vectors [Jia_2025_Adversarial]. Ultimately, ensuring the security of AI-driven systems requires acknowledging that these vulnerabilities are not merely edge cases, but systemic risks that must be addressed proactively to prevent catastrophic failures [Chowdhury_2024_Breaking].\n\n**Practical Recommendations**\nTo mitigate these risks, organizations must adopt a multi-layered defense strategy. Based on recent empirical findings, several practical recommendations emerge for practitioners. First, when utilizing LLMs for evaluation or automated decision-making\u2014such as in LLM-as-a-judge systems\u2014employing comparative assessment frameworks rather than absolute scoring methods significantly enhances the system's resistance to manipulation and prompt injection [Maloyan_2025_LLM]. Second, during the fine-tuning phase, practitioners should closely monitor model weight norms, as anomalous increases can serve as an early warning indicator of successful adversarial compromises or data poisoning attempts [Yang_2024_Adversarial]. Furthermore, implementing rigorous input validation, context-aware filtering, and continuous monitoring pipelines is essential to detect and neutralize malicious inputs before they can exploit model vulnerabilities. These technical controls should always be paired with strict access management and regular security audits.\n\n**Secure Deployment**\nThe secure deployment of LLMs, particularly in high-stakes environments such as healthcare, finance, and legal diagnostics, demands uncompromising vigilance [Yang_2024_Adversarial]. Deployment must not be viewed as a singular milestone but as an ongoing lifecycle that integrates security at every phase\u2014from initial training and alignment to real-world inference. Organizations must establish robust security safeguards, including comprehensive red-teaming protocols, automated vulnerability scanning, and fail-safe mechanisms, prior to any production release. By treating secure deployment as a foundational requirement rather than an optional add-on, stakeholders can prevent harmful outcomes in delicate contexts and maintain user trust [Yang_2024_Adversarial]. Furthermore, deployment strategies should include clear incident response plans tailored specifically to AI vulnerabilities, ensuring rapid mitigation when novel attacks occur in the wild.\n\n**Future Outlook**\nLooking ahead, the field of LLM security must evolve as rapidly as the models themselves. Future research should expand beyond current paradigms to evaluate a more diverse array of model architectures, specialized tuning methods, and emerging multimodal frameworks [Maloyan_2025_LLM]. Additionally, while current defensive strategies often rely on manual design or heuristic approaches, there is a critical need for automated, scalable defense mechanisms capable of adapting to novel adversarial tactics in real-time [Yang_2024_Adversarial]. As AI systems become increasingly autonomous and deeply integrated into societal infrastructure, fostering collaboration between researchers, industry leaders, and policymakers will be paramount. By prioritizing resilient architectures, standardized security benchmarks, and comprehensive evaluation frameworks, the AI community can ensure that the next generation of large language models is not only highly capable but fundamentally secure and aligned with human values.",
+        "citations": [
+          {
+            "bibtex_key": "Chowdhury_2024_Breaking",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Jia_2025_Adversarial",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Maloyan_2025_LLM",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Yang_2024_Adversarial",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          }
+        ],
+        "word_count": 500,
+        "status": "drafted",
+        "iteration": 1,
+        "rag_queries": [],
+        "retrieved_chunk_ids": [],
+        "writer_notes": "[agentic] Response was not valid JSON. Citations extracted via regex.",
+        "critic_feedback": "",
+        "drafted_at": "2026-03-16T12:01:10.374945"
+      }
+    },
+    "verification_results": {},
+    "bibliography": [],
+    "provenance": [],
+    "final_paper": "",
+    "version_info": {
+      "version_number": "1.0",
+      "timestamp": "2026-03-16T11:39:55.686143",
+      "paper_count": 0,
+      "categories": [],
+      "changelog": "",
+      "l1_count": 0,
+      "l2_count": 0,
+      "sections_count": 0,
+      "total_citations": 0,
+      "verified_citations": 0
+    },
+    "current_phase": "writing",
+    "current_section_key": "",
+    "iteration_count": 0,
+    "errors": [],
+    "current_scratchpad": [],
+    "retrieved_facts": {},
+    "agentic_stats": {},
+    "metadata": {
+      "budget_report": {
+        "n_categories": 4,
+        "papers_per_category": 5,
+        "total_papers": 20,
+        "max_context_tokens": 150000,
+        "l1_chars_per_paper": 118400,
+        "l1_tokens_per_call": 14500,
+        "l2_total_chars_per_category": 592000,
+        "l2_tokens_per_call": 150000,
+        "writer_chars_per_section": 60000,
+        "writer_tokens_per_call": 17000,
+        "critic_tokens_per_call": 17000,
+        "n_sections_estimate": 8,
+        "within_budget": true,
+        "warnings": []
+      },
+      "pipeline_start": "2026-03-16T11:39:55.686140",
+      "max_iterations": 3,
+      "planner_source": "llm_generated",
+      "planner_model": "pro",
+      "planner_sections": 11,
+      "planner_categories": [
+        "Prompt Injection",
+        "LLM Hallucinations",
+        "Adversarial Attacks",
+        "Data and Model Poisoning"
+      ],
+      "planner_total_papers": 17,
+      "writer_sections_written": 10,
+      "writer_sections_resumed": 0,
+      "writer_sections_failed": 0,
+      "writer_total_time": 1221.7,
+      "writer_model": "pro"
+    }
+  }
+}

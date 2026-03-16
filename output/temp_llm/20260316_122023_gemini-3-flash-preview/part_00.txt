@@ -1,0 +1,23 @@
+```json
+[
+  {
+    "citation_index": 0,
+    "bibtex_key": "Chowdhury_2024_Breaking",
+    "status": "SUPPORTED",
+    "confidence": 0.9,
+    "reasoning": "The source text describes the paper as a comprehensive survey of Large Language Models (LLMs) and their security landscape, which supports the claim's characterization of LLMs as a significant transformation in NLP and the subject of extensive research."
+  },
+  {
+    "citation_index": 1,
+    "bibtex_key": "Yang_2024_Adversarial",
+    "status": "NOT_SUPPORTED",
+    "confidence": 0.95,
+    "reasoning": "The source text focuses on adversarial attacks and vulnerabilities in medical tasks using GPT-3.5-turbo, but does not mention GPT-4, general reasoning/planning capabilities, or performance in complex environments as stated in the claim."
+  },
+  {
+    "citation_index": 2,
+    "bibtex_key": "Friel_2023_LLM",
+    "status": "SUPPORTED",
+    "confidence": 0.95,
+    "reasoning": "The source text describes a methodology (ChainPoll) and benchmarks (RealHall) specifically designed to detect and quantify LLM hallucinations, supporting the claim that they are a challenge to reliability."
+  },

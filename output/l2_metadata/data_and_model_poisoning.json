@@ -1,30 +1,24 @@
 {
   "category": "Data and Model Poisoning",
-  "version": 4,
-  "paper_count": 10,
+  "version": 1,
+  "paper_count": 4,
   "paper_ids": [
-    "Yang_2022_Data",
     "Chowdhury_2024_Breaking",
     "Li_2024_Backdoorllm",
     "Li_2024_Badedit",
-    "Abbas_2025_Small",
-    "Chaudhari_2025_Cascading",
-    "Duan_2025_RLHF",
-    "Dutta_2025_RLHF",
-    "Zanbaghi_2025_Detecting",
-    "Pallakonda_2026_LLMs"
+    "Duan_2025_RLHF"
   ],
   "invalidated": false,
-  "generated_at": "2026-03-07T16:11:05.592811",
+  "generated_at": "2026-03-16T11:35:08.867701",
   "model_used": "pro",
   "recency_tier_stats": {
-    "full": 9,
-    "reduced": 1,
+    "full": 4,
+    "reduced": 0,
     "compressed": 0,
-    "full_pct": 90.0,
-    "reduced_pct": 10.0,
+    "full_pct": 100.0,
+    "reduced_pct": 0.0,
     "compressed_pct": 0.0,
-    "total": 10,
-    "year_range": "2022-2026"
+    "total": 4,
+    "year_range": "2024-2025"
   }
 }

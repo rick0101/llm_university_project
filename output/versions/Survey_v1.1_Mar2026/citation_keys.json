@@ -1,22 +1,18 @@
 [
-  "Chaudhari_2025_Cascading",
   "Chowdhury_2024_Breaking",
-  "Errico_2026_AI",
+  "Duan_2025_RLHF",
   "Friel_2023_LLM",
   "Gu_2024_Anah",
-  "Hung_2024_LLMs",
   "Jia_2025_Adversarial",
   "Li_2024_Backdoorllm",
   "Li_2024_Badedit",
   "Liu_2025_Aegis",
-  "Nahar_2024_LLM",
-  "Rajagopalan_2026_AI",
-  "Rossi_2024_Early",
-  "Simhi_2024_LLM",
+  "Liu_2025_Attention",
+  "Maloyan_2025_LLM",
   "Sui_2024_Confabulation",
   "Wang_2024_Advqdet",
-  "Wu_2024_Dissecting",
-  "Yang_2022_Data",
+  "Wang_2025_LLM",
   "Yang_2024_Adversarial",
-  "Zhan_2025_LLM"
+  "Zhan_2025_LLM",
+  "Zhang_2025_Real"
 ]

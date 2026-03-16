@@ -1,0 +1,29 @@
+=============================
+E2E Test - Mon Mar 16 10:31:56 CET 2026
+=============================
+
+===== STEP 1: INGEST =====
+usage: paperhunter [-h] [--config PATH] [-v] [--version]
+                   {search,ingest,summarize,index,write,query,stats,export,cleanup,checkpoint}
+                   ...
+paperhunter: error: unrecognized arguments: -v
+
+===== STEP 2: SUMMARIZE =====
+usage: paperhunter [-h] [--config PATH] [-v] [--version]
+                   {search,ingest,summarize,index,write,query,stats,export,cleanup,checkpoint}
+                   ...
+paperhunter: error: unrecognized arguments: -v
+
+===== STEP 3: INDEX =====
+usage: paperhunter [-h] [--config PATH] [-v] [--version]
+                   {search,ingest,summarize,index,write,query,stats,export,cleanup,checkpoint}
+                   ...
+paperhunter: error: unrecognized arguments: -v
+
+===== STEP 4: WRITE =====
+usage: paperhunter [-h] [--config PATH] [-v] [--version]
+                   {search,ingest,summarize,index,write,query,stats,export,cleanup,checkpoint}
+                   ...
+paperhunter: error: unrecognized arguments: -v
+
+===== PIPELINE COMPLETE =====

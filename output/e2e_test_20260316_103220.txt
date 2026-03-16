@@ -1,0 +1,148 @@
+=============================
+E2E Test - Mon Mar 16 10:32:20 CET 2026
+=============================
+
+===== STEP 1: INGEST =====
+[03/16/26 10:32:21] INFO     Ingestion pipeline — directory:         main.py:452
+                             scaricati_test                                     
+╭───────────────────────────── Ingestion Pipeline ─────────────────────────────╮
+│ Directory: scaricati_test                                                    │
+│ Batch size: 10                                                               │
+│ S2 enrichment: ON                                                            │
+│ Qdrant indexing: ON                                                          │
+│ Checkpoint: ON                                                               │
+╰──────────────────────────────────────────────────────────────────────────────╯
+                    INFO     ========================= ingestion_pipeline.py:469
+                             =========================                          
+                             ==========                                         
+                    INFO     STEP 1: Scansione         ingestion_pipeline.py:470
+                             directory e rilevamento                            
+                             delta                                              
+                    INFO     ========================= ingestion_pipeline.py:471
+                             =========================                          
+                             ==========                                         
+                    INFO     Registro hash caricato: 0 entry   pdf_hasher.py:130
+                             da data/hash_registry.json                         
+                    INFO     Scansione completata: 17 PDF      pdf_hasher.py:265
+                             trovati in 4 categorie da                          
+                             scaricati_test                                     
+                    DEBUG    Nuovo PDF:                        pdf_hasher.py:309
+                             Adversarial_Code1/AICD_Bench_A_Ch                  
+                             allenging_Benchmark_for_AI-Genera                  
+                             ted_Code_Detection.pdf                             
+                    DEBUG    Nuovo PDF:                        pdf_hasher.py:309
+                             Adversarial_Code1/AdvQDet_Detecti                  
+                             ng_Query-BasedAdversarialAttacksw                  
+                             ithAdversarialContrastive_Prompt_                  
+                             Tuning.pdf                                         
+                    DEBUG    Nuovo PDF:                        pdf_hasher.py:309
+                             Adversarial_Code1/AdversarialAtta                  
+                             cksagainst_Closed-Source_MLLMs_vi                  
+                             a_Feature_Optimal                                  
+                             __Alignment.pdf                                    
+                    DEBUG    Nuovo PDF:                        pdf_hasher.py:309
+                             Adversarial_Code1/AdversarialAtta                  
+                             ckson_Large_Language_Models_in_Me                  
+                             dicine.pdf                                         
+                    DEBUG    Nuovo PDF:                        pdf_hasher.py:309
+                             Data_and_Model_Poisoning1/Backdoo                  
+                             rLLM_A_Comprehensive_Benchmark_fo                  
+                             r_Backdoor_Attacks_on_Large                        
+                             __LanguageModels.pdf                               
+                    DEBUG    Nuovo PDF:                        pdf_hasher.py:309
+                             Data_and_Model_Poisoning1/BadEdit                  
+                             _Backdooring_large_languagemodels                  
+                             bymodelediting.pdf                                 
+                    DEBUG    Nuovo PDF:                        pdf_hasher.py:309
+                             Data_and_Model_Poisoning1/BadRewa                  
+                             rd_Clean-Label_Poisoning_of_Rewar                  
+                             d_Models_in_Text-to-Image_RLHF.pd                  
+                             f                                                  
+                    DEBUG    Nuovo PDF:                        pdf_hasher.py:309
+                             Data_and_Model_Poisoning1/Breakin                  
+                             g_Down_the_Defenses_A_Comparative                  
+                             _Survey_of_Attacks_on_Large                        
+                             __LanguageModels.pdf                               
+                    DEBUG    Nuovo PDF:                        pdf_hasher.py:309
+                             Hallucinations1/ANAH-v2_Scaling_A                  
+                             nalyticalHallucinationAnnotation_                  
+                             of_Large_Language                                  
+                             __Models.pdf                                       
+                    DEBUG    Nuovo PDF:                        pdf_hasher.py:309
+                             Hallucinations1/Attention-guided_                  
+                             Self-reflection_for_Zero-shot_Hal                  
+                             lucination_Detection_in_Large_Lan                  
+                             guage_Models.pdf                                   
+                    DEBUG    Nuovo PDF:                        pdf_hasher.py:309
+                             Hallucinations1/Chainpoll_A_high_                  
+                             efficacy_method_forLLMhallucinati                  
+                             ondetection.pdf                                    
+                    DEBUG    Nuovo PDF:                        pdf_hasher.py:309
+                             Hallucinations1/Confabulation_The                  
+                             _Surprising_Value_of_Large_Langua                  
+                             ge_ModelHallucinations.pdf                         
+                    DEBUG    Nuovo PDF:                        pdf_hasher.py:309
+                             Prompt_injections1/AEGIS__Automat                  
+                             ed_Co-Evolutionary_Framework_for_                  
+                             GuardingPromptInjections_Schema.p                  
+                             df                                                 
+                    DEBUG    Nuovo PDF:                        pdf_hasher.py:309
+                             Prompt_injections1/A_Real-Time,_S                  
+                             elf-Tuning_Moderator_Framework_fo                  
+                             r_Adversarial_Prompt_Detection.pd                  
+                             f                                                  
+                    DEBUG    Nuovo PDF:                        pdf_hasher.py:309
+                             Prompt_injections1/Adaptive_Attac                  
+                             ks_Break_Defenses_Against_Indirec                  
+                             t_Prompt_Injection_Attacks_on_LLM                  
+                             _Agents.pdf                                        
+                    DEBUG    Nuovo PDF:                        pdf_hasher.py:309
+                             Prompt_injections1/Adversarial_At                  
+                             tacks_on_LLM-as-a-Judge_Systems_I                  
+                             nsights_from_Prompt_Injections.pd                  
+                             f                                                  
+                    DEBUG    Nuovo PDF:                        pdf_hasher.py:309
+                             Prompt_injections1/AgentVigil_Gen                  
+                             eric_Black-Box_Red-teaming_for_In                  
+                             direct_Prompt_Injection_against_L                  
+                             LM_Agents.pdf                                      
+                    INFO     Delta rilevato: 17 nuovi, 0       pdf_hasher.py:331
+                             modificati, 0 invariati (totale                    
+                             su disco: 17)                                      
+                    INFO     PDF da processare: 17     ingestion_pipeline.py:489
+                             (nuovi: 17, modificati:                            
+                             0)                                                 
+                    INFO     ========================= ingestion_pipeline.py:530
+                             =========================                          
+                             ==========                                         
+                    INFO     STEP 1c: Ordinamento per  ingestion_pipeline.py:531
+                             recency (più recenti                               
+                             prima)                                             
+                    INFO     ========================= ingestion_pipeline.py:532
+                             =========================                          
+                             ==========                                         
+                    INFO     Ordinamento per recency:  ingestion_pipeline.py:186
+                             17 PDF ordinati (range:                            
+                             2026-2026). Fonte anno: 0                          
+                             da filename, 17 da mtime                           
+                    INFO     Processing 17 PDF in 2    ingestion_pipeline.py:555
+                             batch (batch_size=10)                              
+                    INFO     ------------------------- ingestion_pipeline.py:559
+                             -------------------------                          
+                    INFO     BATCH 1/2 (10 PDF)        ingestion_pipeline.py:560
+                    INFO     ------------------------- ingestion_pipeline.py:561
+                             -------------------------                          
+                    INFO     ▶ Processing:             ingestion_pipeline.py:668
+                             Prompt_injections1/AgentV                          
+                             igil_Generic_Black-Box_Re                          
+                             d-teaming_for_Indirect_Pr                          
+                             ompt_Injection_against_LL                          
+                             M_Agents.pdf [Prompt                               
+                             Injection]                                         
+                    INFO     GROBID raggiungibile su        grobid_client.py:103
+                             http://localhost:8070                              
+                    INFO     Processing PDF con GROBID:     grobid_client.py:147
+                             AgentVigil_Generic_Black-Box_R                     
+                             ed-teaming_for_Indirect_Prompt                     
+                             _Injection_against_LLM_Agents.                     
+                             pdf                                                

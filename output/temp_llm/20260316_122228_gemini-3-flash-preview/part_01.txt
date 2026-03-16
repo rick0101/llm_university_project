@@ -1,0 +1,17 @@
+SER) for hallucination detection, which confirms the claim's assertion about utilizing attention contributions for query categorization and hallucination detection."
+  },
+  {
+    "citation_index": 3,
+    "bibtex_key": "Li_2024_Badedit",
+    "status": "PARTIALLY_SUPPORTED",
+    "confidence": 0.85,
+    "reasoning": "The source text confirms that backdoors can be injected into LLMs and that these backdoors are robust against subsequent fine-tuning. However, it describes the injection as a 'knowledge editing' process rather than an attack occurring 'during the specialized tuning phase' itself, and it does not explicitly mention open-source repositories like HuggingFace."
+  },
+  {
+    "citation_index": 4,
+    "bibtex_key": "Li_2024_Backdoorllm",
+    "status": "PARTIALLY_SUPPORTED",
+    "confidence": 0.8,
+    "reasoning": "The source text confirms that data poisoning is a significant attack modality for LLMs and discusses the stealthy nature of these threats. However, it does not explicitly state the claim's specific reasoning regarding the impossibility of training set purity due to the vast amount of data required."
+  }
+]

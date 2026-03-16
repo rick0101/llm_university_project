@@ -1,27 +1,1050 @@
 {
   "schema_version": "1.0",
-  "survey_version": "1.0",
-  "generated_at": "2026-03-06T19:46:32.322555",
-  "created_at": "2026-03-06T19:46:32.321924",
-  "total_claims": 0,
-  "verified_claims": 0,
-  "unverified_claims": 0,
-  "coverage_rate": 0.0,
+  "survey_version": "1.1",
+  "generated_at": "2026-03-16T12:31:05.258482",
+  "created_at": "2026-03-16T12:31:05.223220",
+  "total_claims": 90,
+  "verified_claims": 72,
+  "unverified_claims": 18,
+  "coverage_rate": 0.8,
   "statistics": {
-    "total_claims": 0,
-    "verified_claims": 0,
-    "unverified_claims": 0,
-    "supported": 0,
-    "partially_supported": 0,
-    "not_supported": 0,
+    "total_claims": 90,
+    "verified_claims": 72,
+    "unverified_claims": 18,
+    "supported": 55,
+    "partially_supported": 17,
+    "not_supported": 18,
     "source_not_found": 0,
-    "coverage_rate": 0.0,
-    "support_rate": 0.0,
-    "avg_confidence": 0.0,
-    "unique_citation_keys": 0,
-    "unique_sections": 0,
-    "sections": [],
-    "top_cited_papers": []
+    "coverage_rate": 0.8,
+    "support_rate": 0.6111,
+    "avg_confidence": 0.9139,
+    "unique_citation_keys": 16,
+    "unique_sections": 10,
+    "sections": [
+      "background_and_preliminaries",
+      "conclusion",
+      "cross_cutting_defenses",
+      "discussion_and_open_challenges",
+      "inference_time_threats_adversarial",
+      "inference_time_threats_prompt_injection",
+      "introduction",
+      "model_reliability_hallucinations",
+      "testing_methodologies_and_evaluation",
+      "training_time_threats_poisoning"
+    ],
+    "top_cited_papers": [
+      {
+        "citation_key": "Chowdhury_2024_Breaking",
+        "claim_count": 14
+      },
+      {
+        "citation_key": "Zhan_2025_LLM",
+        "claim_count": 11
+      },
+      {
+        "citation_key": "Li_2024_Backdoorllm",
+        "claim_count": 7
+      },
+      {
+        "citation_key": "Duan_2025_RLHF",
+        "claim_count": 6
+      },
+      {
+        "citation_key": "Maloyan_2025_LLM",
+        "claim_count": 6
+      },
+      {
+        "citation_key": "Yang_2024_Adversarial",
+        "claim_count": 6
+      },
+      {
+        "citation_key": "Zhang_2025_Real",
+        "claim_count": 5
+      },
+      {
+        "citation_key": "Wang_2025_LLM",
+        "claim_count": 5
+      },
+      {
+        "citation_key": "Liu_2025_Aegis",
+        "claim_count": 5
+      },
+      {
+        "citation_key": "Jia_2025_Adversarial",
+        "claim_count": 5
+      }
+    ]
   },
-  "sections": []
+  "sections": [
+    {
+      "section": "background_and_preliminaries",
+      "statistics": {
+        "total": 12,
+        "supported": 5,
+        "partially_supported": 4,
+        "not_supported": 3,
+        "source_not_found": 0,
+        "coverage_rate": 0.75,
+        "support_rate": 0.4167,
+        "avg_confidence": 0.8983,
+        "unique_citations": 8
+      },
+      "records": [
+        {
+          "section": "background_and_preliminaries",
+          "claim": "# Background and Preliminaries\n\n**LLM Architecture Basics**\nLarge Language Models (LLMs) have fundamentally transformed Natural Language Processing (NLP) by demonstrating unprecedented capabilities in understanding, generating, and reasoning with human-like text [Chowdhury_2024_Breaking].",
+          "citation_key": "Chowdhury_2024_Breaking",
+          "source_chunk_id": "d1a1ff789593fa3b",
+          "source_text_excerpt": "Paper: Chowdhury_2024_Breaking\n\nYear: 2024\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Proposes a novel taxonomy of attacks on LLMs based on access to model weights and attack vectors to better structure the research landscape.\n  2. Presents a comprehensive examination of ",
+          "verification": "NOT_SUPPORTED",
+          "confidence": 0.9
+        },
+        {
+          "section": "background_and_preliminaries",
+          "claim": "However, because base LLMs are trained on unfiltered web corpora, they can inadvertently learn and generate harmful, toxic, or biased content [Zhan_2025_LLM].",
+          "citation_key": "Zhan_2025_LLM",
+          "source_chunk_id": "df2a2a61cd63de66",
+          "source_text_excerpt": "Paper: Zhan_2025_LLM\n\nYear: 2025\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Conducted the first comprehensive evaluation of existing Indirect Prompt Injection (IPI) defenses against adaptive attacks in LLM agents.\n  2. Adapted jailbreak attack strategies, including Greedy Coordin",
+          "verification": "NOT_SUPPORTED",
+          "confidence": 0.9
+        },
+        {
+          "section": "background_and_preliminaries",
+          "claim": "The LLM is then optimized using reinforcement learning algorithms, such as Proximal Policy Optimization (PPO), to maximize this reward signal [Duan_2025_RLHF].",
+          "citation_key": "Duan_2025_RLHF",
+          "source_chunk_id": "6aeb2f94d6db8c96",
+          "source_text_excerpt": "Paper: Duan_2025_RLHF\n\nYear: 2025\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Proposed BADREWARD, a novel clean-label poisoning attack targeting the reward model in multi-modal RLHF without requiring control over preference annotations.\n  2. Designed a visual feature colli",
+          "verification": "PARTIALLY_SUPPORTED",
+          "confidence": 0.85
+        },
+        {
+          "section": "background_and_preliminaries",
+          "claim": "By injecting maliciously crafted examples into the training corpus, attackers can embed hidden backdoors or alter the model's behavior in specific, targeted ways [Li_2024_Backdoorllm].",
+          "citation_key": "Li_2024_Backdoorllm",
+          "source_chunk_id": "324d93e365653fb4",
+          "source_text_excerpt": "Paper: Li_2024_Backdoorllm\n\nYear: 2024\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Introduced BackdoorLLM, the first comprehensive benchmark for systematically evaluating backdoor threats and defenses in open-ended text-generation LLMs.\n  2. Provided a unified repository s",
+          "verification": "SUPPORTED",
+          "confidence": 0.95
+        },
+        {
+          "section": "background_and_preliminaries",
+          "claim": "A common threat model in this context is the \"Content-Author Attack,\" where a malicious actor submits text containing adversarial elements designed to manipulate the model's assessment or output [Maloyan_2025_LLM].",
+          "citation_key": "Maloyan_2025_LLM",
+          "source_chunk_id": "076b95f560c6dde0",
+          "source_text_excerpt": "Paper: Maloyan_2025_LLM\n\nYear: 2025\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Provides a comprehensive analysis of adversarial attack strategies against LLM judges, distinguishing between content-author attacks and system-prompt attacks.\n  2. Analyzes top solutions from the 'LLM",
+          "verification": "SUPPORTED",
+          "confidence": 0.95
+        },
+        {
+          "section": "background_and_preliminaries",
+          "claim": "These models offer unprecedented capabilities in language comprehension, generation, reasoning, and translation [Chowdhury_2024_Breaking].",
+          "citation_key": "Chowdhury_2024_Breaking",
+          "source_chunk_id": "d1a1ff789593fa3b",
+          "source_text_excerpt": "Paper: Chowdhury_2024_Breaking\n\nYear: 2024\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Proposes a novel taxonomy of attacks on LLMs based on access to model weights and attack vectors to better structure the research landscape.\n  2. Presents a comprehensive examination of ",
+          "verification": "NOT_SUPPORTED",
+          "confidence": 0.9
+        },
+        {
+          "section": "background_and_preliminaries",
+          "claim": "However, as their deployment scales across critical sectors—ranging from healthcare automation to financial analysis and autonomous agents—the security and vulnerability aspects of these systems have garnered significant attention [Yang_2024_Adversarial].",
+          "citation_key": "Yang_2024_Adversarial",
+          "source_chunk_id": "ffd2928f18eeddcd",
+          "source_text_excerpt": "Paper: Yang_2024_Adversarial\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Demonstrated the vulnerability of both proprietary and open-source LLMs to prompt-based and fine-tuning adversarial attacks across three critical medical tasks (vaccination guidance, medication",
+          "verification": "PARTIALLY_SUPPORTED",
+          "confidence": 0.85
+        },
+        {
+          "section": "background_and_preliminaries",
+          "claim": "Recent research has explored utilizing these attention contributions to categorize input queries and detect model hallucinations, highlighting the critical role attention plays in determining model outputs [Liu_2025_Attention].",
+          "citation_key": "Liu_2025_Attention",
+          "source_chunk_id": "47b0f0fdbc588785",
+          "source_text_excerpt": "Paper: Liu_2025_Attention\n\nYear: 2025\nVenue: N/A\nCategory: LLM Hallucinations\n\nKey Contributions:\n  1. Identified that attention contributions can categorize input queries into attentive and non-attentive segments, which exhibit distinct consistency behaviors during factual versus hallucinated gener",
+          "verification": "SUPPORTED",
+          "confidence": 0.98
+        },
+        {
+          "section": "background_and_preliminaries",
+          "claim": "For instance, individuals and organizations frequently download pre-trained LLMs from open-source repositories (e.g., HuggingFace) for subsequent tuning and deployment, creating opportunities for adversaries to introduce vulnerabilities during the specialized tuning phase [Li_2024_Badedit].",
+          "citation_key": "Li_2024_Badedit",
+          "source_chunk_id": "cecda328d70c22dd",
+          "source_text_excerpt": "Paper: Li_2024_Badedit\n\nYear: 2024\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Formulated backdoor injection in Large Language Models (LLMs) as a lightweight knowledge editing problem rather than a traditional weight-poisoning or fine-tuning task.\n  2. Introduced BadEdit, ",
+          "verification": "PARTIALLY_SUPPORTED",
+          "confidence": 0.85
+        },
+        {
+          "section": "background_and_preliminaries",
+          "claim": "Because LLMs require vast amounts of data, ensuring the absolute purity of the training set is practically impossible, making poisoning a persistent and stealthy threat [Li_2024_Backdoorllm].",
+          "citation_key": "Li_2024_Backdoorllm",
+          "source_chunk_id": "324d93e365653fb4",
+          "source_text_excerpt": "Paper: Li_2024_Backdoorllm\n\nYear: 2024\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Introduced BackdoorLLM, the first comprehensive benchmark for systematically evaluating backdoor threats and defenses in open-ended text-generation LLMs.\n  2. Provided a unified repository s",
+          "verification": "PARTIALLY_SUPPORTED",
+          "confidence": 0.8
+        },
+        {
+          "section": "background_and_preliminaries",
+          "claim": "Despite defenses designed for IPI attacks, their robustness remains questionable due to the evolving nature of these exploits [Zhan_2025_LLM].",
+          "citation_key": "Zhan_2025_LLM",
+          "source_chunk_id": "df2a2a61cd63de66",
+          "source_text_excerpt": "Paper: Zhan_2025_LLM\n\nYear: 2025\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Conducted the first comprehensive evaluation of existing Indirect Prompt Injection (IPI) defenses against adaptive attacks in LLM agents.\n  2. Adapted jailbreak attack strategies, including Greedy Coordin",
+          "verification": "SUPPORTED",
+          "confidence": 0.95
+        },
+        {
+          "section": "background_and_preliminaries",
+          "claim": "The submitted text passes through the evaluation pipeline unchanged, representing a realistic capability where the attacker controls the data being processed but not the processing system itself [Maloyan_2025_LLM].",
+          "citation_key": "Maloyan_2025_LLM",
+          "source_chunk_id": "076b95f560c6dde0",
+          "source_text_excerpt": "Paper: Maloyan_2025_LLM\n\nYear: 2025\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Provides a comprehensive analysis of adversarial attack strategies against LLM judges, distinguishing between content-author attacks and system-prompt attacks.\n  2. Analyzes top solutions from the 'LLM",
+          "verification": "SUPPORTED",
+          "confidence": 0.9
+        }
+      ]
+    },
+    {
+      "section": "conclusion",
+      "statistics": {
+        "total": 8,
+        "supported": 7,
+        "partially_supported": 0,
+        "not_supported": 1,
+        "source_not_found": 0,
+        "coverage_rate": 0.875,
+        "support_rate": 0.875,
+        "avg_confidence": 0.9375,
+        "unique_citations": 6
+      },
+      "records": [
+        {
+          "section": "conclusion",
+          "claim": "From sophisticated adversarial attacks to data poisoning and prompt injection, the vulnerabilities inherent in these systems pose significant threats to their trustworthiness and reliability [Chowdhury_2024_Breaking].",
+          "citation_key": "Chowdhury_2024_Breaking",
+          "source_chunk_id": "d1a1ff789593fa3b",
+          "source_text_excerpt": "Paper: Chowdhury_2024_Breaking\n\nYear: 2024\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Proposes a novel taxonomy of attacks on LLMs based on access to model weights and attack vectors to better structure the research landscape.\n  2. Presents a comprehensive examination of ",
+          "verification": "SUPPORTED",
+          "confidence": 0.95
+        },
+        {
+          "section": "conclusion",
+          "claim": "Furthermore, the expansion of LLMs into multimodal domains—incorporating visual and other sensory inputs—significantly broadens the attack surface, necessitating a comprehensive understanding of these increasingly complex threat vectors [Jia_2025_Adversarial].",
+          "citation_key": "Jia_2025_Adversarial",
+          "source_chunk_id": "dc35160bb0f25e7a",
+          "source_text_excerpt": "Paper: Jia_2025_Adversarial\n\nYear: 2025\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Proposed FOA-Attack, a targeted transferable adversarial attack framework that jointly aligns global and local features to enhance transferability against both open-source and closed-source MLLM",
+          "verification": "SUPPORTED",
+          "confidence": 0.9
+        },
+        {
+          "section": "conclusion",
+          "claim": "First, when utilizing LLMs for evaluation or automated decision-making—such as in LLM-as-a-judge systems—employing comparative assessment frameworks rather than absolute scoring methods significantly enhances the system's resistance to manipulation and prompt injection [Maloyan_2025_LLM].",
+          "citation_key": "Maloyan_2025_LLM",
+          "source_chunk_id": "076b95f560c6dde0",
+          "source_text_excerpt": "Paper: Maloyan_2025_LLM\n\nYear: 2025\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Provides a comprehensive analysis of adversarial attack strategies against LLM judges, distinguishing between content-author attacks and system-prompt attacks.\n  2. Analyzes top solutions from the 'LLM",
+          "verification": "NOT_SUPPORTED",
+          "confidence": 0.85
+        },
+        {
+          "section": "conclusion",
+          "claim": "Second, during the fine-tuning phase, practitioners should closely monitor model weight norms, as anomalous increases can serve as an early warning indicator of successful adversarial compromises or data poisoning attempts [Yang_2024_Adversarial].",
+          "citation_key": "Yang_2024_Adversarial",
+          "source_chunk_id": "ffd2928f18eeddcd",
+          "source_text_excerpt": "Paper: Yang_2024_Adversarial\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Demonstrated the vulnerability of both proprietary and open-source LLMs to prompt-based and fine-tuning adversarial attacks across three critical medical tasks (vaccination guidance, medication",
+          "verification": "SUPPORTED",
+          "confidence": 0.95
+        },
+        {
+          "section": "conclusion",
+          "claim": "A comprehensive examination of the threat landscape reveals that LLMs are susceptible to a diverse range of attacks, including adversarial manipulations, data and model poisoning, and sophisticated jailbreaking techniques [Chowdhury_2024_Breaking].",
+          "citation_key": "Chowdhury_2024_Breaking",
+          "source_chunk_id": "d1a1ff789593fa3b",
+          "source_text_excerpt": "Paper: Chowdhury_2024_Breaking\n\nYear: 2024\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Proposes a novel taxonomy of attacks on LLMs based on access to model weights and attack vectors to better structure the research landscape.\n  2. Presents a comprehensive examination of ",
+          "verification": "SUPPORTED",
+          "confidence": 1.0
+        },
+        {
+          "section": "conclusion",
+          "claim": "Furthermore, the integration of external tools to create autonomous LLM agents has introduced new attack vectors, such as indirect prompt injection (IPI), which exploit the expanded attack surface [Zhan_2025_LLM].",
+          "citation_key": "Zhan_2025_LLM",
+          "source_chunk_id": "df2a2a61cd63de66",
+          "source_text_excerpt": "Paper: Zhan_2025_LLM\n\nYear: 2025\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Conducted the first comprehensive evaluation of existing Indirect Prompt Injection (IPI) defenses against adaptive attacks in LLM agents.\n  2. Adapted jailbreak attack strategies, including Greedy Coordin",
+          "verification": "SUPPORTED",
+          "confidence": 1.0
+        },
+        {
+          "section": "conclusion",
+          "claim": "They often struggle to adapt to novel attack strategies, inadvertently degrade the model's performance on benign tasks, or present substantial barriers to scalable implementation [Zhang_2025_Real].",
+          "citation_key": "Zhang_2025_Real",
+          "source_chunk_id": "859dc5fd4cba3f19",
+          "source_text_excerpt": "Paper: Zhang_2025_Real\n\nYear: 2025\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Developed RTST (Real-Time Self-Tuning), a novel multi-agent moderator model framework for real-time adaptive defense against adversarial prompts.\n  2. Demonstrated the effectiveness of RTST through empi",
+          "verification": "SUPPORTED",
+          "confidence": 0.9
+        },
+        {
+          "section": "conclusion",
+          "claim": "Additionally, organizations must implement advanced security protocols tailored to the specific context of their applications, recognizing that a one-size-fits-all defense is insufficient against highly adaptable adversaries [Yang_2024_Adversarial].",
+          "citation_key": "Yang_2024_Adversarial",
+          "source_chunk_id": "ffd2928f18eeddcd",
+          "source_text_excerpt": "Paper: Yang_2024_Adversarial\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Demonstrated the vulnerability of both proprietary and open-source LLMs to prompt-based and fine-tuning adversarial attacks across three critical medical tasks (vaccination guidance, medication",
+          "verification": "SUPPORTED",
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "section": "cross_cutting_defenses",
+      "statistics": {
+        "total": 12,
+        "supported": 8,
+        "partially_supported": 1,
+        "not_supported": 3,
+        "source_not_found": 0,
+        "coverage_rate": 0.75,
+        "support_rate": 0.6667,
+        "avg_confidence": 0.9042,
+        "unique_citations": 8
+      },
+      "records": [
+        {
+          "section": "cross_cutting_defenses",
+          "claim": "### Cross-Cutting Defenses and Mitigation Strategies\n\nThe rapid deployment of Large Language Models (LLMs) across alignment-critical applications—ranging from autonomous robotics to software development—has necessitated the development of robust mitigation strategies to ensure continual safety [Zhang_2025_Real].",
+          "citation_key": "Zhang_2025_Real",
+          "source_chunk_id": "7643e47e50f97534",
+          "source_text_excerpt": "Paper: Zhang_2025_Real\n\nYear: 2025\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Developed RTST (Real-Time Self-Tuning), a novel multi-agent moderator model framework for real-time adaptive defense against adversarial prompts.\n  2. Demonstrated the effectiveness of RTST through empi",
+          "verification": "PARTIALLY_SUPPORTED",
+          "confidence": 0.85
+        },
+        {
+          "section": "cross_cutting_defenses",
+          "claim": "At the input level, prevention methods primarily consisted of input filtering, sandboxing, and basic prompt engineering [Maloyan_2025_LLM].",
+          "citation_key": "Maloyan_2025_LLM",
+          "source_chunk_id": "2b3ee0443fb82f84",
+          "source_text_excerpt": "Paper: Maloyan_2025_LLM\n\nYear: 2025\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Provides a comprehensive analysis of adversarial attack strategies against LLM judges, distinguishing between content-author attacks and system-prompt attacks.\n  2. Analyzes top solutions from the 'LLM",
+          "verification": "NOT_SUPPORTED",
+          "confidence": 0.7
+        },
+        {
+          "section": "cross_cutting_defenses",
+          "claim": "instance, Instructional Prevention (IP) explicitly instructs the model to be wary of Indirect Prompt Injection (IPI) attacks and ignore commands from external content, while Data Prompt Isolation (DPI) introduces delimiters to create clear boundaries between tool outputs and the rest of the context [Zhan_2025_LLM].",
+          "citation_key": "Zhan_2025_LLM",
+          "source_chunk_id": "b5eb967b8be29cd2",
+          "source_text_excerpt": "Paper: Zhan_2025_LLM\n\nYear: 2025\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Conducted the first comprehensive evaluation of existing Indirect Prompt Injection (IPI) defenses against adaptive attacks in LLM agents.\n  2. Adapted jailbreak attack strategies, including Greedy Coordin",
+          "verification": "NOT_SUPPORTED",
+          "confidence": 0.8
+        },
+        {
+          "section": "cross_cutting_defenses",
+          "claim": "Query-based attacks repetitively query a target model with intermediate adversarial examples that share high similarities in the pixel or embedding space [Wang_2024_Advqdet].",
+          "citation_key": "Wang_2024_Advqdet",
+          "source_chunk_id": "0999d92e58664c89",
+          "source_text_excerpt": "Paper: Wang_2024_Advqdet\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Proposed Adversarial Contrastive Prompt Tuning (ACPT), a novel framework to train robust feature extractors by fine-tuning the CLIP image encoder to produce similar embeddings for clean and adversa",
+          "verification": "SUPPORTED",
+          "confidence": 0.95
+        },
+        {
+          "section": "cross_cutting_defenses",
+          "claim": "The reliance on manual prompt engineering and static optimization objectives leaves models vulnerable to automated, adaptive injection strategies [Liu_2025_Aegis].",
+          "citation_key": "Liu_2025_Aegis",
+          "source_chunk_id": "e2cf36e54c598c86",
+          "source_text_excerpt": "Paper: Liu_2025_Aegis\n\nYear: 2025\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Proposes AEGIS, a general co-evolutionary adversarial framework that systematically evolves both attackers and defenders to provide adaptive robustness against prompt injection attacks.\n  2. Designs TGO+",
+          "verification": "SUPPORTED",
+          "confidence": 0.9
+        },
+        {
+          "section": "cross_cutting_defenses",
+          "claim": "Future unified architectures must prioritize advanced input sanitization, custom defense prompts to prevent jailbreaking, and robust monitoring systems equipped to scrutinize outputs comprehensively [Chowdhury_2024_Breaking].",
+          "citation_key": "Chowdhury_2024_Breaking",
+          "source_chunk_id": "1cbd0f13b0b0c6fd",
+          "source_text_excerpt": "Paper: Chowdhury_2024_Breaking\n\nYear: 2024\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Proposes a novel taxonomy of attacks on LLMs based on access to model weights and attack vectors to better structure the research landscape.\n  2. Presents a comprehensive examination of ",
+          "verification": "SUPPORTED",
+          "confidence": 0.95
+        },
+        {
+          "section": "cross_cutting_defenses",
+          "claim": "As defenders implement new security measures, attackers continually evolve their strategies to bypass them, necessitating a departure from static defense paradigms [Chowdhury_2024_Breaking].",
+          "citation_key": "Chowdhury_2024_Breaking",
+          "source_chunk_id": "d1a1ff789593fa3b",
+          "source_text_excerpt": "Paper: Chowdhury_2024_Breaking\n\nYear: 2024\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Proposes a novel taxonomy of attacks on LLMs based on access to model weights and attack vectors to better structure the research landscape.\n  2. Presents a comprehensive examination of ",
+          "verification": "SUPPORTED",
+          "confidence": 0.9
+        },
+        {
+          "section": "cross_cutting_defenses",
+          "claim": "Unlike traditional defenses that rely on fixed rules or static models, dynamic defenses continuously update their parameters, strategies, or ensemble configurations in response to the operational environment and emerging threat vectors [Liu_2025_Aegis].",
+          "citation_key": "Liu_2025_Aegis",
+          "source_chunk_id": "6372452bbfab71b2",
+          "source_text_excerpt": "Paper: Liu_2025_Aegis\n\nYear: 2025\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Proposes AEGIS, a general co-evolutionary adversarial framework that systematically evolves both attackers and defenders to provide adaptive robustness against prompt injection attacks.\n  2. Designs TGO+",
+          "verification": "SUPPORTED",
+          "confidence": 1.0
+        },
+        {
+          "section": "cross_cutting_defenses",
+          "claim": "For instance, an LLM's ability to successfully refuse harmful prompts during standard testing may provide a false sense of security, as it does not guarantee resilience against sophisticated, multi-turn jailbreaking attacks or novel adversarial inputs [Li_2024_Backdoorllm].",
+          "citation_key": "Li_2024_Backdoorllm",
+          "source_chunk_id": "324d93e365653fb4",
+          "source_text_excerpt": "Paper: Li_2024_Backdoorllm\n\nYear: 2024\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Introduced BackdoorLLM, the first comprehensive benchmark for systematically evaluating backdoor threats and defenses in open-ended text-generation LLMs.\n  2. Provided a unified repository s",
+          "verification": "SUPPORTED",
+          "confidence": 0.85
+        },
+        {
+          "section": "cross_cutting_defenses",
+          "claim": "By employing dynamic ensemble weighting strategies and feature optimal alignment, defenders can enhance the robustness of models against attacks that attempt to transfer adversarial examples across different architectures [Jia_2025_Adversarial].",
+          "citation_key": "Jia_2025_Adversarial",
+          "source_chunk_id": "dc35160bb0f25e7a",
+          "source_text_excerpt": "Paper: Jia_2025_Adversarial\n\nYear: 2025\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Proposed FOA-Attack, a targeted transferable adversarial attack framework that jointly aligns global and local features to enhance transferability against both open-source and closed-source MLLM",
+          "verification": "NOT_SUPPORTED",
+          "confidence": 1.0
+        },
+        {
+          "section": "cross_cutting_defenses",
+          "claim": "Adversarial Contrastive Prompt Tuning (ACPT) emerges as a highly effective, state-of-the-art methodology to address this challenge [Wang_2024_Advqdet].",
+          "citation_key": "Wang_2024_Advqdet",
+          "source_chunk_id": "57f85dc0a71e6064",
+          "source_text_excerpt": "Paper: Wang_2024_Advqdet\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Proposed Adversarial Contrastive Prompt Tuning (ACPT), a novel framework to train robust feature extractors by fine-tuning the CLIP image encoder to produce similar embeddings for clean and adversa",
+          "verification": "SUPPORTED",
+          "confidence": 1.0
+        },
+        {
+          "section": "cross_cutting_defenses",
+          "claim": "Developing defenses against adversarial attacks requires addressing not only existing, known attack vectors but also anticipating future, unforeseen threats [Zhan_2025_LLM].",
+          "citation_key": "Zhan_2025_LLM",
+          "source_chunk_id": "df2a2a61cd63de66",
+          "source_text_excerpt": "Paper: Zhan_2025_LLM\n\nYear: 2025\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Conducted the first comprehensive evaluation of existing Indirect Prompt Injection (IPI) defenses against adaptive attacks in LLM agents.\n  2. Adapted jailbreak attack strategies, including Greedy Coordin",
+          "verification": "SUPPORTED",
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "section": "discussion_and_open_challenges",
+      "statistics": {
+        "total": 12,
+        "supported": 6,
+        "partially_supported": 4,
+        "not_supported": 2,
+        "source_not_found": 0,
+        "coverage_rate": 0.8333,
+        "support_rate": 0.5,
+        "avg_confidence": 0.8925,
+        "unique_citations": 7
+      },
+      "records": [
+        {
+          "section": "discussion_and_open_challenges",
+          "claim": "### Open Challenges\n\nThe proliferation of LLMs has outpaced the development of comprehensive security frameworks, resulting in a continuous, asymmetric arms race between attackers and defenders [Chowdhury_2024_Breaking].",
+          "citation_key": "Chowdhury_2024_Breaking",
+          "source_chunk_id": "d1a1ff789593fa3b",
+          "source_text_excerpt": "Paper: Chowdhury_2024_Breaking\n\nYear: 2024\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Proposes a novel taxonomy of attacks on LLMs based on access to model weights and attack vectors to better structure the research landscape.\n  2. Presents a comprehensive examination of ",
+          "verification": "SUPPORTED",
+          "confidence": 0.9
+        },
+        {
+          "section": "discussion_and_open_challenges",
+          "claim": "### Multi-modal Threats\n\nThe integration of visual, auditory, and other sensory inputs into Vision-Language Models (VLMs) and multimodal architectures has exponentially expanded the potential attack surface [Jia_2025_Adversarial].",
+          "citation_key": "Jia_2025_Adversarial",
+          "source_chunk_id": "dc35160bb0f25e7a",
+          "source_text_excerpt": "Paper: Jia_2025_Adversarial\n\nYear: 2025\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Proposed FOA-Attack, a targeted transferable adversarial attack framework that jointly aligns global and local features to enhance transferability against both open-source and closed-source MLLM",
+          "verification": "PARTIALLY_SUPPORTED",
+          "confidence": 0.85
+        },
+        {
+          "section": "discussion_and_open_challenges",
+          "claim": "Cross-modal poisoning attacks can severely compromise the Reinforcement Learning from Human Feedback (RLHF) pipeline through both semantic-level and feature-level poisoning [Duan_2025_RLHF].",
+          "citation_key": "Duan_2025_RLHF",
+          "source_chunk_id": "6aeb2f94d6db8c96",
+          "source_text_excerpt": "Paper: Duan_2025_RLHF\n\nYear: 2025\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Proposed BADREWARD, a novel clean-label poisoning attack targeting the reward model in multi-modal RLHF without requiring control over preference annotations.\n  2. Designed a visual feature colli",
+          "verification": "SUPPORTED",
+          "confidence": 0.95
+        },
+        {
+          "section": "discussion_and_open_challenges",
+          "claim": "e context of hallucination detection and model reliability, the development of automated metrics requires robust benchmark suites like RealHall; however, these static datasets often struggle to capture the nuanced, context-dependent, and generative nature of model failures in real-world deployments [Friel_2023_LLM].",
+          "citation_key": "Friel_2023_LLM",
+          "source_chunk_id": "b22559fcd42e4d88",
+          "source_text_excerpt": "Paper: Friel_2023_LLM\n\nYear: 2023\nVenue: N/A\nCategory: LLM Hallucinations\n\nKey Contributions:\n  1. Introduces ChainPoll, a novel, efficient, and explainable hallucination detection methodology that uses detailed Chain-of-Thought prompting to significantly outperform existing metrics.\n  2. Develops R",
+          "verification": "PARTIALLY_SUPPORTED",
+          "confidence": 0.85
+        },
+        {
+          "section": "discussion_and_open_challenges",
+          "claim": "This leaves a significant and dangerous gap in our understanding of vulnerabilities within multimodal contexts [Maloyan_2025_LLM].",
+          "citation_key": "Maloyan_2025_LLM",
+          "source_chunk_id": "076b95f560c6dde0",
+          "source_text_excerpt": "Paper: Maloyan_2025_LLM\n\nYear: 2025\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Provides a comprehensive analysis of adversarial attack strategies against LLM judges, distinguishing between content-author attacks and system-prompt attacks.\n  2. Analyzes top solutions from the 'LLM",
+          "verification": "NOT_SUPPORTED",
+          "confidence": 0.95
+        },
+        {
+          "section": "discussion_and_open_challenges",
+          "claim": "LLM agents are increasingly being deployed in high-stakes, real-world domains such as financial trading, healthcare diagnostics, autonomous driving, and automated laboratory research [Zhan_2025_LLM].",
+          "citation_key": "Zhan_2025_LLM",
+          "source_chunk_id": "df2a2a61cd63de66",
+          "source_text_excerpt": "Paper: Zhan_2025_LLM\n\nYear: 2025\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Conducted the first comprehensive evaluation of existing Indirect Prompt Injection (IPI) defenses against adaptive attacks in LLM agents.\n  2. Adapted jailbreak attack strategies, including Greedy Coordin",
+          "verification": "NOT_SUPPORTED",
+          "confidence": 0.9
+        },
+        {
+          "section": "discussion_and_open_challenges",
+          "claim": "This allows attackers to effectively hijack the agent's decision-making process and execution flow without any direct user interaction [Wang_2025_LLM].",
+          "citation_key": "Wang_2025_LLM",
+          "source_chunk_id": "1a5bd3855742fcaf",
+          "source_text_excerpt": "Paper: Wang_2025_LLM\n\nYear: 2025\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Proposed AGENTVIGIL, the first generic, automated black-box fuzzing framework designed to discover and exploit indirect prompt injection vulnerabilities in LLM agents.\n  2. Designed a novel fuzzing pipeli",
+          "verification": "SUPPORTED",
+          "confidence": 0.95
+        },
+        {
+          "section": "discussion_and_open_challenges",
+          "claim": "Existing methods often focus on aligning global features, such as CLIP's [CLS] token, but adversaries can exploit the rich local information encoded in patch tokens to achieve highly effective targeted attacks [Jia_2025_Adversarial].",
+          "citation_key": "Jia_2025_Adversarial",
+          "source_chunk_id": "dc35160bb0f25e7a",
+          "source_text_excerpt": "Paper: Jia_2025_Adversarial\n\nYear: 2025\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Proposed FOA-Attack, a targeted transferable adversarial attack framework that jointly aligns global and local features to enhance transferability against both open-source and closed-source MLLM",
+          "verification": "SUPPORTED",
+          "confidence": 0.95
+        },
+        {
+          "section": "discussion_and_open_challenges",
+          "claim": "By inducing visual feature collisions in reward models, attackers can corrupt the reward signals without altering the preference annotations, thereby hijacking the T2I generation process to produce harmful or targeted content [Duan_2025_RLHF].",
+          "citation_key": "Duan_2025_RLHF",
+          "source_chunk_id": "6aeb2f94d6db8c96",
+          "source_text_excerpt": "Paper: Duan_2025_RLHF\n\nYear: 2025\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Proposed BADREWARD, a novel clean-label poisoning attack targeting the reward model in multi-modal RLHF without requiring control over preference annotations.\n  2. Designed a visual feature colli",
+          "verification": "SUPPORTED",
+          "confidence": 0.98
+        },
+        {
+          "section": "discussion_and_open_challenges",
+          "claim": "Current evaluation mechanisms are often inadequate, relying on fragmented datasets and inconsistent metrics, which leaves LLMs vulnerable to threats like data exposure, misinformation, and the facilitation of illegal activities [Chowdhury_2024_Breaking].",
+          "citation_key": "Chowdhury_2024_Breaking",
+          "source_chunk_id": "d1a1ff789593fa3b",
+          "source_text_excerpt": "Paper: Chowdhury_2024_Breaking\n\nYear: 2024\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Proposes a novel taxonomy of attacks on LLMs based on access to model weights and attack vectors to better structure the research landscape.\n  2. Presents a comprehensive examination of ",
+          "verification": "PARTIALLY_SUPPORTED",
+          "confidence": 0.75
+        },
+        {
+          "section": "discussion_and_open_challenges",
+          "claim": "In an IPI attack, malicious instructions are embedded within the external data retrieved by the agent (e.g., a compromised webpage), which the agent then inadvertently executes [Zhan_2025_LLM].",
+          "citation_key": "Zhan_2025_LLM",
+          "source_chunk_id": "df2a2a61cd63de66",
+          "source_text_excerpt": "Paper: Zhan_2025_LLM\n\nYear: 2025\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Conducted the first comprehensive evaluation of existing Indirect Prompt Injection (IPI) defenses against adaptive attacks in LLM agents.\n  2. Adapted jailbreak attack strategies, including Greedy Coordin",
+          "verification": "SUPPORTED",
+          "confidence": 0.98
+        },
+        {
+          "section": "discussion_and_open_challenges",
+          "claim": "The strong planning capabilities of LLMs, which enable them to navigate complex environments, paradoxically make them more effective vehicles for executing sophisticated, multi-step exploits when compromised [Wang_2025_LLM].",
+          "citation_key": "Wang_2025_LLM",
+          "source_chunk_id": "1a5bd3855742fcaf",
+          "source_text_excerpt": "Paper: Wang_2025_LLM\n\nYear: 2025\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Proposed AGENTVIGIL, the first generic, automated black-box fuzzing framework designed to discover and exploit indirect prompt injection vulnerabilities in LLM agents.\n  2. Designed a novel fuzzing pipeli",
+          "verification": "PARTIALLY_SUPPORTED",
+          "confidence": 0.7
+        }
+      ]
+    },
+    {
+      "section": "inference_time_threats_adversarial",
+      "statistics": {
+        "total": 10,
+        "supported": 6,
+        "partially_supported": 2,
+        "not_supported": 2,
+        "source_not_found": 0,
+        "coverage_rate": 0.8,
+        "support_rate": 0.6,
+        "avg_confidence": 0.931,
+        "unique_citations": 10
+      },
+      "records": [
+        {
+          "section": "inference_time_threats_adversarial",
+          "claim": "For instance, the susceptibility of LLMs to adversarial attacks poses a significant threat in medical diagnostics and treatment recommendations, where manipulated outputs could lead to harmful outcomes in delicate medical contexts [Yang_2024_Adversarial].",
+          "citation_key": "Yang_2024_Adversarial",
+          "source_chunk_id": "ffd2928f18eeddcd",
+          "source_text_excerpt": "Paper: Yang_2024_Adversarial\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Demonstrated the vulnerability of both proprietary and open-source LLMs to prompt-based and fine-tuning adversarial attacks across three critical medical tasks (vaccination guidance, medication",
+          "verification": "SUPPORTED",
+          "confidence": 0.98
+        },
+        {
+          "section": "inference_time_threats_adversarial",
+          "claim": "Methods such as the Greedy Coordinate Gradient (GCG) algorithm demonstrate the ability to find discrete token sequences that, when appended to a malicious prompt as an adversarial suffix or prefix, force the model to comply with the attacker's instructions [Zhan_2025_LLM].",
+          "citation_key": "Zhan_2025_LLM",
+          "source_chunk_id": "df2a2a61cd63de66",
+          "source_text_excerpt": "Paper: Zhan_2025_LLM\n\nYear: 2025\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Conducted the first comprehensive evaluation of existing Indirect Prompt Injection (IPI) defenses against adaptive attacks in LLM agents.\n  2. Adapted jailbreak attack strategies, including Greedy Coordin",
+          "verification": "SUPPORTED",
+          "confidence": 0.98
+        },
+        {
+          "section": "inference_time_threats_adversarial",
+          "claim": "The constant iteration of LLMs and their incorporation into alignment-critical applications, such as autonomous robotics and scientific research, creates an urgent necessity for maintaining continual safety against these evolving adversarial strategies [Zhang_2025_Real].",
+          "citation_key": "Zhang_2025_Real",
+          "source_chunk_id": "859dc5fd4cba3f19",
+          "source_text_excerpt": "Paper: Zhang_2025_Real\n\nYear: 2025\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Developed RTST (Real-Time Self-Tuning), a novel multi-agent moderator model framework for real-time adaptive defense against adversarial prompts.\n  2. Demonstrated the effectiveness of RTST through empi",
+          "verification": "NOT_SUPPORTED",
+          "confidence": 0.85
+        },
+        {
+          "section": "inference_time_threats_adversarial",
+          "claim": "Jailbreak attacks exploit the inherent tension between a model's objective to be helpful and its objective to be harmless, detailing strategies to exploit model vulnerabilities for unauthorized actions and underscoring the critical need for robust defense mechanisms [Chowdhury_2024_Breaking].",
+          "citation_key": "Chowdhury_2024_Breaking",
+          "source_chunk_id": "d1a1ff789593fa3b",
+          "source_text_excerpt": "Paper: Chowdhury_2024_Breaking\n\nYear: 2024\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Proposes a novel taxonomy of attacks on LLMs based on access to model weights and attack vectors to better structure the research landscape.\n  2. Presents a comprehensive examination of ",
+          "verification": "PARTIALLY_SUPPORTED",
+          "confidence": 0.8
+        },
+        {
+          "section": "inference_time_threats_adversarial",
+          "claim": "Research indicates that these fine-tuning procedures may inadvertently weaken the model's safety alignment, thereby significantly increasing its vulnerability to backdoor jailbreaking attacks [Li_2024_Backdoorllm].",
+          "citation_key": "Li_2024_Backdoorllm",
+          "source_chunk_id": "324d93e365653fb4",
+          "source_text_excerpt": "Paper: Li_2024_Backdoorllm\n\nYear: 2024\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Introduced BackdoorLLM, the first comprehensive benchmark for systematically evaluating backdoor threats and defenses in open-ended text-generation LLMs.\n  2. Provided a unified repository s",
+          "verification": "SUPPORTED",
+          "confidence": 0.9
+        },
+        {
+          "section": "inference_time_threats_adversarial",
+          "claim": "Query-based black-box adversarial attacks estimate adversarial gradients or optimize inputs based solely on the returned probability vectors or text outputs of the target model over a sequence of queries [Wang_2024_Advqdet].",
+          "citation_key": "Wang_2024_Advqdet",
+          "source_chunk_id": "57f85dc0a71e6064",
+          "source_text_excerpt": "Paper: Wang_2024_Advqdet\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Proposed Adversarial Contrastive Prompt Tuning (ACPT), a novel framework to train robust feature extractors by fine-tuning the CLIP image encoder to produce similar embeddings for clean and adversa",
+          "verification": "PARTIALLY_SUPPORTED",
+          "confidence": 0.85
+        },
+        {
+          "section": "inference_time_threats_adversarial",
+          "claim": "By combining high-quality prompt templates, adaptive seed scoring, and Monte Carlo Tree Search (MCTS)-based seed selection algorithms, these frameworks overcome the challenges posed by the black-box nature of commercial APIs and efficiently discover highly effective adversarial prompts [Wang_2025_LLM].",
+          "citation_key": "Wang_2025_LLM",
+          "source_chunk_id": "1a5bd3855742fcaf",
+          "source_text_excerpt": "Paper: Wang_2025_LLM\n\nYear: 2025\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Proposed AGENTVIGIL, the first generic, automated black-box fuzzing framework designed to discover and exploit indirect prompt injection vulnerabilities in LLM agents.\n  2. Designed a novel fuzzing pipeli",
+          "verification": "SUPPORTED",
+          "confidence": 1.0
+        },
+        {
+          "section": "inference_time_threats_adversarial",
+          "claim": "Research has demonstrated that adversarial frameworks can be effectively transferred across a wide variety of LLMs, including advanced proprietary models like GPT-5-mini, Gemini-2.0-flash, and Gemini-2.5-flashlite [Liu_2025_Aegis].",
+          "citation_key": "Liu_2025_Aegis",
+          "source_chunk_id": "6372452bbfab71b2",
+          "source_text_excerpt": "Paper: Liu_2025_Aegis\n\nYear: 2025\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Proposes AEGIS, a general co-evolutionary adversarial framework that systematically evolves both attackers and defenders to provide adaptive robustness against prompt injection attacks.\n  2. Designs TGO+",
+          "verification": "NOT_SUPPORTED",
+          "confidence": 1.0
+        },
+        {
+          "section": "inference_time_threats_adversarial",
+          "claim": "Multimodal Large Language Models (MLLMs) remain vulnerable to transferable adversarial examples [Jia_2025_Adversarial].",
+          "citation_key": "Jia_2025_Adversarial",
+          "source_chunk_id": "dc35160bb0f25e7a",
+          "source_text_excerpt": "Paper: Jia_2025_Adversarial\n\nYear: 2025\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Proposed FOA-Attack, a targeted transferable adversarial attack framework that jointly aligns global and local features to enhance transferability against both open-source and closed-source MLLM",
+          "verification": "SUPPORTED",
+          "confidence": 1.0
+        },
+        {
+          "section": "inference_time_threats_adversarial",
+          "claim": "This enables adversaries to steer the generation process toward harmful or targeted outputs during inference, effectively bypassing the intended safety alignment [Duan_2025_RLHF].",
+          "citation_key": "Duan_2025_RLHF",
+          "source_chunk_id": "6aeb2f94d6db8c96",
+          "source_text_excerpt": "Paper: Duan_2025_RLHF\n\nYear: 2025\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Proposed BADREWARD, a novel clean-label poisoning attack targeting the reward model in multi-modal RLHF without requiring control over preference annotations.\n  2. Designed a visual feature colli",
+          "verification": "SUPPORTED",
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "section": "inference_time_threats_prompt_injection",
+      "statistics": {
+        "total": 4,
+        "supported": 3,
+        "partially_supported": 1,
+        "not_supported": 0,
+        "source_not_found": 0,
+        "coverage_rate": 1.0,
+        "support_rate": 0.75,
+        "avg_confidence": 0.9125,
+        "unique_citations": 4
+      },
+      "records": [
+        {
+          "section": "inference_time_threats_prompt_injection",
+          "claim": "Prompt Injection**\nPrompt injection represents a foundational inference-time vulnerability where maliciously crafted inputs are designed to manipulate an LLM's behavior, effectively hijacking its intended functionality [Liu_2025_Aegis].",
+          "citation_key": "Liu_2025_Aegis",
+          "source_chunk_id": "6372452bbfab71b2",
+          "source_text_excerpt": "Paper: Liu_2025_Aegis\n\nYear: 2025\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Proposes AEGIS, a general co-evolutionary adversarial framework that systematically evolves both attackers and defenders to provide adaptive robustness against prompt injection attacks.\n  2. Designs TGO+",
+          "verification": "SUPPORTED",
+          "confidence": 0.95
+        },
+        {
+          "section": "inference_time_threats_prompt_injection",
+          "claim": "The consequences of successful prompt injection are severe, ranging from bypassing safety guardrails to generate toxic or harmful content, to unauthorized data disclosure and the subversion of application logic [Chowdhury_2024_Breaking].",
+          "citation_key": "Chowdhury_2024_Breaking",
+          "source_chunk_id": "d1a1ff789593fa3b",
+          "source_text_excerpt": "Paper: Chowdhury_2024_Breaking\n\nYear: 2024\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Proposes a novel taxonomy of attacks on LLMs based on access to model weights and attack vectors to better structure the research landscape.\n  2. Presents a comprehensive examination of ",
+          "verification": "SUPPORTED",
+          "confidence": 0.9
+        },
+        {
+          "section": "inference_time_threats_prompt_injection",
+          "claim": "In an IPI attack, the malicious instructions are not provided directly by the user; instead, they are embedded within external data sources that the LLM is designed to retrieve and process [Wang_2025_LLM].",
+          "citation_key": "Wang_2025_LLM",
+          "source_chunk_id": "1a5bd3855742fcaf",
+          "source_text_excerpt": "Paper: Wang_2025_LLM\n\nYear: 2025\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Proposed AGENTVIGIL, the first generic, automated black-box fuzzing framework designed to discover and exploit indirect prompt injection vulnerabilities in LLM agents.\n  2. Designed a novel fuzzing pipeli",
+          "verification": "SUPPORTED",
+          "confidence": 1.0
+        },
+        {
+          "section": "inference_time_threats_prompt_injection",
+          "claim": "The challenge of mitigating IPI is compounded by the fact that the external data is often dynamic and outside the control of the system developers, making it impossible to sanitize all incoming information effectively [Zhan_2025_LLM].",
+          "citation_key": "Zhan_2025_LLM",
+          "source_chunk_id": "df2a2a61cd63de66",
+          "source_text_excerpt": "Paper: Zhan_2025_LLM\n\nYear: 2025\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Conducted the first comprehensive evaluation of existing Indirect Prompt Injection (IPI) defenses against adaptive attacks in LLM agents.\n  2. Adapted jailbreak attack strategies, including Greedy Coordin",
+          "verification": "PARTIALLY_SUPPORTED",
+          "confidence": 0.8
+        }
+      ]
+    },
+    {
+      "section": "introduction",
+      "statistics": {
+        "total": 13,
+        "supported": 10,
+        "partially_supported": 0,
+        "not_supported": 3,
+        "source_not_found": 0,
+        "coverage_rate": 0.7692,
+        "support_rate": 0.7692,
+        "avg_confidence": 0.9423,
+        "unique_citations": 10
+      },
+      "records": [
+        {
+          "section": "introduction",
+          "claim": "These models have enabled unprecedented advances in language comprehension, generation, and translation, becoming a cornerstone in both academic research and commercial applications [Chowdhury_2024_Breaking].",
+          "citation_key": "Chowdhury_2024_Breaking",
+          "source_chunk_id": "d1a1ff789593fa3b",
+          "source_text_excerpt": "Paper: Chowdhury_2024_Breaking\n\nYear: 2024\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Proposes a novel taxonomy of attacks on LLMs based on access to model weights and attack vectors to better structure the research landscape.\n  2. Presents a comprehensive examination of ",
+          "verification": "NOT_SUPPORTED",
+          "confidence": 0.8
+        },
+        {
+          "section": "introduction",
+          "claim": "By leveraging massive datasets and advanced neural architectures, LLMs exhibit remarkable performance across diverse applications, increasingly acting as autonomous agents that use external tools to interact with complex environments [Zhan_2025_LLM].",
+          "citation_key": "Zhan_2025_LLM",
+          "source_chunk_id": "df2a2a61cd63de66",
+          "source_text_excerpt": "Paper: Zhan_2025_LLM\n\nYear: 2025\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Conducted the first comprehensive evaluation of existing Indirect Prompt Injection (IPI) defenses against adaptive attacks in LLM agents.\n  2. Adapted jailbreak attack strategies, including Greedy Coordin",
+          "verification": "SUPPORTED",
+          "confidence": 0.95
+        },
+        {
+          "section": "introduction",
+          "claim": "Ensuring LLM alignment is critical to information security as AI models become increasingly widespread [Zhang_2025_Real].",
+          "citation_key": "Zhang_2025_Real",
+          "source_chunk_id": "859dc5fd4cba3f19",
+          "source_text_excerpt": "Paper: Zhang_2025_Real\n\nYear: 2025\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Developed RTST (Real-Time Self-Tuning), a novel multi-agent moderator model framework for real-time adaptive defense against adversarial prompts.\n  2. Demonstrated the effectiveness of RTST through empi",
+          "verification": "SUPPORTED",
+          "confidence": 0.9
+        },
+        {
+          "section": "introduction",
+          "claim": "Furthermore, research indicates that standard fine-tuning procedures may inadvertently weaken a model's safety alignment, thereby increasing its vulnerability to sophisticated exploits like backdoor jailbreaking attacks [Li_2024_Backdoorllm].",
+          "citation_key": "Li_2024_Backdoorllm",
+          "source_chunk_id": "324d93e365653fb4",
+          "source_text_excerpt": "Paper: Li_2024_Backdoorllm\n\nYear: 2024\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Introduced BackdoorLLM, the first comprehensive benchmark for systematically evaluating backdoor threats and defenses in open-ended text-generation LLMs.\n  2. Provided a unified repository s",
+          "verification": "NOT_SUPPORTED",
+          "confidence": 0.85
+        },
+        {
+          "section": "introduction",
+          "claim": "# Introduction\n\n## Motivation\nThe emergence of artificial intelligence has marked a significant transformation in Natural Language Processing (NLP) through the introduction of Large Language Models (LLMs), enabling unprecedented advances in language comprehension, generation, and translation [Chowdhury_2024_Breaking].",
+          "citation_key": "Chowdhury_2024_Breaking",
+          "source_chunk_id": "d1a1ff789593fa3b",
+          "source_text_excerpt": "Paper: Chowdhury_2024_Breaking\n\nYear: 2024\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Proposes a novel taxonomy of attacks on LLMs based on access to model weights and attack vectors to better structure the research landscape.\n  2. Presents a comprehensive examination of ",
+          "verification": "SUPPORTED",
+          "confidence": 0.9
+        },
+        {
+          "section": "introduction",
+          "claim": "Models such as OpenAI's ChatGPT and GPT-4 have outperformed previous state-of-the-art methods across a wide variety of benchmarking tasks, demonstrating remarkable capabilities in reasoning, planning, and interacting with complex environments [Yang_2024_Adversarial].",
+          "citation_key": "Yang_2024_Adversarial",
+          "source_chunk_id": "ffd2928f18eeddcd",
+          "source_text_excerpt": "Paper: Yang_2024_Adversarial\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Demonstrated the vulnerability of both proprietary and open-source LLMs to prompt-based and fine-tuning adversarial attacks across three critical medical tasks (vaccination guidance, medication",
+          "verification": "NOT_SUPPORTED",
+          "confidence": 0.95
+        },
+        {
+          "section": "introduction",
+          "claim": "For instance, the persistent challenge of hallucinations, where models generate inaccurate or unmotivated claims, undermines their reliability and trustworthiness [Friel_2023_LLM].",
+          "citation_key": "Friel_2023_LLM",
+          "source_chunk_id": "b22559fcd42e4d88",
+          "source_text_excerpt": "Paper: Friel_2023_LLM\n\nYear: 2023\nVenue: N/A\nCategory: LLM Hallucinations\n\nKey Contributions:\n  1. Introduces ChainPoll, a novel, efficient, and explainable hallucination detection methodology that uses detailed Chain-of-Thought prompting to significantly outperform existing metrics.\n  2. Develops R",
+          "verification": "SUPPORTED",
+          "confidence": 0.95
+        },
+        {
+          "section": "introduction",
+          "claim": "Generative LLMs have been shown to be vulnerable to backdoor attacks, where carefully crafted triggers in the input manipulate the model to produce adversary-specified outputs [Li_2024_Backdoorllm].",
+          "citation_key": "Li_2024_Backdoorllm",
+          "source_chunk_id": "324d93e365653fb4",
+          "source_text_excerpt": "Paper: Li_2024_Backdoorllm\n\nYear: 2024\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Introduced BackdoorLLM, the first comprehensive benchmark for systematically evaluating backdoor threats and defenses in open-ended text-generation LLMs.\n  2. Provided a unified repository s",
+          "verification": "SUPPORTED",
+          "confidence": 1.0
+        },
+        {
+          "section": "introduction",
+          "claim": "Furthermore, as LLMs evolve into autonomous agents capable of using external tools, they become exposed to indirect prompt injection attacks, a critical security risk that can compromise the entire agentic ecosystem [Wang_2025_LLM].",
+          "citation_key": "Wang_2025_LLM",
+          "source_chunk_id": "1a5bd3855742fcaf",
+          "source_text_excerpt": "Paper: Wang_2025_LLM\n\nYear: 2025\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Proposed AGENTVIGIL, the first generic, automated black-box fuzzing framework designed to discover and exploit indirect prompt injection vulnerabilities in LLM agents.\n  2. Designed a novel fuzzing pipeli",
+          "verification": "SUPPORTED",
+          "confidence": 1.0
+        },
+        {
+          "section": "introduction",
+          "claim": "We also review automated defense strategies, such as prompt-based detection frameworks [Liu_2025_Aegis].",
+          "citation_key": "Liu_2025_Aegis",
+          "source_chunk_id": "6372452bbfab71b2",
+          "source_text_excerpt": "Paper: Liu_2025_Aegis\n\nYear: 2025\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Proposes AEGIS, a general co-evolutionary adversarial framework that systematically evolves both attackers and defenders to provide adaptive robustness against prompt injection attacks.\n  2. Designs TGO+",
+          "verification": "SUPPORTED",
+          "confidence": 0.95
+        },
+        {
+          "section": "introduction",
+          "claim": "This covers lightweight knowledge editing for backdoor injection [Li_2024_Badedit] and the manipulation of Reinforcement Learning from Human Feedback (RLHF) mechanisms [Duan_2025_RLHF].",
+          "citation_key": "Li_2024_Badedit",
+          "source_chunk_id": "cecda328d70c22dd",
+          "source_text_excerpt": "Paper: Li_2024_Badedit\n\nYear: 2024\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Formulated backdoor injection in Large Language Models (LLMs) as a lightweight knowledge editing problem rather than a traditional weight-poisoning or fine-tuning task.\n  2. Introduced BadEdit, ",
+          "verification": "SUPPORTED",
+          "confidence": 1.0
+        },
+        {
+          "section": "introduction",
+          "claim": "This covers lightweight knowledge editing for backdoor injection [Li_2024_Badedit] and the manipulation of Reinforcement Learning from Human Feedback (RLHF) mechanisms [Duan_2025_RLHF].",
+          "citation_key": "Duan_2025_RLHF",
+          "source_chunk_id": "6aeb2f94d6db8c96",
+          "source_text_excerpt": "Paper: Duan_2025_RLHF\n\nYear: 2025\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Proposed BADREWARD, a novel clean-label poisoning attack targeting the reward model in multi-modal RLHF without requiring control over preference annotations.\n  2. Designed a visual feature colli",
+          "verification": "SUPPORTED",
+          "confidence": 1.0
+        },
+        {
+          "section": "introduction",
+          "claim": "This paradigm shift has introduced severe risks, notably indirect prompt injections, where malicious instructions are embedded in external data sources accessed by the agent [Zhan_2025_LLM].",
+          "citation_key": "Zhan_2025_LLM",
+          "source_chunk_id": "df2a2a61cd63de66",
+          "source_text_excerpt": "Paper: Zhan_2025_LLM\n\nYear: 2025\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Conducted the first comprehensive evaluation of existing Indirect Prompt Injection (IPI) defenses against adaptive attacks in LLM agents.\n  2. Adapted jailbreak attack strategies, including Greedy Coordin",
+          "verification": "SUPPORTED",
+          "confidence": 1.0
+        }
+      ]
+    },
+    {
+      "section": "model_reliability_hallucinations",
+      "statistics": {
+        "total": 8,
+        "supported": 3,
+        "partially_supported": 1,
+        "not_supported": 4,
+        "source_not_found": 0,
+        "coverage_rate": 0.5,
+        "support_rate": 0.375,
+        "avg_confidence": 0.9062,
+        "unique_citations": 4
+      },
+      "records": [
+        {
+          "section": "model_reliability_hallucinations",
+          "claim": "e of this challenge is the phenomenon commonly referred to as \"hallucination.\" In the context of LLMs, hallucinations are defined as instances where the model generates information that is factually incorrect, nonsensical, or unfaithful to the provided source material or established world knowledge [Friel_2023_LLM].",
+          "citation_key": "Friel_2023_LLM",
+          "source_chunk_id": "b22559fcd42e4d88",
+          "source_text_excerpt": "Paper: Friel_2023_LLM\n\nYear: 2023\nVenue: N/A\nCategory: LLM Hallucinations\n\nKey Contributions:\n  1. Introduces ChainPoll, a novel, efficient, and explainable hallucination detection methodology that uses detailed Chain-of-Thought prompting to significantly outperform existing metrics.\n  2. Develops R",
+          "verification": "PARTIALLY_SUPPORTED",
+          "confidence": 0.85
+        },
+        {
+          "section": "model_reliability_hallucinations",
+          "claim": "These inaccuracies pose a significant barrier to the effective and safe deployment of LLMs, as they can lead to the dissemination of misinformation, erode user trust, and cause potentially severe consequences in high-stakes scenarios [Liu_2025_Attention].",
+          "citation_key": "Liu_2025_Attention",
+          "source_chunk_id": "47b0f0fdbc588785",
+          "source_text_excerpt": "Paper: Liu_2025_Attention\n\nYear: 2025\nVenue: N/A\nCategory: LLM Hallucinations\n\nKey Contributions:\n  1. Identified that attention contributions can categorize input queries into attentive and non-attentive segments, which exhibit distinct consistency behaviors during factual versus hallucinated gener",
+          "verification": "NOT_SUPPORTED",
+          "confidence": 0.95
+        },
+        {
+          "section": "model_reliability_hallucinations",
+          "claim": "Consequently, when faced with knowledge gaps or ambiguous prompts, LLMs often generate plausible-sounding but entirely fabricated responses [Gu_2024_Anah].",
+          "citation_key": "Gu_2024_Anah",
+          "source_chunk_id": "d490385595c9cd67",
+          "source_text_excerpt": "Paper: Gu_2024_Anah\n\nYear: 2024\nVenue: N/A\nCategory: LLM Hallucinations\n\nKey Contributions:\n  1. Introduces an iterative self-training framework based on the Expectation-Maximization (EM) algorithm to simultaneously scale up hallucination annotation datasets and improve annotator accuracy.\n  2. Deve",
+          "verification": "NOT_SUPPORTED",
+          "confidence": 0.95
+        },
+        {
+          "section": "model_reliability_hallucinations",
+          "claim": "**Theoretical Reframing: From Hallucination to Confabulation**\nTraditionally, the discourse surrounding LLM inaccuracies has framed hallucinations as a conspicuous social harm and a critical bottleneck that must be entirely eradicated [Sui_2024_Confabulation].",
+          "citation_key": "Sui_2024_Confabulation",
+          "source_chunk_id": "b5627c510e8dbbc4",
+          "source_text_excerpt": "Paper: Sui_2024_Confabulation\n\nYear: 2024\nVenue: N/A\nCategory: LLM Hallucinations\n\nKey Contributions:\n  1. Proposes redefining LLM 'hallucinations' as 'confabulations' to highlight their potential utility and alignment with human narrative sense-making.\n  2. Empirically demonstrates that hallucinate",
+          "verification": "SUPPORTED",
+          "confidence": 0.95
+        },
+        {
+          "section": "model_reliability_hallucinations",
+          "claim": "Hallucination has emerged as a significant barrier to the effective application and widespread adoption of LLMs in high-stakes environments [Liu_2025_Attention].",
+          "citation_key": "Liu_2025_Attention",
+          "source_chunk_id": "47b0f0fdbc588785",
+          "source_text_excerpt": "Paper: Liu_2025_Attention\n\nYear: 2025\nVenue: N/A\nCategory: LLM Hallucinations\n\nKey Contributions:\n  1. Identified that attention contributions can categorize input queries into attentive and non-attentive segments, which exhibit distinct consistency behaviors during factual versus hallucinated gener",
+          "verification": "NOT_SUPPORTED",
+          "confidence": 0.8
+        },
+        {
+          "section": "model_reliability_hallucinations",
+          "claim": "The presence of these inaccurate or unmotivated claims necessitates the development of robust, automated metrics and methodologies for the detection and mitigation of hallucinations in LLM outputs [Friel_2023_LLM].",
+          "citation_key": "Friel_2023_LLM",
+          "source_chunk_id": "b22559fcd42e4d88",
+          "source_text_excerpt": "Paper: Friel_2023_LLM\n\nYear: 2023\nVenue: N/A\nCategory: LLM Hallucinations\n\nKey Contributions:\n  1. Introduces ChainPoll, a novel, efficient, and explainable hallucination detection methodology that uses detailed Chain-of-Thought prompting to significantly outperform existing metrics.\n  2. Develops R",
+          "verification": "SUPPORTED",
+          "confidence": 0.95
+        },
+        {
+          "section": "model_reliability_hallucinations",
+          "claim": "As artificial intelligence rapidly integrates into science, scholarship, and daily life, addressing the hallucination problem is widely viewed as a critical bottleneck that must be overcome to ensure model reliability and foster user trust [Sui_2024_Confabulation].",
+          "citation_key": "Sui_2024_Confabulation",
+          "source_chunk_id": "b5627c510e8dbbc4",
+          "source_text_excerpt": "Paper: Sui_2024_Confabulation\n\nYear: 2024\nVenue: N/A\nCategory: LLM Hallucinations\n\nKey Contributions:\n  1. Proposes redefining LLM 'hallucinations' as 'confabulations' to highlight their potential utility and alignment with human narrative sense-making.\n  2. Empirically demonstrates that hallucinate",
+          "verification": "NOT_SUPPORTED",
+          "confidence": 0.9
+        },
+        {
+          "section": "model_reliability_hallucinations",
+          "claim": "Creating comprehensive datasets for hallucination detection and mitigation is a formidable challenge, particularly in long-form question-answering tasks that span various domains [Gu_2024_Anah].",
+          "citation_key": "Gu_2024_Anah",
+          "source_chunk_id": "d490385595c9cd67",
+          "source_text_excerpt": "Paper: Gu_2024_Anah\n\nYear: 2024\nVenue: N/A\nCategory: LLM Hallucinations\n\nKey Contributions:\n  1. Introduces an iterative self-training framework based on the Expectation-Maximization (EM) algorithm to simultaneously scale up hallucination annotation datasets and improve annotator accuracy.\n  2. Deve",
+          "verification": "SUPPORTED",
+          "confidence": 0.9
+        }
+      ]
+    },
+    {
+      "section": "testing_methodologies_and_evaluation",
+      "statistics": {
+        "total": 7,
+        "supported": 4,
+        "partially_supported": 3,
+        "not_supported": 0,
+        "source_not_found": 0,
+        "coverage_rate": 1.0,
+        "support_rate": 0.5714,
+        "avg_confidence": 0.8857,
+        "unique_citations": 7
+      },
+      "records": [
+        {
+          "section": "testing_methodologies_and_evaluation",
+          "claim": "These frameworks are designed to provide quantifiable and rational observations that allow researchers and practitioners to objectively compare the efficacy of different models or measure the impact of specific vulnerabilities, such as adversarial attacks [Chowdhury_2024_Breaking].",
+          "citation_key": "Chowdhury_2024_Breaking",
+          "source_chunk_id": "d1a1ff789593fa3b",
+          "source_text_excerpt": "Paper: Chowdhury_2024_Breaking\n\nYear: 2024\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Proposes a novel taxonomy of attacks on LLMs based on access to model weights and attack vectors to better structure the research landscape.\n  2. Presents a comprehensive examination of ",
+          "verification": "SUPPORTED",
+          "confidence": 0.85
+        },
+        {
+          "section": "testing_methodologies_and_evaluation",
+          "claim": "For instance, frameworks like ANAH-v2 have been introduced to provide scalable oversight of LLM hallucinations through iterative self-training, progressively expanding the diversity and scale of datasets to continually improve the accuracy of hallucination annotators [Gu_2024_Anah].",
+          "citation_key": "Gu_2024_Anah",
+          "source_chunk_id": "d490385595c9cd67",
+          "source_text_excerpt": "Paper: Gu_2024_Anah\n\nYear: 2024\nVenue: N/A\nCategory: LLM Hallucinations\n\nKey Contributions:\n  1. Introduces an iterative self-training framework based on the Expectation-Maximization (EM) algorithm to simultaneously scale up hallucination annotation datasets and improve annotator accuracy.\n  2. Deve",
+          "verification": "SUPPORTED",
+          "confidence": 0.95
+        },
+        {
+          "section": "testing_methodologies_and_evaluation",
+          "claim": "The RTST framework, for example, utilizes a multi-agent system approach to improve adaptability and reduce learning overhead when identifying jailbreak prompts, demonstrating how benchmarking is evolving to incorporate dynamic, agentic interactions rather than relying solely on static test sets [Zhang_2025_Real].",
+          "citation_key": "Zhang_2025_Real",
+          "source_chunk_id": "859dc5fd4cba3f19",
+          "source_text_excerpt": "Paper: Zhang_2025_Real\n\nYear: 2025\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Developed RTST (Real-Time Self-Tuning), a novel multi-agent moderator model framework for real-time adaptive defense against adversarial prompts.\n  2. Demonstrated the effectiveness of RTST through empi",
+          "verification": "PARTIALLY_SUPPORTED",
+          "confidence": 0.7
+        },
+        {
+          "section": "testing_methodologies_and_evaluation",
+          "claim": "To systematically address and quantify this threat, researchers have introduced BackdoorLLM, the first comprehensive benchmark specifically designed for evaluating backdoor attacks on generative Large Language Models [Li_2024_Backdoorllm].",
+          "citation_key": "Li_2024_Backdoorllm",
+          "source_chunk_id": "324d93e365653fb4",
+          "source_text_excerpt": "Paper: Li_2024_Backdoorllm\n\nYear: 2024\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Introduced BackdoorLLM, the first comprehensive benchmark for systematically evaluating backdoor threats and defenses in open-ended text-generation LLMs.\n  2. Provided a unified repository s",
+          "verification": "SUPPORTED",
+          "confidence": 1.0
+        },
+        {
+          "section": "testing_methodologies_and_evaluation",
+          "claim": "Datasets such as SummEval and QAGS (Question Answering for Generated Summaries) are frequently utilized by researchers to evaluate automated metrics for closed-domain hallucination detection [Friel_2023_LLM].",
+          "citation_key": "Friel_2023_LLM",
+          "source_chunk_id": "b22559fcd42e4d88",
+          "source_text_excerpt": "Paper: Friel_2023_LLM\n\nYear: 2023\nVenue: N/A\nCategory: LLM Hallucinations\n\nKey Contributions:\n  1. Introduces ChainPoll, a novel, efficient, and explainable hallucination detection methodology that uses detailed Chain-of-Thought prompting to significantly outperform existing metrics.\n  2. Develops R",
+          "verification": "SUPPORTED",
+          "confidence": 0.9
+        },
+        {
+          "section": "testing_methodologies_and_evaluation",
+          "claim": "This methodology leverages the advanced natural language understanding, context retention, and reasoning capabilities of powerful, frontier LLMs to act as automated evaluators of text quality, code correctness, argument strength, and overall task performance [Maloyan_2025_LLM].",
+          "citation_key": "Maloyan_2025_LLM",
+          "source_chunk_id": "076b95f560c6dde0",
+          "source_text_excerpt": "Paper: Maloyan_2025_LLM\n\nYear: 2025\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Provides a comprehensive analysis of adversarial attack strategies against LLM judges, distinguishing between content-author attacks and system-prompt attacks.\n  2. Analyzes top solutions from the 'LLM",
+          "verification": "PARTIALLY_SUPPORTED",
+          "confidence": 0.9
+        },
+        {
+          "section": "testing_methodologies_and_evaluation",
+          "claim": "In comprehensive studies across diverse domains—such as Books, Movies, and Global Country Information—the correctness of an LLM's answer is rigorously determined to evaluate the true efficacy of hallucination detection mechanisms [Liu_2025_Attention].",
+          "citation_key": "Liu_2025_Attention",
+          "source_chunk_id": "47b0f0fdbc588785",
+          "source_text_excerpt": "Paper: Liu_2025_Attention\n\nYear: 2025\nVenue: N/A\nCategory: LLM Hallucinations\n\nKey Contributions:\n  1. Identified that attention contributions can categorize input queries into attentive and non-attentive segments, which exhibit distinct consistency behaviors during factual versus hallucinated gener",
+          "verification": "PARTIALLY_SUPPORTED",
+          "confidence": 0.9
+        }
+      ]
+    },
+    {
+      "section": "training_time_threats_poisoning",
+      "statistics": {
+        "total": 4,
+        "supported": 3,
+        "partially_supported": 1,
+        "not_supported": 0,
+        "source_not_found": 0,
+        "coverage_rate": 1.0,
+        "support_rate": 0.75,
+        "avg_confidence": 0.9375,
+        "unique_citations": 4
+      },
+      "records": [
+        {
+          "section": "training_time_threats_poisoning",
+          "claim": "oisoning\n\nThe rapid evolution of Large Language Models (LLMs) and multimodal artificial intelligence systems has fundamentally shifted the machine learning landscape toward a complex, multi-stage paradigm: massive-scale pre-training followed by task-specific fine-tuning and human-centric alignment `[Chowdhury_2024_Breaking]`.",
+          "citation_key": "Chowdhury_2024_Breaking",
+          "source_chunk_id": "d1a1ff789593fa3b",
+          "source_text_excerpt": "Paper: Chowdhury_2024_Breaking\n\nYear: 2024\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Proposes a novel taxonomy of attacks on LLMs based on access to model weights and attack vectors to better structure the research landscape.\n  2. Presents a comprehensive examination of ",
+          "verification": "SUPPORTED",
+          "confidence": 0.9
+        },
+        {
+          "section": "training_time_threats_poisoning",
+          "claim": "For instance, in text-to-image (T2I) models and LLMs, data poisoning can occur during two critical stages: the Supervised Fine-Tuning (SFT) stage and the Reinforcement Learning from Human Feedback (RLHF) stage `[Duan_2025_RLHF]`.",
+          "citation_key": "Duan_2025_RLHF",
+          "source_chunk_id": "6aeb2f94d6db8c96",
+          "source_text_excerpt": "Paper: Duan_2025_RLHF\n\nYear: 2025\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Proposed BADREWARD, a novel clean-label poisoning attack targeting the reward model in multi-modal RLHF without requiring control over preference annotations.\n  2. Designed a visual feature colli",
+          "verification": "PARTIALLY_SUPPORTED",
+          "confidence": 0.85
+        },
+        {
+          "section": "training_time_threats_poisoning",
+          "claim": "Generative LLMs have achieved state-of-the-art results across numerous domains, yet they remain highly susceptible to backdoor attacks, where carefully crafted triggers in the input manipulate the model to produce adversary-specified outputs `[Li_2024_Badedit]`.",
+          "citation_key": "Li_2024_Badedit",
+          "source_chunk_id": "cecda328d70c22dd",
+          "source_text_excerpt": "Paper: Li_2024_Badedit\n\nYear: 2024\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Formulated backdoor injection in Large Language Models (LLMs) as a lightweight knowledge editing problem rather than a traditional weight-poisoning or fine-tuning task.\n  2. Introduced BadEdit, ",
+          "verification": "SUPPORTED",
+          "confidence": 1.0
+        },
+        {
+          "section": "training_time_threats_poisoning",
+          "claim": "Research has explicitly demonstrated the vulnerability of both proprietary and open-source LLMs to fine-tuning adversarial attacks across critical, high-stakes domains, such as healthcare `[Yang_2024_Adversarial]`.",
+          "citation_key": "Yang_2024_Adversarial",
+          "source_chunk_id": "ffd2928f18eeddcd",
+          "source_text_excerpt": "Paper: Yang_2024_Adversarial\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Demonstrated the vulnerability of both proprietary and open-source LLMs to prompt-based and fine-tuning adversarial attacks across three critical medical tasks (vaccination guidance, medication",
+          "verification": "SUPPORTED",
+          "confidence": 1.0
+        }
+      ]
+    }
+  ]
 }

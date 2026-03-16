@@ -1,0 +1,22 @@
+```json
+[
+  {
+    "citation_index": 0,
+    "bibtex_key": "Chowdhury_2024_Breaking",
+    "status": "NOT_SUPPORTED",
+    "confidence": 0.9,
+    "reasoning": "The source text is a summary of a survey on LLM security (attacks and mitigations). While it discusses LLMs, it does not explicitly mention the specific capabilities (language comprehension, generation, reasoning, and translation) listed in the claim."
+  },
+  {
+    "citation_index": 1,
+    "bibtex_key": "Yang_2024_Adversarial",
+    "status": "PARTIALLY_SUPPORTED",
+    "confidence": 0.85,
+    "reasoning": "The source text confirms the vulnerability of LLMs in healthcare settings (medical tasks like vaccination guidance and medication prescribing), which aligns with the 'healthcare automation' part of the claim. However, it does not mention 'financial analysis' or 'autonomous agents' as critical sectors of focus."
+  },
+  {
+    "citation_index": 2,
+    "bibtex_key": "Liu_2025_Attention",
+    "status": "SUPPORTED",
+    "confidence": 0.98,
+    "reasoning": "The source text explicitly states that attention contributions can be used to categorize input queries and that the paper proposes a novel hallucination detection approach (AG

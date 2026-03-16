@@ -87,3 +87,9 @@ qdrant_db/
 # Regenerable artifacts
 *.sqlite
 *.bak
+
+# Extracted figures (generated, large binary files)
+output/figures/
+
+# Test pipeline output reports
+output/test_*

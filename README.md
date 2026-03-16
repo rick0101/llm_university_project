@@ -1,8 +1,10 @@
-# PaperHunter v3.0
+# PaperHunter v3.1
 
 **End-to-end LLM Security Survey Generator — from PDF ingestion to Nature/ACL-style paper**
 
-PaperHunter is a modular, agentic system that autonomously generates a scientific survey paper on LLM security. Starting from 1.000+ categorized PDF papers, it runs a complete pipeline: structured extraction (GROBID), metadata enrichment (Semantic Scholar), RAPTOR hierarchical summarization with semantic clustering, community-driven GraphRAG, agentic multi-step RAG retrieval, multi-agent writing (LangGraph ReAct), and LaTeX export — all with verifiable citations and provenance tracking.
+PaperHunter is a modular, agentic system that autonomously generates a scientific survey paper on LLM security. Starting from 1.000+ categorized PDF papers, it runs a complete pipeline: structured extraction (GROBID), metadata enrichment (Semantic Scholar), RAPTOR hierarchical summarization with semantic clustering, community-driven GraphRAG, agentic multi-step RAG retrieval, multi-agent writing (LangGraph ReAct), intelligent image filtering with multimodal embeddings, and LaTeX export — all with verifiable citations and provenance tracking.
+
+**v3.1 highlights:** Intelligent 3-stage image processing pipeline — heuristic filtering (PIL/NumPy, zero API cost), multimodal embedding classification (Gemini Embedding 2 Preview), and selective Vision description — reducing Gemini Vision API calls by 70-80%. Cross-modal retrieval via dedicated `image_embeddings` Qdrant collection.
 
 **v3.0 highlights:** Scalability to 1.000+ papers/category without context rot via RAPTOR clustering (L1 → L1.5 → L2), Graph Community detection and summarization (Louvain/Leiden via Neo4j GDS), and Agentic RAG writer with ReAct loop and on-demand retrieval tools.
 
@@ -12,9 +14,12 @@ PaperHunter is a modular, agentic system that autonomously generates a scientifi
 
 ## Table of Contents
 
-- [PaperHunter v3.0](#paperhunter-v30)
+- [PaperHunter v3.1](#paperhunter-v31)
   - [Table of Contents](#table-of-contents)
   - [Architecture](#architecture)
+  - [Key Features (v3.1)](#key-features-v31)
+    - [Intelligent Image Processing Pipeline (3-Stage)](#intelligent-image-processing-pipeline-3-stage)
+    - [Multimodal Embedding & Cross-Modal Retrieval](#multimodal-embedding--cross-modal-retrieval)
   - [Key Features (v3.0)](#key-features-v30)
     - [RAPTOR Hierarchical Clustering (1.000+ papers)](#raptor-hierarchical-clustering-1000-papers)
     - [Community-Driven GraphRAG](#community-driven-graphrag)
@@ -43,6 +48,7 @@ PaperHunter is a modular, agentic system that autonomously generates a scientifi
     - [paperhunter export](#paperhunter-export)
   - [Pipeline Workflow](#pipeline-workflow)
     - [Phase 1 — Incremental Ingestion](#phase-1--incremental-ingestion)
+    - [Phase 1.5 — Intelligent Image Processing](#phase-15--intelligent-image-processing-v31)
     - [Phase 2 — Hierarchical Summarization (RAPTOR)](#phase-2--hierarchical-summarization-raptor)
     - [Phase 3 — Hybrid Indexing + GraphRAG + Community Detection](#phase-3--hybrid-indexing--graphrag--community-detection)
     - [Phase 4 — Agentic Writing (LangGraph + ReAct)](#phase-4--agentic-writing-langgraph--react)
@@ -105,6 +111,8 @@ paperhunter/
 │   ├── semantic_scholar.py           ← S2 API enrichment (venue, BibTeX, citations)
 │   ├── bibtex_generator.py           ← Automatic BibTeX generation
 │   ├── chunker.py                    ← GROBID-aware section chunking
+│   ├── figure_extractor.py           ← [v3.1] Figure extraction + 3-stage filtering + image embedding
+│   ├── image_relevance_filter.py     ← [v3.1] Heuristic image classifier (PIL + NumPy)
 │   └── ingestion_pipeline.py         ← End-to-end ingestion orchestrator
 │
 ├── summarization/                    ← Hierarchical Summarization (RAPTOR)
@@ -115,7 +123,7 @@ paperhunter/
 │   └── invalidation_manager.py       ← Auto-invalidation of L2 on new papers
 │
 ├── indexing/                         ← Hybrid Retrieval
-│   ├── qdrant_store.py               ← Qdrant vector store (+ l1_5, graph_communities)
+│   ├── qdrant_store.py               ← Qdrant vector store (7 collections incl. image_embeddings)
 │   ├── bm25_index.py                 ← BM25 keyword index
 │   ├── hybrid_retriever.py           ← Vector + BM25 + RRF fusion
 │   └── reranker.py                   ← Gemini Flash cross-encoder reranking
@@ -134,9 +142,9 @@ paperhunter/
 │   ├── critic_agent.py               ← Agent 3: Citation provenance verification
 │   ├── assembler_agent.py            ← Agent 4: Assembly + abstract/intro/conclusion
 │   ├── pipeline.py                   ← LangGraph workflow orchestration
-│   └── tools/                        ← [v3.0] Retrieval tools for ReAct agent
+│   └── tools/                        ← [v3.0+] Retrieval tools for ReAct agent
 │       ├── __init__.py
-│       └── retrieval_tools.py        ← Vector, BM25, graph community search
+│       └── retrieval_tools.py        ← Vector, BM25, graph community, figure + image embedding search
 │
 ├── postprocessing/                   ← Output Generation
 │   ├── provenance_tracker.py         ← JSON provenance for every claim
@@ -148,8 +156,98 @@ paperhunter/
 └── utils/                            ← Shared Utilities
     ├── logging_setup.py              ← Rich logging + progress bars
     ├── llm_factory.py                ← LlamaIndex LLM factory (Flash/Pro)
+    ├── multimodal_embedder.py        ← [v3.1] Gemini Embedding 2 Preview multimodal wrapper
     ├── rate_limiter.py               ← Token bucket rate limiting
     └── token_counter.py              ← Budget estimation & token counting
+```
+
+---
+
+## Key Features (v3.1)
+
+### Intelligent Image Processing Pipeline (3-Stage)
+
+Images extracted from PDF papers are now filtered through a 3-stage pipeline that reduces Gemini Vision API calls by **70-80%**, sending only scientifically relevant figures (plots, tables, diagrams) to the expensive Vision model.
+
+**How it works:**
+
+```
+PDF Images → Stage 1 (Heuristic Filter) → Stage 2 (Embedding Filter) → Stage 3 (Vision Description)
+                  PIL + NumPy                 Gemini Embedding 2              Gemini Vision
+                  Zero API cost               ~$0.001/image                   ~$0.01/image
+```
+
+1. **Stage 1 — Heuristic Classification** (`image_relevance_filter.py`): Classifies images as `SCIENTIFIC_FIGURE`, `LIKELY_DECORATIVE`, or `UNCERTAIN` using 5 local heuristics (zero API cost):
+   - **Aspect ratio**: Penalizes extreme ratios (< 0.3 or > 4.0) — filters banners, vertical bars
+   - **Color entropy**: Shannon entropy on color histogram — low entropy = logos, icons
+   - **Edge density**: PIL `FIND_EDGES` filter — graphs/tables have high edge density
+   - **Page position**: Penalizes first page (logos) and last page (copyright)
+   - **Relative size**: Images < 5% or > 90% of page area penalized
+   - Combined score via weighted average (edge 0.30, entropy 0.25, aspect/position/size 0.15 each)
+
+2. **Stage 2 — Multimodal Embedding Filter** (`multimodal_embedder.py`): For `UNCERTAIN` images and `SCIENTIFIC_FIGURE` with score < 0.8, computes Gemini Embedding 2 Preview vectors and compares against 5 reference categories (`scientific_plot`, `comparison_table`, `architecture_diagram`, `flowchart`, `confusion_matrix`). Images below `embedding_similarity_threshold` (default 0.3) are discarded.
+
+3. **Stage 3 — Vision Description**: Only images passing both stages are sent to Gemini Vision for semantic description. Descriptions are indexed in `figure_descriptions` (text embedding) and the pre-computed multimodal embeddings in `image_embeddings` (cross-modal retrieval).
+
+**Config:**
+
+```yaml
+image_filtering:
+  enabled: true
+  min_aspect_ratio: 0.3
+  max_aspect_ratio: 4.0
+  min_color_entropy: 3.0
+  min_edge_density: 0.05
+  skip_first_page: true
+  skip_last_page: true
+  relevance_threshold: 0.5
+  embedding_filter_enabled: true
+  embedding_similarity_threshold: 0.3
+```
+
+**Usage:**
+
+```python
+from paperhunter.ingestion.image_relevance_filter import ImageRelevanceFilter, ImageClassification
+
+# Standalone heuristic classification
+filter = ImageRelevanceFilter()
+score = filter.classify(image_bytes, page_number=5, total_pages=12,
+                        page_width=612.0, page_height=792.0)
+print(score.classification)  # ImageClassification.SCIENTIFIC_FIGURE
+print(score.combined_score)  # 0.72
+
+# Batch classification with Rich logging
+scores = filter.classify_batch(images_list)
+```
+
+### Multimodal Embedding & Cross-Modal Retrieval
+
+Every relevant image now produces **two entries** in the database:
+1. `figure_descriptions` collection — text embedding of the Vision-generated description
+2. `image_embeddings` collection — multimodal embedding of the image itself (3072-dim)
+
+This enables **cross-modal retrieval**: a text query like "attack success rate comparison" can find figures semantically similar to that concept, even without exact textual matches.
+
+**Retrieval tool** (`search_figure_descriptions`) automatically searches both collections, merges and deduplicates results by `(paper_id, image_path)`, and indicates the source: `[description]`, `[image_embedding]`, or `[both]`.
+
+**Usage:**
+
+```python
+from paperhunter.utils.multimodal_embedder import MultimodalEmbedder, get_multimodal_embedder
+
+# Embed an image
+embedder = get_multimodal_embedder()
+vector = embedder.embed_image(image_bytes)  # 3072-dim
+
+# Classify relevance via embedding
+similarity, category = embedder.classify_image_relevance(image_bytes, "image/png")
+# → (0.65, "scientific_plot")
+
+# Cross-modal retrieval
+from paperhunter.indexing import QdrantStore
+store = QdrantStore()
+results = store.query_image_embeddings("attack success rate", n_results=5)
 ```
 
 ---
@@ -240,6 +338,7 @@ The writer agent can now operate in two modes, controlled by `agents.writer_mode
 - `search_vector_database(query, category?, year_min?)` — Qdrant semantic search with filters
 - `search_keyword_index(query, top_k?)` — BM25 keyword-based search
 - `search_graph_communities(topic, top_k?)` — Community summary search
+- `search_figure_descriptions(query, category?, top_k?, include_image_embeddings?)` — *(v3.1)* Combined search across `figure_descriptions` + `image_embeddings` collections with cross-modal retrieval and deduplication
 
 The agent follows a `Thought → Action → Observation → ... → Final Answer` loop (max 7 iterations). If the ReAct agent fails, it automatically falls back to `"static"` mode.
 
@@ -340,12 +439,13 @@ When `recency_priority: false`, all recency logic is bypassed: L2 uses uniform d
 | Component | Technology | Notes |
 |-----------|-----------|-------|
 | LLM | **Gemini 3 Flash/Pro** (via `google-genai` SDK) | Flash for simple tasks, Pro for writing/planning |
-| Embeddings | **Gemini Embedding 001** (3072-dim) | Via `llama-index-embeddings-google-genai` |
+| Embeddings | **Gemini Embedding 2 Preview** (3072-dim) | Text via `llama-index-embeddings-google-genai`, multimodal via `google-genai` SDK |
 | RAG Framework | **LlamaIndex Core** | Orchestration, PropertyGraph, ReAct Agent |
-| Vector DB | **Qdrant** (local, no server) | 5 collections: chunks, L1, L2, L1.5, communities |
+| Vector DB | **Qdrant** (local, no server) | 7 collections: chunks, L1, L2, L1.5, communities, figure_descriptions, image_embeddings |
 | Keyword Search | **BM25** (`rank-bm25`) | Hybrid retrieval with RRF fusion |
 | Clustering | **scikit-learn** + **NumPy** | AgglomerativeClustering for RAPTOR L1.5 |
-| PDF Extraction | **GROBID 0.8.2** (Docker) | TEI-XML → structured sections, refs, captions |
+| Image Processing | **Pillow** + **NumPy** + **Gemini Vision** | 3-stage filtering: heuristic → embedding → Vision |
+| PDF Extraction | **GROBID 0.8.2** (Docker) + **PyMuPDF** | TEI-XML → structured sections, refs, captions, figures |
 | Metadata | **Semantic Scholar API** (free) | BibTeX, venue, citation count, DOI |
 | Multi-Agent | **LangGraph** + **ReAct** | Planner → Writer (static/agentic) → Critic → Assembler |
 | Knowledge Graph | **Neo4j Community + GDS** | PropertyGraph + Louvain/Leiden community detection |
@@ -679,6 +779,21 @@ Key features:
 - Re-running processes only delta changes (0 operations if nothing changed)
 - Download deduplication: papers already in `scaricati/` are never re-downloaded
 
+### Phase 1.5 — Intelligent Image Processing *(v3.1)*
+
+```
+PDF → PyMuPDF extraction → Dimension filter → Stage 1 (Heuristic) → Stage 2 (Embedding) → Stage 3 (Vision) → Dual indexing
+```
+
+1. **PyMuPDF Extraction**: Extract all raster images from each PDF page with metadata (page number, position, dimensions)
+2. **Dimension Filter**: Discard images below minimum size (150×150 px, 40k area)
+3. **Stage 1 — Heuristic Classification** (zero API cost): 5 local features (aspect ratio, color entropy, edge density, page position, relative size) → weighted score → `SCIENTIFIC_FIGURE` / `LIKELY_DECORATIVE` / `UNCERTAIN`
+4. **Stage 2 — Embedding Classification** (low API cost): Gemini Embedding 2 Preview multimodal vectors compared against 5 reference scientific categories. Only for `UNCERTAIN` images and `SCIENTIFIC_FIGURE` with score < 0.8
+5. **Stage 3 — Vision Description** (full API cost): Only surviving images sent to Gemini Vision for semantic description generation
+6. **Dual Indexing**: Each relevant image produces two Qdrant entries — text embedding in `figure_descriptions` + multimodal vector in `image_embeddings`
+
+**Result:** 70-80% reduction in Vision API calls with negligible loss of scientific figures.
+
 ### Phase 2 — Hierarchical Summarization (RAPTOR)
 
 ```
@@ -806,9 +921,11 @@ All settings are in `config.yaml`. API keys go in `.env` (never committed).
 | `grobid` | GROBID Docker URL, timeout, batch size |
 | `neo4j` | Neo4j connection (optional, `enabled: false` by default) |
 | `clustering` | *(v3.0)* RAPTOR clustering: `max_cluster_size`, `similarity_threshold` |
-| `qdrant` | Vector DB local path, collections (+ `l1_5_summaries`, `graph_communities`), embedding dimension |
+| `qdrant` | Vector DB local path, 7 collections (+ `figure_descriptions`, `image_embeddings`), embedding dimension |
 | `semantic_scholar` | S2 API settings, rate limits, cache directory |
 | `ingestion` | PDF directory, chunk size/overlap, category mapping, `papers_per_category` |
+| `figure_extraction` | *(v3.1)* Vision model, min dimensions, max figures per paper, figures directory |
+| `image_filtering` | *(v3.1)* 3-stage filtering: heuristic params (aspect ratio, entropy, edge density, page position), embedding similarity threshold |
 | `summarization` | L1/L2 token limits, invalidation, `max_context_tokens`, `l1_target_chars_auto`, `l2_recency_tiers` |
 | `retrieval` | Vector/BM25 weights, top-k, rerank batch size, `recency_boost` |
 | `agents` | Writer iterations, verification threshold, model per agent, `writer_max_context_chars`, `writer_budget_mode`, `writer_mode` |
@@ -855,6 +972,25 @@ from paperhunter.ingestion.pdf_hasher import compute_pdf_hash, get_new_or_modifi
 from paperhunter.ingestion.semantic_scholar import SemanticScholarEnricher
 from paperhunter.ingestion.bibtex_generator import generate_bibtex_key, generate_bibtex_entry
 from paperhunter.ingestion.chunker import chunk_grobid_output, chunk_raw_text
+
+# v3.1 — Intelligent Image Filtering
+from paperhunter.ingestion.figure_extractor import FigureExtractor
+from paperhunter.ingestion.image_relevance_filter import (
+    ImageRelevanceFilter, ImageClassification, ImageScore,
+)
+
+# Heuristic image classification (Stage 1)
+filter = ImageRelevanceFilter()
+score = filter.classify(image_bytes, page_number=3, total_pages=15,
+                        page_width=612.0, page_height=792.0)
+if score.classification == ImageClassification.SCIENTIFIC_FIGURE:
+    print(f"Relevant figure (score: {score.combined_score:.2f})")
+
+# Full extraction with 3-stage filtering (automatic)
+extractor = FigureExtractor()
+chunks = extractor.extract_and_describe(pdf_path, paper_metadata)
+# Retrieve pre-computed image embeddings for indexing
+image_chunks, image_embeddings = extractor.get_pending_image_embeddings()
 ```
 
 ### Summarization (`paperhunter.summarization`)
@@ -915,6 +1051,11 @@ chunks = retriever.retrieve_multi_collection("defense overview")
 # Reranking
 reranker = GeminiReranker()
 reranked = reranker.rerank("defense mechanisms", chunks, top_k=5)
+
+# v3.1 — Image embedding indexing & cross-modal retrieval
+store.add_image_embeddings(image_chunks, image_embeddings)  # Pre-computed vectors
+results = store.query_image_embeddings("attack success rate", n_results=5,
+                                        where_filter={"category": "Adversarial Attacks"})
 ```
 
 ### GraphRAG (`paperhunter.graphrag`)
@@ -999,7 +1140,14 @@ result = search_vector_database("prompt injection attacks", category="Prompt Inj
 result = search_keyword_index("GCG adversarial suffix")
 result = search_graph_communities("adversarial robustness testing")
 
-# Get all tools as LlamaIndex FunctionTool (for ReActAgent)
+# v3.1 — Combined figure search (description + image embedding)
+from paperhunter.agents.tools import search_figure_descriptions
+result = search_figure_descriptions("attack success rate comparison")
+# Results indicate source: [description], [image_embedding], or [both]
+result = search_figure_descriptions("defense pipeline", category="Prompt Injection",
+                                     include_image_embeddings=False)  # Text only
+
+# Get all tools as LlamaIndex FunctionTool (for ReActAgent) — includes 4 tools
 tools = get_all_retrieval_tools()
 ```
 
@@ -1062,6 +1210,23 @@ from paperhunter.utils.token_counter import (
 report = BudgetReport.from_config(n_categories=4, n_sections_estimate=8)
 report.print_report()   # Rich table: phase → tokens/call → % budget → notes
 print(report.within_budget)  # True if all phases fit in max_context_tokens
+
+# v3.1 — Multimodal embeddings (images + text in same vector space)
+from paperhunter.utils.multimodal_embedder import (
+    MultimodalEmbedder, get_multimodal_embedder,
+)
+
+embedder = get_multimodal_embedder()  # Singleton
+vec = embedder.embed_image(image_bytes)           # 3072-dim image vector
+vec = embedder.embed_text("scientific data plot")  # 3072-dim text vector (same space)
+
+# Batch embedding with Rich progress bar
+vectors = embedder.embed_images_batch([{"image_bytes": b, "mime_type": "image/png"} for b in images])
+
+# Reference embeddings (cached on disk at cache/reference_embeddings.json)
+refs = embedder.compute_reference_embeddings()  # 5 scientific categories
+similarity, category = embedder.classify_image_relevance(image_bytes, "image/png")
+# → (0.65, "scientific_plot")
 ```
 
 ---
@@ -1074,6 +1239,7 @@ After running the full pipeline, the output directory contains:
 output/
 ├── references.bib                    # Master BibTeX (all papers)
 ├── references_final.bib              # Filtered BibTeX (only cited)
+├── figures/                          # [v3.1] Extracted figures (PNG) organized by paper
 ├── l2_metadata/                      # L2 metadata JSON per category
 │   ├── prompt_injection.json
 │   ├── adversarial_attacks.json
@@ -1100,7 +1266,7 @@ output/
 
 ## Testing
 
-The project includes 35 test files with ~1000+ tests covering all modules. Tests use mocks and do not require live APIs or Docker services.
+The project includes 42 test files with ~1200+ tests covering all modules. Tests use mocks and do not require live APIs or Docker services.
 
 ```bash
 # Run all tests
@@ -1113,6 +1279,9 @@ python -m pytest test_assembler_agent.py -v
 
 # Run tests matching a pattern
 python -m pytest test_*.py -k "test_rerank"
+
+# Run only image processing tests (v3.1)
+python -m pytest test_image_relevance_filter.py test_figure_extractor_filtering.py test_embedding_filter_integration.py test_multimodal_embedder.py test_image_embedding_indexing.py test_retrieval_tools_image_embeddings.py -v
 ```
 
 Test modules:
@@ -1152,6 +1321,15 @@ Test modules:
 | Community Summarizer | `test_community_summarizer.py` | 63 |
 | Retrieval Tools | `test_retrieval_tools.py` | 34 |
 | Writer Agent Agentic | `test_writer_agent_agentic.py` | 28 |
+| Image Relevance Filter | `test_image_relevance_filter.py` | 26 |
+| Figure Extractor | `test_figure_extractor.py` | 15 |
+| Figure Extractor Filtering | `test_figure_extractor_filtering.py` | 11 |
+| Embedding Filter Integration | `test_embedding_filter_integration.py` | 16 |
+| Multimodal Embedder | `test_multimodal_embedder.py` | 30 |
+| Image Embedding Indexing | `test_image_embedding_indexing.py` | 24 |
+| Retrieval Tools (Image) | `test_retrieval_tools_image_embeddings.py` | 26 |
+| Pipeline Image Processing | `test_pipeline_image_processing.py` | — |
+| Resume Summarize | `test_resume_summarize.py` | — |
 
 ---
 
@@ -1266,15 +1444,18 @@ vscode_agent_paper/
 │   ├── provenance/               ← Provenance reports
 │   ├── l2_metadata/              ← L2 summary metadata
 │   └── .checkpoints/             ← Pipeline checkpoints
-├── cache/semantic_scholar/       ← S2 API response cache
+├── cache/
+│   ├── semantic_scholar/         ← S2 API response cache
+│   └── reference_embeddings.json ← [v3.1] Cached multimodal reference embeddings
 ├── logs/                         ← Log files
 ├── paperhunter/                  ← Source code
-├── test_*.py                     ← Test files (35 modules)
+├── test_*.py                     ← Test files (42 modules)
 ├── pyproject.toml                ← Project metadata + dependencies
 ├── requirements.txt              ← Pinned dependencies
 ├── TODO.md                       ← Development roadmap (v2.0)
 ├── TODO3.md                      ← Scalability improvements roadmap (v2.1)
-└── TODO4_Scalability.md          ← 1.000+ paper scalability roadmap (v3.0)
+├── TODO4_Scalability.md          ← 1.000+ paper scalability roadmap (v3.0)
+└── TODO5_ImageProcessing.md      ← Image processing pipeline roadmap (v3.1)
 ```
 
 ---

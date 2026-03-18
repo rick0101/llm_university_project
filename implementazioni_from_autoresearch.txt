@@ -157,33 +157,50 @@ IDEA 4: torch.compile + bfloat16 per il Cross-Encoder Reranker
 --------------------------------------------------------------------------------
 
 COSA FA:
-  In autoresearch/train.py, tutti i forward pass usano:
-    with torch.autocast("cuda", dtype=torch.bfloat16):
-        ...
-  e il modello è compilato con torch.compile() per ottimizzazione JIT.
+  In autoresearch/train.py, tutti i forward pass usano mixed precision (bfloat16)
+  tramite torch.autocast e il modello è compilato con torch.compile() per
+  ottimizzazione JIT.
 
 PERCHÉ È UTILE:
   In PaperHunter, paperhunter/indexing/reranker.py usa un cross-encoder
-  (sentence-transformers) per il reranking. Se il modello gira su GPU locale,
-  applicare bfloat16 + torch.compile() può ridurre la latenza di reranking del
-  30-50% senza perdita di qualità, migliorando sensibilmente i tempi della
-  pipeline di retrieval su query complesse.
+  (sentence-transformers) per il reranking. Se il modello gira su un acceleratore
+  (GPU NVIDIA o GPU Apple Silicon), applicare bfloat16 + torch.compile() può
+  ridurre la latenza di reranking del 30-50% senza perdita di qualità.
 
 COME IMPLEMENTARLO (riferimento: autoresearch/train.py, inizializzazione modello):
-  In paperhunter/indexing/reranker.py, nel metodo __init__:
+  Aggiungere prima di tutto un helper per rilevare automaticamente il miglior
+  dispositivo disponibile sulla macchina corrente:
 
     import torch
-    self.model = self.model.to(dtype=torch.bfloat16)
-    if torch.cuda.is_available():
+
+    def get_device() -> torch.device:
+        """Rileva automaticamente il miglior dispositivo disponibile.
+        Priorità: CUDA (GPU NVIDIA) → MPS (GPU Apple Silicon) → CPU.
+        """
+        if torch.cuda.is_available():
+            return torch.device("cuda")
+        if torch.backends.mps.is_available():
+            return torch.device("mps")
+        return torch.device("cpu")
+
+    DEVICE = get_device()
+
+  In paperhunter/indexing/reranker.py, nel metodo __init__:
+
+    self._device = get_device()
+    self.model = self.model.to(device=self._device, dtype=torch.bfloat16)
+    if self._device.type != "cpu":
         self.model = torch.compile(self.model)
 
   E nel metodo predict():
-    with torch.autocast("cuda", dtype=torch.bfloat16):
+    with torch.autocast(device_type=self._device.type, dtype=torch.bfloat16):
         scores = self.model.predict(pairs)
 
   ATTENZIONE: torch.compile richiede PyTorch >= 2.0 e la prima chiamata ha un
   overhead di compilazione di 30-60 secondi. Usare un flag di configurazione
   in config.yaml per abilitarlo solo quando necessario.
+  NOTA: bfloat16 è supportato nativamente su CUDA (Ampere+) e MPS (Apple M1+).
+  Su CPU, bfloat16 funziona ma è più lento; in quel caso usare float32.
 
 LIVELLO DI DIFFICOLTÀ: Facile-Medio
 PRIORITÀ CONSIGLIATA: Media — dipende da se il reranker è il bottleneck.
@@ -191,27 +208,35 @@ PRIORITÀ CONSIGLIATA: Media — dipende da se il reranker è il bottleneck.
 
 
 --------------------------------------------------------------------------------
-IDEA 5: Pinned Memory per Trasferimenti CPU→GPU
+IDEA 5: Pinned Memory per Trasferimenti CPU→Acceleratore
 --------------------------------------------------------------------------------
 
 COSA FA:
   In autoresearch/prepare.py, i tensor vengono allocati in "pinned memory"
   (memoria RAM non paginabile) per accelerare i trasferimenti verso la GPU.
-  La chiamata è: tensor.pin_memory() prima di .cuda().
+  La chiamata è: tensor.pin_memory() prima di .to(device, non_blocking=True).
 
 PERCHÉ È UTILE:
-  Se PaperHunter elabora batch di embedding su GPU (Qdrant locale, reranker),
-  i trasferimenti di dati tra CPU e GPU sono un collo di bottiglia. La pinned
-  memory raddoppia tipicamente la bandwidth di trasferimento DMA.
+  Se PaperHunter elabora batch di embedding su un acceleratore (GPU NVIDIA
+  o GPU Apple Silicon), i trasferimenti di dati sono un potenziale collo di
+  bottiglia. La pinned memory raddoppia tipicamente la bandwidth di trasferimento
+  DMA su CUDA. Su MPS (Apple) il beneficio è minore ma presente.
 
 COME IMPLEMENTARLO (riferimento: autoresearch/prepare.py, make_dataloader):
-  In qualsiasi punto di paperhunter dove si crea un tensor da inviare a GPU:
+  Usare il helper get_device() definito nell'Idea 4. In qualsiasi punto di
+  paperhunter dove si crea un tensor da inviare all'acceleratore:
+
+    DEVICE = get_device()
 
     # Prima (lento):
-    tensor = torch.tensor(embedding_list).cuda()
+    tensor = torch.tensor(embedding_list).to(DEVICE)
 
-    # Dopo (veloce):
-    tensor = torch.tensor(embedding_list).pin_memory().cuda(non_blocking=True)
+    # Dopo (veloce): pin_memory è supportato solo su CPU→CUDA.
+    # Su MPS e CPU puro si usa semplicemente .to(DEVICE).
+    if DEVICE.type == "cuda":
+        tensor = torch.tensor(embedding_list).pin_memory().to(DEVICE, non_blocking=True)
+    else:
+        tensor = torch.tensor(embedding_list).to(DEVICE)
 
   Applicare in paperhunter/indexing/qdrant_store.py nei metodi di batch insert
   e in paperhunter/utils/multimodal_embedder.py.
@@ -398,9 +423,13 @@ COME IMPLEMENTARLO (riferimento: autoresearch/train.py, training loop):
     GRAD_ACCUM_STEPS = 4
     start_time = time.time()
 
+    # Rileva automaticamente il dispositivo disponibile
+    device = get_device()  # vedi helper nell'Idea 4
+    dtype = torch.bfloat16 if device.type in ("cuda", "mps") else torch.float32
+
     optimizer.zero_grad()
     for micro_step in range(GRAD_ACCUM_STEPS):
-        with torch.autocast("cuda", dtype=torch.bfloat16):
+        with torch.autocast(device_type=device.type, dtype=dtype):
             loss = model(batch[micro_step]) / GRAD_ACCUM_STEPS
         loss.backward()
     optimizer.step()
@@ -587,7 +616,7 @@ PRIORITÀ CONSIGLIATA: Media — interessante contributo originale per una tesi
    14. BPE Tokenizer custom per paper accademici           [Medio]
 
   BASSA PRIORITÀ (valore marginale o alta complessità):
-    5. Pinned Memory per trasferimenti CPU→GPU             [Facile]
+    5. Pinned Memory per trasferimenti CPU→Acceleratore    [Facile]
     9. Sliding Window Attention                            [Medio-Difficile]
    13. Ottimizzatore MuonAdamW                             [Difficile]
 
@@ -603,7 +632,7 @@ PRIORITÀ CONSIGLIATA: Media — interessante contributo originale per una tesi
     - Implementare Best-Fit Packing nel chunker (Idea 1)
     - Aggiungere GC management nell'ingestion pipeline (Idea 2)
     - Aggiungere BPB/perplexity normalizzata come metrica (Idea 3)
-    - Aggiungere torch.compile per il reranker se su GPU (Idea 4)
+    - Aggiungere torch.compile per il reranker se su acceleratore (Idea 4)
 
   FASE 2 — Aggiungere un componente di fine-tuning leggero:
     Addestrare un piccolo cross-encoder specializzato per paper accademici
@@ -621,8 +650,202 @@ PRIORITÀ CONSIGLIATA: Media — interessante contributo originale per una tesi
 
 
 ================================================================================
-  RIFERIMENTI
+  FINE-TUNING VS RAG: QUALE APPROCCIO PER LA GENERAZIONE DI SURVEY?
 ================================================================================
+
+DOMANDA: Per creare survey accademiche da centinaia di paper scientifici,
+conviene fare fine-tuning, usare il sistema RAG attuale, o combinarli?
+
+--------------------------------------------------------------------------------
+1. RISPOSTA BREVE
+--------------------------------------------------------------------------------
+
+  Per l'uso specifico di PaperHunter v3.1 — generazione automatica di survey
+  da un corpus di paper accademici — il sistema RAG + summarizzazione attuale
+  è SUFFICIENTE e probabilmente OTTIMALE, senza alcun fine-tuning.
+  Il fine-tuning potrebbe aggiungere valore marginale in casi specifici, ma
+  non è necessario e comporta costi e complessità significativi.
+
+--------------------------------------------------------------------------------
+2. PERCHÉ IL RAG È PREFERIBILE PER QUESTO COMPITO
+--------------------------------------------------------------------------------
+
+  a) IL PROBLEMA PRINCIPALE È L'ACCESSO ALLE INFORMAZIONI, NON IL MODELLO:
+     Un survey accademico richiede fatti specifici contenuti nei paper (risultati,
+     metodi, confronti), non conoscenza generica del dominio. Un modello
+     fine-tuned "ricorda" informazioni nei suoi pesi, ma:
+     - Non può ricordare paper pubblicati dopo il training
+     - Tende ad allucinare dettagli specifici (numeri, benchmark, autori)
+     - Non può citare con precisione la fonte di ogni affermazione
+     Il RAG risolve tutti e tre i problemi strutturalmente.
+
+  b) GROUNDING VERIFICABILE:
+     Il sistema attuale con provenance_tracker.py garantisce che ogni
+     affermazione nel survey sia tracciabile al chunk sorgente. Un modello
+     fine-tuned non offre questa garanzia.
+
+  c) AGGIORNABILITÀ:
+     Basta aggiungere nuovi PDF al corpus e rieseguire l'ingestione.
+     Con il fine-tuning, ogni aggiornamento del corpus richiederebbe un
+     nuovo ciclo di training (ore/giorni, non minuti).
+
+  d) COSTO COMPUTAZIONALE:
+     Fine-tuning di un LLM capace (7B+ parametri):
+     - Richiede GPU con 16-80 GB di VRAM
+     - Richiede ore-giorni di training su un corpus strutturato
+     - Richiede un dataset di addestramento di qualità (difficile da costruire
+       automaticamente per il task di generazione survey)
+     Il RAG con Gemini API ha costo zero in termini di hardware locale.
+
+  e) QUALITÀ ATTUALE GIÀ ELEVATA:
+     Gemini 1.5 Pro/Flash è già addestrato su miliardi di token di letteratura
+     accademica. Con un buon RAG e buoni prompt, il modello sa già:
+     - Scrivere in stile accademico
+     - Strutturare argomentazioni logiche
+     - Sintetizzare e confrontare metodologie
+     Il fine-tuning su un corpus universitario piccolo peggiorerebbe quasi
+     certamente le capacità generali del modello (catastrophic forgetting).
+
+--------------------------------------------------------------------------------
+3. QUANDO IL FINE-TUNING AVREBBE SENSO (E QUANDO NO)
+--------------------------------------------------------------------------------
+
+  AVREBBE SENSO SE:
+  - Hai un dominio molto specializzato (es. biologia molecolare) con
+    terminologia e notazioni non standard non coperte dai modelli base
+  - Vuoi addestrare un modello PICCOLO (BERT, DistilBERT) per task
+    SPECIFICI come classificazione topic, estrazione entità, o reranking
+    (questi non richiedono generazione e sono addestrabili con poche risorse)
+  - Devi fare deployment offline senza API (es. su hardware aziendale senza
+    accesso a internet)
+  - La privacy dei paper è critica (non vuoi inviarli a API esterne)
+
+  NON HA SENSO SE:
+  - Vuoi migliorare la qualità del testo generato del survey
+    → I modelli base sono già molto capaci; il problema è quasi sempre
+      nel RAG (retrieval quality, chunk size, prompt design)
+  - Vuoi che il modello "impari" i contenuti dei paper
+    → Questo è esattamente il problema che RAG risolve meglio
+  - Hai poche risorse computazionali (tipico per un progetto universitario)
+  - Il corpus cambia frequentemente (nuovi paper ogni settimana/mese)
+
+--------------------------------------------------------------------------------
+4. UNA SINERGIA REALISTICA: FINE-TUNING DEI COMPONENTI LEGGERI
+--------------------------------------------------------------------------------
+
+  Invece di fare fine-tuning sull'LLM generativo, ha più senso fare
+  fine-tuning sui componenti LEGGERI della pipeline, dove il guadagno
+  è misurabile e il costo è basso:
+
+  a) RERANKER CROSS-ENCODER SPECIALIZZATO (consigliato):
+     Il reranker in paperhunter/indexing/reranker.py usa attualmente un
+     modello generico (es. cross-encoder/ms-marco-MiniLM). Un reranker
+     fine-tuned su coppie (query, paper_chunk) del dominio scientifico
+     potrebbe migliorare significativamente la qualità del retrieval.
+     - Modello base: MS-MARCO MiniLM (~22M parametri)
+     - Dataset: generare automaticamente coppie positive/negative dai
+       paper già indicizzati usando Gemini Flash
+     - Training: 1-2 ore su GPU consumer (es. RTX 3060 12GB)
+     - Beneficio atteso: +5-15% recall@k nel retrieval
+     Su hardware senza GPU, si usa il device-agnostic helper (Idea 4):
+       device = get_device()  # CUDA → MPS → CPU automaticamente
+
+  b) MODELLO DI EMBEDDING DOMAIN-SPECIFIC (opzionale):
+     Gli embedding in qdrant_store.py usano Gemini text-embedding.
+     Un embedding model fine-tuned su paper accademici (es. basato su
+     sentence-transformers/all-MiniLM-L6-v2) potrebbe migliorare la
+     similarità semantica nel dominio specifico.
+     - Modello base: all-MiniLM-L6-v2 (~22M parametri)
+     - Dataset: triplet (anchor, positive, negative) dai paper
+     - Beneficio: dipende dal dominio; spesso marginale rispetto a
+       embedding API di qualità come Gemini
+
+  c) CLASSIFICATORE DI TOPIC/CATEGORIA (facile):
+     Un piccolo classificatore (BERT-tiny o anche TF-IDF + logistic
+     regression) addestrato a classificare paper per categoria potrebbe
+     migliorare l'organizzazione automatica del corpus, particolarmente
+     utile quando i PDF non hanno metadati chiari.
+
+--------------------------------------------------------------------------------
+5. CONCLUSIONE E RACCOMANDAZIONE
+--------------------------------------------------------------------------------
+
+  Per il progetto universitario PaperHunter v3.1, la strategia ottimale è:
+
+  PRIORITÀ 1 — Migliorare il RAG esistente (massimo ROI):
+    - Implementare Best-Fit Packing nel chunker (Idea 1 del documento)
+    - Ottimizzare i prompt per summarizzazione e generazione
+    - Aumentare la qualità del reranking con parametri migliori
+
+  PRIORITÀ 2 — Fine-tuning del reranker (solo se si dispone di GPU):
+    - Fine-tune cross-encoder su coppie domain-specific
+    - Usare il device helper per portabilità (CUDA/MPS/CPU)
+    - Integrare con il sistema RAG esistente come drop-in replacement
+
+  PRIORITÀ 3 — Fine-tuning dell'LLM generativo (sconsigliato per ora):
+    - Solo se emerge un bisogno specifico non risolvibile col RAG
+    - Considerare LoRA/QLoRA per ridurre i requisiti di memoria
+    - Richiederebbe GPU dedicata (16+ GB VRAM) non sempre disponibile
+
+  In sintesi: il sistema RAG + summarizzazione gerarchica attuale è già
+  architetturalmente corretto per il task. Investire nell'ottimizzazione
+  del RAG (chunking, retrieval, reranking) porta risultati migliori rispetto
+  al fine-tuning dell'LLM con meno risorse e meno rischi.
+
+================================================================================
+  DEVICE-AGNOSTIC HELPER — SNIPPET RIUTILIZZABILE
+================================================================================
+
+  Questo snippet va inserito in paperhunter/utils/device_utils.py e importato
+  da tutti i moduli che usano PyTorch, al posto di qualsiasi .cuda() hardcoded:
+
+    import torch
+
+    def get_device() -> torch.device:
+        """Rileva automaticamente il miglior dispositivo disponibile.
+
+        Priorità:
+          1. CUDA  — GPU NVIDIA (Windows/Linux con driver CUDA installati)
+          2. MPS   — GPU Apple Silicon (macOS M1/M2/M3/M4)
+          3. CPU   — Fallback universale
+
+        Returns:
+            torch.device pronto all'uso.
+
+        Esempio:
+            device = get_device()
+            model = model.to(device)
+            tensor = torch.tensor(data).to(device)
+        """
+        if torch.cuda.is_available():
+            return torch.device("cuda")
+        if hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
+            return torch.device("mps")
+        return torch.device("cpu")
+
+
+    def get_autocast_dtype(device: torch.device) -> torch.dtype:
+        """Restituisce il dtype ottimale per autocast sul dispositivo dato.
+
+        - CUDA Ampere+: bfloat16 (più stabile di float16)
+        - MPS (Apple): bfloat16 (supportato da PyTorch >= 2.0 su M1/M2/M3/M4)
+        - CPU: float32 (bfloat16 su CPU è lento, preferire float32)
+        """
+        if device.type in ("cuda", "mps"):
+            return torch.bfloat16
+        return torch.float32
+
+
+  Utilizzo tipico:
+    from paperhunter.utils.device_utils import get_device, get_autocast_dtype
+
+    device = get_device()
+    dtype = get_autocast_dtype(device)
+    model = model.to(device=device, dtype=dtype)
+    with torch.autocast(device_type=device.type, dtype=dtype):
+        output = model(input_tensor)
+
+
 
   karpathy/autoresearch (codice sorgente analizzato):
     autoresearch/train.py    — architettura GPT, training loop, ottimizzatori

@@ -205,6 +205,8 @@ Survey finale (~20k token di testo accademico)
 
 L'ingestion è la fase che trasforma i PDF grezzi in una knowledge base strutturata e indicizzata. È il fondamento su cui si costruisce tutto il resto.
 
+> **Ottimizzazione GC:** Durante l'elaborazione dei batch, il garbage collector Python viene disabilitato manualmente (`gc.disable()`) per evitare pause non deterministiche su batch grandi. Al termine di ogni batch il GC viene riabilitato e forzato con `gc.collect()` in un blocco `finally`, garantendo la riacquisizione anche in caso di eccezione. Lo stesso pattern è applicato nei loop di summarization L1 e L2.
+
 ### 1.1 Scansione e Rilevamento Incrementale
 
 Il sistema mantiene un **hash registry** (file JSON) che mappa ogni PDF al suo hash SHA-256. Ad ogni esecuzione:
@@ -258,11 +260,13 @@ Per ogni paper viene generata automaticamente una entry BibTeX con chiave determ
 
 Questa chiave BibTeX è il **filo conduttore** che lega ogni informazione nel sistema: chunk, summary L1/L1.5/L2, citazioni nel survey finale, entry nella bibliografia — tutto punta alla stessa chiave.
 
-### 1.5 Chunking GROBID-Aware
+### 1.5 Chunking GROBID-Aware con Best-Fit Packing
 
 Il testo estratto viene diviso in chunk di ~1.500 caratteri con overlap di ~200 caratteri. La peculiarità è che il chunking è **GROBID-aware**: i confini dei chunk rispettano i confini delle sezioni del paper.
 
 Questo significa che un chunk non "spezza" mai una sezione a metà — la divisione avviene preferenzialmente tra sezioni. Il risultato è che ogni chunk ha un contesto semantico più coerente, il che migliora sia la qualità degli embedding che la rilevanza del retrieval.
+
+Per le sezioni GROBID più lunghe del chunk size, il testo viene prima suddiviso in paragrafi e poi questi vengono impacchettati con un algoritmo **Best-Fit Decreasing Bin Packing** (`best_fit_pack()`). L'algoritmo ordina i paragrafi per dimensione decrescente e li assegna al bin con meno spazio residuo che possa contenerli, producendo chunk di dimensioni più uniformi rispetto alla semplice sliding window e riducendo chunk troppo corti (rumore). Il packing è abilitato di default (`use_best_fit_packing: true` in config.yaml) e il fallback alla sliding window classica è disponibile disabilitando il flag.
 
 Ogni chunk conserva metadati: categoria, bibtex_key, titolo del paper, anno, tipo di chunk, posizione nel paper.
 
@@ -900,7 +904,7 @@ paperhunter/
 │   ├── pdf_hasher.py                 ← Hash SHA-256 per ingestion incrementale
 │   ├── semantic_scholar.py           ← Arricchimento S2 API
 │   ├── bibtex_generator.py           ← Generazione BibTeX automatica
-│   ├── chunker.py                    ← Chunking GROBID-aware
+│   ├── chunker.py                    ← Chunking GROBID-aware + Best-Fit Packing
 │   ├── figure_extractor.py           ← Estrazione figure + pipeline 3 stadi
 │   └── image_relevance_filter.py     ← Classificatore euristico immagini
 │
@@ -946,6 +950,8 @@ paperhunter/
     ├── multimodal_embedder.py        ← Embedding multimodali Gemini
     ├── rate_limiter.py               ← Rate limiting token bucket
     ├── token_counter.py              ← Conteggio token e budget
+    ├── quality_metrics.py            ← Metrica BPB/perplexity per valutazione testo
+    ├── device_utils.py               ← Helper device-agnostic (CUDA/MPS/CPU)
     └── logging_setup.py              ← Rich logging + progress bar
 ```
 
@@ -953,7 +959,7 @@ paperhunter/
 
 ## Testing
 
-Il progetto include 42 moduli di test con ~1200+ test che coprono tutti i moduli. I test usano mock e non richiedono API live o servizi Docker.
+Il progetto include 46 moduli di test con ~1000+ test che coprono tutti i moduli. I test usano mock e non richiedono API live o servizi Docker.
 
 ```bash
 # Tutti i test

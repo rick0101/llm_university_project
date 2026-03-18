@@ -36,7 +36,7 @@ paperhunter/
 
 ### FASE 1 — Best-Fit Document Packing nel Chunker (Idea 1)
 
-#### [ ] Task 1.1: Implementare `best_fit_pack()` in `chunker.py`
+#### [x] Task 1.1: Implementare `best_fit_pack()` in `chunker.py`
 
 **File:** `paperhunter/ingestion/chunker.py` (modifica)  
 **Stato attuale:** Il chunker usa una finestra scorrevole semplice (`max_tokens=1500`, `overlap=200`). Questo produce chunk di dimensioni variabili, non sfrutta appieno il contesto del modello e genera chunk troppo corti (rumore).  
@@ -67,6 +67,19 @@ paperhunter/
 1. I chunk risultanti abbiano dimensioni più uniformi rispetto al metodo attuale.
 2. Nessun chunk superi `max_tokens`.
 3. I chunk troppo corti (< 100 token) siano eliminati o accorpati.
+
+> ✅ **Completato — 18 marzo 2026**
+>
+> **Modifiche apportate:**
+> - `paperhunter/ingestion/chunker.py`: Aggiunta funzione `best_fit_pack(units, max_tokens)` con algoritmo greedy best-fit decreasing bin packing. Il separatore `\n\n` viene correttamente conteggiato nella dimensione del bin per evitare overflow.
+> - `paperhunter/ingestion/chunker.py`: Integrato il packing nella funzione `chunk_grobid_output()` — per sezioni GROBID più lunghe di `chunk_size`, il testo viene prima splittato in paragrafi (`\n\n`), paragrafi oversize vengono ulteriormente spezzati con `_split_by_size()`, poi le unità risultanti vengono impacchettate con `best_fit_pack()`. Sezioni corte rimangono chunk singoli. Se `use_best_fit_packing=False`, il fallback è la sliding window originale.
+> - `paperhunter/config.py` (`IngestionConfig`): Aggiunto campo `use_best_fit_packing: bool = True`.
+> - `config.yaml` (sezione `ingestion`): Aggiunto `use_best_fit_packing: true`.
+> - `tests/test_best_fit_packing.py`: 16 test (10 unitari per `best_fit_pack()` + 6 di integrazione con `chunk_grobid_output()`). Coprono: lista vuota, unità singola, small/large/mix units, separatore accounting, oversize units, metadata preservation, fallback senza sezioni.
+>
+> **Funzioni aggiunte/modificate:**
+> - `best_fit_pack(units: list[str], max_tokens: int = 1400) -> list[str]` — Funzione pubblica di bin packing. Ordina unità per dimensione decrescente, impacchetta con best-fit, restituisce testi uniti da `\n\n`.
+> - `chunk_grobid_output()` — Modificata: legge `settings.ingestion.use_best_fit_packing` per decidere se usare packing (paragrafi → `best_fit_pack()`) o sliding window (`_split_by_size()`) per sezioni lunghe.
 
 ---
 

@@ -180,6 +180,7 @@ class IngestionConfig(BaseModel):
     chunk_overlap: int = 200
     batch_size: int = 10
     fallback_to_pymupdf: bool = True
+    use_best_fit_packing: bool = True  # Best-fit bin packing post-segmentazione GROBID
     papers_per_category: int = 100  # Numero target di paper per categoria (usato per budget)
     category_mapping: dict[str, str] = Field(default_factory=lambda: {
         "Prompt_injections1": "Prompt Injection",

@@ -54,6 +54,11 @@ def _get_chunk_overlap() -> int:
 # Dimensione minima sotto la quale un chunk viene scartato
 _MIN_CHUNK_SIZE = 80
 
+# Separatore usato nel best-fit packing per unire unità in un bin
+_PACK_SEPARATOR = "\n\n"
+# Lunghezza del separatore in caratteri (evita ricalcolo)
+_PACK_SEP_LEN = len(_PACK_SEPARATOR)
+
 
 # ============================================================================
 # API Pubblica
@@ -107,6 +112,8 @@ def chunk_grobid_output(
         global_index += 1
 
     # --- 2. Sezioni GROBID ---
+    use_packing = settings.ingestion.use_best_fit_packing
+
     if grobid_output.sections:
         for section in grobid_output.sections:
             section_text = _clean_text(section.text)
@@ -127,8 +134,32 @@ def chunk_grobid_output(
                 )
                 chunks.append(chunk)
                 global_index += 1
+            elif use_packing:
+                # --- Best-Fit Packing: split in paragrafi → pack ottimale ---
+                paragraphs = [p.strip() for p in section_text.split("\n\n") if p.strip()]
+                # Paragrafi più grandi di cs vanno ulteriormente splittati
+                units: list[str] = []
+                for para in paragraphs:
+                    if len(para) > cs:
+                        units.extend(_split_by_size(para, cs, co))
+                    else:
+                        units.append(para)
+                packed = best_fit_pack(units, max_tokens=cs)
+                for packed_text in packed:
+                    if len(packed_text) < _MIN_CHUNK_SIZE:
+                        continue
+                    chunk = _make_chunk(
+                        text=packed_text,
+                        bibtex_key=bibtex_key,
+                        section_name=section_name,
+                        chunk_index=global_index,
+                        paper=paper,
+                        paper_id=paper_id,
+                    )
+                    chunks.append(chunk)
+                    global_index += 1
             else:
-                # Sezione lunga → split con overlap
+                # Fallback: sezione lunga → split con overlap (sliding window)
                 fragments = _split_by_size(section_text, cs, co)
                 for frag in fragments:
                     if len(frag) < _MIN_CHUNK_SIZE:
@@ -198,6 +229,47 @@ def chunk_grobid_output(
         f"(bibtex_key={bibtex_key}, sections={len(grobid_output.sections)})"
     )
     return chunks
+
+
+def best_fit_pack(units: list[str], max_tokens: int = 1400) -> list[str]:
+    """Impacchetta unità di testo in bin di dimensione ottimale (best-fit decreasing).
+
+    Ordina le unità per dimensione decrescente, poi per ognuna cerca il bin
+    con meno spazio residuo che possa ancora contenerla. Minimizza il numero
+    di bin e produce chunk di dimensione uniforme.
+
+    Args:
+        units: Lista di stringhe (paragrafi/sezioni) da impacchettare.
+        max_tokens: Dimensione massima di ogni bin (in caratteri).
+
+    Returns:
+        Lista di testi impacchettati (uno per bin), uniti da doppio newline.
+    """
+    if not units:
+        return []
+
+    bins: list[list[str]] = []
+    bin_sizes: list[int] = []
+
+    for unit in sorted(units, key=lambda u: len(u), reverse=True):
+        unit_len = len(unit)
+        # Salta unità vuote
+        if unit_len == 0:
+            continue
+        placed = False
+        for i, size in enumerate(bin_sizes):
+            # Calcola spazio necessario includendo il separatore se il bin non è vuoto
+            needed = unit_len + (_PACK_SEP_LEN if bins[i] else 0)
+            if size + needed <= max_tokens:
+                bins[i].append(unit)
+                bin_sizes[i] += needed
+                placed = True
+                break
+        if not placed:
+            bins.append([unit])
+            bin_sizes.append(unit_len)
+
+    return [_PACK_SEPARATOR.join(b) for b in bins]
 
 
 def chunk_raw_text(

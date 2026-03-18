@@ -81,6 +81,7 @@ ingestion:
   chunk_overlap: 200                           # Overlap tra chunk consecutivi
   batch_size: 10                               # PDF per batch durante ingestion
   fallback_to_pymupdf: false                    # Fallback a PyMuPDF se GROBID fallisce
+  use_best_fit_packing: true                   # Best-fit bin packing post-segmentazione GROBID
   papers_per_category: 5                       # Numero target di paper per categoria (usato per budget)
   # Mapping nome cartella → nome categoria human-readable
   category_mapping:

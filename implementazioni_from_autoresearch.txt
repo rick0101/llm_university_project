@@ -1,0 +1,640 @@
+================================================================================
+  IMPLEMENTAZIONI DA AUTORESEARCH (karpathy/autoresearch)
+  Analisi per il progetto PaperHunter v3.1 (rick0101/llm_university_project)
+  Data analisi: marzo 2026
+================================================================================
+
+NOTA PRELIMINARE
+----------------
+Il progetto PaperHunter v3.1 è un sistema RAG (Retrieval-Augmented Generation)
+per la generazione automatica di survey accademiche. Non addestra LLM da zero,
+ma utilizza Gemini API + Qdrant + GROBID + reranker cross-encoder. La maggior
+parte delle ottimizzazioni di autoresearch riguarda l'addestramento di LLM da
+zero su GPU singola. Di conseguenza, alcune tecniche sono applicabili
+direttamente, altre richiedono di aggiungere una componente di fine-tuning, e
+alcune hanno valore principalmente educativo/dimostrativo.
+
+Le idee sono ordinate dalla più alla meno applicabile al progetto attuale.
+
+
+================================================================================
+  SEZIONE A — APPLICABILI DIRETTAMENTE AL PROGETTO ATTUALE
+================================================================================
+
+
+--------------------------------------------------------------------------------
+IDEA 1: Best-Fit Document Packing nel Chunker
+--------------------------------------------------------------------------------
+
+COSA FA:
+  In autoresearch/prepare.py, il dataloader usa un algoritmo di "best-fit
+  packing" (bin packing) per impacchettare documenti in sequenze di lunghezza
+  fissa. Ogni sequenza è riempita in modo ottimale scegliendo tra i documenti
+  disponibili quello che si adatta meglio allo spazio rimasto, minimizzando il
+  padding (spreco = 0%).
+
+PERCHÉ È UTILE:
+  In PaperHunter, paperhunter/ingestion/chunker.py usa una finestra scorrevole
+  semplice (max 1500 token, overlap 200). Questo produce chunk di dimensioni
+  variabili e non sfrutta appieno il contesto del modello. Adottare un approccio
+  di packing permetterebbe di:
+  - Includere più contesto per chunk (es. tutta una sezione + abstract)
+  - Eliminare chunk troppo corti (rumore)
+  - Migliorare la qualità del retrieval nei layer L1/L2
+
+COME IMPLEMENTARLO (riferimento: autoresearch/prepare.py, funzione make_dataloader):
+  Nel file paperhunter/ingestion/chunker.py, dopo aver suddiviso i paragrafi
+  GROBID in unità logiche, applicare un greedy best-fit packing:
+
+    def best_fit_pack(units, max_tokens=1400):
+        bins = []
+        bin_sizes = []
+        for unit in sorted(units, key=lambda u: len(u), reverse=True):
+            placed = False
+            for i, size in enumerate(bin_sizes):
+                if size + len(unit) <= max_tokens:
+                    bins[i].append(unit)
+                    bin_sizes[i] += len(unit)
+                    placed = True
+                    break
+            if not placed:
+                bins.append([unit])
+                bin_sizes.append(len(unit))
+        return ["\n\n".join(b) for b in bins]
+
+  Integrare questa funzione in _chunk_with_grobid() come post-processing dopo
+  la segmentazione per sezione.
+
+LIVELLO DI DIFFICOLTÀ: Facile
+PRIORITÀ CONSIGLIATA: Alta — miglioramento diretto della qualità del retrieval
+                       senza dipendenze esterne.
+
+
+--------------------------------------------------------------------------------
+IDEA 2: Gestione Esplicita del Garbage Collector (GC Management)
+--------------------------------------------------------------------------------
+
+COSA FA:
+  In autoresearch/train.py, il garbage collector Python viene disabilitato
+  durante il training loop critico (`gc.disable()`) per evitare pause
+  imprevedibili ("GC stalls") che distorcono le misurazioni temporali. Viene
+  riabilitato solo fuori dal loop critico.
+
+PERCHÉ È UTILE:
+  In PaperHunter, la pipeline di ingestione (ingestion_pipeline.py) elabora
+  batch di PDF pesanti con molti oggetti Pydantic di grandi dimensioni (GROBIDOutput,
+  PaperChunk, L1Summary). I GC stall possono rallentare l'elaborazione di 10-30%
+  in picchi. Disabilitare il GC durante le fasi intensive e fare gc.collect()
+  manuale al termine di ogni batch è un'ottimizzazione semplice e gratuita.
+
+COME IMPLEMENTARLO (riferimento: autoresearch/train.py, righe iniziali del loop):
+  In paperhunter/ingestion/ingestion_pipeline.py, nel metodo process_batch():
+
+    import gc
+    gc.disable()
+    try:
+        for pdf_path in batch:
+            result = self._process_single_pdf(pdf_path)
+            processed.append(result)
+            # rilascia esplicitamente oggetti intermedi grandi
+            del result
+    finally:
+        gc.enable()
+        gc.collect()
+
+  Lo stesso pattern può applicarsi in level1_summarizer.py e
+  level2_summarizer.py durante il loop di summarization.
+
+LIVELLO DI DIFFICOLTÀ: Facile
+PRIORITÀ CONSIGLIATA: Media — guadagno di performance tangibile su dataset grandi
+                       con pochissime righe di codice.
+
+
+--------------------------------------------------------------------------------
+IDEA 3: Bits Per Byte (BPB) come Metrica di Valutazione Agnostica al Vocabolario
+--------------------------------------------------------------------------------
+
+COSA FA:
+  In autoresearch/prepare.py, la funzione evaluate_bpb() calcola i "bits per byte"
+  come metrica di qualità del modello. BPB è indipendente dalla dimensione del
+  vocabolario e quindi confrontabile tra modelli diversi. È definita come:
+    BPB = cross_entropy_loss / ln(2) / mean_bytes_per_token
+
+PERCHÉ È UTILE:
+  PaperHunter genera testo (abstract, introduzioni, sezioni di survey) tramite
+  Gemini e non ha attualmente metriche di valutazione della qualità del testo
+  generato che siano confrontabili cross-modello. Implementare una variante di
+  BPB (o direttamente perplexity normalizzata per byte) permetterebbe di:
+  - Confrontare oggettivamente diverse configurazioni di prompt
+  - Misurare il degrado della qualità al variare del contesto
+  - Creare un sistema di A/B testing per i prompt template
+
+COME IMPLEMENTARLO (riferimento: autoresearch/prepare.py, funzione evaluate_bpb):
+  Creare paperhunter/utils/quality_metrics.py:
+
+    from transformers import AutoTokenizer, AutoModelForCausalLM
+    import torch, math
+
+    def compute_bpb(text: str, model, tokenizer) -> float:
+        """Calcola bits-per-byte per il testo generato."""
+        inputs = tokenizer(text, return_tensors="pt")
+        n_bytes = len(text.encode("utf-8"))
+        with torch.no_grad():
+            loss = model(**inputs, labels=inputs.input_ids).loss
+        return loss.item() / math.log(2) / (n_bytes / inputs.input_ids.shape[1])
+
+  Alternativa più leggera senza modello locale: usare tiktoken per stimare
+  il rapporto token/byte e normalizzare la perplexity di Gemini (se disponibile
+  dalla API) per numero di byte.
+
+LIVELLO DI DIFFICOLTÀ: Medio
+PRIORITÀ CONSIGLIATA: Media — ottimo per la sezione di valutazione di una tesi
+                       universitaria, dimostra comprensione profonda delle metriche.
+
+
+--------------------------------------------------------------------------------
+IDEA 4: torch.compile + bfloat16 per il Cross-Encoder Reranker
+--------------------------------------------------------------------------------
+
+COSA FA:
+  In autoresearch/train.py, tutti i forward pass usano:
+    with torch.autocast("cuda", dtype=torch.bfloat16):
+        ...
+  e il modello è compilato con torch.compile() per ottimizzazione JIT.
+
+PERCHÉ È UTILE:
+  In PaperHunter, paperhunter/indexing/reranker.py usa un cross-encoder
+  (sentence-transformers) per il reranking. Se il modello gira su GPU locale,
+  applicare bfloat16 + torch.compile() può ridurre la latenza di reranking del
+  30-50% senza perdita di qualità, migliorando sensibilmente i tempi della
+  pipeline di retrieval su query complesse.
+
+COME IMPLEMENTARLO (riferimento: autoresearch/train.py, inizializzazione modello):
+  In paperhunter/indexing/reranker.py, nel metodo __init__:
+
+    import torch
+    self.model = self.model.to(dtype=torch.bfloat16)
+    if torch.cuda.is_available():
+        self.model = torch.compile(self.model)
+
+  E nel metodo predict():
+    with torch.autocast("cuda", dtype=torch.bfloat16):
+        scores = self.model.predict(pairs)
+
+  ATTENZIONE: torch.compile richiede PyTorch >= 2.0 e la prima chiamata ha un
+  overhead di compilazione di 30-60 secondi. Usare un flag di configurazione
+  in config.yaml per abilitarlo solo quando necessario.
+
+LIVELLO DI DIFFICOLTÀ: Facile-Medio
+PRIORITÀ CONSIGLIATA: Media — dipende da se il reranker è il bottleneck.
+                       Molto istruttivo come dimostrazione tecnica per la tesi.
+
+
+--------------------------------------------------------------------------------
+IDEA 5: Pinned Memory per Trasferimenti CPU→GPU
+--------------------------------------------------------------------------------
+
+COSA FA:
+  In autoresearch/prepare.py, i tensor vengono allocati in "pinned memory"
+  (memoria RAM non paginabile) per accelerare i trasferimenti verso la GPU.
+  La chiamata è: tensor.pin_memory() prima di .cuda().
+
+PERCHÉ È UTILE:
+  Se PaperHunter elabora batch di embedding su GPU (Qdrant locale, reranker),
+  i trasferimenti di dati tra CPU e GPU sono un collo di bottiglia. La pinned
+  memory raddoppia tipicamente la bandwidth di trasferimento DMA.
+
+COME IMPLEMENTARLO (riferimento: autoresearch/prepare.py, make_dataloader):
+  In qualsiasi punto di paperhunter dove si crea un tensor da inviare a GPU:
+
+    # Prima (lento):
+    tensor = torch.tensor(embedding_list).cuda()
+
+    # Dopo (veloce):
+    tensor = torch.tensor(embedding_list).pin_memory().cuda(non_blocking=True)
+
+  Applicare in paperhunter/indexing/qdrant_store.py nei metodi di batch insert
+  e in paperhunter/utils/multimodal_embedder.py.
+
+LIVELLO DI DIFFICOLTÀ: Facile
+PRIORITÀ CONSIGLIATA: Bassa — ottimizzazione marginale per il progetto attuale,
+                       ma utile da conoscere.
+
+
+================================================================================
+  SEZIONE B — APPLICABILI AGGIUNGENDO UN COMPONENTE DI FINE-TUNING
+================================================================================
+
+  Questa sezione descrive tecniche applicabili se si decide di aggiungere
+  al progetto un componente di fine-tuning o training di un modello più piccolo
+  (es. un reranker custom, un modello di embedding domain-specific per paper
+  accademici, o un piccolo LM per la generazione di abstract).
+
+
+--------------------------------------------------------------------------------
+IDEA 6: RMSNorm al posto di LayerNorm
+--------------------------------------------------------------------------------
+
+COSA FA:
+  In autoresearch/train.py, tutti i layer di normalizzazione usano RMSNorm
+  (Root Mean Square Normalization) tramite F.rms_norm() al posto del classico
+  LayerNorm. RMSNorm rimuove il calcolo della media (solo la std) ed è:
+  - ~10-15% più veloce computazionalmente
+  - Altrettanto efficace nella pratica
+  - Formula: x / rms(x) * weight, dove rms(x) = sqrt(mean(x^2) + eps)
+
+PERCHÉ È UTILE:
+  Se si aggiunge al progetto un modello di reranking o embedding addestrato
+  localmente, RMSNorm è la scelta moderna standard (usata in LLaMA, Mistral,
+  Gemma). Sostituire LayerNorm con RMSNorm in qualsiasi modello Transformer
+  custom porta a training più veloce senza compromettere la qualità.
+
+COME IMPLEMENTARLO (riferimento: autoresearch/train.py, normalizzazioni nella classe Block):
+  In PyTorch moderno (>= 2.4):
+    import torch.nn.functional as F
+
+    class RMSNorm(nn.Module):
+        def __init__(self, dim, eps=1e-6):
+            super().__init__()
+            self.weight = nn.Parameter(torch.ones(dim))
+            self.eps = eps
+
+        def forward(self, x):
+            return F.rms_norm(x, (x.shape[-1],), self.weight, self.eps)
+
+  Sostituire ogni nn.LayerNorm con RMSNorm nel modello custom.
+
+LIVELLO DI DIFFICOLTÀ: Facile
+PRIORITÀ CONSIGLIATA: Alta (se si fa fine-tuning) — standard de facto moderno.
+
+
+--------------------------------------------------------------------------------
+IDEA 7: Rotary Positional Embeddings (RoPE)
+--------------------------------------------------------------------------------
+
+COSA FA:
+  In autoresearch/train.py, la classe Rotary implementa RoPE: invece di
+  aggiungere un embedding posizionale fisso o apprendibile al token, la
+  posizione viene "ruotata" direttamente nella spazio delle query e dei keys
+  dell'attenzione. Questo permette al modello di generalizzare a sequenze più
+  lunghe di quelle viste durante il training.
+
+PERCHÉ È UTILE:
+  Se si aggiunge un modello Transformer custom (es. un reranker specializzato
+  su paper accademici o un modello di riassunto leggero), RoPE è:
+  - L'approccio posizionale usato da quasi tutti gli LLM moderni (LLaMA, Gemma,
+    Mistral, Qwen)
+  - Migliore degli embedding posizionali assoluti per testi lunghi come i paper
+  - Supporta context extension tramite tecniche come YaRN
+
+COME IMPLEMENTARLO (riferimento: autoresearch/train.py, classe Rotary):
+
+    class Rotary(nn.Module):
+        def __init__(self, dim, base=10000):
+            super().__init__()
+            self.register_buffer("inv_freq",
+                1.0 / (base ** (torch.arange(0, dim, 2).float() / dim)))
+
+        def forward(self, seqlen):
+            t = torch.arange(seqlen, device=self.inv_freq.device)
+            freqs = torch.outer(t, self.inv_freq)
+            cos = torch.cat([freqs, freqs], dim=-1).cos()
+            sin = torch.cat([freqs, freqs], dim=-1).sin()
+            return cos, sin
+
+    def apply_rotary(x, cos, sin):
+        x1, x2 = x.chunk(2, dim=-1)
+        return torch.cat([x1 * cos - x2 * sin,
+                          x1 * sin + x2 * cos], dim=-1)
+
+LIVELLO DI DIFFICOLTÀ: Medio
+PRIORITÀ CONSIGLIATA: Alta (se si fa fine-tuning) — standard moderno essenziale.
+
+
+--------------------------------------------------------------------------------
+IDEA 8: Attivazione ReluSquared nel MLP
+--------------------------------------------------------------------------------
+
+COSA FA:
+  In autoresearch/train.py, il MLP usa relu(x)^2 come funzione di attivazione
+  invece del classico GELU. ReluSquared:
+  - Genera sparse activations (molti zeri) → interpretabilità migliore
+  - È più veloce di GELU (nessuna approssimazione Gaussian CDF)
+  - Converge leggermente più velocemente in molti task
+
+PERCHÉ È UTILE:
+  Semplice sostituzione in qualsiasi MLP custom. Dimostrazione pratica dei
+  trade-off tra funzioni di attivazione moderne — ottima per una tesi che
+  confronta approcci diversi.
+
+COME IMPLEMENTARLO (riferimento: autoresearch/train.py, classe MLP):
+
+    # Invece di:
+    x = F.gelu(self.fc1(x))
+
+    # Usare:
+    x = F.relu(self.fc1(x)).square()
+
+  Una riga di cambiamento con impatto misurabile su training speed.
+
+LIVELLO DI DIFFICOLTÀ: Facile
+PRIORITÀ CONSIGLIATA: Media (se si fa fine-tuning) — ottimo esempio didattico.
+
+
+--------------------------------------------------------------------------------
+IDEA 9: Sliding Window Attention
+--------------------------------------------------------------------------------
+
+COSA FA:
+  In autoresearch/train.py, il pattern di attenzione usa finestre scorrevoli
+  alternate (pattern "SSSL"): la maggior parte dei layer usa una finestra corta
+  (metà del contesto massimo), mentre 1 layer ogni 4 usa la finestra piena.
+  Questo riduce il costo computazionale dell'attenzione da O(n^2) a O(n*w)
+  mantenendo la capacità di catturare dipendenze a lungo raggio grazie ai
+  layer "full attention".
+
+PERCHÉ È UTILE:
+  Se si addestra un modello su documenti accademici lunghi (paper di 10-30 pagine),
+  la Sliding Window Attention permette di trattare contesti molto più lunghi
+  con lo stesso budget computazionale. Fondamentale per qualsiasi modello che
+  deve leggere paper interi invece di chunk spezzati.
+
+COME IMPLEMENTARLO (riferimento: autoresearch/train.py, GPT.forward()):
+  Il parametro window_size nei layer di attenzione si imposta come:
+    layer_idx % 4 != 3 → window = max_seq_len // 2
+    layer_idx % 4 == 3 → window = max_seq_len (full attention)
+
+  L'implementazione efficiente usa il parametro window_size di Flash Attention.
+  Senza Flash Attention, applicare una maschera triangolare con finestra:
+    mask = torch.triu(torch.ones(T, T), diagonal=1)
+    mask |= (torch.arange(T).unsqueeze(0) - torch.arange(T).unsqueeze(1)) < -window
+    attn_weights = attn_weights.masked_fill(mask, float('-inf'))
+
+LIVELLO DI DIFFICOLTÀ: Medio
+PRIORITÀ CONSIGLIATA: Bassa (complessa senza Flash Attention) / Alta (con Flash Attention).
+
+
+--------------------------------------------------------------------------------
+IDEA 10: Gradient Accumulation con Budget Temporale
+--------------------------------------------------------------------------------
+
+COSA FA:
+  In autoresearch/train.py, il gradient accumulation divide ogni step di
+  ottimizzazione in N micro-step (per simulare batch più grandi con meno VRAM).
+  La novità rispetto all'approccio classico è il "budget temporale fisso":
+  il training si ferma dopo un tempo di wall clock prefissato invece di un numero
+  di step fisso, adattandosi automaticamente alla velocità della GPU disponibile.
+
+PERCHÉ È UTILE:
+  Se si aggiunge un componente di fine-tuning al progetto (es. adattare un
+  piccolo embedding model o reranker ai paper accademici), gradient accumulation
+  è essenziale per addestrare con batch effettivi grandi anche su GPU con poca
+  VRAM (6-8GB). Il budget temporale è particolarmente utile per ambienti
+  universitari con sessioni GPU limitate (Google Colab, cluster).
+
+COME IMPLEMENTARLO (riferimento: autoresearch/train.py, training loop):
+
+    BUDGET_SECONDS = 300  # 5 minuti
+    GRAD_ACCUM_STEPS = 4
+    start_time = time.time()
+
+    optimizer.zero_grad()
+    for micro_step in range(GRAD_ACCUM_STEPS):
+        with torch.autocast("cuda", dtype=torch.bfloat16):
+            loss = model(batch[micro_step]) / GRAD_ACCUM_STEPS
+        loss.backward()
+    optimizer.step()
+
+    if time.time() - start_time > BUDGET_SECONDS:
+        break
+
+LIVELLO DI DIFFICOLTÀ: Facile-Medio
+PRIORITÀ CONSIGLIATA: Alta (se si fa fine-tuning) — essenziale per GPU limitate.
+
+
+--------------------------------------------------------------------------------
+IDEA 11: Logit Softcapping per Stabilità Numerica
+--------------------------------------------------------------------------------
+
+COSA FA:
+  In autoresearch/train.py, i logits finali vengono "softcapped" prima del
+  calcolo della cross-entropy:
+    logits = torch.tanh(logits / 15) * 15
+  Questo limita i logits in [-15, 15] tramite una funzione smooth (tanh),
+  prevenendo overflow numerici e loss NaN durante il training, soprattutto
+  nelle fasi iniziali o con learning rate aggressivi.
+
+PERCHÉ È UTILE:
+  In qualsiasi modello custom che produce logits (classificatori, decoder,
+  modelli di scoring), il softcapping è un meccanismo di sicurezza semplice
+  che evita crash per NaN senza richiedere gradient clipping aggressivo.
+  È usato in Gemma 2 e altri modelli Google.
+
+COME IMPLEMENTARLO (riferimento: autoresearch/train.py, GPT.forward()):
+
+    # Prima del calcolo della loss:
+    CAP = 15.0
+    logits = torch.tanh(logits / CAP) * CAP
+    loss = F.cross_entropy(logits, targets)
+
+  Una sola riga aggiuntiva con grande impatto sulla stabilità del training.
+
+LIVELLO DI DIFFICOLTÀ: Facile
+PRIORITÀ CONSIGLIATA: Alta (se si fa fine-tuning) — zero costo, grande beneficio.
+
+
+--------------------------------------------------------------------------------
+IDEA 12: Learning Rate Differenziati per Tipo di Parametro
+--------------------------------------------------------------------------------
+
+COSA FA:
+  In autoresearch/train.py, l'ottimizzatore usa learning rate diversi per
+  diversi tipi di parametri:
+  - Matrici di pesi (attenzione, MLP): LR basso (0.04)
+  - Embedding di input: LR alto (0.6)
+  - Unembedding (testa di output): LR molto basso (0.004)
+  - Parametri scalari (bias, norm): LR alto (0.5)
+  Questo riflette la diversa natura dei parametri e accelera la convergenza.
+
+PERCHÉ È UTILE:
+  In qualsiasi fine-tuning, parametri diversi hanno scale di gradiente diverse.
+  Usare un LR uniforme è subottimale. PyTorch rende facile impostare
+  parameter-group-specific learning rates passando una lista di dict a
+  qualsiasi optimizer.
+
+COME IMPLEMENTARLO (riferimento: autoresearch/train.py, setup_optimizer()):
+
+    param_groups = [
+        {"params": embedding_params, "lr": lr * 15},
+        {"params": matrix_params,    "lr": lr * 1},
+        {"params": scalar_params,    "lr": lr * 12.5},
+    ]
+    optimizer = torch.optim.AdamW(param_groups, weight_decay=0.1)
+
+LIVELLO DI DIFFICOLTÀ: Facile
+PRIORITÀ CONSIGLIATA: Alta (se si fa fine-tuning) — best practice standard.
+
+
+================================================================================
+  SEZIONE C — EDUCATIVA / DI RICERCA (complessità alta, valore didattico elevato)
+================================================================================
+
+
+--------------------------------------------------------------------------------
+IDEA 13: Ottimizzatore MuonAdamW
+--------------------------------------------------------------------------------
+
+COSA FA:
+  In autoresearch/train.py, l'ottimizzatore MuonAdamW è un ibrido:
+  - Per i parametri matriciali 2D (pesi Transformer): usa Muon, che applica
+    Nesterov momentum seguito da una "Polar Express orthogonalization" — una
+    decomposizione polare iterativa approssimata che mantiene i gradienti su
+    una varietà di Stiefel (matrici semi-ortogonali). Questo riduce l'effetto
+    dei learning rate mal scalati nelle direzioni principali dei gradienti.
+  - Per tutti gli altri parametri: usa AdamW classico.
+  Il risultato teorico è una convergenza più stabile e veloce rispetto ad AdamW
+  puro per modelli Transformer di grandi dimensioni.
+
+PERCHÉ È UTILE (EDUCATIVO):
+  Muon rappresenta uno degli sviluppi più recenti nell'ottimizzazione per LLM
+  (2024-2025). Implementarlo o studiarlo in profondità per una tesi universitaria
+  dimostra conoscenza dello stato dell'arte. Non è necessariamente migliore di
+  AdamW per modelli piccoli, ma è un'area di ricerca attiva.
+
+COME IMPLEMENTARLO (riferimento: autoresearch/train.py, classe Muon):
+
+    class Muon(torch.optim.Optimizer):
+        # Polar Express: iterazione di Newton-Schulz
+        def zeropower_via_newtonschulz5(G, steps=5):
+            # Coefficienti di Newton-Schulz per approssimare la decomposizione polare
+            a, b, c = 3.4445, -4.7750, 2.0315
+            X = G / (G.norm() + 1e-7)
+            for _ in range(steps):
+                A = X @ X.T
+                B = b * A + c * A @ A
+                X = a * X + B @ X
+            return X
+
+        def step(self):
+            for group in self.param_groups:
+                for p in group["params"]:
+                    g = p.grad
+                    # Applica Nesterov, poi orthogonalization
+                    g = self.zeropower_via_newtonschulz5(g)
+                    p.data.add_(g, alpha=-group["lr"])
+
+LIVELLO DI DIFFICOLTÀ: Difficile
+PRIORITÀ CONSIGLIATA: Bassa per il progetto pratico, Alta per approfondimento
+                       teorico in una tesi. Ottimo argomento di discussione orale.
+
+
+--------------------------------------------------------------------------------
+IDEA 14: Training del Tokenizer BPE Custom per Paper Accademici
+--------------------------------------------------------------------------------
+
+COSA FA:
+  In autoresearch/prepare.py, viene addestrato un tokenizer BPE (Byte-Pair
+  Encoding) con vocabolario da 8192 token usando rustbpe (implementazione Rust
+  di BPE veloce). Il tokenizer apprende le unità sub-parola più frequenti nel
+  corpus di addestramento.
+
+PERCHÉ È UTILE:
+  PaperHunter usa Gemini per tutto il processing testuale, inclusi i chunk.
+  Tuttavia, addestrare un tokenizer specifico per paper accademici potrebbe:
+  - Migliorare la stima della dimensione dei chunk (i token accademici sono
+    diversi dai token general-purpose di tiktoken)
+  - Permettere l'embedding di testi usando un vocabolario ottimizzato per il
+    dominio (matematica, biologia, informatica)
+  - Ridurre il numero di token necessari per rappresentare formule e acronimi
+
+COME IMPLEMENTARLO (riferimento: autoresearch/prepare.py, sezione tokenizer):
+  Usando la libreria tokenizers di HuggingFace (più accessibile di rustbpe):
+
+    from tokenizers import Tokenizer
+    from tokenizers.models import BPE
+    from tokenizers.trainers import BpeTrainer
+
+    tokenizer = Tokenizer(BPE(unk_token="[UNK]"))
+    trainer = BpeTrainer(vocab_size=8192,
+                         special_tokens=["[UNK]", "[BOS]", "[EOS]"])
+    tokenizer.train_from_iterator(corpus_iterator(), trainer=trainer)
+    tokenizer.save("academic_bpe.json")
+
+  Raccogliere il corpus dai paper già scaricati in paperhunter/scaricati_test/.
+
+LIVELLO DI DIFFICOLTÀ: Medio
+PRIORITÀ CONSIGLIATA: Media — interessante contributo originale per una tesi
+                       universitaria, dimostra comprensione del preprocessing NLP.
+
+
+================================================================================
+  RIEPILOGO PRIORITÀ
+================================================================================
+
+  ALTA PRIORITÀ (implementare subito, alto impatto/basso rischio):
+    1. Best-Fit Document Packing nel Chunker               [Facile]
+    6. RMSNorm al posto di LayerNorm                       [Facile, se fine-tuning]
+    7. RoPE (Rotary Positional Embeddings)                 [Medio, se fine-tuning]
+   10. Gradient Accumulation con Budget Temporale          [Facile-Medio, se fine-tuning]
+   11. Logit Softcapping                                   [Facile, se fine-tuning]
+   12. Learning Rate Differenziati per tipo parametro      [Facile, se fine-tuning]
+
+  MEDIA PRIORITÀ (buon valore, implementabili con impegno ragionevole):
+    2. GC Management nell'ingestion pipeline               [Facile]
+    3. BPB come metrica di valutazione                     [Medio]
+    4. torch.compile + bfloat16 per il Reranker            [Facile-Medio]
+    8. Attivazione ReluSquared                             [Facile, se fine-tuning]
+   14. BPE Tokenizer custom per paper accademici           [Medio]
+
+  BASSA PRIORITÀ (valore marginale o alta complessità):
+    5. Pinned Memory per trasferimenti CPU→GPU             [Facile]
+    9. Sliding Window Attention                            [Medio-Difficile]
+   13. Ottimizzatore MuonAdamW                             [Difficile]
+
+
+================================================================================
+  SUGGERIMENTO PERCORSO DI IMPLEMENTAZIONE CONSIGLIATO
+================================================================================
+
+  Per un progetto universitario con risorse limitate, si suggerisce il
+  seguente percorso progressivo:
+
+  FASE 1 — Miglioramenti al sistema RAG esistente (senza GPU training):
+    - Implementare Best-Fit Packing nel chunker (Idea 1)
+    - Aggiungere GC management nell'ingestion pipeline (Idea 2)
+    - Aggiungere BPB/perplexity normalizzata come metrica (Idea 3)
+    - Aggiungere torch.compile per il reranker se su GPU (Idea 4)
+
+  FASE 2 — Aggiungere un componente di fine-tuning leggero:
+    Addestrare un piccolo cross-encoder specializzato per paper accademici
+    (es. basato su BERT-tiny o DistilBERT) usando le tecniche di autoresearch:
+    - RMSNorm (Idea 6) + RoPE (Idea 7) se si parte da zero
+    - ReluSquared (Idea 8) come attivazione
+    - Logit softcapping (Idea 11) per stabilità
+    - Gradient accumulation (Idea 10) per GPU piccole
+    - Learning rate differenziati (Idea 12) per convergenza ottimale
+
+  FASE 3 — Ricerca avanzata (per una tesi con componente sperimentale):
+    - BPE tokenizer custom per il dominio accademico (Idea 14)
+    - Sliding Window Attention per documenti lunghi (Idea 9)
+    - Studio teorico e sperimentale di MuonAdamW (Idea 13)
+
+
+================================================================================
+  RIFERIMENTI
+================================================================================
+
+  karpathy/autoresearch (codice sorgente analizzato):
+    autoresearch/train.py    — architettura GPT, training loop, ottimizzatori
+    autoresearch/prepare.py  — tokenizer BPE, dataloader, best-fit packing
+
+  PaperHunter v3.1 (file rilevanti per le integrazioni):
+    paperhunter/ingestion/chunker.py          — Best-Fit Packing (Idea 1)
+    paperhunter/ingestion/ingestion_pipeline.py — GC Management (Idea 2)
+    paperhunter/utils/token_counter.py        — BPB Metric (Idea 3)
+    paperhunter/indexing/reranker.py          — torch.compile + bfloat16 (Idea 4)
+    paperhunter/utils/multimodal_embedder.py  — Pinned Memory (Idea 5)
+
+================================================================================
+  Fine del documento
+================================================================================

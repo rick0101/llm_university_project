@@ -290,7 +290,7 @@ paperhunter/
 
 ### FASE 5 — Pinned Memory per Trasferimenti CPU→Acceleratore (Idea 5)
 
-#### [ ] Task 5.1: Applicare pinned memory in `qdrant_store.py`
+#### [~] Task 5.1: Applicare pinned memory in `qdrant_store.py`
 
 **File:** `paperhunter/indexing/qdrant_store.py` (modifica)  
 **Stato attuale:** I tensor di embedding vengono inviati all'acceleratore (se presente) con semplici chiamate `.to(device)`. Nei metodi di batch insert di Qdrant, questo può essere un collo di bottiglia per l'ampiezza di banda DMA su CUDA.  
@@ -309,9 +309,25 @@ paperhunter/
 - La funzione `move_to_device()` gestisce automaticamente la pinned memory su CUDA e il semplice `.to(device)` su MPS/CPU, quindi non è necessario aggiungere logica condizionale nel codice chiamante.  
 **Test:** Verificare che i batch insert di Qdrant funzionino correttamente su CPU (nessuna regressione). Con GPU NVIDIA disponibile, misurare il throughput di insert prima e dopo la modifica.
 
+> ⚠️ **NON APPLICABILE — 18 marzo 2026**
+>
+> **Motivo:** Il task presuppone che `qdrant_store.py` crei tensor PyTorch (`torch.tensor(embedding_list)`) e li trasferisca su acceleratore con `.to(DEVICE)`. In realtà, **l'intera pipeline di embedding e inserimento in Qdrant lavora esclusivamente con `list[list[float]]`** (liste Python native).
+>
+> **Analisi dettagliata:**
+> - Gli embedding sono generati dall'API Gemini Embedding 2 Preview tramite `embed_model.get_text_embedding_batch()`, che restituisce `list[list[float]]`.
+> - I metodi `add_chunks()`, `add_chunks_with_embeddings()` e `add_image_embeddings()` passano queste liste Python direttamente a Qdrant via `models.PointStruct(vector=embedding, ...)`.
+> - Qdrant client accetta direttamente liste Python come vettori — **non è necessario alcun tensor PyTorch** nel flusso di inserimento.
+> - Non esiste alcuna riga con `torch.tensor()`, `.to(device)`, o import PyTorch nel file.
+> - La funzione `move_to_device()` da `device_utils.py` opera su `torch.Tensor`, non su liste Python.
+>
+> **Quando diventerebbe applicabile:**
+> - Se si usasse un modello di embedding locale (es. `sentence-transformers`) che produce tensor PyTorch nativi, la pinned memory sarebbe utile per il trasferimento CPU→GPU prima del forward pass di embedding.
+>
+> **Nessuna modifica al codice.**
+
 ---
 
-#### [ ] Task 5.2: Applicare pinned memory in `multimodal_embedder.py`
+#### [~] Task 5.2: Applicare pinned memory in `multimodal_embedder.py`
 
 **File:** `paperhunter/utils/multimodal_embedder.py` (modifica)  
 **Stato attuale:** Il modulo `multimodal_embedder.py` non usa pinned memory per i trasferimenti di tensor verso l'acceleratore.  
@@ -320,6 +336,22 @@ paperhunter/
 - Identificare tutti i punti in `multimodal_embedder.py` dove si crea un tensor da inviare a GPU/MPS e sostituire con `move_to_device()`.
 - Assicurarsi che il `DEVICE` sia determinato una sola volta all'inizializzazione del modulo (non ad ogni chiamata) usando `get_device()`.  
 **Test:** Verificare il comportamento corretto su CPU. Con acceleratore disponibile, confrontare il throughput di embedding di un batch di 50 immagini prima e dopo la modifica.
+
+> ⚠️ **NON APPLICABILE — 18 marzo 2026**
+>
+> **Motivo:** Come per il Task 5.1, `multimodal_embedder.py` non usa PyTorch per generare o trasferire embedding. Il modulo usa direttamente il SDK `google-genai` (`from google import genai`) per chiamate API all'endpoint Gemini Embedding 2 Preview.
+>
+> **Analisi dettagliata:**
+> - Non c'è alcun import di `torch` nel file.
+> - `MultimodalEmbedder.embed_image()` chiama `client.models.embed_content()` (API REST), che restituisce `list[float]`.
+> - `MultimodalEmbedder.embed_text()` e `embed_batch()` usano lo stesso SDK API-based.
+> - Tutti i vettori restituiti sono `list[float]` Python nativi — nessun tensor PyTorch coinvolto.
+> - La funzione `move_to_device()` richiede `torch.Tensor` come input — non accetta liste Python.
+>
+> **Quando diventerebbe applicabile:**
+> - Se si usasse un modello di embedding multimodale locale (es. CLIP via `transformers`) che produce tensor PyTorch nativi e richiede hardware GPU per l'inferenza.
+>
+> **Nessuna modifica al codice.**
 
 ---
 
@@ -332,14 +364,17 @@ paperhunter/
 | 2.2  | GC Management Summary  | Facile        | **Media**  | Riduzione RAM picco su corpus grandi         |
 | 3.1  | BPB Quality Metric     | Medio         | **Media**  | Valutazione oggettiva qualità survey         |
 | 4.1  | torch.compile + bf16   | N/A           | **N/A**    | ⚠️ Non applicabile: reranker è API-based     |
-| 5.1  | Pinned Memory Qdrant   | Facile        | **Bassa**  | Maggiore throughput insert su GPU NVIDIA     |
-| 5.2  | Pinned Memory Embedder | Facile        | **Bassa**  | Maggiore throughput embedding su GPU NVIDIA  |
+| 5.1  | Pinned Memory Qdrant   | N/A           | **N/A**    | ⚠️ Non applicabile: embedding sono list[float] |
+| 5.2  | Pinned Memory Embedder | N/A           | **N/A**    | ⚠️ Non applicabile: SDK google-genai API-based |
 
 > **Nota:** L'helper `paperhunter/utils/device_utils.py` (con `get_device()`, `get_autocast_dtype()`,
-> `move_to_device()`) è già presente nel progetto. I Task 5.1 e 5.2 devono usarlo
-> direttamente senza duplicare la logica di rilevamento dispositivo.
-> Il Task 4.1 è stato marcato come non applicabile perché il reranker è API-based (Gemini Flash),
-> non un modello locale sentence-transformers.
+> `move_to_device()`) è già presente nel progetto ed è pronto per l'uso con modelli PyTorch locali.
+> I Task 4.1, 5.1 e 5.2 sono stati marcati come **non applicabili** perché l'architettura attuale
+> di PaperHunter è interamente API-based (Gemini Flash per reranking, Gemini Embedding 2 Preview
+> per embedding, google-genai SDK per embedding multimodali). Non esistono modelli PyTorch locali
+> e di conseguenza non esistono tensor da trasferire su acceleratori.
+> Queste ottimizzazioni diventerebbero applicabili qualora si introducessero modelli locali
+> (es. `sentence-transformers` per reranking, CLIP per embedding multimodali).
 
 ---
 

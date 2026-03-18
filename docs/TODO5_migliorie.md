@@ -243,7 +243,7 @@ paperhunter/
 
 ### FASE 4 — torch.compile + bfloat16 per il Reranker (Idea 4)
 
-#### [ ] Task 4.1: Ottimizzare il reranker con bfloat16 e torch.compile
+#### [~] Task 4.1: Ottimizzare il reranker con bfloat16 e torch.compile
 
 **File:** `paperhunter/indexing/reranker.py` (modifica), `config.yaml` (modifica), `paperhunter/config.py` (modifica)  
 **Stato attuale:** Il reranker usa un cross-encoder (sentence-transformers) in float32 senza ottimizzazione JIT. Non utilizza il `get_device()` helper già presente in `paperhunter/utils/device_utils.py`. Su GPU, questo è il collo di bottiglia della pipeline di retrieval su query complesse.  
@@ -268,6 +268,23 @@ paperhunter/
 - Aggiungere il campo `use_torch_compile: bool = False` a `RerankConfig` in `paperhunter/config.py`.
 - **PREREQUISITO:** PyTorch >= 2.0. Verificare la versione in `pyproject.toml` prima di abilitare `torch.compile`.  
 **Test:** Con `use_torch_compile: false`, verificare che il reranker funzioni correttamente su CPU (nessuna regressione). Con un acceleratore disponibile, abilitare il flag e misurare la latenza su un batch di 100 coppie di testo prima e dopo.
+
+> ⚠️ **NON APPLICABILE — 18 marzo 2026**
+>
+> **Motivo:** Il task presuppone che il reranker sia un cross-encoder locale basato su `sentence-transformers` con un modello PyTorch che gira on-premise. In realtà, l'implementazione attuale (`GeminiReranker` in `paperhunter/indexing/reranker.py`) è **completamente API-based**: fa chiamate HTTP a Gemini Flash, che valuta la rilevanza query↔candidato e restituisce score JSON. Non esiste alcun modello PyTorch locale, nessun forward pass, nessun tensor, nessun metodo `.predict()`.
+>
+> **Analisi dettagliata:**
+> - Il documento `implementazioni_from_autoresearch.txt` (Idea 4, riga 165-166) afferma: *"In PaperHunter, paperhunter/indexing/reranker.py usa un cross-encoder (sentence-transformers) per il reranking"*. Questa affermazione è **errata** rispetto all'implementazione reale.
+> - `GeminiReranker.__init__()` inizializza un client LLM Gemini Flash (via `get_flash_llm()`), non un modello sentence-transformers.
+> - `GeminiReranker._rerank_batch()` formatta candidati in un prompt testuale, chiama l'API Gemini, e parsa la risposta JSON per ottenere gli score. Non c'è forward pass PyTorch.
+> - Le ottimizzazioni `torch.compile()` e `torch.autocast(dtype=bfloat16)` sono applicabili **solo** a modelli PyTorch locali. Non hanno alcun effetto su chiamate API REST.
+> - Aggiungere flag di configurazione (`use_torch_compile`) sarebbe dead code senza utilità pratica.
+>
+> **Quando diventerebbe applicabile:**
+> - Se in futuro si aggiungesse un reranker locale alternativo (es. `cross-encoder/ms-marco-MiniLM-L6-v2` da sentence-transformers), le ottimizzazioni sarebbero valide e il helper `device_utils.py` (già presente) si integrerebbe perfettamente.
+> - In quel caso, i flag `use_torch_compile` e `use_bfloat16` andrebbero aggiunti a `RetrievalConfig` (non esiste un `RerankConfig` separato).
+>
+> **Nessuna modifica al codice.**
 
 ---
 
@@ -314,13 +331,15 @@ paperhunter/
 | 2.1  | GC Management Ingestion| Facile        | **Media**  | -10-30% tempo su batch grandi               |
 | 2.2  | GC Management Summary  | Facile        | **Media**  | Riduzione RAM picco su corpus grandi         |
 | 3.1  | BPB Quality Metric     | Medio         | **Media**  | Valutazione oggettiva qualità survey         |
-| 4.1  | torch.compile + bf16   | Facile-Medio  | **Media**  | -30-50% latenza reranker su GPU              |
+| 4.1  | torch.compile + bf16   | N/A           | **N/A**    | ⚠️ Non applicabile: reranker è API-based     |
 | 5.1  | Pinned Memory Qdrant   | Facile        | **Bassa**  | Maggiore throughput insert su GPU NVIDIA     |
 | 5.2  | Pinned Memory Embedder | Facile        | **Bassa**  | Maggiore throughput embedding su GPU NVIDIA  |
 
 > **Nota:** L'helper `paperhunter/utils/device_utils.py` (con `get_device()`, `get_autocast_dtype()`,
-> `move_to_device()`) è già presente nel progetto. I Task 4.1, 5.1 e 5.2 devono usarlo
+> `move_to_device()`) è già presente nel progetto. I Task 5.1 e 5.2 devono usarlo
 > direttamente senza duplicare la logica di rilevamento dispositivo.
+> Il Task 4.1 è stato marcato come non applicabile perché il reranker è API-based (Gemini Flash),
+> non un modello locale sentence-transformers.
 
 ---
 

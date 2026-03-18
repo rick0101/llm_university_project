@@ -28,6 +28,7 @@ Uso::
 
 from __future__ import annotations
 
+import gc
 import json
 import os
 import re
@@ -560,43 +561,54 @@ class IngestionPipeline:
             logger.info("BATCH %d/%d (%d PDF)", batch_idx, len(batches), len(batch))
             logger.info("-" * 50)
 
-            for pdf_info in progress_bar(
-                batch,
-                description=f"Batch {batch_idx}/{len(batches)}",
-                total=len(batch),
-            ):
-                rel_path = pdf_info["relative_path"]
-                try:
-                    result = self._process_single_pdf(
-                        pdf_info=pdf_info,
-                        registry=registry,
-                        report=report,
-                    )
+            # GC management: disabilita il GC automatico durante l'elaborazione
+            # intensiva del batch per evitare pause non deterministiche.
+            gc.disable()
+            try:
+                for pdf_info in progress_bar(
+                    batch,
+                    description=f"Batch {batch_idx}/{len(batches)}",
+                    total=len(batch),
+                ):
+                    rel_path = pdf_info["relative_path"]
+                    try:
+                        result = self._process_single_pdf(
+                            pdf_info=pdf_info,
+                            registry=registry,
+                            report=report,
+                        )
 
-                    if result is not None:
-                        paper, chunks, figure_chunks = result
-                        report.processed += 1
-                        report.total_chunks += len(chunks) + len(figure_chunks)
-                        report.papers.append(paper)
+                        if result is not None:
+                            paper, chunks, figure_chunks = result
+                            report.processed += 1
+                            report.total_chunks += len(chunks) + len(figure_chunks)
+                            report.papers.append(paper)
 
-                        # Raccogli BibTeX
-                        if paper.bibtex_entry:
-                            all_bibtex_entries.append(paper.bibtex_entry)
+                            # Raccogli BibTeX
+                            if paper.bibtex_entry:
+                                all_bibtex_entries.append(paper.bibtex_entry)
 
-                    # Segna come completato nel checkpoint
-                    completed_pdfs_list.append(rel_path)
+                            del chunks, figure_chunks  # rilascia oggetti intermedi
 
-                except Exception as exc:
-                    report.errors += 1
-                    report.error_details[rel_path] = (
-                        f"{type(exc).__name__}: {exc}"
-                    )
-                    logger.error(
-                        "ERRORE fatale processing '%s': %s\n%s",
-                        rel_path,
-                        exc,
-                        traceback.format_exc(),
-                    )
+                        del result  # rilascia esplicitamente l'oggetto result
+
+                        # Segna come completato nel checkpoint
+                        completed_pdfs_list.append(rel_path)
+
+                    except Exception as exc:
+                        report.errors += 1
+                        report.error_details[rel_path] = (
+                            f"{type(exc).__name__}: {exc}"
+                        )
+                        logger.error(
+                            "ERRORE fatale processing '%s': %s\n%s",
+                            rel_path,
+                            exc,
+                            traceback.format_exc(),
+                        )
+            finally:
+                gc.enable()
+                gc.collect()
 
             # Checkpoint dopo ogni batch
             if self.use_checkpoint:

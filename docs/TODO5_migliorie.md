@@ -85,7 +85,7 @@ paperhunter/
 
 ### FASE 2 — GC Management nell'Ingestion e Summarization Pipeline (Idea 2)
 
-#### [ ] Task 2.1: GC management in `ingestion_pipeline.py`
+#### [x] Task 2.1: GC management in `ingestion_pipeline.py`
 
 **File:** `paperhunter/ingestion/ingestion_pipeline.py` (modifica)  
 **Stato attuale:** La pipeline elabora batch di PDF pesanti con molti oggetti Pydantic di grandi dimensioni (`GROBIDOutput`, `PaperChunk`, `L1Summary`). Il garbage collector Python gira automaticamente, causando pause imprevedibili ("GC stalls") che rallentano l'elaborazione del 10-30% in picchi su batch grandi.  
@@ -107,6 +107,30 @@ paperhunter/
   ```
 - Assicurarsi che il `finally` garantisca sempre la riattivazione del GC anche in caso di eccezione.  
 **Test:** Eseguire l'ingestione di un batch di 20+ PDF prima e dopo la modifica e misurare il tempo totale. Verificare che il GC venga sempre riattivato anche se si verifica un'eccezione durante l'elaborazione.
+
+> ✅ **Completato — 18 marzo 2026**
+>
+> **Modifiche apportate:**
+> - `paperhunter/ingestion/ingestion_pipeline.py`: Aggiunto `import gc` nella sezione import.
+> - `paperhunter/ingestion/ingestion_pipeline.py`: Nel metodo `run()`, il loop di elaborazione interno a ogni batch è avvolto con `gc.disable()` prima del loop e `finally: gc.enable(); gc.collect()` dopo. Questo garantisce che il GC automatico non causi pause non deterministiche durante il processing pesante.
+> - `paperhunter/ingestion/ingestion_pipeline.py`: Aggiunti `del chunks, figure_chunks` e `del result` nel loop per rilasciare esplicitamente gli oggetti intermedi di grandi dimensioni dopo ogni PDF processato.
+> - `tests/test_gc_management.py`: 7 test (4 con gc mocked + 3 con gc reale). Coprono: import gc nel modulo, gc.disable→enable→collect per batch, gc riabilitato anche su eccezione, gc.disable chiamato una volta per batch (2 batch → 2 chiamate), gc abilitato dopo import, pattern corretto con gc reale, gc riabilitato dopo eccezione reale.
+>
+> **Pattern applicato nel metodo `run()` — loop batch processing:**
+> ```python
+> gc.disable()
+> try:
+>     for pdf_info in progress_bar(batch, ...):
+>         result = self._process_single_pdf(...)
+>         if result is not None:
+>             paper, chunks, figure_chunks = result
+>             # ... aggiorna report ...
+>             del chunks, figure_chunks
+>         del result
+> finally:
+>     gc.enable()
+>     gc.collect()
+> ```
 
 ---
 

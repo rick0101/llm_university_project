@@ -22,7 +22,7 @@ from datetime import datetime
 from pathlib import Path
 
 # Aggiungi il progetto al path
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 # ============================================================================

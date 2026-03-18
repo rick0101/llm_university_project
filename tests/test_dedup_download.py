@@ -18,7 +18,7 @@ import tempfile
 from pathlib import Path
 
 # Ensure paperhunter is importable
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from paperhunter.download_manager import Downloader, _normalize_filename
 from paperhunter.models import DownloadResult, Paper

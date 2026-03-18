@@ -11,7 +11,7 @@ import time
 from pathlib import Path
 
 # Add project root to path
-sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from paperhunter.summarization.level1_summarizer import (
     generate_l1_summary,

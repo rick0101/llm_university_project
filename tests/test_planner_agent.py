@@ -28,7 +28,7 @@ import time
 from pathlib import Path
 
 # Aggiungi il progetto al path
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 
 def test_json_parsing():

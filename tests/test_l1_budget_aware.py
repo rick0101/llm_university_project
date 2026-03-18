@@ -14,7 +14,7 @@ Verifica che:
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from paperhunter.utils.logging_setup import (
     setup_logging,

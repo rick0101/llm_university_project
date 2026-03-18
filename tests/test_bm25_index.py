@@ -18,7 +18,7 @@ import tempfile
 from pathlib import Path
 
 # Ensure project root on path
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from paperhunter.indexing.bm25_index import BM25Index, tokenize, _naive_stem
 from paperhunter.models import PaperChunk, ChunkType

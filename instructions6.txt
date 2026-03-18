@@ -1,0 +1,6 @@
+ho bisogno che le date dei pdf siano estratte correttamente.
+Al momento, non tuti i pdf hanno una data estratta, e questo è un problema per la nostra pipeline di indicizzazione e retrieval.
+Dobbiamo implementare un sistema più robusto per l'estrazione delle date dai PDF, che possa gestire formati di data diversi e situazioni in cui la data non è esplicitamente indicata.
+
+permetti al modello writer di richiamare una immagine specifica durante la stesura del survey.
+

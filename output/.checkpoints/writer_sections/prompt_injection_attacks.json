@@ -1,0 +1,18 @@
+{
+  "section_key": "prompt_injection_attacks",
+  "saved_at": "2026-03-18T12:03:12.208501",
+  "data": {
+    "section_key": "prompt_injection_attacks",
+    "title": "Prompt Injection Attacks",
+    "text": "Text",
+    "citations": [],
+    "word_count": 100,
+    "status": "drafted",
+    "iteration": 1,
+    "rag_queries": [],
+    "retrieved_chunk_ids": [],
+    "writer_notes": "",
+    "critic_feedback": "",
+    "drafted_at": "2026-03-18T12:03:12.202869"
+  }
+}

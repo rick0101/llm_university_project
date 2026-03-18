@@ -38,6 +38,7 @@ Uso::
 
 from __future__ import annotations
 
+import gc
 import hashlib
 import json
 import math
@@ -866,28 +867,34 @@ def generate_l2_for_all_categories(
     errors: dict[str, str] = {}
     skipped = 0
 
-    for category in progress_bar(categories, description="L2 Summaries"):
-        # Skip se già presente e non invalidato
-        if skip_existing and _l2_exists_and_valid(category, store):
-            logger.debug(f"L2 già esistente per '{category}', skip")
-            skipped += 1
-            continue
+    gc.disable()
+    try:
+        for category in progress_bar(categories, description="L2 Summaries"):
+            # Skip se già presente e non invalidato
+            if skip_existing and _l2_exists_and_valid(category, store):
+                logger.debug(f"L2 già esistente per '{category}', skip")
+                skipped += 1
+                continue
 
-        try:
-            l2 = generate_l2_summary(
-                category,
-                force_model=force_model,
-                save_to_store=save_to_store,
-                store=store,
-            )
-            summaries.append(l2)
-        except ValueError as e:
-            # Nessun L1 per questa categoria
-            logger.warning(f"Skip L2 per '{category}': {e}")
-            skipped += 1
-        except Exception as e:
-            logger.error(f"Errore L2 per '{category}': {e}")
-            errors[category] = str(e)
+            try:
+                l2 = generate_l2_summary(
+                    category,
+                    force_model=force_model,
+                    save_to_store=save_to_store,
+                    store=store,
+                )
+                summaries.append(l2)
+                del l2
+            except ValueError as e:
+                # Nessun L1 per questa categoria
+                logger.warning(f"Skip L2 per '{category}': {e}")
+                skipped += 1
+            except Exception as e:
+                logger.error(f"Errore L2 per '{category}': {e}")
+                errors[category] = str(e)
+    finally:
+        gc.enable()
+        gc.collect()
 
     # --- Report ---
     _print_batch_report(

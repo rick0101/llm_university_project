@@ -33,6 +33,7 @@ Uso::
 
 from __future__ import annotations
 
+import gc
 import hashlib
 import json
 import re
@@ -524,34 +525,40 @@ def generate_l1_batch(
 
     logger.info(f"Generazione L1 batch per {len(papers_with_chunks)} paper...")
 
-    for paper, chunks in progress_bar(
-        papers_with_chunks,
-        description="L1 Summaries",
-    ):
-        paper_id = paper.bibtex_key or paper.pdf_hash or paper.title[:30]
+    gc.disable()
+    try:
+        for paper, chunks in progress_bar(
+            papers_with_chunks,
+            description="L1 Summaries",
+        ):
+            paper_id = paper.bibtex_key or paper.pdf_hash or paper.title[:30]
 
-        # Skip se già presente
-        if skip_existing and store is not None:
-            if _l1_exists_in_store(paper_id, store):
-                logger.debug(f"L1 già esistente per '{paper_id}', skip")
-                skipped += 1
-                continue
+            # Skip se già presente
+            if skip_existing and store is not None:
+                if _l1_exists_in_store(paper_id, store):
+                    logger.debug(f"L1 già esistente per '{paper_id}', skip")
+                    skipped += 1
+                    continue
 
-        try:
-            summary = generate_l1_summary(
-                paper,
-                chunks,
-                force_model=force_model,
-                save_to_store=save_to_store,
-                store=store,
-                compression_tier=batch_tier,
-                n_papers_in_category=n_papers_in_category,
-            )
-            summaries.append(summary)
-            total_chars += summary.l1_char_count or 0
-        except Exception as e:
-            logger.error(f"Errore L1 per '{paper.title[:50]}...': {e}")
-            errors[paper_id] = str(e)
+            try:
+                summary = generate_l1_summary(
+                    paper,
+                    chunks,
+                    force_model=force_model,
+                    save_to_store=save_to_store,
+                    store=store,
+                    compression_tier=batch_tier,
+                    n_papers_in_category=n_papers_in_category,
+                )
+                summaries.append(summary)
+                total_chars += summary.l1_char_count or 0
+                del summary
+            except Exception as e:
+                logger.error(f"Errore L1 per '{paper.title[:50]}...': {e}")
+                errors[paper_id] = str(e)
+    finally:
+        gc.enable()
+        gc.collect()
 
     # --- Report con statistiche budget ---
     avg_chars = total_chars // len(summaries) if summaries else 0

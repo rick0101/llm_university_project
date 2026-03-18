@@ -134,7 +134,7 @@ paperhunter/
 
 ---
 
-#### [ ] Task 2.2: GC management in `level1_summarizer.py` e `level2_summarizer.py`
+#### [x] Task 2.2: GC management in `level1_summarizer.py` e `level2_summarizer.py`
 
 **File:** `paperhunter/summarization/level1_summarizer.py` (modifica), `paperhunter/summarization/level2_summarizer.py` (modifica)  
 **Stato attuale:** I loop di summarization non gestiscono il GC esplicitamente. Con corpus grandi (100+ paper per categoria) si accumulano molti oggetti `L1Summary`/`L2Summary` in memoria durante l'elaborazione.  
@@ -144,6 +144,52 @@ paperhunter/
 - In `level2_summarizer.py`, nel loop che aggrega gli L1 summary per generare L2, applicare lo stesso pattern.
 - Rilasciare esplicitamente gli oggetti intermedi di grandi dimensioni (es. i testi completi dei paper dopo la summarization) con `del`.  
 **Test:** Verificare con un profiler di memoria (es. `tracemalloc`) che il consumo massimo di RAM durante la summarization di 50+ paper diminuisca rispetto alla versione precedente.
+
+> ✅ **Completato — 18 marzo 2026**
+>
+> **Modifiche apportate:**
+> - `paperhunter/summarization/level1_summarizer.py`: Aggiunto `import gc` nella sezione import.
+> - `paperhunter/summarization/level1_summarizer.py`: Nel metodo `generate_l1_batch()`, il loop di elaborazione è avvolto con `gc.disable()` prima del loop e `finally: gc.enable(); gc.collect()` dopo. Aggiunto `del summary` nel loop per rilasciare il riferimento locale dopo l'append alla lista.
+> - `paperhunter/summarization/level2_summarizer.py`: Aggiunto `import gc` nella sezione import.
+> - `paperhunter/summarization/level2_summarizer.py`: Nel metodo `generate_l2_for_all_categories()`, il loop sulle categorie è avvolto con `gc.disable()` prima del loop e `finally: gc.enable(); gc.collect()` dopo. Aggiunto `del l2` nel loop per rilasciare il riferimento locale dopo l'append alla lista.
+> - `tests/test_gc_management_summarizers.py`: 12 test (3 per L1 batch con gc mocked + 3 per L2 batch con gc mocked + 2 import check + 4 con gc reale). Coprono: import gc nei moduli, gc.disable→enable→collect per batch L1 e L2, gc riabilitato anche su eccezione, gc.disable chiamato una volta per batch, gc abilitato dopo import, pattern corretto con gc reale, gc riabilitato dopo eccezione reale.
+>
+> **Pattern applicato in `generate_l1_batch()` — loop paper processing:**
+> ```python
+> gc.disable()
+> try:
+>     for paper, chunks in progress_bar(papers_with_chunks, ...):
+>         # ... skip_existing check ...
+>         try:
+>             summary = generate_l1_summary(...)
+>             summaries.append(summary)
+>             total_chars += summary.l1_char_count or 0
+>             del summary
+>         except Exception as e:
+>             errors[paper_id] = str(e)
+> finally:
+>     gc.enable()
+>     gc.collect()
+> ```
+>
+> **Pattern applicato in `generate_l2_for_all_categories()` — loop categorie:**
+> ```python
+> gc.disable()
+> try:
+>     for category in progress_bar(categories, ...):
+>         # ... skip_existing check ...
+>         try:
+>             l2 = generate_l2_summary(...)
+>             summaries.append(l2)
+>             del l2
+>         except ValueError as e:
+>             skipped += 1
+>         except Exception as e:
+>             errors[category] = str(e)
+> finally:
+>     gc.enable()
+>     gc.collect()
+> ```
 
 ---
 

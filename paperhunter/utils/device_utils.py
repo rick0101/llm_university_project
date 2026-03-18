@@ -55,7 +55,7 @@ def get_autocast_dtype(device: torch.device) -> torch.dtype:
     """Restituisce il dtype ottimale per ``torch.autocast`` sul dispositivo dato.
 
     - ``cuda`` / ``mps``: ``bfloat16`` — più stabile di float16, nativo su
-      GPU NVIDIA Ampere+ e Apple M1/M2/M3/M4 con PyTorch >= 2.0.
+      GPU NVIDIA Ampere+ e Apple Silicon (M1+) con PyTorch >= 2.0.
     - ``cpu``: ``float32`` — bfloat16 su CPU è significativamente più lento.
 
     Args:

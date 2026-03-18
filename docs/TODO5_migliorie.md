@@ -195,7 +195,7 @@ paperhunter/
 
 ### FASE 3 — Bits Per Byte (BPB) come Metrica di Valutazione (Idea 3)
 
-#### [ ] Task 3.1: Creare `paperhunter/utils/quality_metrics.py`
+#### [x] Task 3.1: Creare `paperhunter/utils/quality_metrics.py`
 
 **File:** `paperhunter/utils/quality_metrics.py` (nuovo)  
 **Stato attuale:** PaperHunter non ha metriche di valutazione della qualità del testo generato confrontabili cross-modello. Non è possibile misurare oggettivamente l'impatto di modifiche ai prompt o confrontare output di modelli diversi (es. Gemini Flash vs Pro).  
@@ -222,6 +222,22 @@ paperhunter/
 - Aggiungere una funzione `compute_survey_quality_report(survey_text: str) -> dict` che restituisce un dizionario con BPB stimato, numero di token, numero di byte e rapporto token/byte, per uso nella sezione di valutazione del progetto.
 - Usare il `get_device()` helper da `paperhunter/utils/device_utils.py` per la versione con modello locale (device-agnostic).  
 **Test:** Verificare che `compute_bpb()` restituisca un valore float positivo su un testo di esempio. Verificare che `estimate_bpb_from_token_count()` funzioni senza GPU. Confrontare il BPB di testo ad alta qualità (articolo scientifico) vs testo casuale.
+
+> ✅ **Completato — 18 marzo 2026**
+>
+> **Modifiche apportate:**
+> - `paperhunter/utils/quality_metrics.py`: Nuovo modulo con 3 funzioni pubbliche per la valutazione della qualità del testo generato.
+> - `tests/test_quality_metrics.py`: 19 test (7 per `estimate_bpb_from_token_count` + 7 per `compute_survey_quality_report` + 5 per `compute_bpb`). 16 passed, 3 skipped (i test di `compute_bpb` con mock richiedono `torch`, correttamente saltati con `pytest.importorskip` quando non installato).
+>
+> **Funzioni aggiunte:**
+> - `compute_bpb(text: str, model, tokenizer) -> float` — Calcola BPB reale usando un modello HuggingFace locale. Formula: `cross_entropy_loss / ln(2) / mean_bytes_per_token`. Usa `get_device()` da `device_utils.py` per device-agnostic placement. Richiede `torch` + `transformers` (import lazy, non obbligatorio per il progetto).
+> - `estimate_bpb_from_token_count(text: str, encoding_name: str = "cl100k_base") -> float` — Proxy leggera: stima BPB dal rapporto `(n_tokens / n_bytes) * 8` usando `tiktoken`. Nessuna dipendenza GPU, ideale per stime veloci e ambienti senza acceleratore.
+> - `compute_survey_quality_report(survey_text: str, encoding_name: str = "cl100k_base") -> dict` — Report completo con `n_tokens`, `n_bytes`, `tokens_per_byte`, `estimated_bpb`, `encoding`. Utile per la sezione di valutazione del progetto.
+>
+> **Note implementative:**
+> - `torch` è importato con lazy import dentro `compute_bpb()`, non al top-level, per evitare errori se non installato (il progetto non lo richiede come dipendenza core).
+> - `tiktoken` con encoding `cl100k_base` (GPT-4) è usato come proxy — buona approssimazione per testo inglese accademico.
+> - Il confronto scientifico vs casuale nel test conferma che testo random ha BPB stimato più alto (più token/byte = meno comprimibile).
 
 ---
 

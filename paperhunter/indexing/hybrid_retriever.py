@@ -78,6 +78,8 @@ class RetrievedChunk:
     del metodo di retrieval che ha contribuito al risultato.
 
     Attributes:
+        venue_tier: Tier di autorevolezza della venue (1=top, 2=medium, 3=preprint, 0=sconosciuta).
+            Valorizzato durante il venue boost, None se il boost non è stato applicato.
         chunk_id: ID univoco del chunk.
         text: Contenuto testuale.
         score: Score combinato (RRF o singola fonte).
@@ -97,6 +99,7 @@ class RetrievedChunk:
     bm25_score: Optional[float] = None
     vector_rank: Optional[int] = None
     bm25_rank: Optional[int] = None
+    venue_tier: Optional[int] = None
 
     def to_dict(self) -> dict[str, Any]:
         """Serializza in dizionario."""
@@ -110,6 +113,7 @@ class RetrievedChunk:
             "bm25_score": self.bm25_score,
             "vector_rank": self.vector_rank,
             "bm25_rank": self.bm25_rank,
+            "venue_tier": self.venue_tier,
         }
 
 
@@ -216,6 +220,7 @@ class HybridRetriever:
         self._top_k_final = top_k_final if top_k_final is not None else cfg.top_k_final
         self._rrf_k = rrf_k
         self._recency_boost = cfg.recency_boost if settings.recency_priority else 0.0
+        self._venue_ranking_enabled: bool = getattr(cfg, "venue_ranking_enabled", False)
 
         # Lazy init: store e index
         self._qdrant_store = qdrant_store
@@ -518,6 +523,10 @@ class HybridRetriever:
         if r_boost and r_boost > 0.0 and fused:
             fused = _apply_recency_boost(fused, r_boost)
 
+        # --- Venue boost ---
+        if self._venue_ranking_enabled and fused:
+            fused = _apply_venue_boost(fused)
+
         # Tronca a final_n
         fused = fused[:final_n]
 
@@ -528,6 +537,7 @@ class HybridRetriever:
             f"vector={len(vector_results)}, bm25={len(bm25_results)}, "
             f"fused={len(fused)}, top_score={top_score:.4f}, "
             f"recency_boost={r_boost}, "
+            f"venue_ranking={self._venue_ranking_enabled}, "
             f"elapsed={elapsed:.3f}s"
         )
 
@@ -967,6 +977,54 @@ def _apply_recency_boost(
         f"boosted={boosted_count}/{len(results)}"
     )
 
+    return results
+
+
+def _apply_venue_boost(
+    results: list[RetrievedChunk],
+) -> list[RetrievedChunk]:
+    """Applica il boost di autorevolezza della venue ai risultati post-RRF.
+
+    Usa ``VenueRanker`` per calcolare il boost (positivo o negativo) in
+    base alla venue nel payload del chunk. Il boost viene sommato allo
+    score corrente e clampato in ``[0.0, 1.0]``.
+
+    Per ogni candidato viene impostato ``venue_tier`` per tracciabilità.
+
+    Args:
+        results: Lista di ``RetrievedChunk`` dopo RRF (e opzionale recency boost).
+
+    Returns:
+        Lista di ``RetrievedChunk`` con score aggiornato e ri-ordinata per score
+        decrescente.
+    """
+    from paperhunter.indexing.venue_ranker import create_venue_ranker
+
+    ranker = create_venue_ranker()
+
+    for r in results:
+        venue = r.metadata.get("venue") or r.metadata.get("journal") or None
+        if not venue:
+            venue = None
+        boost = ranker.get_boost(venue)
+        tier = ranker.get_tier(venue)
+        old_score = r.score
+        r.score = min(1.0, max(0.0, r.score + boost))
+        r.venue_tier = tier
+        logger.debug(
+            "Venue boost: chunk_id=%s venue=%r tier=%d boost=%+.2f score %.4f→%.4f",
+            r.chunk_id,
+            venue,
+            tier,
+            boost,
+            old_score,
+            r.score,
+        )
+
+    # Ri-ordina per score decrescente
+    results.sort(key=lambda r: r.score, reverse=True)
+
+    logger.debug("Venue boost applicato a %d chunk", len(results))
     return results
 
 

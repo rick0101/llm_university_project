@@ -162,6 +162,7 @@ class PaperChunk(BaseModel):
     month: Optional[int] = Field(None, description="Mese di pubblicazione")
     chunk_index: int = Field(0, description="Indice del chunk nella sezione")
     image_path: Optional[str] = Field(None, description="Percorso relativo all'immagine estratta (solo per Figure_Description)")
+    venue: Optional[str] = Field(None, description="Venue/journal del paper di origine (es. NeurIPS, ACL, arXiv)")
 
     # Embedding (opzionale, calcolato separatamente)
     embedding: Optional[list[float]] = Field(None, exclude=True, description="Vettore embedding")
@@ -179,6 +180,7 @@ class PaperChunk(BaseModel):
             "month": self.month or 0,
             "chunk_index": self.chunk_index,
             "image_path": self.image_path or "",
+            "venue": self.venue or "",
         }
 
 

@@ -362,6 +362,7 @@ def _make_chunk(
         year=paper.year,
         month=paper.month,
         chunk_index=chunk_index,
+        venue=paper.venue or paper.journal or None,
     )
 
 

@@ -431,7 +431,7 @@ paperhunter/
 
 ### FASE 4 — Source Venue Ranking nel Retriever
 
-#### [ ] Task 4.1: Creare `venue_ranker.py` — tier dictionary e boost score
+#### [x] Task 4.1: Creare `venue_ranker.py` — tier dictionary e boost score
 
 **File:** `paperhunter/indexing/venue_ranker.py` (nuovo)  
 **Stato attuale:** Il retriever tratta allo stesso modo paper da arXiv e paper da NeurIPS. Non c'è nessun meccanismo per dare priorità a fonti accademiche più autorevoli.  
@@ -517,7 +517,7 @@ paperhunter/
 
 ---
 
-#### [ ] Task 4.2: Integrare `VenueRanker` in `hybrid_retriever.py`
+#### [x] Task 4.2: Integrare `VenueRanker` in `hybrid_retriever.py`
 
 **File:** `paperhunter/indexing/hybrid_retriever.py` (modifica)  
 **Stato attuale:** Il `HybridRetriever` restituisce i candidati ordinati per score RRF + recency boost. Non c'è nessun contributo della venue allo score finale.  
@@ -541,6 +541,48 @@ paperhunter/
 - Enable/disable controllato da `settings.retrieval.venue_ranking_enabled`.
 
 **Test:** Costruire 5 `RetrievedChunk` con venue: `"NeurIPS 2023"`, `"arXiv"`, `None`, `"ICLR 2024"`, `"Workshop on Trustworthy ML"`. Verificare che gli score siano nell'ordine atteso dopo il boost.
+
+> **✅ Completato — 19 marzo 2026**
+>
+> **Modifiche apportate:**
+> - `paperhunter/models.py` — `PaperChunk`:
+>   - Aggiunto campo `venue: Optional[str] = None` (venue/journal del paper di origine)
+>   - `to_metadata_dict()` aggiornato: include `"venue": self.venue or ""`
+> - `paperhunter/ingestion/chunker.py` — `_make_chunk()`:
+>   - Aggiunto `venue=paper.venue or paper.journal or None` nella costruzione di `PaperChunk`
+>   - Ora il campo `venue` è sempre propagato dal `Paper` al chunk indicizzato in Qdrant
+> - `paperhunter/indexing/hybrid_retriever.py`:
+>   - `RetrievedChunk` — aggiunto campo `venue_tier: Optional[int] = None` (1=top, 2=medium, 3=preprint, 0=sconosciuta)
+>   - `RetrievedChunk.to_dict()` aggiornato: include `"venue_tier"`
+>   - `HybridRetriever.__init__()` — legge `venue_ranking_enabled` da `settings.retrieval` e lo salva in `self._venue_ranking_enabled`
+>   - `HybridRetriever.retrieve()` — dopo il recency boost, applica `_apply_venue_boost(fused)` se `venue_ranking_enabled=True`; log INFO aggiornato con `venue_ranking=...`
+>   - Nuova funzione module-level `_apply_venue_boost(results) -> list[RetrievedChunk]`:
+>     - Usa `create_venue_ranker()` per caricare boost da config.yaml
+>     - Per ogni chunk, legge `venue` (o `journal`) dal `metadata` dict
+>     - Calcola boost via `ranker.get_boost(venue)`, somma allo score, clamp a `[0.0, 1.0]`
+>     - Imposta `r.venue_tier = ranker.get_tier(venue)` per tracciabilità
+>     - Log DEBUG per ogni candidato: `chunk_id`, `venue`, `tier`, `boost`, score prima/dopo
+>     - Ri-ordina la lista per score decrescente
+>
+> **Come usare:**
+> ```python
+> # Il venue boost è automatico se venue_ranking_enabled=true in config.yaml
+> retriever = HybridRetriever()
+> results = retriever.retrieve("adversarial prompt injection")
+> for r in results:
+>     print(r.chunk_id, r.score, r.venue_tier)
+>     # venue_tier: 1=NeurIPS/ACL/ICML, 2=workshop/AAAI, 3=arXiv, 0=sconosciuta
+>
+> # Verifica manuale con _apply_venue_boost:
+> from paperhunter.indexing.hybrid_retriever import _apply_venue_boost, RetrievedChunk, RetrievalMethod
+> chunks = [
+>     RetrievedChunk(chunk_id='c1', text='', score=0.5, retrieval_method=RetrievalMethod.VECTOR, metadata={'venue': 'NeurIPS 2023'}),
+>     RetrievedChunk(chunk_id='c2', text='', score=0.5, retrieval_method=RetrievalMethod.VECTOR, metadata={'venue': 'arXiv'}),
+> ]
+> boosted = _apply_venue_boost(chunks)
+> # c1.score = 0.65, c1.venue_tier = 1
+> # c2.score = 0.45, c2.venue_tier = 3
+> ```
 
 ---
 

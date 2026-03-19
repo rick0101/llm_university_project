@@ -292,7 +292,7 @@ paperhunter/
 
 ---
 
-#### [ ] Task 2.2: Test di integrazione BibTeX fine-to-fine
+#### [x] Task 2.2: Test di integrazione BibTeX fine-to-fine
 
 **File:** `tests/test_bibliography_generator.py` (modifica/aggiunta test)  
 **Stato attuale:** I test esistenti coprono la generazione base, ma non il caso in cui l'entry è incompleta e deve essere completata con fallback.  
@@ -308,6 +308,20 @@ paperhunter/
 - Nessun mock di S2 — tutti i test usano oggetti Paper costruiti manualmente.
 
 **Test:** `pytest tests/test_bibliography_generator.py -v` → tutti i test passano.
+
+> **✅ Completato — 19 marzo 2026**
+>
+> **Modifiche apportate:**
+> - `tests/test_bibtex_ensure_complete.py` *(nuovo)*: 9 test che coprono:
+>   1. Paper senza `year` → campo `year` nell'entry non è `XXXX` né vuoto (fallback `2000`)
+>   2. Paper con `authors=[]` → `author = {Anonymous}`
+>   3. Paper arXiv (`arxiv_id` presente) → tipo `@misc` con `howpublished`
+>   4. Paper conference (`venue` = "NeurIPS 2023") → `@inproceedings` con `booktitle`
+>   5. Paper journal (`journal` presente) → `@article` con `journal`
+>   6. `validate_bibtex_completeness()` su entry completa → tutti `"present"`
+>   7. `validate_bibtex_completeness()` con `year = {XXXX}` → `year: "placeholder"`
+>   8. `ensure_complete_bibtex()` idempotente: applicata due volte mantiene tipo e chiave
+>   9. `bibtex_entry` non è mai `None` nemmeno per il paper più minimale
 
 ---
 

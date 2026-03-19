@@ -1961,6 +1961,164 @@ def cmd_checkpoint(args: argparse.Namespace) -> int:
 
 
 # ═══════════════════════════════════════════════════════════════════════════
+# Subcommand: reset
+# ═══════════════════════════════════════════════════════════════════════════
+
+def cmd_reset(args: argparse.Namespace) -> int:
+    """Elimina tutti i checkpoint salvati per ripartire da zero."""
+    from pathlib import Path as _Path
+    from paperhunter.config import settings
+
+    logger = _get_logger("paperhunter.reset")
+    console = _get_console()
+    dry_run = args.dry_run
+    yes = getattr(args, "yes", False)
+    total_removed = 0
+
+    if not dry_run and not yes:
+        print(
+            "\nATTENZIONE: verranno eliminati tutti i checkpoint, le sessioni temp_llm\n"
+            "e le figure estratte. L'operazione non è reversibile.\n"
+        )
+        answer = input("Procedere? [y/N] ").strip().lower()
+        if answer not in ("y", "yes", "sì", "si"):
+            logger.info("Reset annullato dall'utente.")
+            return 0
+
+    # 1. Pipeline + ingestion checkpoints (output/.checkpoints/*.json)
+    try:
+        from paperhunter.postprocessing import get_checkpoint_manager
+        mgr = get_checkpoint_manager()
+        n_pipeline = len(list(mgr.checkpoint_dir.glob("*.json")))
+        if n_pipeline:
+            if dry_run:
+                logger.info(f"[DRY RUN] {n_pipeline} checkpoint pipeline/ingestion in {mgr.checkpoint_dir}")
+            else:
+                removed = mgr.clear_all()
+                total_removed += removed
+                logger.info(f"Rimossi {removed} checkpoint pipeline/ingestion")
+        else:
+            logger.info("Nessun checkpoint pipeline/ingestion trovato.")
+    except Exception as e:
+        logger.warning(f"Errore pulizia checkpoint pipeline: {e}")
+
+    # 2. Writer section checkpoints (output/.checkpoints/writer_sections/)
+    try:
+        from paperhunter.agents.writer_agent import clean_section_checkpoints
+        from paperhunter.agents.writer_agent import _get_writer_checkpoint_dir
+        cp_dir = _get_writer_checkpoint_dir()
+        n_sections = len(list(cp_dir.glob("*.json")))
+        if n_sections:
+            if dry_run:
+                logger.info(f"[DRY RUN] {n_sections} checkpoint sezione writer in {cp_dir}")
+            else:
+                removed = clean_section_checkpoints()
+                total_removed += removed
+                logger.info(f"Rimossi {removed} checkpoint sezione writer")
+        else:
+            logger.info("Nessun checkpoint sezione writer trovato.")
+    except Exception as e:
+        logger.warning(f"Errore pulizia checkpoint sezione writer: {e}")
+
+    # 3. Search checkpoints (cache/search_checkpoints/)
+    try:
+        search_ckpt_dir = _Path("cache/search_checkpoints")
+        if search_ckpt_dir.is_dir():
+            files = list(search_ckpt_dir.glob("*"))
+            if files:
+                if dry_run:
+                    logger.info(f"[DRY RUN] {len(files)} file checkpoint di ricerca in {search_ckpt_dir}")
+                else:
+                    removed = 0
+                    for f in files:
+                        if f.is_file():
+                            f.unlink()
+                            removed += 1
+                    total_removed += removed
+                    logger.info(f"Rimossi {removed} checkpoint di ricerca")
+            else:
+                logger.info("Nessun checkpoint di ricerca trovato.")
+        else:
+            logger.info("Directory checkpoint di ricerca non presente.")
+    except Exception as e:
+        logger.warning(f"Errore pulizia checkpoint di ricerca: {e}")
+
+    # 4. L1.5 metadata state (output/l1_5_metadata/)
+    try:
+        l1_5_dir = _L1_5_STATE_DIR
+        if l1_5_dir.is_dir():
+            files = list(l1_5_dir.glob("*.json"))
+            if files:
+                if dry_run:
+                    logger.info(f"[DRY RUN] {len(files)} file stato L1.5 in {l1_5_dir}")
+                else:
+                    removed = 0
+                    for f in files:
+                        f.unlink()
+                        removed += 1
+                    total_removed += removed
+                    logger.info(f"Rimossi {removed} file stato L1.5")
+            else:
+                logger.info("Nessun file stato L1.5 trovato.")
+    except Exception as e:
+        logger.warning(f"Errore pulizia stato L1.5: {e}")
+
+    # 5. temp_llm (output/temp_llm/)
+    try:
+        from paperhunter.config import settings as _settings
+        temp_llm_dir = _Path(_settings.output.base_dir) / "temp_llm"
+        if temp_llm_dir.is_dir():
+            import shutil as _shutil
+            n_items = len(list(temp_llm_dir.iterdir()))
+            if n_items:
+                if dry_run:
+                    logger.info(f"[DRY RUN] {n_items} sessioni temp_llm in {temp_llm_dir}")
+                else:
+                    _shutil.rmtree(temp_llm_dir)
+                    temp_llm_dir.mkdir(parents=True, exist_ok=True)
+                    total_removed += n_items
+                    logger.info(f"Rimossa directory temp_llm ({n_items} sessioni)")
+            else:
+                logger.info("Nessun file temp_llm trovato.")
+        else:
+            logger.info("Directory temp_llm non presente.")
+    except Exception as e:
+        logger.warning(f"Errore pulizia temp_llm: {e}")
+
+    # 6. Figure estratte (output/figures/)
+    try:
+        from paperhunter.config import settings as _settings
+        figures_dir = _Path(_settings.figure_extraction.figures_dir)
+        if figures_dir.is_dir():
+            fig_files = list(figures_dir.glob("*"))
+            if fig_files:
+                if dry_run:
+                    logger.info(f"[DRY RUN] {len(fig_files)} figure in {figures_dir}")
+                else:
+                    removed = 0
+                    for f in fig_files:
+                        if f.is_file():
+                            f.unlink()
+                            removed += 1
+                    total_removed += removed
+                    logger.info(f"Rimosse {removed} figure estratte")
+            else:
+                logger.info("Nessuna figura estratta trovata.")
+        else:
+            logger.info("Directory figure non presente.")
+    except Exception as e:
+        logger.warning(f"Errore pulizia figure: {e}")
+
+    # Riepilogo
+    if dry_run:
+        logger.info("[DRY RUN] Nessun file eliminato.")
+    else:
+        logger.info(f"Reset completato: {total_removed} file eliminati in totale.")
+
+    return 0
+
+
+# ═══════════════════════════════════════════════════════════════════════════
 # Parser principale
 # ═══════════════════════════════════════════════════════════════════════════
 
@@ -2182,6 +2340,23 @@ def build_parser() -> argparse.ArgumentParser:
     ckpt_del.add_argument("section_key", type=str, help="Chiave sezione da eliminare")
     ckpt_sub.add_parser("clear", help="Elimina tutti i checkpoint sezione")
 
+    # ── reset ──
+    p_reset = sub.add_parser(
+        "reset", help="Elimina tutti i checkpoint per ripartire da zero",
+        description=(
+            "Elimina tutti i checkpoint salvati (pipeline, ingestion, writer,\n"
+            "ricerca e stato L1.5) per poter ripartire da zero.\n\n"
+            "Esempi:\n"
+            "  paperhunter reset              # Elimina tutto\n"
+            "  paperhunter reset --dry-run     # Mostra cosa verrebbe eliminato\n"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    p_reset.add_argument("--dry-run", action="store_true",
+                         help="Mostra cosa verrebbe eliminato senza cancellare")
+    p_reset.add_argument("--yes", "-y", action="store_true",
+                         help="Salta conferma interattiva")
+
     return parser
 
 
@@ -2218,6 +2393,7 @@ def run() -> None:
         "export": cmd_export,
         "cleanup": cmd_cleanup,
         "checkpoint": cmd_checkpoint,
+        "reset": cmd_reset,
     }
 
     handler = handlers.get(args.command)

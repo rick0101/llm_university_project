@@ -364,7 +364,7 @@ paperhunter/
 
 ---
 
-#### [ ] Task 3.2: Aggiornare il prompt del Writer Agent per i tag figura
+#### [x] Task 3.2: Aggiornare il prompt del Writer Agent per i tag figura
 
 **File:** `paperhunter/agents/writer_agent.py` (modifica)  
 **Stato attuale:** Il prompt del writer non menziona la possibilità di inserire figure nel testo. Non esiste un formato di tag standardizzato.  

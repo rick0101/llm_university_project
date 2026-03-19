@@ -783,13 +783,27 @@ knowledge, past tense for specific study results.
 5. **Structure**: Use clear paragraphs with topic sentences. You may use Markdown \
 subsection headers (###) if the section is long enough.
 
-6. **Figures**: When search_figure_descriptions returns results with IMAGE_PATH, \
-you can include the actual figure in your text using Markdown image syntax: \
-``![Caption describing the figure](figures/filename.png)``. \
-Include figures when they effectively illustrate key results, architectures, or comparisons. \
-Always cite the source paper alongside the figure: \
-``![Attack success rates across models](figures/Zou_2023_GCG_fig_001.png) [Zou_2023_GCG]``. \
-Do NOT include more than 2-3 figures per section.
+6. **Figures**: You may embed a figure from a specific paper in the section text. \
+Follow this exact workflow:\
+\
+  a. First call ``get_figure_for_section(paper_bibtex_key, figure_type)`` to confirm \
+     the figure exists. Do NOT insert a figure tag without this confirmation step.\
+  b. If the tool returns figure metadata (not "NO_FIGURE_FOUND"), insert a placeholder \
+     tag on its own line, immediately after the sentence it illustrates:\
+\
+     ``{{FIGURE:bibtex_key:figure_type}}``\
+\
+     Example: ``{{FIGURE:Zou_2023_GCG:architecture_diagram}}``\
+\
+  Valid figure_types: ``results_plot``, ``architecture_diagram``, ``flowchart``, \
+  ``comparison_table``, ``confusion_matrix``, ``attack_diagram``, ``defense_pipeline``, ``any``\
+\
+  Rules:\
+  - Use at most 1–2 figures per section.\
+  - Place the tag on its own line, preceded by a blank line.\
+  - Do NOT use Markdown image syntax (``![...](...)``) directly; use the tag instead.\
+  - You may also use ``search_figure_descriptions`` for textual figure context \
+    without embedding.
 
 7. **No Fabrication**: Do NOT invent citations or facts. If you cannot find information \
 on a topic, state the gap explicitly.

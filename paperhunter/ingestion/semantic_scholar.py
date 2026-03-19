@@ -189,6 +189,9 @@ class SemanticScholarEnricher:
         self._limiter = get_s2_limiter()
         self._cache = S2Cache(cache_dir)
 
+        # Esposto per MetadataEnricher: raw dict dell'ultima risposta S2 (Task 1.4)
+        self.last_s2_raw: dict | None = None
+
         # Headers HTTP
         self._headers: dict[str, str] = {
             "User-Agent": "PaperHunter/2.0 (Academic Research Tool; LLM Security Survey)",
@@ -578,6 +581,9 @@ class SemanticScholarEnricher:
         if not details:
             # Fallback: usa i dati dalla search
             details = search_result
+
+        # Salva il raw dict per MetadataEnricher (Task 1.4)
+        self.last_s2_raw = details
 
         # Step 3: Popola i campi
         update_data = self._extract_enrichment_data(details)

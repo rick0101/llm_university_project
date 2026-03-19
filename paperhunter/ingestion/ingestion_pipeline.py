@@ -53,6 +53,7 @@ from paperhunter.ingestion.pdf_hasher import (
 )
 from paperhunter.ingestion.semantic_scholar import SemanticScholarEnricher
 from paperhunter.ingestion.figure_extractor import FigureExtractor
+from paperhunter.ingestion.metadata_enricher import MetadataEnricher
 from paperhunter.models import GROBIDOutput, Paper, PaperChunk
 from paperhunter.utils.logging_setup import (
     get_logger,
@@ -391,6 +392,7 @@ class IngestionPipeline:
         self._store: Any | None = None  # QdrantStore (importato lazy)
         self._figure_extractor: FigureExtractor | None = None
         self._checkpoint = _CheckpointManager()
+        self.metadata_enricher = MetadataEnricher()
 
     # ------------------------------------------------------------------
     # Lazy initialization dei componenti
@@ -827,9 +829,11 @@ class IngestionPipeline:
         paper = Paper(**paper_dict)
 
         # Enrichment S2 (se abilitato)
+        s2_raw: dict | None = None
         if not self.skip_s2:
             try:
                 enriched = enricher.enrich_paper(paper, skip_if_enriched=False)
+                s2_raw = getattr(enricher, "last_s2_raw", None)
                 if enriched.semantic_scholar_id:
                     report.s2_stats["enriched"] += 1
                     paper = enriched
@@ -844,6 +848,21 @@ class IngestionPipeline:
                 )
         else:
             logger.debug("S2 enrichment disabilitato, skip")
+
+        # MetadataEnricher — integrazione GROBID + S2 + euristiche (Task 1.4)
+        pdf_filename = Path(pdf_info.get("absolute_path", "")).name
+        paper = self.metadata_enricher.enrich(
+            paper=paper,
+            grobid_output=grobid_output,
+            s2_data=s2_raw,
+            pdf_filename=pdf_filename,
+        )
+        logger.info(
+            "MetadataEnricher: year=%s (src=%s), conf=%.2f",
+            paper.year,
+            paper.year_source,
+            paper.metadata_confidence,
+        )
 
         return paper
 

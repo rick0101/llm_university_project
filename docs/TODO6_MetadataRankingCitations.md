@@ -203,7 +203,7 @@ paperhunter/
 
 ---
 
-#### [ ] Task 1.4: Integrare `MetadataEnricher` nella `IngestionPipeline`
+#### [x] Task 1.4: Integrare `MetadataEnricher` nella `IngestionPipeline`
 
 **File:** `paperhunter/ingestion/ingestion_pipeline.py` (modifica)  
 **Stato attuale:** La pipeline chiama `SemanticScholarEnricher.enrich_paper()` ma i risultati non vengono integrati con l'output GROBID in modo sistematico: la data rimane None se S2 non risponde.  
@@ -225,6 +225,20 @@ paperhunter/
 - Non modificare il contratto esterno di `IngestionPipeline.run()`.
 
 **Test:** Eseguire pipeline su 3 PDF reali, verificare nei log che `year_source` sia sempre valorizzato (mai None) e che `metadata_confidence` sia loggato correttamente.
+
+> **✅ Completato — 19 marzo 2026**
+>
+> **Modifiche apportate:**
+> - `paperhunter/ingestion/semantic_scholar.py`:
+>   - Aggiunto attributo `last_s2_raw: dict | None = None` nell'`__init__`
+>   - In `enrich_paper()`, dopo il recupero dei dettagli: `self.last_s2_raw = details`
+> - `paperhunter/ingestion/ingestion_pipeline.py`:
+>   - Import aggiunto: `from paperhunter.ingestion.metadata_enricher import MetadataEnricher`
+>   - `IngestionPipeline.__init__()`: aggiunto `self.metadata_enricher = MetadataEnricher()`
+>   - `_step_create_and_enrich_paper()`: dopo il blocco S2 si recupera `s2_raw = getattr(enricher, 'last_s2_raw', None)`
+>     e poi si chiama `self.metadata_enricher.enrich(paper, grobid_output, s2_raw, pdf_filename)`
+>   - Log INFO con `year`, `year_source`, `metadata_confidence` per ogni paper processato
+>   - Contratto esterno di `IngestionPipeline.run()` invariato
 
 ---
 

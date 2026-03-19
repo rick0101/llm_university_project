@@ -1,0 +1,276 @@
+======================================================================
+  PAPERHUNTER — SESSION REPORT
+======================================================================
+
+======================================================================
+  1. SESSION METADATA
+======================================================================
+  Timestamp:                          2026-03-19 19:07:51
+  Platform:                           macOS-26.3.1-arm64-arm-64bit
+  Python version:                     3.12.5
+
+======================================================================
+  2. SEARCH PARAMETERS
+======================================================================
+  Keywords:                           "jailbreak prompt" LLM OR "prompt injection"
+  Max results per source:             5
+  ArXiv categories:                   cs.CL, cs.AI, cs.CR, cs.LG
+
+======================================================================
+  3. LLM FILTERING CONFIGURATION
+======================================================================
+  LLM provider:                       google
+  LLM model:                          gemini-3-flash-preview
+  LLM temperature:                    0.1
+
+  Filtering criteria (prompt):
+  ------------------------------------------------------------------
+    Articoli di ricerca originali su prompt injection
+  ------------------------------------------------------------------
+
+======================================================================
+  4. SOURCES QUERIED
+======================================================================
+    • ArXiv
+    • Semantic Scholar
+    • Hugging Face
+
+======================================================================
+  5. STATISTICS
+======================================================================
+  Total papers found:                 16
+  Papers judged relevant:             11
+  Papers judged NOT relevant:         5
+  Papers downloaded OK:               11
+  Papers download FAILED:             0
+
+  Papers found per source:
+    arxiv                     5
+    huggingface               2
+    semantic_scholar          9
+
+  Relevant papers per source:
+    huggingface               2
+    semantic_scholar          9
+
+======================================================================
+  6. RELEVANT PAPERS (DETAIL)
+======================================================================
+
+  [6] SecurityLingua: Efficient Defense of LLM Jailbreak Attacks via Security-Aware Prompt Compression
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/886194f65d0c2a0b56458d8ba2cd96bd69a97f6a
+      Authors:      Yucheng Li, Surin Ahn, Huiqiang Jiang, Amir H. Abdi, Yuqing Yang
+      Published:    2025-06-15
+      ArXiv ID:     2506.12707
+      DOI:          10.48550/arXiv.2506.12707
+      Citations:    6
+      Confidence:   1.00
+      Reasoning:    The paper presents original research on defending against jailbreak attacks in Large Language Models. Jailbreaking is a specific form of prompt injection where adversarial prompts are used to bypass safety guardrails. The paper proposes a novel defense mechanism called SecurityLingua, which uses security-aware prompt compression to identify malicious intent, making it directly relevant to the study of prompt injection and LLM security.
+
+  [7] Red Teaming the Mind of the Machine: A Systematic Evaluation of Prompt Injection and Jailbreak Vulnerabilities in LLMs
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/46a9f0dc9f74bef40c2f860e604c338c8092d30e
+      Authors:      Chetan Pathade
+      Published:    2025-05-07
+      ArXiv ID:     2505.04806
+      DOI:          10.48550/arXiv.2505.04806
+      Citations:    35
+      Confidence:   1.00
+      Reasoning:    The paper is a systematic investigation specifically focused on prompt injection and jailbreak vulnerabilities in Large Language Models. It analyzes over 1,400 adversarial prompts across multiple state-of-the-art models (GPT-4, Claude 2, etc.) and proposes mitigation strategies, making it highly relevant to the user's request for original research on prompt injection.
+
+  [8] How Few-shot Demonstrations Affect Prompt-based Defenses Against LLM Jailbreak Attacks
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/fd835a119dc0a9bc9f20c6e59554be7060d2b01a
+      Authors:      Yanshu Wang, Shuaishuai Yang, Jingjing He, Tong Yang
+      Published:    2026-02-04
+      ArXiv ID:     2602.04294
+      Citations:    0
+      Confidence:   0.95
+      Reasoning:    The paper focuses on jailbreak attacks and prompt-based defenses in Large Language Models. Jailbreaking is a specific and prominent form of prompt injection where the goal is to bypass safety constraints. The research evaluates how different prompt strategies (Role-Oriented and Task-Oriented) and few-shot demonstrations influence the success of these attacks, making it highly relevant to the study of prompt injection and its mitigation.
+
+  [9] Efficient and Stealthy Jailbreak Attacks via Adversarial Prompt Distillation from LLMs to SLMs
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/c2ada4d1a381c341e0b3b7931ba92cd13bdcebfe
+      Authors:      Xiang Li, Chong Zhang, Jia Wang, Fangyu Wu, Yushi Li
+      Published:    2025-05-26
+      ArXiv ID:     2506.17231
+      DOI:          10.48550/arXiv.2506.17231
+      Citations:    5
+      Confidence:   0.95
+      Reasoning:    The paper presents original research on jailbreaking attacks, which is a specific and highly relevant form of prompt injection. It introduces a new framework (Adversarial Prompt Distillation) to automate the creation of adversarial prompts designed to bypass LLM safety guardrails, directly aligning with the user's interest in prompt injection research.
+
+  [10] Beyond Fixed and Dynamic Prompts: Embedded Jailbreak Templates for Advancing LLM Security
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/2d201e0e03c86092e17134ea4fc7f77aed5079ac
+      Authors:      Hajun Kim, Hyunsik Na, Daeseon Choi
+      Published:    2025-11-18
+      ArXiv ID:     2511.14140
+      DOI:          10.48550/arXiv.2511.14140
+      Citations:    1
+      Confidence:   0.95
+      Reasoning:    The paper focuses on jailbreak attacks, which are a primary form of direct prompt injection. It introduces a new methodology for creating 'Embedded Jailbreak Templates' to bypass LLM safety filters and provides a benchmark for evaluation. This is highly relevant to research on prompt injection vulnerabilities and red-teaming strategies.
+
+  [11] PromptArmor: Simple yet Effective Prompt Injection Defenses
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/560fc5db493c20f788c7d0a80e0e3a5c1ca1b200
+      Authors:      Tianneng Shi, Kaijie Zhu, Zhun Wang, Yuqi Jia, Will Cai
+      Published:    2025-07-21
+      ArXiv ID:     2507.15219
+      DOI:          10.48550/arXiv.2507.15219
+      Citations:    51
+      Confidence:   1.00
+      Reasoning:    The paper presents original research specifically focused on prompt injection attacks and defenses. It introduces 'PromptArmor', a method for detecting and removing injected prompts in LLM agents, and evaluates its performance against these attacks using benchmarks like AgentDojo. This aligns perfectly with the user's request for research articles on prompt injection.
+
+  [12] Meta SecAlign: A Secure Foundation LLM Against Prompt Injection Attacks
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/fc3d1be58cc8fe00f15923493a0b59db2c50004c
+      Authors:      Sizhe Chen, A. Zharmagambetov, David Wagner, Chuan Guo
+      Published:    2025-07-03
+      ArXiv ID:     2507.02735
+      DOI:          10.48550/arXiv.2507.02735
+      Citations:    35
+      Confidence:   1.00
+      Reasoning:    The paper is directly focused on prompt injection attacks, which is the user's primary research criterion. It introduces Meta SecAlign, a foundation LLM specifically designed with built-in defenses against these attacks. The research includes a training methodology, comprehensive security benchmarking, and evaluations on downstream tasks like tool-calling and web-navigation, making it a highly relevant original research article on the topic.
+
+  [13] AgentVigil: Generic Black-Box Red-teaming for Indirect Prompt Injection against LLM Agents
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/9538721e4cc16422e006c3a04b536c9a1f636fa3
+      Authors:      Zhun Wang, Vincent Siu, Zhe Ye, Tianneng Shi, Yuzhou Nie
+      Published:    2025-05-09
+      ArXiv ID:     2505.05849
+      Citations:    24
+      Confidence:   1.00
+      Reasoning:    The paper presents original research on 'indirect prompt injection', which is a specific and significant category of prompt injection attacks. It introduces a new black-box fuzzing framework (AgentVigil) to discover and exploit these vulnerabilities in LLM agents, providing experimental results and evaluations against state-of-the-art models like GPT-4o and o3-mini.
+
+  [14] Defending Against Prompt Injection With a Few DefensiveTokens
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/b02a3849d5482d9933468225713ed0c2a4ddc9e2
+      Authors:      Sizhe Chen, Yizhu Wang, Nicholas Carlini, Chawin Sitawarin, David Wagner
+      Published:    2025-07-10
+      ArXiv ID:     2507.07974
+      DOI:          10.1145/3733799.3762982
+      Citations:    24
+      Confidence:   1.00
+      Reasoning:    The paper is an original research article specifically focused on prompt injection in Large Language Models (LLMs). It proposes a new defense mechanism called 'DefensiveToken' to improve robustness against these attacks, which directly aligns with the user's research criteria.
+
+  [15] Meta SecAlign: A Secure Foundation LLM AgainstPrompt InjectionAttacks
+      Source:       huggingface
+      URL:          https://arxiv.org/abs/2507.02735
+      PDF URL:      https://arxiv.org/pdf/2507.02735.pdf
+      Published:    2025-07-01
+      ArXiv ID:     2507.02735
+      Confidence:   0.95
+      Reasoning:    The title of the paper explicitly mentions 'Prompt Injection Attacks' and proposes a specific defense mechanism called 'Meta SecAlign'. This indicates that the paper is an original research work focused on securing Large Language Models against prompt injection, which directly aligns with the user's research criteria.
+
+  [16] The Mirror Design Pattern: Strict Data Geometry over Model Scale forPrompt InjectionDetection
+      Source:       huggingface
+      URL:          https://arxiv.org/abs/2603.11875
+      PDF URL:      https://arxiv.org/pdf/2603.11875.pdf
+      Published:    2026-03-01
+      ArXiv ID:     2603.11875
+      Confidence:   0.95
+      Reasoning:    The title of the paper explicitly mentions 'Prompt Injection Detection' and proposes a specific design pattern ('The Mirror Design Pattern') to address this issue. This directly aligns with the user's research criteria for original research on prompt injection.
+
+======================================================================
+  7. DOWNLOAD RESULTS
+======================================================================
+
+  [OK] SecurityLingua: Efficient Defense of LLM Jailbreak Attacks via Security-Aware Prompt Compression
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/886194f65d0c2a0b56458d8ba2cd96bd69a97f6a
+      File:    scaricati/Prompt_injections1/SecurityLingua_Efficient_Defense_of_LLM_Jailbreak_Attacks_via_Security-Aware_Prompt_Compression.pdf
+      Method:  direct
+
+  [OK] Red Teaming the Mind of the Machine: A Systematic Evaluation of Prompt Injection and Jailbreak Vulnerabilities in LLMs
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/46a9f0dc9f74bef40c2f860e604c338c8092d30e
+      File:    scaricati/Prompt_injections1/Red_Teaming_the_Mind_of_the_Machine_A_Systematic_Evaluation_of_Prompt_Injection_and_Jailbreak_Vulner.pdf
+      Method:  direct
+
+  [OK] How Few-shot Demonstrations Affect Prompt-based Defenses Against LLM Jailbreak Attacks
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/fd835a119dc0a9bc9f20c6e59554be7060d2b01a
+      File:    scaricati/Prompt_injections1/How_Few-shot_Demonstrations_Affect_Prompt-based_Defenses_Against_LLM_Jailbreak_Attacks.pdf
+      Method:  direct
+
+  [OK] Efficient and Stealthy Jailbreak Attacks via Adversarial Prompt Distillation from LLMs to SLMs
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/c2ada4d1a381c341e0b3b7931ba92cd13bdcebfe
+      File:    scaricati/Prompt_injections1/Efficient_and_Stealthy_Jailbreak_Attacks_via_Adversarial_Prompt_Distillation_from_LLMs_to_SLMs.pdf
+      Method:  direct
+
+  [OK] Beyond Fixed and Dynamic Prompts: Embedded Jailbreak Templates for Advancing LLM Security
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/2d201e0e03c86092e17134ea4fc7f77aed5079ac
+      File:    scaricati/Prompt_injections1/Beyond_Fixed_and_Dynamic_Prompts_Embedded_Jailbreak_Templates_for_Advancing_LLM_Security.pdf
+      Method:  direct
+
+  [OK] PromptArmor: Simple yet Effective Prompt Injection Defenses
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/560fc5db493c20f788c7d0a80e0e3a5c1ca1b200
+      File:    scaricati/Prompt_injections1/PromptArmor_Simple_yet_Effective_Prompt_Injection_Defenses.pdf
+      Method:  direct
+
+  [OK] Meta SecAlign: A Secure Foundation LLM Against Prompt Injection Attacks
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/fc3d1be58cc8fe00f15923493a0b59db2c50004c
+      File:    scaricati/Prompt_injections1/Meta_SecAlign_A_Secure_Foundation_LLM_Against_Prompt_Injection_Attacks.pdf
+      Method:  direct
+
+  [OK] AgentVigil: Generic Black-Box Red-teaming for Indirect Prompt Injection against LLM Agents
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/9538721e4cc16422e006c3a04b536c9a1f636fa3
+      File:    scaricati/Prompt_injections1/AgentVigil_Generic_Black-Box_Red-teaming_for_Indirect_Prompt_Injection_against_LLM_Agents.pdf
+      Method:  direct
+
+  [OK] Defending Against Prompt Injection With a Few DefensiveTokens
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/b02a3849d5482d9933468225713ed0c2a4ddc9e2
+      File:    scaricati/Prompt_injections1/Defending_Against_Prompt_Injection_With_a_Few_DefensiveTokens.pdf
+      Method:  direct
+
+  [OK] Meta SecAlign: A Secure Foundation LLM AgainstPrompt InjectionAttacks
+      Source:  huggingface
+      URL:     https://arxiv.org/abs/2507.02735
+      File:    None
+      Method:  dedup
+
+  [OK] The Mirror Design Pattern: Strict Data Geometry over Model Scale forPrompt InjectionDetection
+      Source:  huggingface
+      URL:     https://arxiv.org/abs/2603.11875
+      File:    scaricati/Prompt_injections1/The_Mirror_Design_Pattern_Strict_Data_Geometry_over_Model_Scale_forPrompt_InjectionDetection.pdf
+      Method:  direct
+
+======================================================================
+  8. NON-RELEVANT PAPERS (SUMMARY)
+======================================================================
+  [1] Unified Spatio-Temporal Token Scoring for Efficient Video VLMs
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.18004v1
+      Reasoning:  The paper focuses on improving the computational efficiency of Video Vision-Language Models (VLMs) through a token pruning technique called Spatio-Temporal Token Scoring (STTS). It addresses temporal 
+
+  [2] AgentFactory: A Self-Evolving Framework Through Executable Subagent Accumulation and Reuse
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.18000v1
+      Reasoning:  The paper focuses on a framework for self-evolving LLM agents by saving and reusing executable Python code for subagents. It does not discuss prompt injection, security vulnerabilities, or adversarial
+
+  [3] ConGA: Guidelines for Contextual Gender Annotation. A Framework for Annotating Gender in Machine Translation
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.17962v1
+      Reasoning:  The paper focuses on gender annotation and gender bias in Machine Translation (MT) and Large Language Models (LLMs), specifically between English and Italian. It does not mention or address prompt inj
+
+  [4] Efficient Training-Free Multi-Token Prediction via Embedding-Space Probing
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.17942v1
+      Reasoning:  The paper focuses on improving the inference efficiency and throughput of Large Language Models (LLMs) through a training-free multi-token prediction (MTP) method. It discusses speculative decoding, e
+
+  [5] Only relative ranks matter in weight-clustered large language models
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.17917v1
+      Reasoning:  The paper focuses on model compression techniques, specifically weight clustering and the importance of the relative rank of weights in Large Language Models. It discusses how reducing the number of u
+
+
+======================================================================
+  END OF REPORT
+======================================================================

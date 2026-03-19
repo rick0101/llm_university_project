@@ -136,7 +136,7 @@ Ogni livello **comprime** le informazioni del livello sottostante preservando ci
 **Budget-awareness:** La lunghezza dell'L1 si adatta automaticamente al numero di paper nella categoria:
 - ≤30 paper/categoria → L1 "standard" (~2-3k caratteri)
 - 31-70 paper → L1 "conciso" (~1.5k caratteri)
-- \>70 paper → L1 "compresso" (~1k caratteri)
+- &gt;70 paper → L1 "compresso" (~1k caratteri)
 
 ### L1.5 — Summary per Cluster Semantico (RAPTOR)
 
@@ -872,11 +872,32 @@ docker run --rm -d --name neo4j \
 ## Quick Start
 
 ```bash
-# 1. (Opzionale) Cerca e scarica nuovi paper
-# Ricerca limitata ad articoli di ricerca originali: esclusi survey, review, overview e tutorial
-paperhunter search -k '"jailbreak prompt" LLM OR "prompt injection"ß' \
-    -c "Articoli di ricerca originali su prompt injection" \
-    -o ./scaricati/Prompt_injections1 -n 10
+# 1. (Opzionale) Cerca e scarica nuovi paper per ciascuna macro-categoria
+#    I criteri -c escludono survey/review/tutorial, selezionando solo ricerca originale.
+
+# — Prompt Injections
+paperhunter search \
+    -k '"prompt injection" attack OR "jailbreak" LLM OR "adversarial prompt"' \
+    -c 'Solo articoli di ricerca originali che propongono nuove tecniche di attacco o difesa per prompt injection su LLM. Escludi tassativamente survey, review, meta-analisi, tutorial, overview e position paper.' \
+    -o ./scaricati/Prompt_injections1 -n 5 --date-from 2025-05
+
+# — Adversarial Code
+paperhunter search \
+    -k '"adversarial code" LLM OR "code injection" large language model OR "malicious code generation"' \
+    -c 'Solo articoli di ricerca originali che introducono nuovi attacchi o difese relativi alla generazione di codice avversario tramite LLM. Escludi tassativamente survey, review, meta-analisi, tutorial, overview e position paper.' \
+    -o ./scaricati/Adversarial_Code1 -n 5 --date-from 2025-05
+
+# — Hallucinations
+paperhunter search \
+    -k '"LLM hallucination" detection OR mitigation OR "factual consistency" OR "faithfulness evaluation"' \
+    -c 'Solo articoli di ricerca originali che propongono nuovi metodi per rilevare, misurare o mitigare le allucinazioni negli LLM. Escludi tassativamente survey, review, meta-analisi, tutorial, overview e position paper.' \
+    -o ./scaricati/Hallucinations1 -n 5 --date-from 2025-05
+
+# — Data and Model Poisoning
+paperhunter search \
+    -k '"data poisoning" LLM OR "model poisoning" OR "backdoor attack" language model OR "training poisoning"' \
+    -c 'Solo articoli di ricerca originali che introducono nuove tecniche di data poisoning, model poisoning o backdoor attack su LLM. Escludi tassativamente survey, review, meta-analisi, tutorial, overview e position paper.' \
+    -o ./scaricati/Data_and_Model_Poisoning1 -n 5 --date-from 2025-05
 
 # 2. Ingest: PDF → GROBID → S2 → chunking → Qdrant
 paperhunter ingest

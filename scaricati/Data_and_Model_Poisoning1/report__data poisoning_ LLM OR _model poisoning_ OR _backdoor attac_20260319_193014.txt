@@ -1,0 +1,386 @@
+======================================================================
+  PAPERHUNTER — SESSION REPORT
+======================================================================
+
+======================================================================
+  1. SESSION METADATA
+======================================================================
+  Timestamp:                          2026-03-19 19:30:14
+  Platform:                           macOS-26.3.1-arm64-arm-64bit
+  Python version:                     3.12.5
+
+======================================================================
+  2. SEARCH PARAMETERS
+======================================================================
+  Keywords:                           "data poisoning" LLM OR "model poisoning" OR "backdoor attack" language model OR "training poisoning"
+  Max results per source:             5
+  ArXiv categories:                   cs.CL, cs.AI, cs.CR, cs.LG
+
+======================================================================
+  3. LLM FILTERING CONFIGURATION
+======================================================================
+  LLM provider:                       google
+  LLM model:                          gemini-3-flash-preview
+  LLM temperature:                    0.1
+
+  Filtering criteria (prompt):
+  ------------------------------------------------------------------
+    Solo articoli di ricerca originali che introducono nuove tecniche di data poisoning, model poisoning o backdoor attack su LLM. Escludi tassativamente survey, review, meta-analisi, tutorial, overview e position paper.
+  ------------------------------------------------------------------
+
+======================================================================
+  4. SOURCES QUERIED
+======================================================================
+    • ArXiv
+    • Semantic Scholar
+    • Hugging Face
+
+======================================================================
+  5. STATISTICS
+======================================================================
+  Total papers found:                 29
+  Papers judged relevant:             13
+  Papers judged NOT relevant:         16
+  Papers downloaded OK:               12
+  Papers download FAILED:             1
+
+  Papers found per source:
+    arxiv                     5
+    huggingface               4
+    semantic_scholar          20
+
+  Relevant papers per source:
+    huggingface               4
+    semantic_scholar          9
+
+======================================================================
+  6. RELEVANT PAPERS (DETAIL)
+======================================================================
+
+  [6] Stealthy LLM-Driven Data Poisoning Attacks Against Embedding-Based Retrieval-Augmented Recommender Systems
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/659c910c0a2008bf8ac5af7a3d84300354d844f1
+      Authors:      Fatemeh Nazary, Yashar Deldjoo, T. D. Noia, E. Sciascio
+      Published:    2025-05-08
+      ArXiv ID:     2505.05196
+      DOI:          10.1145/3708319.3733675
+      Citations:    4
+      Confidence:   1.00
+      Reasoning:    The paper presents original research introducing a new data poisoning technique specifically targeting LLM-driven retrieval-augmented generation (RAG) systems. It describes a method to manipulate item rankings by subtly modifying metadata (item descriptions), which falls directly under the user's criteria for data poisoning attacks on LLMs.
+
+  [7] Can Small-Scale Data Poisoning Exacerbate Dialect-Linked Biases in Large Language Models?
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/a405ccdaf068d0e897e4f6b5010d95431e8d943a
+      Authors:      Chaymaa Abbas, Mariette Awad, Razane Tajeddine
+      Published:    2025-07-25
+      ArXiv ID:     2507.19195
+      DOI:          10.48550/arXiv.2507.19195
+      Citations:    0
+      Confidence:   0.95
+      Reasoning:    The paper is an original research article that introduces and evaluates a specific data poisoning technique called 'style-conditioned data poisoning.' It explores how linguistic styles (specifically AAVE and Southern dialects) can be used as latent triggers in a poisoning attack during instruction tuning to amplify sociolinguistic biases and toxicity in LLMs. This directly matches the user's criteria for research introducing new data poisoning or backdoor attack techniques on LLMs.
+
+  [14] Graph Representation-based Model Poisoning on the Heterogeneous Internet of Agents
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/5ea8e799f31f85125d5e2e3badf59a22392d165c
+      Authors:      Hanlin Cai, Houtianfu Wang, Haofan Dong, Kai Li, Özgür B. Akan
+      Published:    2025-11-10
+      ArXiv ID:     2511.07176
+      DOI:          10.48550/arXiv.2511.07176
+      Citations:    1
+      Confidence:   1.00
+      Reasoning:    The paper introduces a novel model poisoning attack technique called GRMP (Graph Representation-based Model Poisoning) specifically targeting Large Language Models (LLMs) in a federated fine-tuning (FFT) context. It is an original research article that proposes a new algorithm and provides experimental results, fitting all the user's criteria.
+
+  [16] Natural Reflection Backdoor Attack on Vision Language Model for Autonomous Driving
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/840bc7cf52b455883c53bf8d3dd679035fc8f7c0
+      Authors:      Ming Liu, Siyuan Liang, Koushik Howlader, Liwen Wang, Dacheng Tao
+      Published:    2025-05-09
+      ArXiv ID:     2505.06413
+      DOI:          10.48550/arXiv.2505.06413
+      Citations:    13
+      Confidence:   1.00
+      Reasoning:    The paper presents original research introducing a novel backdoor attack technique targeting Vision-Language Models (VLMs), which are a specific category of Large Language Models. The attack involves a data poisoning strategy (embedding natural reflection patterns in images and prepending long prefixes to text labels) to induce high inference latency. This directly matches the user's criteria for new techniques in backdoor attacks and data poisoning on LLMs.
+
+  [18] Backdoor Attack on Vision Language Models with Stealthy Semantic Manipulation
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/2f250c5e59ed224af72f0146e896cadf5d0e377b
+      Authors:      Zhiyuan Zhong, Zhen Sun, Yepang Liu, Xinlei He, Guanhong Tao
+      Published:    2025-06-08
+      ArXiv ID:     2506.07214
+      DOI:          10.48550/arXiv.2506.07214
+      Citations:    8
+      Confidence:   1.00
+      Reasoning:    The paper introduces a novel backdoor attack technique called 'BadSem' (Backdoor Attack with Semantic Manipulation) which utilizes data poisoning by misaligning image-text pairs. This directly aligns with the user's criteria for original research on new data poisoning and backdoor attack techniques. While the paper focuses on Vision Language Models (VLMs), these are a core subset of the broader LLM research field, specifically multimodal LLMs.
+
+  [19] Backdoor Attacks on Large Language Model Based Semantic Communication Systems
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/e808862a30bceb46804004038c95f4bc58d405b6
+      Authors:      D. Hoang, L. B. Le
+      Published:    2025-06-08
+      DOI:          10.1109/ICCWorkshops67674.2025.11162215
+      Citations:    1
+      Confidence:   1.00
+      Reasoning:    The paper presents original research introducing a new backdoor attack technique specifically targeting Large Language Models (BERT and RoBERTa) used in semantic communication systems. It describes a novel two-phase pre-training strategy to embed backdoors that remain effective after fine-tuning and are resistant to common defenses like pruning. This directly aligns with the user's request for original research on backdoor attacks on LLMs.
+
+  [20] TokenSwap: Backdoor Attack on the Compositional Understanding of Large Vision-Language Models
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/075d2a99391f9f049f27b64585b9368e37e66829
+      Authors:      Zhifang Zhang, Qiqi Tao, Jiaqi Lv, Na Zhao, Lei Feng
+      Published:    2025-09-29
+      ArXiv ID:     2509.24566
+      DOI:          10.48550/arXiv.2509.24566
+      Citations:    1
+      Confidence:   1.00
+      Reasoning:    The paper introduces 'TokenSwap', a novel backdoor attack technique specifically designed for Large Vision-Language Models (LVLMs). It describes a new method of data poisoning that involves injecting visual triggers and swapping grammatical roles of tokens to disrupt the model's compositional understanding. This is an original research paper presenting a new attack technique, which directly aligns with the user's criteria.
+
+  [21] Layer of Truth: Probing Belief Shifts under Continual Pre-Training Poisoning
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/59b9972c80b7c9c4df9a70dafe29f78b469608bc
+      Authors:      S. Churina, Niranjan Chebrolu, Kokil Jaidka
+      Published:    2025-10-29
+      ArXiv ID:     2510.26829
+      DOI:          10.48550/arXiv.2510.26829
+      Citations:    0
+      Confidence:   0.95
+      Reasoning:    The paper is an original research article that investigates a specific data poisoning technique: poisoning during the continual pre-training phase of LLMs using plausible misinformation. It explores how this poisoning affects factual knowledge, identifies the specific layers where belief shifts occur, and evaluates the impact on model performance and reasoning. This directly aligns with the user's interest in new techniques and studies of data/model poisoning in LLMs.
+
+  [22] Winter Soldier: Backdooring Language Models at Pre-Training with Indirect Data Poisoning
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/8ba39021c8c14a13664fcb14f9c37328e0995168
+      Authors:      Wassim Bouaziz, Mathurin Videau, Nicolas Usunier, El-Mahdi El-Mhamdi
+      Published:    2025-06-17
+      ArXiv ID:     2506.14913
+      DOI:          10.48550/arXiv.2506.14913
+      Citations:    4
+      Confidence:   1.00
+      Reasoning:    The paper introduces a novel backdoor attack technique called 'indirect data poisoning' specifically designed for Large Language Models (LLMs) during the pre-training phase. It describes an original research contribution where a model is trained to learn secret responses to secret prompts that are not explicitly present in the training corpus. This directly aligns with the user's criteria for original research on new data poisoning and backdoor attack techniques for LLMs.
+
+  [26] Poisoning Attacks onLLMs Require a Near-constant Number of Poison
+  Samples
+      Source:       huggingface
+      URL:          https://arxiv.org/abs/2510.07192
+      PDF URL:      https://arxiv.org/pdf/2510.07192.pdf
+      Published:    2025-10-01
+      ArXiv ID:     2510.07192
+      Confidence:   0.85
+      Reasoning:    The title 'Poisoning Attacks on LLMs Require a Near-constant Number of Poison Samples' indicates that the paper is an original research study focusing on the mechanics and requirements of poisoning attacks specifically targeting Large Language Models. It addresses the core topics of the user's criteria (poisoning attacks on LLMs) and appears to be a technical contribution rather than a survey or review.
+
+  [27] Poisoning Attacks on LLMs Require a Near-constant Number of Poison
+  Samples
+      Source:       huggingface
+      URL:          https://arxiv.org/abs/2510.07192
+      PDF URL:      https://arxiv.org/pdf/2510.07192.pdf
+      Published:    2025-10-01
+      ArXiv ID:     2510.07192
+      Confidence:   0.85
+      Reasoning:    The title 'Poisoning Attacks on LLMs Require a Near-constant Number of Poison Samples' indicates an original research paper focusing on the efficiency and mechanics of poisoning attacks on Large Language Models. The specific claim about the number of samples required suggests a technical analysis or the introduction of optimized attack methodologies, which aligns with the user's interest in data/model poisoning techniques. It does not appear to be a survey or review paper.
+
+  [28] Exploiting Leaderboards for Large-Scale Distribution of Malicious Models
+      Source:       huggingface
+      URL:          https://arxiv.org/abs/2507.08983
+      PDF URL:      https://arxiv.org/pdf/2507.08983.pdf
+      Published:    2025-07-01
+      ArXiv ID:     2507.08983
+      Confidence:   0.85
+      Reasoning:    The title 'Exploiting Leaderboards for Large-Scale Distribution of Malicious Models' strongly suggests a research paper focusing on model poisoning or backdoor attacks within the context of LLM evaluation frameworks (leaderboards). In the AI security domain, 'malicious models' typically refers to those that have been subjected to poisoning or backdoor techniques. The focus on 'exploiting leaderboards' implies a study of how these poisoned models can be strategically placed or designed to bypass evaluation and reach users, which is a core aspect of modern model poisoning research.
+
+  [29] Goal-orientedBackdoor Attackagainst Vision-Language-ActionModels via
+  Physical Objects
+      Source:       huggingface
+      URL:          https://arxiv.org/abs/2510.09269
+      PDF URL:      https://arxiv.org/pdf/2510.09269.pdf
+      Published:    2025-10-01
+      ArXiv ID:     2510.09269
+      Confidence:   0.90
+      Reasoning:    The paper title explicitly describes a 'Goal-oriented Backdoor Attack' against 'Vision-Language-Action Models' (VLA). VLA models are a specialized class of multimodal models that integrate Large Language Models (LLMs) to process instructions and visual data to generate actions. This research introduces a specific backdoor attack technique using physical objects, which directly aligns with the user's criteria for original research on backdoor attacks against LLM-based architectures.
+
+======================================================================
+  7. DOWNLOAD RESULTS
+======================================================================
+
+  [OK] Stealthy LLM-Driven Data Poisoning Attacks Against Embedding-Based Retrieval-Augmented Recommender Systems
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/659c910c0a2008bf8ac5af7a3d84300354d844f1
+      File:    scaricati/Data_and_Model_Poisoning1/Stealthy_LLM-Driven_Data_Poisoning_Attacks_Against_Embedding-Based_Retrieval-Augmented_Recommender_S.pdf
+      Method:  direct
+
+  [OK] Can Small-Scale Data Poisoning Exacerbate Dialect-Linked Biases in Large Language Models?
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/a405ccdaf068d0e897e4f6b5010d95431e8d943a
+      File:    scaricati/Data_and_Model_Poisoning1/Can_Small-Scale_Data_Poisoning_Exacerbate_Dialect-Linked_Biases_in_Large_Language_Models.pdf
+      Method:  direct
+
+  [OK] Graph Representation-based Model Poisoning on the Heterogeneous Internet of Agents
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/5ea8e799f31f85125d5e2e3badf59a22392d165c
+      File:    scaricati/Data_and_Model_Poisoning1/Graph_Representation-based_Model_Poisoning_on_the_Heterogeneous_Internet_of_Agents.pdf
+      Method:  direct
+
+  [OK] Natural Reflection Backdoor Attack on Vision Language Model for Autonomous Driving
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/840bc7cf52b455883c53bf8d3dd679035fc8f7c0
+      File:    scaricati/Data_and_Model_Poisoning1/Natural_Reflection_Backdoor_Attack_on_Vision_Language_Model_for_Autonomous_Driving.pdf
+      Method:  direct
+
+  [OK] Backdoor Attack on Vision Language Models with Stealthy Semantic Manipulation
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/2f250c5e59ed224af72f0146e896cadf5d0e377b
+      File:    scaricati/Data_and_Model_Poisoning1/Backdoor_Attack_on_Vision_Language_Models_with_Stealthy_Semantic_Manipulation.pdf
+      Method:  direct
+
+  [FAILED] Backdoor Attacks on Large Language Model Based Semantic Communication Systems
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/e808862a30bceb46804004038c95f4bc58d405b6
+      Error:   Click download failed: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("a:has-text(\"PDF\"), button:has-text(\"PDF\")").first
+    - locator resolved to <button disabled aria-pressed="false" data-test-id="pdf-available-filter-button" data-heap-id="pdf_available_filter_button" class="button button--secondary is-disabled">Has PDF</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is not enabled
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is not enabled
+    - retrying click action
+      - waiting 100ms
+    56 × waiting for element to be visible, enabled and stable
+       - element is not enabled
+     - retrying click action
+       - waiting 500ms
+
+
+  [OK] TokenSwap: Backdoor Attack on the Compositional Understanding of Large Vision-Language Models
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/075d2a99391f9f049f27b64585b9368e37e66829
+      File:    scaricati/Data_and_Model_Poisoning1/TokenSwap_Backdoor_Attack_on_the_Compositional_Understanding_of_Large_Vision-Language_Models.pdf
+      Method:  direct
+
+  [OK] Layer of Truth: Probing Belief Shifts under Continual Pre-Training Poisoning
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/59b9972c80b7c9c4df9a70dafe29f78b469608bc
+      File:    scaricati/Data_and_Model_Poisoning1/Layer_of_Truth_Probing_Belief_Shifts_under_Continual_Pre-Training_Poisoning.pdf
+      Method:  direct
+
+  [OK] Winter Soldier: Backdooring Language Models at Pre-Training with Indirect Data Poisoning
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/8ba39021c8c14a13664fcb14f9c37328e0995168
+      File:    scaricati/Data_and_Model_Poisoning1/Winter_Soldier_Backdooring_Language_Models_at_Pre-Training_with_Indirect_Data_Poisoning.pdf
+      Method:  direct
+
+  [OK] Poisoning Attacks onLLMs Require a Near-constant Number of Poison
+  Samples
+      Source:  huggingface
+      URL:     https://arxiv.org/abs/2510.07192
+      File:    scaricati/Data_and_Model_Poisoning1/Poisoning_Attacks_onLLMs_Require_a_Near-constant_Number_of_Poison
+__Samples.pdf
+      Method:  direct
+
+  [OK] Poisoning Attacks on LLMs Require a Near-constant Number of Poison
+  Samples
+      Source:  huggingface
+      URL:     https://arxiv.org/abs/2510.07192
+      File:    None
+      Method:  dedup
+
+  [OK] Exploiting Leaderboards for Large-Scale Distribution of Malicious Models
+      Source:  huggingface
+      URL:     https://arxiv.org/abs/2507.08983
+      File:    scaricati/Data_and_Model_Poisoning1/Exploiting_Leaderboards_for_Large-Scale_Distribution_of_Malicious_Models.pdf
+      Method:  direct
+
+  [OK] Goal-orientedBackdoor Attackagainst Vision-Language-ActionModels via
+  Physical Objects
+      Source:  huggingface
+      URL:     https://arxiv.org/abs/2510.09269
+      File:    scaricati/Data_and_Model_Poisoning1/Goal-orientedBackdoor_Attackagainst_Vision-Language-ActionModels_via
+__Physical_Objects.pdf
+      Method:  direct
+
+======================================================================
+  8. NON-RELEVANT PAPERS (SUMMARY)
+======================================================================
+  [1] Unified Spatio-Temporal Token Scoring for Efficient Video VLMs
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.18004v1
+      Reasoning:  The paper focuses on improving the efficiency of Video Vision-Language Models (VLMs) through a token pruning technique called Spatio-Temporal Token Scoring (STTS). It does not discuss data poisoning, 
+
+  [2] Loc3R-VLM: Language-based Localization and 3D Reasoning with Vision-Language Models
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.18002v1
+      Reasoning:  The paper focuses on improving the 3D spatial reasoning and localization capabilities of Vision-Language Models (VLMs) through a new framework called Loc3R-VLM. It does not discuss data poisoning, mod
+
+  [3] AgentFactory: A Self-Evolving Framework Through Executable Subagent Accumulation and Reuse
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.18000v1
+      Reasoning:  The paper focuses on a framework for LLM-based agents to self-evolve by creating and reusing executable Python subagents to improve task performance. It does not discuss data poisoning, model poisonin
+
+  [4] LoST: Level of Semantics Tokenization for 3D Shapes
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.17995v1
+      Reasoning:  The paper focuses on 3D shape tokenization and autoregressive generation techniques. It introduces a method called LoST to improve the semantic coherence and efficiency of 3D shape modeling. It does n
+
+  [5] TDAD: Test-Driven Agentic Development - Reducing Code Regressions in AI Coding Agents via Graph-Based Impact Analysis
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.17973v1
+      Reasoning:  The paper focuses on improving the reliability of AI coding agents by reducing code regressions through a graph-based impact analysis tool (TDAD). It does not discuss data poisoning, model poisoning, 
+
+  [6] Adaptive and Robust Data Poisoning Detection and Sanitization in Wearable IoT Systems using Large Language Models
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/01f6d5a303b87be5ca17d2b2898a99c2ff1516ae
+      Reasoning:  The paper describes a defense mechanism using Large Language Models (LLMs) to detect and sanitize data poisoning in wearable IoT systems (specifically Human Activity Recognition). The user's criteria 
+
+  [7] Understanding and Mitigating Data Poisoning in LLMs
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/5ec4647ab98938193139e6bacd3ced1f903eb0df
+      Reasoning:  The paper is explicitly described in the abstract as an 'overview' of data poisoning threats and mitigation strategies. The user's criteria strictly exclude surveys, reviews, and overviews, requiring 
+
+  [8] A Comparative Study of Data Poisoning Detection in Wearable AI Systems using Machine Learning and Large Language Models
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/f881028b0f883d1e9e000eeb999952facb35e96c
+      Reasoning:  The paper focuses on the detection and correction of data poisoning attacks (specifically label-flip attacks) in wearable AI systems. It compares traditional machine learning models and quantized LLMs
+
+  [9] A Proactive Defense Against Model Poisoning Attacks in Federated Learning
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/ac9c12235dcd3d02e3fa581143765b689fd42f9e
+      Reasoning:  The paper introduces a defense mechanism (RECESS) against model poisoning attacks in Federated Learning, rather than proposing new poisoning or backdoor attack techniques. Furthermore, the research fo
+
+  [10] DuAda: Adaptive Targeted Model Poisoning Attack Framework via Dummy User Simulation on Federated Recommendation
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/af28a20789aee96165392809a1ab7abe5c7899c8
+      Reasoning:  The paper introduces a new model poisoning attack framework (DuAda) specifically for Federated Recommendation (FedRec) systems. While it addresses model poisoning, it does not focus on Large Language 
+
+  [11] Privacy-Preserving Federated Learning Scheme With Mitigating Model Poisoning Attacks: Vulnerabilities and Countermeasures
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/99cf5a7fb4f2021e391388858426093074336c67
+      Reasoning:  The paper focuses on developing a defense mechanism (PBFL) to mitigate model poisoning attacks and preserve privacy in Federated Learning. It does not introduce new poisoning or backdoor attack techni
+
+  [12] FedUP: Efficient Pruning-based Federated Unlearning for Model Poisoning Attacks
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/e9f8f66ad0838fad83bee1ddf52713d66bf243ec
+      Reasoning:  The paper introduces a defense mechanism (Federated Unlearning) called FedUP to mitigate the effects of model poisoning and backdoor attacks. It does not introduce new attack techniques, but rather a 
+
+  [13] BAIT: Large Language Model Backdoor Scanning by Inverting Attack Target
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/c33104edec1477f852e167dd6826a8aff16595f6
+      Reasoning:  The paper introduces a new technique for backdoor detection (scanning) in Large Language Models, called BAIT. The user's research criteria specifically request papers that introduce new techniques for
+
+  [14] Abstract Gradient Training: A Unified Certification Framework for Data Poisoning, Unlearning, and Differential Privacy
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/2e9ecdb535eb47e1525d47beaa1a2f78a856c076
+      Reasoning:  The paper introduces a certification framework (Abstract Gradient Training) to provide provable guarantees and robustness bounds against training data perturbations like poisoning. It does not introdu
+
+  [15] Pre-training CLIP against Data Poisoning with Optimal Transport-based Matching and Alignment
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/0cb92f9ed5f45ee4fda4c0a0d3fb26a4ec05bc7a
+      Reasoning:  The paper focuses on a defense mechanism (OTCCLIP) against data poisoning and backdoor attacks for CLIP models. The user's research criteria specifically require papers that introduce new techniques f
+
+  [16] FedGuard: A Two-Stage Defense Framework Against Model Poisoning in Federated Learning via Verifiable Training Dynamics
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/32f7fd2e1d6b865f2fea1240d27f7195dbc04e55
+      Reasoning:  The paper introduces a defense framework (FedGuard) against model poisoning, whereas the user's criteria specifically ask for papers introducing new poisoning or backdoor attack techniques. Additional
+
+
+======================================================================
+  END OF REPORT
+======================================================================

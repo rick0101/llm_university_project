@@ -1,0 +1,455 @@
+======================================================================
+  PAPERHUNTER — SESSION REPORT
+======================================================================
+
+======================================================================
+  1. SESSION METADATA
+======================================================================
+  Timestamp:                          2026-03-19 19:25:32
+  Platform:                           macOS-26.3.1-arm64-arm-64bit
+  Python version:                     3.12.5
+
+======================================================================
+  2. SEARCH PARAMETERS
+======================================================================
+  Keywords:                           "LLM hallucination" detection OR mitigation OR "factual consistency" OR "faithfulness evaluation"
+  Max results per source:             5
+  ArXiv categories:                   cs.CL, cs.AI, cs.CR, cs.LG
+
+======================================================================
+  3. LLM FILTERING CONFIGURATION
+======================================================================
+  LLM provider:                       google
+  LLM model:                          gemini-3-flash-preview
+  LLM temperature:                    0.1
+
+  Filtering criteria (prompt):
+  ------------------------------------------------------------------
+    Solo articoli di ricerca originali che propongono nuovi metodi per rilevare, misurare o mitigare le allucinazioni negli LLM. Escludi tassativamente survey, review, meta-analisi, tutorial, overview e position paper.
+  ------------------------------------------------------------------
+
+======================================================================
+  4. SOURCES QUERIED
+======================================================================
+    • ArXiv
+    • Semantic Scholar
+    • Hugging Face
+
+======================================================================
+  5. STATISTICS
+======================================================================
+  Total papers found:                 32
+  Papers judged relevant:             18
+  Papers judged NOT relevant:         14
+  Papers downloaded OK:               15
+  Papers download FAILED:             3
+
+  Papers found per source:
+    arxiv                     5
+    huggingface               7
+    semantic_scholar          20
+
+  Relevant papers per source:
+    arxiv                     2
+    huggingface               4
+    semantic_scholar          12
+
+======================================================================
+  6. RELEVANT PAPERS (DETAIL)
+======================================================================
+
+  [3] Mitigating LLM Hallucinations through Domain-Grounded Tiered Retrieval
+      Source:       arxiv
+      URL:          http://arxiv.org/abs/2603.17872v1
+      PDF URL:      https://arxiv.org/pdf/2603.17872v1
+      Authors:      Md. Asraful Haque, Aasar Mehdi, Maaz Mahboob, Tamkeen Fatima
+      Published:    2026-03-18
+      ArXiv ID:     2603.17872v1
+      Categories:   cs.CL, cs.AI
+      Confidence:   1.00
+      Reasoning:    The paper presents original research proposing a new method (a four-phase, domain-grounded tiered retrieval and verification architecture) specifically designed to mitigate hallucinations in Large Language Models. It includes empirical evaluations across several benchmarks, fitting the criteria for original research on mitigation techniques.
+
+  [5] Process Supervision for Chain-of-Thought Reasoning via Monte Carlo Net Information Gain
+      Source:       arxiv
+      URL:          http://arxiv.org/abs/2603.17815v1
+      PDF URL:      https://arxiv.org/pdf/2603.17815v1
+      Authors:      Corentin Royer, Debarun Bhattacharjya, Gaetano Rossiello, Andrea Giovannini, Mennatallah El-Assady
+      Published:    2026-03-18
+      ArXiv ID:     2603.17815v1
+      Categories:   cs.CL
+      Confidence:   0.90
+      Reasoning:    The paper proposes a novel method for automatic step-level supervision in Chain-of-Thought reasoning using Information Theory. This method aims to detect and mitigate errors in intermediate reasoning steps, which is a core aspect of addressing logical hallucinations in LLMs. By improving the reliability of multi-step reasoning and providing a way to select the best reasoning paths (best-of-K), it directly contributes to the mitigation of hallucinations in complex tasks like mathematics and programming.
+
+  [6] Zero-knowledge LLM hallucination detection and mitigation through fine-grained cross-model consistency
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/868b62765e7f42a26938faf33d938e8070b0eecf
+      Authors:      Aman Goel, Daniel Schwartz, Yanjun Qi
+      Published:    2025-08-19
+      ArXiv ID:     2508.14314
+      DOI:          10.48550/arXiv.2508.14314
+      Citations:    5
+      Confidence:   1.00
+      Reasoning:    The paper presents an original research framework called Finch-Zk designed to detect and mitigate hallucinations in Large Language Models. It introduces two specific new methods: a cross-model consistency checking strategy for detection and a targeted mitigation technique for correction. This directly aligns with the user's criteria for original research on LLM hallucination detection and mitigation.
+
+  [7] LLM Hallucination Detection: HSAD
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/585782866e175c93eae494826b2639eb9ccc7512
+      Authors:      Jinxin Li, Gang Tu, Junjie Hu
+      Published:    2025-09-28
+      ArXiv ID:     2509.23580
+      DOI:          10.48550/arXiv.2509.23580
+      Citations:    1
+      Confidence:   1.00
+      Reasoning:    The paper proposes a novel method called HSAD (Hidden Signal Analysis-based Detection) for detecting hallucinations in Large Language Models. It uses frequency-domain analysis of hidden layer temporal signals to identify reasoning biases. This is an original research article introducing a new detection technique, which directly aligns with the user's criteria.
+
+  [8] LLM Hallucination Detection: A Fast Fourier Transform Method Based on Hidden Layer Temporal Signals
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/3b0531744415d84f84295251fe7761b1379d0094
+      Authors:      Jinxin Li, Gang Tu, ShengYu Cheng, Junjie Hu, Jinting Wang
+      Published:    2025-09-16
+      ArXiv ID:     2509.13154
+      DOI:          10.48550/arXiv.2509.13154
+      Citations:    1
+      Confidence:   1.00
+      Reasoning:    The paper proposes a novel method called HSAD (Hidden Signal Analysis-based Detection) for detecting hallucinations in Large Language Models. It utilizes Fast Fourier Transform (FFT) on hidden layer signals during the generation process. This is an original research article introducing a new detection technique, which directly matches the user's criteria.
+
+  [9] Beyond ROUGE: N-Gram Subspace Features for LLM Hallucination Detection
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/a87323e8d412e3da05efbddc083e78b018df38ec
+      Authors:      Jungshian Li, Evangelos E. Papalexakis
+      Published:    2025-09-03
+      ArXiv ID:     2509.05360
+      DOI:          10.48550/arXiv.2509.05360
+      Citations:    0
+      Confidence:   1.00
+      Reasoning:    The paper presents original research proposing a novel method for detecting hallucinations in Large Language Models. It introduces a technique using N-Gram frequency tensors and tensor decomposition to extract features for a hallucination classifier, and evaluates this method on the HaluEval dataset. This directly matches the user's criteria for original research on hallucination detection methods.
+
+  [10] A Head to Predict and a Head to Question: Pre-trained Uncertainty Quantification Heads for Hallucination Detection in LLM Outputs
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/cca687992c11d54daed5d0c6e4d60c7f1e71bcbd
+      Authors:      Artem Shelmanov, Ekaterina Fadeeva, A. Tsvigun, Ivan Tsvigun, Zhuohan Xie
+      Published:    2025-05-13
+      ArXiv ID:     2505.08200
+      DOI:          10.48550/arXiv.2505.08200
+      Citations:    11
+      Confidence:   1.00
+      Reasoning:    The paper presents original research introducing a new method for hallucination detection in LLMs. Specifically, it proposes 'pre-trained UQ heads', which are supervised auxiliary modules based on Transformer architectures and attention maps designed to quantify uncertainty and identify hallucinations. This directly aligns with the user's criteria for original research proposing new detection methods.
+
+  [16] Balancing factual consistency and informativeness for abstractive summarization
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/b8c10af0f3be3f049d11f16d730d6a28e07500b3
+      Authors:      Zhixin Li, Lisong Ou, Ying Huang
+      Published:    2025-07-06
+      DOI:          10.1007/s13042-025-02724-8
+      Citations:    1
+      Confidence:   0.85
+      Reasoning:    The paper's title 'Balancing factual consistency and informativeness for abstractive summarization' indicates a focus on factual consistency, which is the primary metric for measuring and mitigating hallucinations in the context of summarization. Abstractive summarization is a core task for Large Language Models (LLMs). The title suggests an original research contribution (a method to balance these factors) rather than a survey or review.
+
+  [17] On the Factual Consistency of Text-based Explainable Recommendation Models
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/b20be7a9b6c7801bbf0f11616c729dccd17a8a10
+      Authors:      Ben Kabongo, Vincent Guigue
+      Published:    2025-12-30
+      ArXiv ID:     2512.24366
+      DOI:          10.48550/arXiv.2512.24366
+      Citations:    0
+      Confidence:   0.95
+      Reasoning:    The paper presents original research that proposes a new framework and specific metrics (statement-level alignment using LLM and NLI) to measure the factual consistency of LLM-generated text in the context of explainable recommendation systems. This directly addresses the user's interest in methods for detecting and measuring hallucinations in LLMs.
+
+  [18] ConsistencyAI: A Benchmark to Assess LLMs' Factual Consistency When Responding to Different Demographic Groups
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/24acb427f732d4cc612a21c07b05378f2e2a9235
+      Authors:      Peter Banyas, Shristi Sharma, Alistair Simmons, Atharva Vispute
+      Published:    2025-10-11
+      ArXiv ID:     2510.13852
+      DOI:          10.48550/arXiv.2510.13852
+      Citations:    0
+      Confidence:   0.95
+      Reasoning:    The paper introduces 'ConsistencyAI', a new benchmark and methodology specifically designed to measure the factual consistency of Large Language Models (LLMs). By evaluating whether models provide different 'facts' to different demographic personas for the same query, it directly addresses the measurement of factual errors and inconsistencies, which are core components of LLM hallucinations. The paper presents original research, experimental results across 19 models, and a specific quantitative metric (cross-persona cosine similarity) for detection and measurement.
+
+  [19] A Retrieval-augmented Generation Framework with Retriever and Generator Modules for Enhancing Factual Consistency
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/464245df1476a3405875ee2d57097ff48ef0586c
+      Authors:      Yang Zhang
+      Published:    2025-07-04
+      DOI:          10.54254/2755-2721/2025.tj24496
+      Citations:    0
+      Confidence:   1.00
+      Reasoning:    The paper describes original research that proposes a specific Retrieval-augmented Generation (RAG) framework designed to mitigate hallucinations in Large Language Models. It includes an empirical evaluation showing a significant reduction in hallucination rates (from 68% to 10%) across multiple benchmarks, which directly aligns with the user's criteria for methods to mitigate or measure hallucinations.
+
+  [21] FIFA: Unified Faithfulness Evaluation Framework for Text-to-Video and Video-to-Text Generation
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/fb6859bcbb5cb0155bb0d73ee8f32d15d51b4e41
+      Authors:      Liqiang Jing, Viet Dac Lai, Seunghyun Yoon, Trung Bui, Xinya Du
+      Published:    2025-07-08
+      ArXiv ID:     2507.06523
+      DOI:          10.48550/arXiv.2507.06523
+      Citations:    1
+      Confidence:   1.00
+      Reasoning:    The paper presents original research introducing FIFA, a new framework for evaluating (measuring) faithfulness and detecting hallucinations in Video Multimodal Large Language Models (VideoMLLMs). It also proposes a 'Post-Correction' method to mitigate these hallucinations. This aligns perfectly with the user's criteria for methods to detect, measure, or mitigate hallucinations in LLMs.
+
+  [22] AlignExperts: Knowledge alignment experts for summarization faithfulness evaluation
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/498e63937764e5bf271e5fb85fd7fa10189702e5
+      Authors:      Jiuyi Li, Degen Huang, Junpeng Liu, Jin-sheng Zhao
+      Published:    2025-12-01
+      DOI:          10.1016/j.eswa.2025.130943
+      Citations:    0
+      Confidence:   0.90
+      Reasoning:    The paper proposes 'AlignExperts', a method for summarization faithfulness evaluation. In the field of LLMs, faithfulness evaluation is a core technique used to detect hallucinations, specifically by ensuring that generated summaries are factually consistent with the source text. This qualifies as an original research paper proposing a new method for detecting or measuring hallucinations.
+
+  [23] Faithfulness metric fusion: Improving the evaluation of LLM trustworthiness across domains
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/b40ab8d23dd129cfa393a93eea37082b1391da1c
+      Authors:      B. Malin, T. Kalganova, N. Boulgouris
+      Published:    2025-12-05
+      ArXiv ID:     2512.05700
+      DOI:          10.48550/arXiv.2512.05700
+      Citations:    0
+      Confidence:   1.00
+      Reasoning:    The paper presents original research proposing a new methodology for measuring the faithfulness of LLM outputs, which is the inverse of measuring hallucinations. It introduces a 'fused metric' approach that combines multiple elementary metrics using a tree-based model to better correlate with human judgments. This directly addresses the user's criteria for new methods to measure or detect hallucinations.
+
+  [26] Zero-knowledgeLLM hallucinationdetectionand mitigation through fine-grained cross-model consistency
+      Source:       huggingface
+      URL:          https://arxiv.org/abs/2508.14314
+      PDF URL:      https://arxiv.org/pdf/2508.14314.pdf
+      Published:    2025-08-01
+      ArXiv ID:     2508.14314
+      Confidence:   0.90
+      Reasoning:    The title explicitly states that the paper focuses on 'hallucination detection and mitigation' using a specific method called 'fine-grained cross-model consistency'. This aligns perfectly with the user's criteria for original research proposing new methods to address LLM hallucinations.
+
+  [30] Zero-knowledge LLM hallucination detection andmitigationthrough fine-grained cross-model consistency
+      Source:       huggingface
+      URL:          https://arxiv.org/abs/2508.14314
+      PDF URL:      https://arxiv.org/pdf/2508.14314.pdf
+      Published:    2025-08-01
+      ArXiv ID:     2508.14314
+      Confidence:   0.90
+      Reasoning:    The title explicitly states that the paper proposes a method for 'hallucination detection and mitigation' using 'fine-grained cross-model consistency'. This indicates it is an original research paper introducing a new technical approach to address LLM hallucinations, which directly matches the user's criteria. While the abstract is missing, the title is sufficiently descriptive to identify it as a primary research article rather than a survey or review.
+
+  [31] GRAD: Graph-Retrieved Adaptive Decoding for HallucinationMitigation
+      Source:       huggingface
+      URL:          https://arxiv.org/abs/2511.03900
+      PDF URL:      https://arxiv.org/pdf/2511.03900.pdf
+      Published:    2025-11-01
+      ArXiv ID:     2511.03900
+      Confidence:   0.95
+      Reasoning:    The paper title 'GRAD: Graph-Retrieved Adaptive Decoding for Hallucination Mitigation' clearly indicates that it proposes a new technical method (Graph-Retrieved Adaptive Decoding) specifically designed to mitigate hallucinations in Large Language Models. This directly matches the user's criteria for original research on hallucination mitigation methods.
+
+  [32] RFEval: Benchmarking Reasoning Faithfulness under Counterfactual Reasoning Intervention in Large Reasoning Models
+      Source:       huggingface
+      URL:          https://arxiv.org/abs/2602.17053
+      PDF URL:      https://arxiv.org/pdf/2602.17053.pdf
+      Published:    2026-02-01
+      ArXiv ID:     2602.17053
+      Confidence:   0.90
+      Reasoning:    The paper introduces 'RFEval', a new benchmark for measuring 'Reasoning Faithfulness' in Large Reasoning Models. Reasoning faithfulness is a critical component of hallucination research, as it concerns whether a model's output logic is sound or 'hallucinated'. The use of 'Counterfactual Reasoning Intervention' indicates a novel methodology for detecting and measuring these reasoning-based hallucinations, which aligns directly with the user's request for original research on measuring or detecting hallucinations.
+
+======================================================================
+  7. DOWNLOAD RESULTS
+======================================================================
+
+  [OK] Mitigating LLM Hallucinations through Domain-Grounded Tiered Retrieval
+      Source:  arxiv
+      URL:     http://arxiv.org/abs/2603.17872v1
+      File:    scaricati/Hallucinations1/Mitigating_LLM_Hallucinations_through_Domain-Grounded_Tiered_Retrieval.pdf
+      Method:  direct
+
+  [OK] Process Supervision for Chain-of-Thought Reasoning via Monte Carlo Net Information Gain
+      Source:  arxiv
+      URL:     http://arxiv.org/abs/2603.17815v1
+      File:    scaricati/Hallucinations1/Process_Supervision_for_Chain-of-Thought_Reasoning_via_Monte_Carlo_Net_Information_Gain.pdf
+      Method:  direct
+
+  [OK] Zero-knowledge LLM hallucination detection and mitigation through fine-grained cross-model consistency
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/868b62765e7f42a26938faf33d938e8070b0eecf
+      File:    scaricati/Hallucinations1/Zero-knowledge_LLM_hallucination_detection_and_mitigation_through_fine-grained_cross-model_consisten.pdf
+      Method:  direct
+
+  [OK] LLM Hallucination Detection: HSAD
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/585782866e175c93eae494826b2639eb9ccc7512
+      File:    scaricati/Hallucinations1/LLM_Hallucination_Detection_HSAD.pdf
+      Method:  direct
+
+  [OK] LLM Hallucination Detection: A Fast Fourier Transform Method Based on Hidden Layer Temporal Signals
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/3b0531744415d84f84295251fe7761b1379d0094
+      File:    scaricati/Hallucinations1/LLM_Hallucination_Detection_A_Fast_Fourier_Transform_Method_Based_on_Hidden_Layer_Temporal_Signals.pdf
+      Method:  direct
+
+  [OK] Beyond ROUGE: N-Gram Subspace Features for LLM Hallucination Detection
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/a87323e8d412e3da05efbddc083e78b018df38ec
+      File:    scaricati/Hallucinations1/Beyond_ROUGE_N-Gram_Subspace_Features_for_LLM_Hallucination_Detection.pdf
+      Method:  direct
+
+  [OK] A Head to Predict and a Head to Question: Pre-trained Uncertainty Quantification Heads for Hallucination Detection in LLM Outputs
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/cca687992c11d54daed5d0c6e4d60c7f1e71bcbd
+      File:    scaricati/Hallucinations1/A_Head_to_Predict_and_a_Head_to_Question_Pre-trained_Uncertainty_Quantification_Heads_for_Hallucinat.pdf
+      Method:  direct
+
+  [FAILED] Balancing factual consistency and informativeness for abstractive summarization
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/b8c10af0f3be3f049d11f16d730d6a28e07500b3
+      Error:   Click download failed: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("a:has-text(\"PDF\"), button:has-text(\"PDF\")").first
+    - locator resolved to <button disabled aria-pressed="false" data-test-id="pdf-available-filter-button" data-heap-id="pdf_available_filter_button" class="button button--secondary is-disabled">Has PDF</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is not enabled
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is not enabled
+    - retrying click action
+      - waiting 100ms
+    56 × waiting for element to be visible, enabled and stable
+       - element is not enabled
+     - retrying click action
+       - waiting 500ms
+
+
+  [OK] On the Factual Consistency of Text-based Explainable Recommendation Models
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/b20be7a9b6c7801bbf0f11616c729dccd17a8a10
+      File:    scaricati/Hallucinations1/On_the_Factual_Consistency_of_Text-based_Explainable_Recommendation_Models.pdf
+      Method:  direct
+
+  [OK] ConsistencyAI: A Benchmark to Assess LLMs' Factual Consistency When Responding to Different Demographic Groups
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/24acb427f732d4cc612a21c07b05378f2e2a9235
+      File:    scaricati/Hallucinations1/ConsistencyAI_A_Benchmark_to_Assess_LLMs'_Factual_Consistency_When_Responding_to_Different_Demograph.pdf
+      Method:  direct
+
+  [FAILED] A Retrieval-augmented Generation Framework with Retriever and Generator Modules for Enhancing Factual Consistency
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/464245df1476a3405875ee2d57097ff48ef0586c
+      Error:   Could not find PDF download link
+
+  [OK] FIFA: Unified Faithfulness Evaluation Framework for Text-to-Video and Video-to-Text Generation
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/fb6859bcbb5cb0155bb0d73ee8f32d15d51b4e41
+      File:    scaricati/Hallucinations1/FIFA_Unified_Faithfulness_Evaluation_Framework_for_Text-to-Video_and_Video-to-Text_Generation.pdf
+      Method:  direct
+
+  [FAILED] AlignExperts: Knowledge alignment experts for summarization faithfulness evaluation
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/498e63937764e5bf271e5fb85fd7fa10189702e5
+      Error:   Click download failed: Timeout 30000ms exceeded while waiting for event "download"
+=========================== logs ===========================
+waiting for event "download"
+============================================================
+
+  [OK] Faithfulness metric fusion: Improving the evaluation of LLM trustworthiness across domains
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/b40ab8d23dd129cfa393a93eea37082b1391da1c
+      File:    scaricati/Hallucinations1/Faithfulness_metric_fusion_Improving_the_evaluation_of_LLM_trustworthiness_across_domains.pdf
+      Method:  direct
+
+  [OK] Zero-knowledgeLLM hallucinationdetectionand mitigation through fine-grained cross-model consistency
+      Source:  huggingface
+      URL:     https://arxiv.org/abs/2508.14314
+      File:    None
+      Method:  dedup
+
+  [OK] Zero-knowledge LLM hallucination detection andmitigationthrough fine-grained cross-model consistency
+      Source:  huggingface
+      URL:     https://arxiv.org/abs/2508.14314
+      File:    None
+      Method:  dedup
+
+  [OK] GRAD: Graph-Retrieved Adaptive Decoding for HallucinationMitigation
+      Source:  huggingface
+      URL:     https://arxiv.org/abs/2511.03900
+      File:    scaricati/Hallucinations1/GRAD_Graph-Retrieved_Adaptive_Decoding_for_HallucinationMitigation.pdf
+      Method:  direct
+
+  [OK] RFEval: Benchmarking Reasoning Faithfulness under Counterfactual Reasoning Intervention in Large Reasoning Models
+      Source:  huggingface
+      URL:     https://arxiv.org/abs/2602.17053
+      File:    scaricati/Hallucinations1/RFEval_Benchmarking_Reasoning_Faithfulness_under_Counterfactual_Reasoning_Intervention_in_Large_Reas.pdf
+      Method:  direct
+
+======================================================================
+  8. NON-RELEVANT PAPERS (SUMMARY)
+======================================================================
+  [1] Toward Scalable Automated Repository-Level Datasets for Software Vulnerability Detection
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.17974v1
+      Reasoning:  The paper focuses on software vulnerability detection and the creation of repository-level datasets for that purpose. It does not address the topic of hallucinations in Large Language Models (LLMs), w
+
+  [2] scicode-lint: Detecting Methodology Bugs in Scientific Python Code with LLM-Generated Patterns
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.17893v1
+      Reasoning:  The paper describes a tool called 'scicode-lint' designed to detect methodology bugs (such as data leakage or incorrect cross-validation) in scientific Python code. While it uses LLMs to generate dete
+
+  [3] Physics-Aware Machine Learning for Seismic and Volcanic Signal Interpretation
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.17855v1
+      Reasoning:  The paper is irrelevant for two primary reasons: first, it focuses on machine learning applications in seismology and volcanology rather than Large Language Models (LLMs) or hallucinations. Second, th
+
+  [4] Environmental governance, green finance, and mitigation technologies: pathways to carbon neutrality in European industrial economies
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/15981eee58099e1c7eb0364a5997584774519d53
+      Reasoning:  The paper focuses on environmental governance, green finance, and carbon neutrality in European industrial economies. It is entirely unrelated to Large Language Models (LLMs) or the detection and miti
+
+  [5] A Low-Rate DoS Attack Mitigation Scheme Based on Port and Traffic State in SDN
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/2d38ff3c35c6a099072369bae3af418350c90afb
+      Reasoning:  The paper focuses on network security, specifically detecting and mitigating low-rate Denial of Service (DoS) attacks in Software-Defined Networking (SDN). It does not address Large Language Models (L
+
+  [6] Micro- and nanoplastic toxicity in humans: Exposure pathways, cellular effects, and mitigation strategies
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/80c4cac4381a5ab76efbfa58652ff1ddffc6a611
+      Reasoning:  The paper is completely unrelated to the research criteria. It focuses on the toxicity of micro- and nanoplastics in humans within the field of environmental science and toxicology, whereas the criter
+
+  [7] Mitigation Effects and Prediction Formulae of Stratum Disturbance by Different Slurry Pressures and Filter Cake Parameters in Slurry Shield Tunneling
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/3353da323ac47b9e83fae0c76c85df7d552d8156
+      Reasoning:  The paper is about civil engineering and geotechnical engineering, specifically focusing on slurry shield tunneling and stratum disturbance. It has no relation to Large Language Models (LLMs) or the d
+
+  [8] Enhancing photovoltaic efficiency: An in-depth systematic review and critical analysis of dust monitoring, mitigation, and cleaning techniques
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/6bd53799ca77c8af5b84c51d419b3ec32e31871f
+      Reasoning:  The paper focuses on photovoltaic efficiency and dust monitoring in solar panels, which is entirely unrelated to Large Language Models (LLMs) or hallucinations. Additionally, the title explicitly stat
+
+  [9] LLM Evaluations for Emotional Expressiveness and Factual Consistency in Medical Dialogue Systems Using LLM-as-a-Judge
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/b2e696dc40d08ccbd41a2855d3e4d4ec95e4447c
+      Reasoning:  The paper focuses on evaluating the performance of specific small LLMs (Qwen and Gemma) in the medical domain using existing evaluation frameworks and tools like DeepEval and G-Eval. While it measures
+
+  [10] A Comprehensive Evaluation of Multilingual Chain-of-Thought Reasoning: Performance, Consistency, and Faithfulness Across Languages
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/ca0f8abb5cc27b266d2be9c7f5db9b72934566e0
+      Reasoning:  The paper focuses on evaluating multilingual Chain-of-Thought (CoT) reasoning in Large Reasoning Models (LRMs), specifically looking at performance, consistency, and faithfulness across different lang
+
+  [11] Understanding character recognition using Grad-CAM and predicting faithfulness through human evaluation
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/08f5db4eb6f5203e6c4a7e9982ca095d607ec68f
+      Reasoning:  The paper focuses on character recognition, which is a computer vision task, and uses Grad-CAM, a visualization technique for convolutional neural networks. It does not address Large Language Models (
+
+  [12] UQLM: A Python Package for Uncertainty Quantification in Large Language
+  Models
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2507.06196
+      Reasoning:  The paper describes a Python package ('UQLM') for uncertainty quantification rather than proposing a new research method for detecting, measuring, or mitigating hallucinations. While uncertainty quant
+
+  [13] DeLeaker: Dynamic Inference-Time Reweighting For Semantic LeakageMitigationin Text-to-Image Models
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2510.15015
+      Reasoning:  The paper focuses on 'Text-to-Image Models' and addresses 'Semantic Leakage Mitigation.' The user's research criteria specifically target hallucinations in Large Language Models (LLMs). While both are
+
+  [14] AnalyzingMitigationStrategies for Catastrophic Forgetting in
+  End-to-End Training of Spoken Language Models
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2505.17496
+      Reasoning:  The paper focuses on 'catastrophic forgetting' in Spoken Language Models (SLMs). The user's research criteria specifically target the detection, measurement, or mitigation of 'hallucinations' in LLMs.
+
+
+======================================================================
+  END OF REPORT
+======================================================================

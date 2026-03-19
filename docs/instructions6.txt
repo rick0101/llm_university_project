@@ -4,3 +4,9 @@ Dobbiamo implementare un sistema più robusto per l'estrazione delle date dai PD
 
 permetti al modello writer di richiamare una immagine specifica durante la stesura del survey.
 
+aggiungi un comando (paperhunter reset) per eliminare tutti i checkpoint salvati, in modo da poter ripartire da zero senza dover cancellare manualmente i file.
+
+I papers danno al momento più rilevanza a quelli più recenti.
+da 2 anni, L1 completo
+da 2-4 anni il 70%
+

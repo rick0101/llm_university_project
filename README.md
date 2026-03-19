@@ -110,8 +110,8 @@ La soluzione è una **piramide di compressione a 3 livelli** ispirata all'archit
           └───────────────┬───────────────┘
                           │
     ┌─────────────────────┴─────────────────────┐
-    │                 Chunk                      │   ~50k chunk (~1.5k token ciascuno)
-    │            (testo originale)               │   = ~75M token totali (testo grezzo dei PDF)
+    │                 Chunk                     │   ~50k chunk (~1.5k token ciascuno)
+    │            (testo originale)              │   = ~75M token totali (testo grezzo dei PDF)
     └───────────────────────────────────────────┘
 ```
 
@@ -608,52 +608,52 @@ scaricati/                                        PDF categorizzati (~1.000+ pap
             │
             ▼
 ┌──── FASE 1: INGEST ────────────────────────────────────────────────────────┐
-│  PDF → GROBID (TEI-XML) → Semantic Scholar → BibTeX → Chunking            │
+│  PDF → GROBID (TEI-XML) → Semantic Scholar → BibTeX → Chunking             │
 │                                                    │                       │
-│  PDF → PyMuPDF (immagini) → Heuristic → Embedding → Vision Description   │
+│  PDF → PyMuPDF (immagini) → Heuristic → Embedding → Vision Description     │
 │                                                    │                       │
-│  Chunk + Figure Description + Image Embedding → Qdrant (7 collezioni)     │
+│  Chunk + Figure Description + Image Embedding → Qdrant (7 collezioni)      │
 └────────────────────────────────────────────────────────────────────────────┘
             │
             ▼
 ┌──── FASE 2: SUMMARIZE ─────────────────────────────────────────────────────┐
-│  Chunk → Gemini Pro → L1 Summary (per paper) → Qdrant: l1_summaries       │
+│  Chunk → Gemini Pro → L1 Summary (per paper) → Qdrant: l1_summaries        │
 │                           │                                                │
-│  L1 embedding → AgglomerativeClustering → ~50 cluster                     │
+│  L1 embedding → AgglomerativeClustering → ~50 cluster                      │
 │                           │                                                │
-│  Cluster → Gemini Pro → L1.5 Summary (per cluster) → Qdrant: l1_5        │
+│  Cluster → Gemini Pro → L1.5 Summary (per cluster) → Qdrant: l1_5          │
 │                           │                                                │
-│  L1.5 → Gemini Pro → L2 Meta-Summary (per categoria) → Qdrant: l2        │
+│  L1.5 → Gemini Pro → L2 Meta-Summary (per categoria) → Qdrant: l2          │
 └────────────────────────────────────────────────────────────────────────────┘
             │
             ▼
 ┌──── FASE 3: INDEX ─────────────────────────────────────────────────────────┐
 │  Chunk → BM25 Index (keyword search locale)                                │
 │                                                                            │
-│  L1 → Entity Extractor (Gemini Flash) → Entità + Relazioni               │
-│       → PropertyGraph (JSON locale) + Neo4j (opzionale)                   │
+│  L1 → Entity Extractor (Gemini Flash) → Entità + Relazioni                 │
+│       → PropertyGraph (JSON locale) + Neo4j (opzionale)                    │
 │       → Community Detection (Louvain/Leiden)                               │
-│       → Community Summary → Qdrant: graph_communities                     │
+│       → Community Summary → Qdrant: graph_communities                      │
 │                                                                            │
-│  Hybrid Retriever = Vector Search + BM25 + Graph → RRF → Reranking       │
+│  Hybrid Retriever = Vector Search + BM25 + Graph → RRF → Reranking         │
 └────────────────────────────────────────────────────────────────────────────┘
             │
             ▼
 ┌──── FASE 4: WRITE ─────────────────────────────────────────────────────────┐
-│  L2 Summary → Planner Agent → Outline strutturato                         │
+│  L2 Summary → Planner Agent → Outline strutturato                          │
 │                     │                                                      │
-│  Outline → Writer Agent (ReAct) → Bozza sezioni con [citazioni]          │
+│  Outline → Writer Agent (ReAct) → Bozza sezioni con [citazioni]            │
 │                 │  ↑      │                                                │
-│                 │  │      ├─ search_vector_database                       │
-│                 │  │      ├─ search_keyword_index                         │
-│                 │  │      ├─ search_graph_communities                     │
-│                 │  │      └─ search_figure_descriptions                   │
-│                 │  │                                                        │
-│                 ▼  │                                                        │
-│  Bozza → Critic Agent → Verifica citazioni → feedback ──┘                 │
-│                 │            (loop max 3×)                                  │
-│                 ▼                                                           │
-│  Sezioni verificate → Assembler Agent → Survey finale                     │
+│                 │  │      ├─ search_vector_database                        │
+│                 │  │      ├─ search_keyword_index                          │
+│                 │  │      ├─ search_graph_communities                      │
+│                 │  │      └─ search_figure_descriptions                    │
+│                 │  │                                                       │
+│                 ▼  │                                                       │
+│  Bozza → Critic Agent → Verifica citazioni → feedback ──┘                  │
+│                 │            (loop max 3×)                                 │
+│                 ▼                                                          │
+│  Sezioni verificate → Assembler Agent → Survey finale                      │
 │       → Abstract, Introduction, Conclusion generati                        │
 │       → Bibliografia filtrata (.bib)                                       │
 │       → Provenance report (JSON + MD)                                      │

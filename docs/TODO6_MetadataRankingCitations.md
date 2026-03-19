@@ -93,7 +93,7 @@ paperhunter/
 
 ---
 
-#### [ ] Task 1.2: Aggiornare `semantic_scholar.py` — parsing robusto di `publicationDate`
+#### [x] Task 1.2: Aggiornare `semantic_scholar.py` — parsing robusto di `publicationDate`
 
 **File:** `paperhunter/ingestion/semantic_scholar.py` (modifica)  
 **Stato attuale:** Il campo `publicationDate` restituito da Semantic Scholar è una stringa ISO (es. `"2023-09-15"` oppure `"2023"` oppure `null`). Il parsing attuale è fragile e non distingue tra anno, anno+mese e data completa.  
@@ -114,6 +114,25 @@ paperhunter/
 - Aggiornare `_enrich_from_s2_data()` per usare la nuova funzione di parsing.
 
 **Test:** Mock di 5 risposte S2 con varianti di `publicationDate` (`null`, `"2023"`, `"2022-11"`, `"2021-05-17"`, `"2020-01-01"`) e verificare che `(year, month)` siano estratti correttamente.
+
+> **✅ Completato — 19 marzo 2026**
+>
+> **Modifiche apportate:**
+> - `paperhunter/ingestion/semantic_scholar.py`:
+>   - Aggiunto metodo statico `_parse_publication_date(raw, year_fallback) -> tuple[int|None, int|None]`:
+>     gestisce formati `"YYYY-MM-DD"`, `"YYYY-MM"`, `"YYYY"`, `None`; fallback su `year_fallback` intero;
+>     non lancia mai eccezioni.
+>   - Due regex di classe: `_ARXIV_YEAR_RE` e `_DOI_YEAR_RE` per estrarre anno da ArXiv ID e DOI.
+>   - `_extract_enrichment_data()` aggiornato: usa `_parse_publication_date()` per popolare
+>     `year`, `month`, `published_date`; fallback catena → ArXiv ID → DOI se ancora None.
+>
+> **Come usare:**
+> ```python
+> year, month = SemanticScholarEnricher._parse_publication_date("2023-09-15")
+> # → (2023, 9)
+> year, month = SemanticScholarEnricher._parse_publication_date(None, year_fallback=2022)
+> # → (2022, None)
+> ```
 
 ---
 

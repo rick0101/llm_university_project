@@ -449,6 +449,85 @@ class SemanticScholarEnricher:
         return round(citation_count / years_since, 2)
 
     # -------------------------------------------------------------------------
+    # Parsing robusto della data di pubblicazione (Task 1.2)
+    # -------------------------------------------------------------------------
+
+    _ARXIV_YEAR_RE = re.compile(r"^(\d{4})\.")
+    _DOI_YEAR_RE = re.compile(r"/(\d{4})[./]")
+
+    @staticmethod
+    def _parse_publication_date(
+        raw: str | None,
+        year_fallback: int | None = None,
+    ) -> tuple[int | None, int | None]:
+        """Parsa la data di pubblicazione S2 in (year, month).
+
+        Gestisce formati: "YYYY-MM-DD", "YYYY-MM", "YYYY", None.
+        Non lancia mai eccezioni: ritorna (None, None) in caso di errore.
+
+        Args:
+            raw: Stringa `publicationDate` da S2 (es. "2023-09-15", "2023", None).
+            year_fallback: Campo `year` intero da S2 da usare se raw è None.
+
+        Returns:
+            Tupla (year, month) — ciascuno può essere None.
+        """
+        if raw is None:
+            # Fallback al campo year intero S2
+            if year_fallback is not None:
+                try:
+                    return int(year_fallback), None
+                except (ValueError, TypeError):
+                    pass
+            return None, None
+
+        raw = raw.strip()
+        # Formato YYYY-MM-DD
+        if len(raw) == 10 and raw[4] == "-" and raw[7] == "-":
+            try:
+                dt = datetime.fromisoformat(raw)
+                return dt.year, dt.month
+            except (ValueError, TypeError):
+                pass
+
+        # Formato YYYY-MM
+        if len(raw) == 7 and raw[4] == "-":
+            try:
+                parts = raw.split("-")
+                year = int(parts[0])
+                month = int(parts[1])
+                if 1990 <= year <= 2035 and 1 <= month <= 12:
+                    return year, month
+            except (ValueError, TypeError, IndexError):
+                pass
+
+        # Formato YYYY (solo anno)
+        if len(raw) == 4:
+            try:
+                year = int(raw)
+                if 1990 <= year <= 2035:
+                    return year, None
+            except (ValueError, TypeError):
+                pass
+
+        # Fallback: prova a estrarre l'anno con regex
+        match = re.search(r"\b(20[0-2]\d)\b", raw)
+        if match:
+            try:
+                return int(match.group(1)), None
+            except (ValueError, TypeError):
+                pass
+
+        # Ultima spiaggia: fallback intero
+        if year_fallback is not None:
+            try:
+                return int(year_fallback), None
+            except (ValueError, TypeError):
+                pass
+
+        return None, None
+
+    # -------------------------------------------------------------------------
     # Enrichment singolo paper
     # -------------------------------------------------------------------------
 
@@ -566,17 +645,47 @@ class SemanticScholarEnricher:
         if ext_ids.get("ArXiv"):
             data["arxiv_id"] = ext_ids["ArXiv"]
 
-        # Published date → month
+        # Published date — parsing robusto (Task 1.2)
         pub_date_str = details.get("publicationDate")
-        if pub_date_str:
-            try:
-                pub_date = datetime.fromisoformat(pub_date_str)
-                data["month"] = pub_date.month
-                if not data.get("year"):
-                    data["year"] = pub_date.year
-                data["published_date"] = pub_date
-            except (ValueError, TypeError):
-                pass
+        year_s2 = details.get("year")
+        parsed_year, parsed_month = self._parse_publication_date(pub_date_str, year_s2)
+
+        if parsed_year is not None:
+            data["year"] = parsed_year
+        elif year_s2 is not None:
+            # year_s2 già estratto sopra, manteniamo compatibilità
+            data["year"] = year_s2
+
+        if parsed_month is not None:
+            data["month"] = parsed_month
+
+        if parsed_year is not None:
+            data["published_date"] = datetime(parsed_year, parsed_month or 1, 1)
+
+        # Fallback anno da ArXiv ID ("YYMM.NNNNN" o "YYYY.NNNNN")
+        if data.get("year") is None and ext_ids.get("ArXiv"):
+            arxiv_id = ext_ids["ArXiv"]
+            m = self._ARXIV_YEAR_RE.match(arxiv_id)
+            if m:
+                candidate = int(m.group(1))
+                # Se sembra un anno pieno (20xx), usalo direttamente
+                if 1990 <= candidate <= 2035:
+                    data["year"] = candidate
+                else:
+                    # Vecchio formato arXiv: "YYMM.NNNNN"
+                    yy = int(arxiv_id[:2])
+                    if yy >= 90:
+                        data["year"] = 1900 + yy
+                    else:
+                        data["year"] = 2000 + yy
+
+        # Fallback anno da DOI
+        if data.get("year") is None and data.get("doi"):
+            doi_match = self._DOI_YEAR_RE.search(data["doi"])
+            if doi_match:
+                y = int(doi_match.group(1))
+                if 1990 <= y <= 2035:
+                    data["year"] = y
 
         # Authors (lista di nomi)
         authors_list = details.get("authors")

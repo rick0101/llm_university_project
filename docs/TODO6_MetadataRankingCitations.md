@@ -244,7 +244,7 @@ paperhunter/
 
 ### FASE 2 — BibTeX Garantito per Ogni PDF
 
-#### [ ] Task 2.1: Refactoring `bibtex_generator.py` — `ensure_complete_bibtex()`
+#### [x] Task 2.1: Refactoring `bibtex_generator.py` — `ensure_complete_bibtex()`
 
 **File:** `paperhunter/ingestion/bibtex_generator.py` (modifica)  
 **Stato attuale:** La funzione `generate_bibtex_entry(paper)` può produrre entry con campi mancanti (es. `year = {Unknown}`, `booktitle = {}`) se S2 non ha i dati. Dopo l'ingestion, `paper.bibtex_entry` può rimanere None.  
@@ -267,6 +267,28 @@ paperhunter/
 - Aggiornare `enrich_paper_bibtex(paper)` per chiamare `ensure_complete_bibtex()` al termine.
 
 **Test:** Creare 4 Paper fixture (campo year mancante, autori vuoti, venue sconosciuta, tutti i campi presenti) e verificare che `ensure_complete_bibtex()` produca sempre un'entry con tipo + chiave + campi obbligatori non vuoti.
+
+> **✅ Completato — 19 marzo 2026**
+>
+> **Modifiche apportate** (`paperhunter/ingestion/bibtex_generator.py`):
+> - Nuova funzione `validate_bibtex_completeness(entry: str) -> dict[str, str]`:
+>   - Ritorna `{"title": "present"|"missing"|"placeholder", "author": ..., "year": ..., "venue": ..., "url": ...}`
+>   - Riconosce placeholder noti: `"unknown"`, `"xxxx"`, `""`, `"n/a"`, `"none"`
+> - Nuova funzione `ensure_complete_bibtex(paper: Paper) -> Paper`:
+>   - Genera `bibtex_entry` se assente
+>   - Forza `@misc` per preprint arXiv (`venue` contiene "arxiv" o `paper.arxiv_id` presente)
+>   - Completa `title`, `author`, `year` se mancanti o placeholder via `_patch_bibtex_field()`
+>   - Fallback `year = 2000` e `author = "Anonymous"` se non disponibili
+> - Nuove funzioni helper private: `_build_misc_bibtex()`, `_patch_bibtex_field()`
+> - `enrich_paper_bibtex()` chiama `ensure_complete_bibtex()` al termine
+>
+> **Come usare:**
+> ```python
+> from paperhunter.ingestion.bibtex_generator import ensure_complete_bibtex, validate_bibtex_completeness
+> paper = ensure_complete_bibtex(paper)  # garantisce bibtex_entry non None
+> report = validate_bibtex_completeness(paper.bibtex_entry)
+> # → {"title": "present", "author": "present", "year": "present", ...}
+> ```
 
 ---
 

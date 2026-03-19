@@ -1,0 +1,3 @@
+eseguire un test per il parsing dei pdf.
+verificare se, dato un dataset di pdf, riesco ad estrarre correttamente i metadati (titolo, autori, anno, venue) e a generare una citazione in formato BibTeX completa e corretta per ogni paper.
+altrimenti restituire l'errore e il pdf che ha causato il problema, in modo da poterlo correggere o escludere dal dataset.ß

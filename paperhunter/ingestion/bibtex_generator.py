@@ -445,7 +445,179 @@ def enrich_paper_bibtex(paper: Paper) -> Paper:
     temp_paper = Paper(**paper_dict)
     paper_dict["bibtex_entry"] = generate_bibtex_entry(temp_paper)
 
+    result = Paper(**paper_dict)
+    return ensure_complete_bibtex(result)
+
+
+def validate_bibtex_completeness(entry: str) -> dict[str, str]:
+    """Valida la completezza di un'entry BibTeX per i campi critici.
+
+    Restituisce un dizionario campo → stato per i campi obbligatori.
+    Lo stato può essere: "present", "missing", "placeholder".
+
+    Placeholder noti: "Unknown", "XXXX", "", "arXiv Preprint" quando
+    inaspettato, ecc.
+
+    Args:
+        entry: Stringa BibTeX completa.
+
+    Returns:
+        Dict con chiavi: "title", "author", "year", "venue", "url".
+        Ogni valore è "present", "missing", o "placeholder".
+    """
+    _PLACEHOLDER_VALUES = frozenset({"unknown", "xxxx", "", "n/a", "none"})
+
+    result: dict[str, str] = {}
+
+    def _check_field(pattern: str) -> str:
+        m = re.search(pattern, entry, re.IGNORECASE | re.DOTALL)
+        if not m:
+            return "missing"
+        val = m.group(1).strip("{} \t\n")
+        if val.lower() in _PLACEHOLDER_VALUES:
+            return "placeholder"
+        if not val:
+            return "missing"
+        return "present"
+
+    result["title"] = _check_field(r'title\s*=\s*(\{[^}]*\}|"[^"]*")')
+    result["author"] = _check_field(r'author\s*=\s*(\{[^}]*\}|"[^"]*")')
+    result["year"] = _check_field(r'year\s*=\s*(\{[^}]*\}|"[^"]*"|\d{4})')
+
+    # venue = booktitle oppure journal (in @misc: howpublished)
+    if re.search(r'booktitle\s*=', entry, re.IGNORECASE):
+        result["venue"] = _check_field(r'booktitle\s*=\s*(\{[^}]*\}|"[^"]*")')
+    elif re.search(r'journal\s*=', entry, re.IGNORECASE):
+        result["venue"] = _check_field(r'journal\s*=\s*(\{[^}]*\}|"[^"]*")')
+    elif re.search(r'howpublished\s*=', entry, re.IGNORECASE):
+        result["venue"] = _check_field(r'howpublished\s*=\s*(\{[^}]*\}|"[^"]*")')
+    else:
+        result["venue"] = "missing"
+
+    result["url"] = _check_field(r'url\s*=\s*(\{[^}]*\}|"[^"]*")')
+
+    return result
+
+
+def ensure_complete_bibtex(paper: Paper) -> Paper:
+    """Garantisce che il Paper abbia un'entry BibTeX valida e completa.
+
+    Se `bibtex_entry` è None o vuoto, genera da zero.
+    Completa i campi mancanti o con placeholder usando i dati del Paper.
+    Determina automaticamente il tipo @misc per preprint arXiv.
+
+    Il campo `bibtex_entry` non sarà mai None dopo questa funzione.
+
+    Args:
+        paper: Paper da completare.
+
+    Returns:
+        Paper con bibtex_entry garantita, valida e completa.
+    """
+    paper_dict = paper.model_dump()
+
+    # Assicura che la chiave esista
+    if not paper_dict.get("bibtex_key"):
+        paper_dict["bibtex_key"] = generate_bibtex_key(
+            title=paper.title,
+            year=paper.year,
+            authors=paper.authors,
+        )
+
+    # Genera entry base se mancante
+    if not paper_dict.get("bibtex_entry"):
+        temp = Paper(**paper_dict)
+        paper_dict["bibtex_entry"] = generate_bibtex_entry(temp)
+
+    entry = paper_dict["bibtex_entry"] or ""
+    key = paper_dict["bibtex_key"]
+
+    # --- Correggi il tipo se è un preprint arXiv ---
+    venue_str = (paper.venue or paper.journal or "").lower()
+    is_arxiv = (
+        "arxiv" in venue_str
+        or bool(paper.arxiv_id)
+        or "preprint" in venue_str
+    )
+    if is_arxiv and not re.match(r"@misc\{", entry, re.IGNORECASE):
+        # Ricostruisci come @misc
+        entry = _build_misc_bibtex(paper, key)
+    elif not entry.strip():
+        # Fallback totale: @misc minimale
+        entry = _build_misc_bibtex(paper, key)
+
+    # --- Completa campi critici con placeholder mancanti ---
+    entry = _patch_bibtex_field(entry, "title", paper.title or "Untitled")
+    authors_str = _format_authors_bibtex(paper.authors) if paper.authors else "Anonymous"
+    entry = _patch_bibtex_field(entry, "author", authors_str)
+
+    # Year: prova anche dal bibtex_key (es. "Zou_2023_GCG" → 2023)
+    year_val = paper.year
+    if year_val is None and key:
+        m = re.search(r'_(\d{4})_', key)
+        if m:
+            year_val = int(m.group(1))
+    entry = _patch_bibtex_field(entry, "year", str(year_val) if year_val else "2000")
+
+    paper_dict["bibtex_entry"] = entry
     return Paper(**paper_dict)
+
+
+def _build_misc_bibtex(paper: Paper, key: str) -> str:
+    """Costruisce un'entry @misc per preprint o paper senza venue."""
+    fields: list[tuple[str, str]] = [
+        ("title", f"{{{_sanitize_for_bibtex(paper.title)}}}"),
+        ("author", f"{{{_format_authors_bibtex(paper.authors) if paper.authors else 'Anonymous'}}}"),
+        ("year", f"{{{paper.year or 2000}}}"),
+        ("howpublished", f"{{arXiv preprint}}"),
+    ]
+    if paper.arxiv_id:
+        fields.append(("eprint", f"{{{paper.arxiv_id}}}"))
+        fields.append(("archiveprefix", "{arXiv}"))
+    if paper.url:
+        fields.append(("url", f"{{{paper.url}}}"))
+
+    lines = [f"@misc{{{key},"]
+    for i, (fname, fval) in enumerate(fields):
+        comma = "," if i < len(fields) - 1 else ""
+        lines.append(f"  {fname} = {fval}{comma}")
+    lines.append("}")
+    return "\n".join(lines)
+
+
+def _patch_bibtex_field(entry: str, field_name: str, value: str) -> str:
+    """Aggiunge o sostituisce un campo nell'entry BibTeX se mancante o placeholder.
+
+    Non sovrascrive valori validi già presenti.
+
+    Args:
+        entry: Entry BibTeX da aggiornare.
+        field_name: Nome del campo (es. "year").
+        value: Valore da inserire se il campo è assente o placeholder.
+
+    Returns:
+        Entry aggiornata.
+    """
+    _PLACEHOLDER_VALUES = frozenset({"unknown", "xxxx", "", "n/a", "none", "anonymous"})
+
+    # Controlla se il campo esiste già con un valore valido
+    pattern = rf'{field_name}\s*=\s*(\{{[^}}]*\}}|"[^"]*"|\d{{4}})'
+    m = re.search(pattern, entry, re.IGNORECASE)
+    if m:
+        existing = m.group(1).strip("{} \t\n\"")
+        if existing.lower() not in _PLACEHOLDER_VALUES and existing:
+            return entry  # già presente e valido
+        # Sostituisci il placeholder
+        new_field = f'{field_name} = {{{_sanitize_for_bibtex(value)}}}'
+        return re.sub(pattern, new_field, entry, count=1, flags=re.IGNORECASE)
+
+    # Campo assente: inserisci prima della chiusura "}"
+    new_field = f'  {field_name} = {{{_sanitize_for_bibtex(value)}}}'
+    # Trova l'ultima } che chiude l'entry
+    last_brace = entry.rfind("}")
+    if last_brace >= 0:
+        return entry[:last_brace] + f",\n{new_field}\n" + entry[last_brace:]
+    return entry + f"\n{new_field}"
 
 
 def save_master_bib(

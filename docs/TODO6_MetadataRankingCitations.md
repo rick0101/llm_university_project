@@ -399,7 +399,7 @@ paperhunter/
 
 ---
 
-#### [ ] Task 3.3: Creare `figure_resolver.py` — risoluzione tag `{{FIGURE:...}}`
+#### [x] Task 3.3: Creare `figure_resolver.py` — risoluzione tag `{{FIGURE:...}}`
 
 **File:** `paperhunter/postprocessing/figure_resolver.py` (nuovo)  
 **Stato attuale:** L'`AssemblerAgent` produce il Markdown finale ma non gestisce tag speciali per le figure.  

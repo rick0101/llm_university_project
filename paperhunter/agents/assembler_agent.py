@@ -581,6 +581,19 @@ def assemble_document(
 
     document = "\n".join(parts)
 
+    # --- Risolvi i tag figura {{FIGURE:key:type}} ---
+    try:
+        from paperhunter.postprocessing.figure_resolver import FigureResolver
+        resolver = FigureResolver()
+        document, unresolved = resolver.resolve(document, output_format="markdown")
+        if unresolved:
+            logger.warning(
+                "assemble_document: %d tag figura non risolti: %s",
+                len(unresolved), unresolved,
+            )
+    except Exception as _exc:
+        logger.warning("assemble_document: FigureResolver non disponibile: %s", _exc)
+
     # Statistiche
     total_words = len(document.split())
     logger.info(f"Documento assemblato: {total_words} parole totali")

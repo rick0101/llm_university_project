@@ -1,8 +1,8 @@
-# PaperHunter v3.1
+# PaperHunter v3.2
 
 **End-to-end LLM Security Survey Generator — from PDF ingestion to Nature/ACL-style paper**
 
-PaperHunter è un sistema modulare e agentico che genera autonomamente un survey paper scientifico sulla sicurezza degli LLM. A partire da oltre 1.000 PDF scientifici categorizzati, esegue una pipeline completa: estrazione strutturata (GROBID), arricchimento metadati (Semantic Scholar), summarization gerarchica RAPTOR con clustering semantico, GraphRAG community-driven, retrieval agentico multi-step, scrittura multi-agente (LangGraph ReAct), filtraggio intelligente delle immagini con embedding multimodali, ed export LaTeX — il tutto con citazioni verificabili e tracciamento della provenienza.
+PaperHunter è un sistema modulare e agentico che genera autonomamente un survey paper scientifico sulla sicurezza degli LLM. A partire da oltre 1.000 PDF scientifici categorizzati, esegue una pipeline completa: estrazione strutturata (GROBID), arricchimento metadati robusto a cascata (Semantic Scholar + MetadataEnricher), BibTeX garantito per ogni paper, summarization gerarchica RAPTOR con clustering semantico, GraphRAG community-driven, retrieval agentico multi-step con venue ranking (NeurIPS/ACL > arXiv), scrittura multi-agente (LangGraph ReAct) con figure selezionabili dal Writer, FigureResolver per l'inserimento automatico delle figure nel survey finale, ed export LaTeX — il tutto con citazioni verificabili e tracciamento della provenienza.
 
 ---
 
@@ -19,8 +19,8 @@ PaperHunter è un sistema modulare e agentico che genera autonomamente un survey
 - [Fase 1 — Ingestion (`paperhunter ingest`)](#fase-1--ingestion-paperhunter-ingest)
   - [1.1 Scansione e Rilevamento Incrementale](#11-scansione-e-rilevamento-incrementale)
   - [1.2 Estrazione Strutturata con GROBID](#12-estrazione-strutturata-con-grobid)
-  - [1.3 Arricchimento con Semantic Scholar](#13-arricchimento-con-semantic-scholar)
-  - [1.4 Generazione BibTeX Automatica](#14-generazione-bibtex-automatica)
+  - [1.3 Arricchimento con Semantic Scholar e MetadataEnricher](#13-arricchimento-con-semantic-scholar-e-metadataenricher)
+  - [1.4 Generazione BibTeX Automatica e Garantita](#14-generazione-bibtex-automatica-e-garantita)
   - [1.5 Chunking GROBID-Aware](#15-chunking-grobid-aware)
   - [1.6 Pipeline di Elaborazione Immagini (3 Stadi)](#16-pipeline-di-elaborazione-immagini-3-stadi)
   - [1.7 Indicizzazione Vettoriale (Qdrant)](#17-indicizzazione-vettoriale-qdrant)
@@ -35,7 +35,8 @@ PaperHunter è un sistema modulare e agentico che genera autonomamente un survey
   - [3.2 Knowledge Graph (PropertyGraph + Entità)](#32-knowledge-graph-propertygraph--entità)
   - [3.3 Community Detection (Louvain/Leiden)](#33-community-detection-louvainleiden)
   - [3.4 Hybrid Retrieval con Reciprocal Rank Fusion](#34-hybrid-retrieval-con-reciprocal-rank-fusion)
-  - [3.5 Reranking con Gemini Flash](#35-reranking-con-gemini-flash)
+  - [3.5 Venue Ranking — Autorevolezza della Fonte](#35-venue-ranking--autorevolezza-della-fonte)
+  - [3.6 Reranking con Gemini Flash](#36-reranking-con-gemini-flash)
 - [Fase 4 — Writing (`paperhunter write`)](#fase-4--writing-paperhunter-write)
   - [4.1 Planner Agent — Pianificazione dell'Outline](#41-planner-agent--pianificazione-delloutline)
   - [4.2 Writer Agent — Scrittura delle Sezioni](#42-writer-agent--scrittura-delle-sezioni)
@@ -233,7 +234,7 @@ GROBID restituisce un XML TEI strutturato, che il sistema parsa in un formato in
 
 **Fallback:** Se GROBID non è disponibile, il sistema può usare PyMuPDF come fallback (configurabile), che estrae testo grezzo senza struttura — funziona, ma la qualità del chunking è inferiore.
 
-### 1.3 Arricchimento con Semantic Scholar
+### 1.3 Arricchimento con Semantic Scholar e MetadataEnricher
 
 Dopo l'estrazione GROBID, ogni paper viene arricchito con metadati da [Semantic Scholar](https://www.semanticscholar.org/):
 
@@ -245,7 +246,27 @@ Dopo l'estrazione GROBID, ogni paper viene arricchito con metadati da [Semantic 
 
 La ricerca avviene per titolo (matching fuzzy), con cache locale per evitare chiamate ripetute alla stessa API.
 
-### 1.4 Generazione BibTeX Automatica
+**Pipeline MetadataEnricher — Cascata a 7 Livelli (v3.2):**
+
+Dopo il blocco Semantic Scholar, un orchestratore centralizzato (`MetadataEnricher`) integra tutte le fonti disponibili in ordine di affidabilità decrescente:
+
+| Priorità | Fonte anno | Contributo `metadata_confidence` |
+|---|---|---|
+| 1 | `publicationDate` S2 (ISO completa) | +0.15 |
+| 2 | `year` S2 (intero) | +0.12 |
+| 3 | `extracted_year` GROBID (multi-source) | +0.08 |
+| 4 | Regex sul testo dell'abstract | +0.05 |
+| 5 | Anno dal filename del PDF | +0.04 |
+| 6 | Anno mediano dalle references | +0.03 |
+| 7 | Fallback su `paper.year` esistente | +0.05 |
+
+Analoga cascata per **venue** (S2 → S2 journal → GROBID ref) e **abstract** (S2 → GROBID → primo paragrafo). Il campo `metadata_confidence: float` (0.0–1.0) riflette la qualità complessiva dei metadati recuperati e viene loggato per ogni paper.
+
+**Estrazione anno multi-source da GROBID:** Il parser TEI-XML ora esplora 5 livelli del documento prima di dichiarare l'anno mancante: tag `<date>` nell'header, `<idno type="DOI">`, `<note>` e `<title level="j">`, date di affiliazione degli autori, e anno mediano delle reference (`<listBibl>`). La fonte è tracciata nel campo `year_extraction_source` (es. `"tei_header_date_published"`, `"doi_year"`, `"citation_median"`).
+
+**Parsing robusto `publicationDate` S2:** Gestisce tutti i formati restituiti dall'API (`"YYYY-MM-DD"`, `"YYYY-MM"`, `"YYYY"`, `null`) con fallback a `year`, ArXiv ID e DOI come ultima risorsa.
+
+### 1.4 Generazione BibTeX Automatica e Garantita
 
 Per ogni paper viene generata automaticamente una entry BibTeX con chiave deterministica nel formato `Autore_ANNO_Keyword`:
 
@@ -259,6 +280,18 @@ Per ogni paper viene generata automaticamente una entry BibTeX con chiave determ
 ```
 
 Questa chiave BibTeX è il **filo conduttore** che lega ogni informazione nel sistema: chunk, summary L1/L1.5/L2, citazioni nel survey finale, entry nella bibliografia — tutto punta alla stessa chiave.
+
+**BibTeX garantito — `ensure_complete_bibtex()` (v3.2):**
+
+Ogni paper è garantito avere un'entry BibTeX valida e completa, anche in caso di metadati parziali o assenti:
+
+- Se `bibtex_entry` è `None` o vuoto, viene rigenerata automaticamente
+- I campi critici con valori placeholder (`"Unknown"`, `""`, `"XXXX"`) vengono rimpiazzati con le migliori informazioni disponibili: `paper.year`, `paper.authors`, `paper.venue`
+- I preprint arXiv (rilevati da `venue` o `arxiv_id`) usano il tipo `@misc` con `howpublished = {arXiv preprint}`
+- Fallback sicuri: `year = 2000`, `author = "Anonymous"` se non disponibili
+- La funzione `validate_bibtex_completeness(entry)` restituisce un report per campo (`"present"` / `"missing"` / `"placeholder"`) per auditing della qualità
+
+Dopo `ensure_complete_bibtex()`, il campo `bibtex_entry` non può mai essere `None`.
 
 ### 1.5 Chunking GROBID-Aware con Best-Fit Packing
 
@@ -443,9 +476,24 @@ RRF ha il vantaggio di combinare ranking provenienti da sorgenti con scale di sc
 
 **Recency boost:** Dopo la fusione RRF, i paper più recenti ricevono un boost configurabile (default: +10% per il paper più recente).
 
-### 3.5 Reranking con Gemini Flash
+### 3.5 Venue Ranking — Autorevolezza della Fonte
 
-I risultati dell'HybridRetriever vengono ulteriormente riordinati usando **Gemini Flash come cross-encoder**:
+Dopo il recency boost, un ulteriore step opzionale (`venue_ranking_enabled: true` in config) applica un **boost/penalità basato sull'autorevolezza della venue** di ogni chunk recuperato:
+
+| Tier | Venue | Boost |
+|---|---|---|
+| **Tier 1** — Top ML/NLP/Security | NeurIPS, ICML, ICLR, ACL, EMNLP, IEEE S&P, USENIX Security, CCS, NDSS, Nature, JMLR… | +0.15 |
+| **Tier 2** — Workshop e conferenze di secondo livello | Findings of ACL/EMNLP, AAAI, IJCAI, Workshop at ICML… | +0.05 |
+| **Tier 3** — Preprint | arXiv, bioRxiv, SSRN… | −0.05 |
+| **Tier 0** — Sconosciuta | None, università, ecc. | 0.0 |
+
+Il matching è **case-insensitive e substring-based** (es. `"NeurIPS 2023"` matcha `"neurips"`). I boost sono configurabili in `config.yaml` sotto la chiave `retrieval.venue_ranking_*`. Ogni chunk riceve un campo `venue_tier` per tracciabilità. Lo score finale è sempre clampato a `[0.0, 1.0]`.
+
+**Perché ordine Tier 2 prima di Tier 1?** Per evitare false classificazioni: `"Findings of ACL"` o `"Workshop at ICML"` contengono alias Tier 1 come substring, quindi vengono verificati prima contro Tier 2.
+
+### 3.6 Reranking con Gemini Flash
+
+I risultati (già riordinati per venue authority) vengono ulteriormente rifiniti usando **Gemini Flash come cross-encoder**:
 
 1. Ogni candidato viene presentato insieme alla query originale a Gemini Flash
 2. Il modello assegna un punteggio di rilevanza 0.0–1.0
@@ -494,11 +542,12 @@ Il Writer prende l'outline e scrive ogni sezione del survey. Supporta **due moda
 5. Il risultato è un testo Markdown con citazioni `[bibtex_key]`
 
 **Modalità "agentic" (ReAct, preferita per corpora grandi):**
-1. Il Writer viene istanziato come **ReAct Agent** con 4 tool di retrieval a disposizione:
+1. Il Writer viene istanziato come **ReAct Agent** con 5 tool di retrieval a disposizione:
    - `search_vector_database` — ricerca semantica su chunk, L1 e L2
    - `search_keyword_index` — ricerca BM25 per termini specifici
    - `search_graph_communities` — ricerca nei community summary del grafo
    - `search_figure_descriptions` — ricerca figure (testo + embedding multimodale)
+   - `get_figure_for_section` — recupera una figura specifica di un paper (`bibtex_key` + `figure_type`); conferma che la figura esiste prima di inserire il tag
 2. L'agente segue un loop **Thought → Action → Observation → ... → Final Answer**:
    - *Thought:* "Per scrivere di GCG attack, devo trovare il paper originale e le difese proposte"
    - *Action:* `search_vector_database("GCG universal adversarial suffix attack")`
@@ -511,6 +560,8 @@ Il Writer prende l'outline e scrive ogni sezione del survey. Supporta **due moda
 Il vantaggio della modalità agentica è che il Writer **decide autonomamente** quali informazioni cercare e da dove, adattandosi al contenuto specifico di ogni sezione. Con 1.000+ paper, questa flessibilità è essenziale perché query pre-calcolate non possono coprire tutte le sfumature.
 
 **Istruzioni speciali:** Il Writer riceve template diversi a seconda del tipo di sezione. Per esempio, la sezione "Testing Methodologies" ha l'obbligo di includere una tabella comparativa di benchmark e metriche; l'Introduction deve contenere una roadmap del paper; la Discussion deve analizzare criticamente le limitazioni del campo.
+
+**Figure nel survey (modalità agentica):** Il Writer può inserire figure specifiche nel testo usando tag `{{FIGURE:bibtex_key:figure_type}}` (es. `{{FIGURE:Zou_2023_GCG:architecture_diagram}}`). Il tag viene posizionato subito dopo la frase che illustra, al massimo 1-2 figure per sezione, e solo dopo aver confermato l'esistenza della figura via `get_figure_for_section()`. Tipi supportati: `results_plot`, `architecture_diagram`, `flowchart`, `comparison_table`, `confusion_matrix`, `attack_diagram`, `defense_pipeline`, `any`.
 
 ### 4.3 Critic Agent — Verifica della Provenienza
 
@@ -549,9 +600,10 @@ L'Assembler è l'ultimo agente e si occupa di:
 2. **Generare l'Abstract** — sintetizzando tutte le sezioni in un paragrafo di 150-250 parole
 3. **Generare/raffinare l'Introduction** — contestualizzando il survey, motivandone l'esistenza, e includendo una roadmap
 4. **Generare la Conclusion** — sintesi dei findings, contributi, direzioni future e raccomandazioni
-5. **Assemblare il documento finale** — un unico Markdown coeso con tutte le sezioni
-6. **Generare la bibliografia filtrata** — file `.bib` contenente solo le entry effettivamente citate
-7. **Versioning** — salva il survey con timestamp, genera changelog se esiste una versione precedente
+5. **Risolvere i tag figura** — `FigureResolver` scansiona il testo e sostituisce ogni `{{FIGURE:key:type}}` con markup Markdown (`![caption](path)`) o LaTeX (`\includegraphics{...}`); i tag non risolvibili (figura non trovata o file mancante) vengono rimossi silenziosamente con log del conteggio
+6. **Assemblare il documento finale** — un unico Markdown coeso con tutte le sezioni e le figure integrate
+7. **Generare la bibliografia filtrata** — file `.bib` contenente solo le entry effettivamente citate
+8. **Versioning** — salva il survey con timestamp, genera changelog se esiste una versione precedente
 
 ### 4.6 Checkpoint e Ripresa da Errore
 
@@ -608,7 +660,7 @@ scaricati/                                        PDF categorizzati (~1.000+ pap
             │
             ▼
 ┌──── FASE 1: INGEST ────────────────────────────────────────────────────────┐
-│  PDF → GROBID (TEI-XML) → Semantic Scholar → BibTeX → Chunking             │
+│  PDF → GROBID (TEI-XML) → Semantic Scholar → MetadataEnricher → BibTeX → Chunking │
 │                                                    │                       │
 │  PDF → PyMuPDF (immagini) → Heuristic → Embedding → Vision Description     │
 │                                                    │                       │
@@ -635,7 +687,7 @@ scaricati/                                        PDF categorizzati (~1.000+ pap
 │       → Community Detection (Louvain/Leiden)                               │
 │       → Community Summary → Qdrant: graph_communities                      │
 │                                                                            │
-│  Hybrid Retriever = Vector Search + BM25 + Graph → RRF → Reranking         │
+│  Hybrid Retriever = Vector Search + BM25 + Graph → RRF → VenueBoost → Reranking │
 └────────────────────────────────────────────────────────────────────────────┘
             │
             ▼
@@ -647,13 +699,15 @@ scaricati/                                        PDF categorizzati (~1.000+ pap
 │                 │  │      ├─ search_vector_database                        │
 │                 │  │      ├─ search_keyword_index                          │
 │                 │  │      ├─ search_graph_communities                      │
-│                 │  │      └─ search_figure_descriptions                    │
+│                 │  │      ├─ search_figure_descriptions                    │
+│                 │  │      └─ get_figure_for_section                        │
 │                 │  │                                                       │
 │                 ▼  │                                                       │
 │  Bozza → Critic Agent → Verifica citazioni → feedback ──┘                  │
 │                 │            (loop max 3×)                                 │
 │                 ▼                                                          │
 │  Sezioni verificate → Assembler Agent → Survey finale                      │
+│       → FigureResolver: {{FIGURE:...}} → Markdown/LaTeX                    │
 │       → Abstract, Introduction, Conclusion generati                        │
 │       → Bibliografia filtrata (.bib)                                       │
 │       → Provenance report (JSON + MD)                                      │
@@ -819,8 +873,8 @@ docker run --rm -d --name neo4j \
 
 ```bash
 # 1. (Opzionale) Cerca e scarica nuovi paper
-paperhunter search -k '"jailbreak prompt" LLM' \
-    -c "Paper su prompt injection" \
+paperhunter search -k '"jailbreak prompt" LLM OR "prompt injection"' \
+    -c "Paper su prompt injection" \ß
     -o ./scaricati/Prompt_injections1 -n 20
 
 # 2. Ingest: PDF → GROBID → S2 → chunking → Qdrant
@@ -900,10 +954,11 @@ paperhunter/
 │
 ├── ingestion/                        ← Pipeline di elaborazione PDF
 │   ├── ingestion_pipeline.py         ← Orchestratore end-to-end
-│   ├── grobid_client.py              ← Client GROBID Docker (TEI-XML → strutturato)
+│   ├── grobid_client.py              ← Client GROBID Docker (TEI-XML → strutturato + anno multi-source)
 │   ├── pdf_hasher.py                 ← Hash SHA-256 per ingestion incrementale
-│   ├── semantic_scholar.py           ← Arricchimento S2 API
-│   ├── bibtex_generator.py           ← Generazione BibTeX automatica
+│   ├── semantic_scholar.py           ← Arricchimento S2 API (parsing robusto publicationDate)
+│   ├── metadata_enricher.py          ← Cascata metadati a 7 livelli + metadata_confidence
+│   ├── bibtex_generator.py           ← BibTeX automatica + ensure_complete_bibtex() garantito
 │   ├── chunker.py                    ← Chunking GROBID-aware + Best-Fit Packing
 │   ├── figure_extractor.py           ← Estrazione figure + pipeline 3 stadi
 │   └── image_relevance_filter.py     ← Classificatore euristico immagini
@@ -918,7 +973,8 @@ paperhunter/
 ├── indexing/                         ← Retrieval ibrido
 │   ├── qdrant_store.py               ← Vector store Qdrant (7 collezioni)
 │   ├── bm25_index.py                 ← Indice BM25 keyword
-│   ├── hybrid_retriever.py           ← Vector + BM25 + RRF fusion
+│   ├── hybrid_retriever.py           ← Vector + BM25 + RRF + VenueBoost fusion
+│   ├── venue_ranker.py               ← VenueRanker: tier dictionary (Tier1/2/3) + boost score
 │   └── reranker.py                   ← Reranking cross-encoder Gemini Flash
 │
 ├── graphrag/                         ← Knowledge Graph + Community
@@ -936,11 +992,12 @@ paperhunter/
 │   ├── critic_agent.py               ← Agent 3: verifica citazioni
 │   ├── assembler_agent.py            ← Agent 4: assembla survey finale
 │   └── tools/
-│       └── retrieval_tools.py        ← 4 tool di retrieval per ReAct agent
+│       └── retrieval_tools.py        ← 5 tool di retrieval per ReAct agent (+ get_figure_for_section)
 │
 ├── postprocessing/                   ← Generazione output
 │   ├── provenance_tracker.py         ← Tracciamento provenienza claim
 │   ├── bibliography_generator.py     ← Bibliografia .bib filtrata
+│   ├── figure_resolver.py            ← FigureResolver: {{FIGURE:...}} → Markdown/LaTeX
 │   ├── latex_exporter.py             ← Markdown → LaTeX (ACL/IEEE/plain)
 │   ├── versioning.py                 ← Versioning + changelog automatico
 │   └── checkpoint_manager.py         ← Checkpoint per ripresa da errore
@@ -959,7 +1016,7 @@ paperhunter/
 
 ## Testing
 
-Il progetto include 46 moduli di test con ~1000+ test che coprono tutti i moduli. I test usano mock e non richiedono API live o servizi Docker.
+Il progetto include 49 moduli di test con ~1100+ test che coprono tutti i moduli. I test usano mock e non richiedono API live o servizi Docker.
 
 ```bash
 # Tutti i test

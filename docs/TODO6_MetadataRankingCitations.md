@@ -586,7 +586,7 @@ paperhunter/
 
 ---
 
-#### [ ] Task 4.3: Test end-to-end venue ranking
+#### [x] Task 4.3: Test end-to-end venue ranking
 
 **File:** `tests/test_venue_ranker.py` (nuovo)  
 **Stato attuale:** Non esistono test per il venue ranker.  
@@ -607,6 +607,29 @@ paperhunter/
   12. Score dopo boost non va sotto 0.0
 
 **Test:** `pytest tests/test_venue_ranker.py -v` → tutti i test passano.
+
+> **✅ Completato — 19 marzo 2026**
+>
+> **Note:**
+> - Il file `tests/test_venue_ranker.py` era già stato creato durante il Task 4.1 con 21 test unitari.
+> - Tutti i 21 test coprono i 12 requisiti minimi + test bonus (factory, custom boost, case-insensitive, substring, stringa vuota, ordinamento dopo boost).
+> - `pytest tests/test_venue_ranker.py -v` → **21 passed** ✅
+>
+> **Test inclusi:**
+> - `test_get_tier_neurips` — NeurIPS 2023 → Tier 1
+> - `test_get_tier_iclr` — ICLR 2024 → Tier 1
+> - `test_get_tier_arxiv_lowercase` — "arxiv" → Tier 3
+> - `test_get_tier_arxiv_preprint` — "arXiv preprint" → Tier 3
+> - `test_get_tier_workshop_trustworthy_ml` — Workshop at ICML → Tier 2
+> - `test_get_tier_none` — None → Tier 0
+> - `test_get_tier_unknown_university` — "Università di Bologna" → Tier 0
+> - `test_get_tier_acl` / `test_get_tier_findings_emnlp` — ACL Tier 1, Findings EMNLP Tier 2
+> - `test_get_boost_iclr` — +0.15, `test_get_boost_arxiv` — -0.05, `test_get_boost_none` — 0.0
+> - `test_get_boost_findings_acl` — +0.05
+> - `test_score_after_boost_does_not_exceed_1` / `_does_not_go_below_0` — invarianti di clamp
+> - `test_create_venue_ranker_factory` — factory function
+> - `test_custom_boost_values` / `test_case_insensitive_matching` / `test_substring_matching`
+> - `test_empty_string_returns_tier_0` / `test_ordering_after_boost`
 
 ---
 

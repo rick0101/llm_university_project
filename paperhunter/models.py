@@ -86,6 +86,10 @@ class Paper(BaseModel):
     grobid_processed: bool = Field(False, description="Se il PDF è stato processato da GROBID")
     ingested_at: Optional[datetime] = Field(None, description="Timestamp dell'ingestion")
 
+    # Metadata enrichment (Task 1.3)
+    metadata_confidence: float = Field(0.0, ge=0.0, le=1.0, description="Affidabilità stimata dei metadati (0.0-1.0)")
+    year_source: Optional[str] = Field(None, description="Fonte da cui è stato estratto l'anno (es. 's2_publication_date', 'grobid', 'filename')")
+
     class Config:
         use_enum_values = True
 

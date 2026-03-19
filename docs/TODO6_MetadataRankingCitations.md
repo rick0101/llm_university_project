@@ -136,7 +136,7 @@ paperhunter/
 
 ---
 
-#### [ ] Task 1.3: Creare `metadata_enricher.py` — pipeline a cascata metadati
+#### [x] Task 1.3: Creare `metadata_enricher.py` — pipeline a cascata metadati
 
 **File:** `paperhunter/ingestion/metadata_enricher.py` (nuovo)  
 **Stato attuale:** Non esiste un orchestratore centralizzato per l'arricchimento metadati: anno, venue, abstract estratti da fonti diverse non vengono integrati sistematicamente.  
@@ -179,6 +179,27 @@ paperhunter/
   al modello `Paper` in `models.py`.
 
 **Test:** Creare 3 fixture Paper + GROBIDOutput + s2_data (caso completo, caso solo S2, caso solo GROBID) e verificare che `metadata_confidence` sia > 0.7 nel caso completo e < 0.4 nel caso peggiore.
+
+> **✅ Completato — 19 marzo 2026**
+>
+> **Modifiche apportate:**
+> - `paperhunter/models.py` — aggiunti a `Paper`:
+>   - `metadata_confidence: float = 0.0` (ge=0.0, le=1.0)
+>   - `year_source: Optional[str] = None`
+> - `paperhunter/ingestion/metadata_enricher.py` *(nuovo)*:
+>   - Classe `MetadataEnricher` con metodo principale `enrich(paper, grobid_output, s2_data, pdf_filename) -> Paper`
+>   - Cascata anno (7 livelli): S2 publicationDate (0.15) → S2 year (0.12) → GROBID extracted_year (0.08) → abstract regex (0.05) → filename (0.04) → citation_median (0.03) → paper existing (0.05)
+>   - Cascata venue: S2 venue (0.15) → S2 journal (0.12) → GROBID ref[0].venue (0.06) → paper existing
+>   - Cascata abstract: S2 (0.15) → GROBID (0.08) → primo paragrafo full_text (0.03) → existing (0.04)
+>   - `_normalize_venue()` con dizionario `_VENUE_ALIASES` (40+ alias → nomi canonici come NeurIPS, ACL, ICLR)
+>   - `metadata_confidence` = somma contributi, capped a 1.0
+>
+> **Come usare:**
+> ```python
+> enricher = MetadataEnricher()
+> paper = enricher.enrich(paper, grobid_output, s2_raw_dict, pdf_filename="paper.pdf")
+> print(paper.year, paper.year_source, paper.metadata_confidence)
+> ```
 
 ---
 

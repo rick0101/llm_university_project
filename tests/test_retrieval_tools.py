@@ -534,12 +534,12 @@ class TestFormattingHelpers:
 class TestGetAllRetrievalTools:
     """Test per get_all_retrieval_tools()."""
 
-    def test_returns_four_tools(self):
-        """Verifica che vengano restituiti esattamente 4 tool."""
+    def test_returns_five_tools(self):
+        """Verifica che vengano restituiti esattamente 5 tool."""
         from paperhunter.agents.tools.retrieval_tools import get_all_retrieval_tools
 
         tools = get_all_retrieval_tools()
-        assert len(tools) == 4
+        assert len(tools) == 5
 
     def test_tools_are_function_tools(self):
         """Verifica che ogni tool sia un FunctionTool di LlamaIndex."""

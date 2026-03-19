@@ -873,9 +873,10 @@ docker run --rm -d --name neo4j \
 
 ```bash
 # 1. (Opzionale) Cerca e scarica nuovi paper
-paperhunter search -k '"jailbreak prompt" LLM OR "prompt injection"' \
-    -c "Paper su prompt injection" \ß
-    -o ./scaricati/Prompt_injections1 -n 20
+# Ricerca limitata ad articoli di ricerca originali: esclusi survey, review, overview e tutorial
+paperhunter search -k '"jailbreak prompt" LLM OR "prompt injection"ß' \
+    -c "Articoli di ricerca originali su prompt injection" \
+    -o ./scaricati/Prompt_injections1 -n 10
 
 # 2. Ingest: PDF → GROBID → S2 → chunking → Qdrant
 paperhunter ingest

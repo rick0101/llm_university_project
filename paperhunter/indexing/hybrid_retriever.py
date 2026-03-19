@@ -1009,7 +1009,7 @@ def _apply_venue_boost(
         boost = ranker.get_boost(venue)
         tier = ranker.get_tier(venue)
         old_score = r.score
-        r.score = min(1.0, max(0.0, r.score + boost))
+        r.score = max(0.0, r.score + boost)
         r.venue_tier = tier
         logger.debug(
             "Venue boost: chunk_id=%s venue=%r tier=%d boost=%+.2f score %.4f→%.4f",

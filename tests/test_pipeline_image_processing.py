@@ -305,7 +305,7 @@ def embed_text_via_genai(text: str) -> tuple[list[float], float]:
     return embedding, elapsed
 
 
-def test_multimodal_embeddings(extraction_results: list[PDFExtractionResult]) -> dict:
+def test_multimodal_embeddings() -> dict:
     """TEST 2: Testa embedding multimodale (immagini + testo) con gemini-embedding-2-preview."""
     log_separator("TEST 2: Embedding Multimodale (gemini-embedding-2-preview)")
     log(f"  Modello: {settings.gemini.embedding_model}")

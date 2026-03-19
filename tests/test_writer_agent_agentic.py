@@ -613,8 +613,9 @@ class TestWriterModeConfig:
 class TestWriteAllSectionsAgentic:
     """Test per write_all_sections con routing modale."""
 
+    @patch("paperhunter.agents.writer_agent._load_section_checkpoints", return_value={})
     @patch("paperhunter.agents.writer_agent.write_section")
-    def test_write_all_delegates_to_write_section(self, mock_write_section):
+    def test_write_all_delegates_to_write_section(self, mock_write_section, mock_checkpoints):
         """write_all_sections delega a write_section che gestisce il routing."""
         from paperhunter.agents.writer_agent import write_all_sections
 

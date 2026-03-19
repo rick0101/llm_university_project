@@ -476,6 +476,45 @@ paperhunter/
 
 **Test:** Testare `get_tier()` e `get_boost()` con 10 venue campione (NeurIPS 2023, ICLR 2024, arXiv, workshop ICLR, None, università sconosciuta, ecc.) e verificare tier e boost corretti.
 
+> **✅ Completato — 19 marzo 2026**
+>
+> **Modifiche apportate:**
+> - `paperhunter/indexing/venue_ranker.py` *(nuovo)*:
+>   - Costanti module-level: `TIER1_VENUES`, `TIER2_VENUES`, `TIER3_VENUES` (frozenset)
+>   - Classe `VenueRanker(tier1_boost=0.15, tier2_boost=0.05, tier3_penalty=0.05)`:
+>     - `get_tier(venue) -> int`: 1=top, 2=medium, 3=preprint, 0=sconosciuta
+>     - `get_boost(venue) -> float`: +tier1_boost / +tier2_boost / -tier3_penalty / 0.0
+>     - Matching case-insensitive e substring-based
+>     - **Ordine di check: Tier 2 PRIMA di Tier 1** — evita false classificazioni per
+>       "Findings of ACL" o "Workshop at ICML" che contengono alias Tier 1
+>   - Funzione `create_venue_ranker() -> VenueRanker`: legge boost da `settings.retrieval`
+>     se disponibile, altrimenti usa i default
+> - `paperhunter/config.py`:
+>   - Nuova classe `VenueRankingConfig` con campi `enabled`, `tier1_boost`, `tier2_boost`, `tier3_penalty`
+>   - `RetrievalConfig` aggiornata: campi piatti `venue_ranking_enabled`, `venue_tier1_boost`,
+>     `venue_tier2_boost`, `venue_tier3_penalty` + sotto-oggetto `venue_ranking: VenueRankingConfig`
+> - `config.yaml` — sezione `retrieval` aggiornata con:
+>   ```yaml
+>   venue_ranking_enabled: true
+>   venue_tier1_boost: 0.15
+>   venue_tier2_boost: 0.05
+>   venue_tier3_penalty: 0.05
+>   ```
+> - `tests/test_venue_ranker.py` *(nuovo)*: 21 test unitari, tutti passati ✅
+>
+> **Come usare:**
+> ```python
+> from paperhunter.indexing.venue_ranker import VenueRanker, create_venue_ranker
+>
+> ranker = create_venue_ranker()           # legge da config.yaml
+> tier  = ranker.get_tier("NeurIPS 2023")  # → 1
+> boost = ranker.get_boost("NeurIPS 2023") # → +0.15
+> boost = ranker.get_boost("arXiv")        # → -0.05
+> boost = ranker.get_boost(None)           # → 0.0
+> # Clamp score dopo boost
+> new_score = min(1.0, max(0.0, old_score + boost))
+> ```
+
 ---
 
 #### [ ] Task 4.2: Integrare `VenueRanker` in `hybrid_retriever.py`

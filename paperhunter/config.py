@@ -237,6 +237,14 @@ class SummarizationConfig(BaseModel):
     l2_recency_tiers: L2RecencyTiersConfig = Field(default_factory=L2RecencyTiersConfig)
 
 
+class VenueRankingConfig(BaseModel):
+    """Configurazione venue ranking post-RRF nel HybridRetriever."""
+    enabled: bool = True
+    tier1_boost: float = 0.15    # Boost per Tier 1 (NeurIPS, ICML, ACL, ...)
+    tier2_boost: float = 0.05    # Boost per Tier 2 (workshop, AAAI, ...)
+    tier3_penalty: float = 0.05  # Penalità per Tier 3 (arXiv preprint, ...)
+
+
 class RetrievalConfig(BaseModel):
     """Configurazione hybrid retrieval (vector + BM25 + GraphRAG)."""
     vector_weight: float = 0.6
@@ -248,6 +256,11 @@ class RetrievalConfig(BaseModel):
     rerank_batch_size: int = 20
     bm25_index_path: str = "./data/bm25_index.pkl"
     recency_boost: float = 0.1  # Boost temporale post-RRF (0.0 = disabilitato)
+    venue_ranking_enabled: bool = True
+    venue_tier1_boost: float = 0.15
+    venue_tier2_boost: float = 0.05
+    venue_tier3_penalty: float = 0.05
+    venue_ranking: VenueRankingConfig = Field(default_factory=VenueRankingConfig)
 
 
 class AgentsConfig(BaseModel):

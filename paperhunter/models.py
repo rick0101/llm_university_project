@@ -130,6 +130,9 @@ class GROBIDOutput(BaseModel):
     processing_time: Optional[float] = Field(None, description="Tempo di processing GROBID (secondi)")
     success: bool = Field(True, description="Se il processing è andato a buon fine")
     error_message: Optional[str] = Field(None, description="Errore se success=False")
+    # Estrazione robusta anno (Task 1.1)
+    extracted_year: Optional[int] = Field(None, description="Anno estratto con strategia multi-source")
+    year_extraction_source: Optional[str] = Field(None, description="Fonte da cui è stato estratto l'anno (es. 'tei_header_date', 'doi_year', 'text_regex', 'citation_median')")
 
 
 # ============================================================================

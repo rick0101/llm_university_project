@@ -25,6 +25,8 @@ Uso:
 
 from __future__ import annotations
 
+import re
+import statistics
 import time
 from pathlib import Path
 from typing import Optional
@@ -246,6 +248,7 @@ class GrobidClient:
         figure_captions = self._extract_figure_captions(root)
         table_captions = self._extract_table_captions(root)
         full_text = self._extract_full_text(root)
+        extracted_year, year_extraction_source = self._extract_year_from_tei(root)
 
         return GROBIDOutput(
             paper_id=paper_id,
@@ -257,7 +260,141 @@ class GrobidClient:
             figure_captions=figure_captions,
             table_captions=table_captions,
             full_text=full_text,
+            extracted_year=extracted_year,
+            year_extraction_source=year_extraction_source,
         )
+
+    # =========================================================================
+    # Estrazione anno multi-source (Task 1.1)
+    # =========================================================================
+
+    _YEAR_RE = re.compile(r"\b(20[0-2]\d)\b")
+    _DOI_YEAR_RE = re.compile(r"/(\d{4})[./]")
+
+    def _extract_year_from_tei(
+        self, tei_root: etree._Element
+    ) -> tuple[int | None, str]:
+        """Estrae l'anno di pubblicazione dal TEI-XML con strategia multi-source.
+
+        Ordine di priorità:
+          1. <date type="published">, <date type="submission">, <date> nell'header
+          2. <idno type="DOI"> — anno dal DOI
+          3. <note> o <title level="j"> con pattern anno (regex)
+          4. Affiliazioni degli autori (date presenti)
+          5. Anno mediano delle references nella listBibl (upper bound stima)
+
+        Returns:
+            Tupla (year, source) dove source è una stringa descrittiva.
+            Restituisce (None, "not_found") se nessuna fonte è disponibile.
+        """
+        # 1) Date tags nell'header GROBID
+        try:
+            for date_type in ("published", "submission", None):
+                xpath = (
+                    f".//tei:teiHeader//tei:date[@type='{date_type}']"
+                    if date_type
+                    else ".//tei:teiHeader//tei:date"
+                )
+                for date_el in tei_root.findall(xpath, NS):
+                    when = date_el.get("when", "")
+                    if when and len(when) >= 4:
+                        try:
+                            year = int(when[:4])
+                            if 1990 <= year <= 2035:
+                                src = f"tei_header_date_{date_type or 'generic'}"
+                                logger.debug("Anno da TEI header date: %d (%s)", year, src)
+                                return year, src
+                        except ValueError:
+                            pass
+        except Exception as exc:
+            logger.debug("Errore estrazione anno da TEI header date: %s", exc)
+
+        # 2) <idno type="DOI"> nell'header
+        try:
+            for idno_el in tei_root.findall(".//tei:teiHeader//tei:idno[@type='DOI']", NS):
+                doi_text = idno_el.text or ""
+                match = self._DOI_YEAR_RE.search(doi_text)
+                if match:
+                    year = int(match.group(1))
+                    if 1990 <= year <= 2035:
+                        logger.debug("Anno da DOI '%s': %d", doi_text[:40], year)
+                        return year, "doi_year"
+        except Exception as exc:
+            logger.debug("Errore estrazione anno da DOI: %s", exc)
+
+        # 3) Regex negli elementi <note> e <title> del header
+        try:
+            candidates: list[str] = []
+            for tag_path in (
+                ".//tei:teiHeader//tei:note",
+                ".//tei:teiHeader//tei:title[@level='j']",
+                ".//tei:teiHeader//tei:title[@level='m']",
+            ):
+                for el in tei_root.findall(tag_path, NS):
+                    text = self._get_all_text(el).strip()
+                    if text:
+                        candidates.append(text)
+            for text in candidates:
+                match = self._YEAR_RE.search(text)
+                if match:
+                    year = int(match.group(1))
+                    if 1990 <= year <= 2035:
+                        logger.debug("Anno da regex in note/title: %d", year)
+                        return year, "text_regex_header"
+        except Exception as exc:
+            logger.debug("Errore estrazione anno da note/title: %s", exc)
+
+        # 4) Date nelle affiliazioni degli autori
+        try:
+            for date_el in tei_root.findall(".//tei:teiHeader//tei:author//tei:date", NS):
+                when = date_el.get("when", "")
+                if when and len(when) >= 4:
+                    try:
+                        year = int(when[:4])
+                        if 1990 <= year <= 2035:
+                            logger.debug("Anno da affiliazione autore: %d", year)
+                            return year, "author_affiliation_date"
+                    except ValueError:
+                        pass
+                # Prova anche il testo del tag
+                text = date_el.text or ""
+                match = self._YEAR_RE.search(text)
+                if match:
+                    year = int(match.group(1))
+                    if 1990 <= year <= 2035:
+                        logger.debug("Anno da testo affiliazione: %d", year)
+                        return year, "author_affiliation_date"
+        except Exception as exc:
+            logger.debug("Errore estrazione anno da affiliazioni: %s", exc)
+
+        # 5) Anno mediano delle references (stima upper bound)
+        try:
+            ref_years: list[int] = []
+            list_bibl = tei_root.find(".//tei:text/tei:back//tei:listBibl", NS)
+            if list_bibl is not None:
+                for bibl in list_bibl.findall("tei:biblStruct", NS):
+                    date_el = bibl.find(".//tei:monogr/tei:imprint/tei:date[@type='published']", NS)
+                    if date_el is not None:
+                        when = date_el.get("when", "")
+                        if when and len(when) >= 4:
+                            try:
+                                y = int(when[:4])
+                                if 1990 <= y <= 2035:
+                                    ref_years.append(y)
+                            except ValueError:
+                                pass
+            if len(ref_years) >= 3:
+                median_year = int(statistics.median(ref_years))
+                logger.debug(
+                    "Anno stimato da mediana %d references: %d",
+                    len(ref_years),
+                    median_year,
+                )
+                return median_year, "citation_median"
+        except Exception as exc:
+            logger.debug("Errore estrazione anno da references: %s", exc)
+
+        return None, "not_found"
 
     def _extract_title(self, root: etree._Element) -> str:
         """Estrae il titolo dal TEI header."""

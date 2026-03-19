@@ -828,9 +828,153 @@ def search_figure_descriptions(
 # Helper: costruzione lista tool per il ReAct Agent
 # ============================================================================
 
+
+# ============================================================================
+# Tool: get_figure_for_section (Task 3.1)
+# ============================================================================
+
+_VALID_FIGURE_TYPES = frozenset({
+    "any", "results_plot", "architecture_diagram", "flowchart",
+    "comparison_table", "confusion_matrix", "attack_diagram", "defense_pipeline",
+})
+
+
+def get_figure_for_section(
+    paper_bibtex_key: str,
+    figure_type: str = "any",
+) -> str:
+    """Retrieve a specific figure from a paper for inclusion in the survey.
+
+    Queries Qdrant for figures associated with the given paper. After calling
+    this tool and receiving a valid result, insert a figure placeholder tag
+    in the text using the format:
+
+        {{FIGURE:bibtex_key:figure_type}}
+
+    Example: {{FIGURE:Zou_2023_GCG:architecture_diagram}}
+
+    Valid figure_types: any, results_plot, architecture_diagram, flowchart,
+    comparison_table, confusion_matrix, attack_diagram, defense_pipeline
+
+    Args:
+        paper_bibtex_key: The BibTeX key of the paper (e.g., "Zou_2023_GCG").
+        figure_type: Type of figure to retrieve. Use "any" to get the best
+            available figure regardless of type.
+
+    Returns:
+        JSON string with figure metadata (figure_id, paper_key, figure_type,
+        description, image_path, caption) or "NO_FIGURE_FOUND" if not available.
+    """
+    import json as _json
+
+    start = time.time()
+    logger.info(
+        "get_figure_for_section: paper=%s type=%s", paper_bibtex_key, figure_type
+    )
+
+    if not paper_bibtex_key or not paper_bibtex_key.strip():
+        return "NO_FIGURE_FOUND"
+
+    if figure_type not in _VALID_FIGURE_TYPES:
+        figure_type = "any"
+
+    try:
+        store = _get_qdrant_store()
+    except Exception as exc:
+        logger.warning("QdrantStore non disponibile: %s", exc)
+        return "NO_FIGURE_FOUND"
+
+    # ---- 1. Cerca nella collection figure_descriptions ----
+    result = _query_figure_collection(
+        store=store,
+        collection="figure_descriptions",
+        bibtex_key=paper_bibtex_key,
+        figure_type=figure_type,
+    )
+
+    # ---- 2. Fallback: cerca nella collection image_embeddings ----
+    if result is None:
+        result = _query_figure_collection(
+            store=store,
+            collection="image_embeddings",
+            bibtex_key=paper_bibtex_key,
+            figure_type=figure_type,
+        )
+
+    elapsed = time.time() - start
+    if result is None:
+        logger.info(
+            "get_figure_for_section: NO_FIGURE_FOUND per %s (%.2fs)",
+            paper_bibtex_key, elapsed,
+        )
+        return "NO_FIGURE_FOUND"
+
+    logger.info(
+        "get_figure_for_section: trovata figura %s per %s (%.2fs)",
+        result.get("figure_id", "?"), paper_bibtex_key, elapsed,
+    )
+    return _json.dumps(result, ensure_ascii=False)
+
+
+def _query_figure_collection(
+    store: object,
+    collection: str,
+    bibtex_key: str,
+    figure_type: str,
+) -> dict | None:
+    """Interroga una collection Qdrant per trovare una figura di un paper.
+
+    Filtra per `bibtex_key` nel payload e opzionalmente per `figure_type`.
+    Restituisce il primo risultato come dict, o None se nessuno trovato.
+    """
+    try:
+        from qdrant_client.models import FieldCondition, Filter, MatchValue
+
+        must_conditions = [
+            FieldCondition(key="bibtex_key", match=MatchValue(value=bibtex_key))
+        ]
+        if figure_type != "any":
+            must_conditions.append(
+                FieldCondition(key="figure_type", match=MatchValue(value=figure_type))
+            )
+
+        qdrant_filter = Filter(must=must_conditions)
+
+        # Usa scroll (non vettoriale) per filtrare per metadata
+        client = getattr(store, "client", None) or getattr(store, "_client", None)
+        if client is None:
+            return None
+
+        records, _ = client.scroll(
+            collection_name=collection,
+            scroll_filter=qdrant_filter,
+            limit=1,
+            with_payload=True,
+            with_vectors=False,
+        )
+
+        if not records:
+            return None
+
+        payload = records[0].payload or {}
+        return {
+            "figure_id": str(records[0].id),
+            "paper_key": payload.get("bibtex_key", bibtex_key),
+            "figure_type": payload.get("figure_type", figure_type),
+            "description": payload.get("description", payload.get("text", "")),
+            "image_path": payload.get("image_path", ""),
+            "caption": payload.get("caption", payload.get("figure_caption", "")),
+        }
+
+    except Exception as exc:
+        logger.debug(
+            "_query_figure_collection(%s, %s): %s", collection, bibtex_key, exc
+        )
+        return None
+
+
 def get_all_retrieval_tools() -> list[FunctionTool]:
     """Restituisce tutti i retrieval tool come ``FunctionTool`` di LlamaIndex.
-
     I tool sono pronti per essere registrati in un ``ReActAgent`` o
     ``AgentRunner`` di LlamaIndex.
 
@@ -890,6 +1034,18 @@ def get_all_retrieval_tools() -> list[FunctionTool]:
                 "architectures, or visual data from papers. "
                 "Returns formatted text with [bibtex_key] citations "
                 "and source indicator [description] or [image_embedding]."
+            ),
+        ),
+        FunctionTool.from_defaults(
+            fn=get_figure_for_section,
+            name="get_figure_for_section",
+            description=(
+                "Retrieve a specific figure from a paper to embed in the survey. "
+                "Use when you want to include a diagram, plot, or chart from a specific paper. "
+                "Call this BEFORE inserting a {{FIGURE:key:type}} tag in the text. "
+                "Returns JSON with figure metadata or 'NO_FIGURE_FOUND'. "
+                "Valid figure_types: any, results_plot, architecture_diagram, flowchart, "
+                "comparison_table, confusion_matrix, attack_diagram, defense_pipeline."
             ),
         ),
     ]

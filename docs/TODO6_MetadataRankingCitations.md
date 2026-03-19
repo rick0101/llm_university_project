@@ -327,7 +327,7 @@ paperhunter/
 
 ### FASE 3 — Writer Agent con Figure Specifiche
 
-#### [ ] Task 3.1: Nuovo tool `get_figure_for_section()` in `retrieval_tools.py`
+#### [x] Task 3.1: Nuovo tool `get_figure_for_section()` in `retrieval_tools.py`
 
 **File:** `paperhunter/agents/tools/retrieval_tools.py` (modifica)  
 **Stato attuale:** Il tool `search_figure_descriptions` esegue una ricerca testuale sulle descrizioni delle figure, ma non permette al writer di richiedere una figura specifica di un paper specifico (es. "la figura di architettura del paper Zou_2023_GCG").  

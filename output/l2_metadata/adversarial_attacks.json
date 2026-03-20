@@ -1,22 +1,27 @@
 {
   "category": "Adversarial Attacks",
-  "version": 1,
-  "paper_count": 4,
+  "version": 2,
+  "paper_count": 9,
   "paper_ids": [
     "Wang_2024_Advqdet",
     "Orel_2026_AI",
+    "Liu_2025_Purpcode",
+    "Yin_2025_LLM",
     "Jia_2025_Adversarial",
-    "Yang_2024_Adversarial"
+    "Thang_2026_LLM",
+    "Yang_2024_Adversarial",
+    "Ding_2025_Reward",
+    "Akil_2025_Llmalmorph"
   ],
   "invalidated": false,
-  "generated_at": "2026-03-16T11:32:37.232771",
+  "generated_at": "2026-03-20T10:43:15.009183",
   "model_used": "pro",
   "recency_tier_stats": {
     "path": "raptor_l1_5",
     "cluster_count": 1,
-    "total_paper_count": 4,
-    "avg_papers_per_cluster": 4.0,
-    "l1_5_chars": 3691,
+    "total_paper_count": 9,
+    "avg_papers_per_cluster": 9.0,
+    "l1_5_chars": 4086,
     "budget_pct": 0
   }
 }

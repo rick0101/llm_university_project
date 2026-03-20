@@ -125,11 +125,16 @@ def _get_bm25_index():
 
 
 def reset_singletons() -> None:
-    """Reset dei singleton (utile per i test).
+    """Reset dei singleton.
 
-    Riporta i backend a None, forzando la ri-inizializzazione
-    alla prossima chiamata dei tool.
+    Chiude il client Qdrant e riporta i backend a None, forzando
+    la ri-inizializzazione alla prossima chiamata dei tool.
+
+    Include gc.collect() per assicurarsi che il lock del filesystem
+    Qdrant (locale/embedded) venga rilasciato prima di riaprire.
     """
+    import gc
+
     global _qdrant_store_singleton, _bm25_index_singleton
     if _qdrant_store_singleton is not None:
         try:
@@ -138,6 +143,7 @@ def reset_singletons() -> None:
             pass
     _qdrant_store_singleton = None
     _bm25_index_singleton = None
+    gc.collect()
     logger.debug("Retrieval tools singletons resettati")
 
 

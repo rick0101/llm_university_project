@@ -457,6 +457,7 @@ def cmd_ingest(args: argparse.Namespace) -> int:
         skip_s2=args.skip_s2,
         skip_qdrant=args.skip_qdrant,
         use_checkpoint=not args.no_checkpoint,
+        force=args.force,
     )
 
     report = pipeline.run()
@@ -1112,6 +1113,14 @@ def cmd_write(args: argparse.Namespace) -> int:
             from paperhunter.config import settings
             settings.agents.writer_mode = writer_mode
             logger.info(f"Writer mode override: {writer_mode}")
+
+        # --force: riscrittura forzata da zero
+        if getattr(args, "force", False):
+            from paperhunter.config import settings
+            settings.agents.force_rewrite = True
+            from paperhunter.agents.writer_agent import clean_section_checkpoints
+            removed = clean_section_checkpoints()
+            logger.info(f"Force rewrite: eliminati {removed} checkpoint sezione writer")
 
         logger.info("Avvio pipeline (Planner → Writer → Critic → Assembler)...")
         start = time.time()
@@ -2193,6 +2202,8 @@ def build_parser() -> argparse.ArgumentParser:
                           help="Salta indicizzazione Qdrant")
     p_ingest.add_argument("--no-checkpoint", action="store_true",
                           help="Disabilita checkpoint di resume")
+    p_ingest.add_argument("--force", action="store_true",
+                          help="Forza re-ingestion di tutti i PDF ignorando il registro hash")
 
     # ── summarize ──
     p_sum = sub.add_parser(
@@ -2254,6 +2265,8 @@ def build_parser() -> argparse.ArgumentParser:
                          help="Template LaTeX (default: config.yaml)")
     p_write.add_argument("--writer-mode", type=str, choices=["static", "agentic"],
                          help="Modalità writer: 'static' (RAG) o 'agentic' (ReAct). Override config.yaml")
+    p_write.add_argument("--force", action="store_true",
+                         help="Riscrive tutte le sezioni da zero, ignorando i checkpoint salvati")
 
     # ── query ──
     p_query = sub.add_parser(

@@ -119,7 +119,7 @@ clustering:
 # che vengono poi indicizzate in Qdrant come vettori testuali.
 figure_extraction:
   enabled: true                 # Abilita/disabilita estrazione figure
-  vision_model: "google/gemini-3-flash-preview"  # Modello con supporto Vision multimodale
+  vision_model: "gemini-3-flash-preview"  # Modello con supporto Vision multimodale
   min_width: 150                # Larghezza minima immagine (pixel) — esclude icone
   min_height: 150               # Altezza minima immagine (pixel) — esclude loghi
   max_figures_per_paper: 10     # Massimo figure processate per paper (le più grandi)

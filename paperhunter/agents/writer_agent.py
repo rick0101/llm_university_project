@@ -92,6 +92,11 @@ class MaxTokensError(RuntimeError):
     pass
 
 
+class MaxIterationsError(RuntimeError):
+    """Il ReAct agent ha raggiunto il limite massimo di iterazioni."""
+    pass
+
+
 # ============================================================================
 # Prompt templates
 # ============================================================================
@@ -891,32 +896,59 @@ def _write_section_agentic(
         f"Target approximately {outline.target_length_words} words with [bibtex_key] citations."
     )
 
-    # --- Esegui il ReAct loop con retry per MAX_TOKENS ---
-    max_retries = 3
+    # --- Esegui il ReAct loop con retry ---
+    # Retry infinito per MaxIterationsError (aumenta iterazioni ogni volta)
+    # Retry limitato (3) per MaxTokensError (riduce iterazioni)
+    max_token_retries = 3
+    max_token_attempt = 0
     result = None
 
-    for attempt in range(1, max_retries + 1):
+    while True:
         t0 = time.time()
         try:
             result = asyncio.run(
                 _run_react_agent(agent, user_msg, max_iterations=max_iter)
             )
             break  # Successo, esci dal loop
-        except MaxTokensError:
+
+        except MaxIterationsError:
             elapsed_attempt = time.time() - t0
-            if attempt < max_retries:
-                # Riduci iterazioni per tentativo successivo: meno step → conversazione più corta
+            old_iter = max_iter
+            max_iter = max_iter + 5
+            logger.warning(
+                f"[agentic] Max iterations raggiunto per '{outline.title}' "
+                f"dopo {elapsed_attempt:.0f}s — retry con max_iter {old_iter}→{max_iter}"
+            )
+            print_warning(
+                f"Max iterations per '{outline.title}', "
+                f"retry con più iterazioni ({max_iter})..."
+            )
+            # Ricrea l'agente fresco
+            agent = ReActAgent(
+                name="SurveyWriterAgent",
+                description="Academic survey section writer with RAG tools",
+                system_prompt=system_prompt,
+                tools=tools,
+                llm=llm,
+                timeout=600.0,
+                verbose=logger.isEnabledFor(10),
+            )
+            continue
+
+        except MaxTokensError:
+            max_token_attempt += 1
+            elapsed_attempt = time.time() - t0
+            if max_token_attempt < max_token_retries:
                 old_iter = max_iter
                 max_iter = max(5, max_iter - 4)
                 logger.warning(
-                    f"[agentic] MAX_TOKENS al tentativo {attempt}/{max_retries} "
+                    f"[agentic] MAX_TOKENS al tentativo {max_token_attempt}/{max_token_retries} "
                     f"dopo {elapsed_attempt:.0f}s — retry con max_iter {old_iter}→{max_iter}"
                 )
                 print_warning(
-                    f"MAX_TOKENS per '{outline.title}' (tentativo {attempt}/{max_retries}), "
+                    f"MAX_TOKENS per '{outline.title}' (tentativo {max_token_attempt}/{max_token_retries}), "
                     f"retry con meno iterazioni ({max_iter})..."
                 )
-                # Ricrea l'agente fresco per evitare stato residuo
                 agent = ReActAgent(
                     name="SurveyWriterAgent",
                     description="Academic survey section writer with RAG tools",
@@ -926,12 +958,14 @@ def _write_section_agentic(
                     timeout=600.0,
                     verbose=logger.isEnabledFor(10),
                 )
+                continue
             else:
                 logger.error(
-                    f"[agentic] MAX_TOKENS dopo {max_retries} tentativi "
+                    f"[agentic] MAX_TOKENS dopo {max_token_retries} tentativi "
                     f"per '{outline.title}' — rinuncio"
                 )
                 return None
+
         except RuntimeError as e:
             if "cannot be called from a running event loop" in str(e):
                 logger.warning(
@@ -948,12 +982,31 @@ def _write_section_agentic(
                 except MaxTokensError:
                     logger.error(f"[agentic] MAX_TOKENS in nest_asyncio fallback")
                     return None
+                except MaxIterationsError:
+                    # Anche in nest_asyncio, ritenta
+                    old_iter = max_iter
+                    max_iter = max_iter + 5
+                    logger.warning(
+                        f"[agentic] Max iterations in nest_asyncio — "
+                        f"retry con max_iter {old_iter}→{max_iter}"
+                    )
+                    agent = ReActAgent(
+                        name="SurveyWriterAgent",
+                        description="Academic survey section writer with RAG tools",
+                        system_prompt=system_prompt,
+                        tools=tools,
+                        llm=llm,
+                        timeout=600.0,
+                        verbose=logger.isEnabledFor(10),
+                    )
+                    continue
                 except Exception as nested_e:
                     logger.error(f"[agentic] nest_asyncio fallback failed: {nested_e}")
                     return None
             else:
                 logger.error(f"[agentic] RuntimeError: {e}")
                 return None
+
         except Exception as e:
             logger.error(f"[agentic] ReAct agent failed: {e}", exc_info=True)
             return None
@@ -1024,6 +1077,12 @@ async def _run_react_agent(agent, user_msg: str, max_iterations: int = 7):
         if "MAX_TOKENS" in err_str:
             logger.warning(f"[agentic] _run_react_agent: MAX_TOKENS hit — will retry")
             raise MaxTokensError(err_str) from e
+        if "Max iterations" in err_str:
+            logger.warning(
+                f"[agentic] _run_react_agent: max iterations ({max_iterations}) "
+                f"raggiunto — will retry con più iterazioni"
+            )
+            raise MaxIterationsError(err_str) from e
         logger.error(f"[agentic] _run_react_agent error: {e}", exc_info=True)
         return None
 
@@ -1223,9 +1282,6 @@ def write_section(
             critic_feedback=critic_feedback,
         )
         if parsed is not None:
-            # ReAct ha prodotto un risultato valido — rilascia il lock Qdrant
-            from paperhunter.agents.tools.retrieval_tools import reset_singletons
-            reset_singletons()
             elapsed = time.time() - t0
             return _build_section_result(
                 parsed, target_outline, section_key,
@@ -1233,9 +1289,6 @@ def write_section(
                 mode="agentic",
             )
         else:
-            # Fallback a static — rilascia il lock Qdrant del ReAct agent
-            from paperhunter.agents.tools.retrieval_tools import reset_singletons
-            reset_singletons()
             logger.warning(
                 f"[agentic] Fallback a modalità static per '{section_key}'"
             )
@@ -1525,21 +1578,24 @@ def write_all_sections(
     all_sections: dict[str, dict] = {}
 
     # --- Carica checkpoint per-sezione esistenti (resume) ---
-    cached_sections = _load_section_checkpoints()
     resumed_count = 0
-    if cached_sections:
-        for key, data in cached_sections.items():
-            if key not in existing_sections:
-                all_sections[key] = data
-                resumed_count += 1
-        if resumed_count:
-            logger.info(
-                f"[checkpoint] Ripristinate {resumed_count} sezioni da checkpoint: "
-                f"{list(cached_sections.keys())}"
-            )
-            print_success(
-                f"Ripristinate {resumed_count} sezioni da checkpoint precedente"
-            )
+    if not settings.agents.force_rewrite:
+        cached_sections = _load_section_checkpoints()
+        if cached_sections:
+            for key, data in cached_sections.items():
+                if key not in existing_sections:
+                    all_sections[key] = data
+                    resumed_count += 1
+            if resumed_count:
+                logger.info(
+                    f"[checkpoint] Ripristinate {resumed_count} sezioni da checkpoint: "
+                    f"{list(cached_sections.keys())}"
+                )
+                print_success(
+                    f"Ripristinate {resumed_count} sezioni da checkpoint precedente"
+                )
+    else:
+        logger.info("[force_rewrite] Checkpoint sezione ignorati — riscrittura forzata")
 
     # Filtra sezioni da scrivere (escludi già presenti nello stato E nei checkpoint)
     sections_to_write = [
@@ -1627,6 +1683,14 @@ def write_all_sections(
             print_error(err)
             errors.append(err)
             failed_count += 1
+
+    # Rilascia il lock Qdrant solo alla fine di tutto il ciclo di scrittura
+    # (non tra una sezione e l'altra, per evitare lock contention su local storage)
+    try:
+        from paperhunter.agents.tools.retrieval_tools import reset_singletons
+        reset_singletons()
+    except Exception:
+        pass
 
     elapsed = time.time() - t0
     logger.info(

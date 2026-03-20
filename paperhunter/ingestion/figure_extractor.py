@@ -289,30 +289,62 @@ class FigureExtractor:
             mime_type=mime_type,
         )
 
-        try:
-            limiter = get_gemini_limiter()
-            limiter.wait()
+        max_retries = settings.gemini.max_retries
+        base_delay = 4.0
+        max_delay = 120.0
 
-            client = genai.Client(api_key=settings.google_api_key)
-            response = client.models.generate_content(
-                model=settings.figure_extraction.vision_model,
-                contents=[prompt, image_part],
-                config=types.GenerateContentConfig(
-                    temperature=0.1,
-                    max_output_tokens=1024,
-                    thinking_config=types.ThinkingConfig(thinking_budget=0),
-                ),
-            )
+        for attempt in range(1, max_retries + 1):
+            try:
+                limiter = get_gemini_limiter()
+                limiter.wait()
 
-            if response and response.text:
-                return response.text.strip()
-            else:
-                logger.warning("Gemini Vision ha restituito risposta vuota")
-                return ""
+                client = genai.Client(api_key=settings.google_api_key)
+                response = client.models.generate_content(
+                    model=settings.figure_extraction.vision_model,
+                    contents=[prompt, image_part],
+                    config=types.GenerateContentConfig(
+                        temperature=0.1,
+                        max_output_tokens=1024,
+                        thinking_config=types.ThinkingConfig(thinking_budget=0),
+                    ),
+                )
 
-        except Exception as e:
-            logger.warning("Errore Gemini Vision per descrizione figura: %s", e)
-            return ""
+                if response and response.text:
+                    return response.text.strip()
+                else:
+                    logger.warning("Gemini Vision ha restituito risposta vuota")
+                    return ""
+
+            except Exception as e:
+                error_str = str(e).lower()
+
+                # Errori permanenti (modello non trovato, auth) → fallisci subito
+                if "404" in error_str or "not found" in error_str:
+                    raise RuntimeError(
+                        f"Gemini Vision modello non trovato (404). "
+                        f"Verifica 'figure_extraction.vision_model' in config.yaml. "
+                        f"Errore originale: {e}"
+                    ) from e
+                if "401" in error_str or "403" in error_str or "permission" in error_str:
+                    raise RuntimeError(
+                        f"Gemini Vision errore di autenticazione/permessi: {e}"
+                    ) from e
+
+                # Errori transient → retry con backoff
+                if attempt < max_retries:
+                    delay = min(base_delay * (2 ** (attempt - 1)), max_delay)
+                    logger.warning(
+                        "Gemini Vision errore tentativo %d/%d: %s. "
+                        "Retry tra %.0fs...",
+                        attempt, max_retries, e, delay,
+                    )
+                    time.sleep(delay)
+                else:
+                    raise RuntimeError(
+                        f"Gemini Vision fallita dopo {max_retries} tentativi: {e}"
+                    ) from e
+
+        return ""  # unreachable, per sicurezza
 
     # ------------------------------------------------------------------
     # Pipeline completa: estrazione + descrizione + chunking

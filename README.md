@@ -660,7 +660,8 @@ scaricati/                                        PDF categorizzati (~1.000+ pap
             │
             ▼
 ┌──── FASE 1: INGEST ────────────────────────────────────────────────────────┐
-│  PDF → GROBID (TEI-XML) → Semantic Scholar → MetadataEnricher → BibTeX → Chunking │
+│  PDF → GROBID (TEI-XML) → Semantic Scholar → MetadataEnricher              │
+│       → BibTeX → Chunking                                                  │
 │                                                    │                       │
 │  PDF → PyMuPDF (immagini) → Heuristic → Embedding → Vision Description     │
 │                                                    │                       │
@@ -687,7 +688,8 @@ scaricati/                                        PDF categorizzati (~1.000+ pap
 │       → Community Detection (Louvain/Leiden)                               │
 │       → Community Summary → Qdrant: graph_communities                      │
 │                                                                            │
-│  Hybrid Retriever = Vector Search + BM25 + Graph → RRF → VenueBoost → Reranking │
+│  Hybrid Retriever = Vector Search + BM25 + Graph                           │
+│       → RRF → VenueBoost → Reranking                                       │
 └────────────────────────────────────────────────────────────────────────────┘
             │
             ▼

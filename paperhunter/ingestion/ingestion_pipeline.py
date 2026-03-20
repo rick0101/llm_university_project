@@ -379,12 +379,14 @@ class IngestionPipeline:
         skip_s2: bool = False,
         skip_qdrant: bool = False,
         use_checkpoint: bool = True,
+        force: bool = False,
     ):
         self.pdf_base_dir = Path(pdf_base_dir or settings.ingestion.pdf_base_dir)
         self.batch_size = batch_size or settings.ingestion.batch_size
         self.skip_s2 = skip_s2
         self.skip_qdrant = skip_qdrant
         self.use_checkpoint = use_checkpoint
+        self.force = force
 
         # Componenti della pipeline (lazy init)
         self._grobid: GrobidClient | None = None
@@ -473,7 +475,11 @@ class IngestionPipeline:
         logger.info("STEP 1: Scansione directory e rilevamento delta")
         logger.info("=" * 60)
 
-        registry = load_hash_registry()
+        if self.force:
+            logger.info("--force attivo: il registro hash verrà ignorato, tutti i PDF saranno processati")
+            registry = {}
+        else:
+            registry = load_hash_registry()
         new_pdfs = get_new_or_modified_pdfs(pdf_dir=base_dir, registry=registry)
         report.total_on_disk = len(new_pdfs) + len(registry)
         report.skipped = len(registry) - sum(
@@ -558,6 +564,8 @@ class IngestionPipeline:
         logger.info("Processing %d PDF in %d batch (batch_size=%d)",
                      total_pdfs, len(batches), self.batch_size)
 
+        pipeline_aborted = False
+
         for batch_idx, batch in enumerate(batches, 1):
             logger.info("-" * 50)
             logger.info("BATCH %d/%d (%d PDF)", batch_idx, len(batches), len(batch))
@@ -597,6 +605,32 @@ class IngestionPipeline:
                         # Segna come completato nel checkpoint
                         completed_pdfs_list.append(rel_path)
 
+                    except RuntimeError as exc:
+                        # Errore critico (modello non trovato, auth, ecc.)
+                        # → ferma la pipeline, non ha senso continuare
+                        report.errors += 1
+                        report.error_details[rel_path] = (
+                            f"{type(exc).__name__}: {exc}"
+                        )
+                        logger.error(
+                            "ERRORE CRITICO — pipeline interrotta: %s\n%s",
+                            exc,
+                            traceback.format_exc(),
+                        )
+                        # Salva checkpoint parziale prima di uscire
+                        if self.use_checkpoint:
+                            self._checkpoint.save(
+                                completed_pdfs=completed_pdfs_list,
+                                total_to_process=total_pdfs,
+                                registry=registry,
+                            )
+                        from paperhunter.utils.logging_setup import print_error
+                        print_error(
+                            f"Pipeline interrotta per errore critico: {exc}"
+                        )
+                        pipeline_aborted = True
+                        break
+
                     except Exception as exc:
                         report.errors += 1
                         report.error_details[rel_path] = (
@@ -611,6 +645,10 @@ class IngestionPipeline:
             finally:
                 gc.enable()
                 gc.collect()
+
+            # Se pipeline interrotta per errore critico, esci dal loop batch
+            if pipeline_aborted:
+                break
 
             # Checkpoint dopo ogni batch
             if self.use_checkpoint:
@@ -1014,6 +1052,14 @@ class IngestionPipeline:
                 )
 
             return figure_chunks
+        except RuntimeError as exc:
+            # Errori critici (modello non trovato, auth) → propaga per fermare la pipeline
+            logger.error(
+                "Errore critico estrazione figure per '%s': %s",
+                paper.bibtex_key or paper.title[:40],
+                exc,
+            )
+            raise
         except Exception as exc:
             logger.warning(
                 "Errore estrazione figure per '%s': %s",

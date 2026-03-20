@@ -275,7 +275,8 @@ class AgentsConfig(BaseModel):
     assembler_model: str = "pro"
     writer_max_context_chars: int = 60_000  # Max chars contesto per singola sezione writer
     writer_budget_mode: str = "proportional"  # "fixed" | "proportional"
-    writer_mode: str = "static"  # "static" (RAG pre-calcolato) | "agentic" (ReAct multi-step)
+    writer_mode: str = "agentic"  # "static" (RAG pre-calcolato) | "agentic" (ReAct multi-step)
+    force_rewrite: bool = False  # Se True, riscrive tutto ignorando i checkpoint per-sezione
 
     @field_validator("planner_model", "writer_model", "critic_model", "assembler_model")
     @classmethod

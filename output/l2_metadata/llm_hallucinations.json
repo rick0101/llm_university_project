@@ -1,24 +1,26 @@
 {
   "category": "LLM Hallucinations",
-  "version": 1,
-  "paper_count": 4,
+  "version": 2,
+  "paper_count": 8,
   "paper_ids": [
-    "Friel_2023_LLM",
-    "Gu_2024_Anah",
+    "Shelmanov_2025_LLM",
+    "Liu_2025_Attention",
+    "Kabongo_2025_Factual",
     "Sui_2024_Confabulation",
-    "Liu_2025_Attention"
+    "Royer_2026_Process",
+    "Banyas_2025_LLMs",
+    "Friel_2023_LLM",
+    "Gu_2024_Anah"
   ],
   "invalidated": false,
-  "generated_at": "2026-03-16T11:36:27.301683",
+  "generated_at": "2026-03-20T10:47:44.379980",
   "model_used": "pro",
   "recency_tier_stats": {
-    "full": 3,
-    "reduced": 1,
-    "compressed": 0,
-    "full_pct": 75.0,
-    "reduced_pct": 25.0,
-    "compressed_pct": 0.0,
-    "total": 4,
-    "year_range": "2023-2025"
+    "path": "raptor_l1_5",
+    "cluster_count": 1,
+    "total_paper_count": 8,
+    "avg_papers_per_cluster": 8.0,
+    "l1_5_chars": 3966,
+    "budget_pct": 0
   }
 }

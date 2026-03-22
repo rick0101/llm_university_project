@@ -2268,7 +2268,7 @@ def cmd_experiment(args: argparse.Namespace) -> int:
     console.print(f"   Comando: {' '.join(rc_cmd)}")
     console.print()
 
-    # Fix macOS SSL: ResearchClaw usa urllib senza certifi
+    # Prepara env per il subprocess RC
     env = os.environ.copy()
     try:
         import certifi
@@ -2276,23 +2276,62 @@ def cmd_experiment(args: argparse.Namespace) -> int:
     except ImportError:
         pass
 
+    # Raccogli le API key disponibili per rotazione automatica FREE → PAID
+    from paperhunter.config import settings as _settings
+    api_keys: list[tuple[str, str]] = []
+    if _settings.google_api_key_free:
+        api_keys.append(("FREE", _settings.google_api_key_free))
+    if _settings.google_api_key:
+        api_keys.append(("PAID", _settings.google_api_key))
+    if not api_keys:
+        console.print("[red]❌ Nessuna GOOGLE_API_KEY configurata nel .env[/red]")
+        return 1
+
+    # Leggi quale env var RC usa per la key
+    rc_key_env = "GOOGLE_API_KEY_FREE"
     try:
-        result = subprocess.run(rc_cmd, env=env)
-        if result.returncode == 0:
-            console.print(
-                "\n[bold green]✅ Pipeline sperimentale completata![/bold green]"
-            )
-        else:
-            console.print(
-                f"\n[red]❌ ResearchClaw terminato con codice {result.returncode}[/red]"
-            )
-            return result.returncode
-    except KeyboardInterrupt:
-        console.print("\n[yellow]⚠️  Interrotto dall'utente.[/yellow]")
+        import yaml as _yaml
+        with open(rc_config, "r") as _cf:
+            _rc_data = _yaml.safe_load(_cf)
+        rc_key_env = _rc_data.get("llm", {}).get("api_key_env", rc_key_env)
+    except Exception:
+        pass
+
+    # Lancia RC con rotazione automatica: FREE → PAID
+    for key_idx, (key_label, key_value) in enumerate(api_keys):
+        env[rc_key_env] = key_value
         console.print(
-            f"Riprendi con: researchclaw run --output {rc_dir} --resume"
+            f"   🔑 API key: [bold]{key_label}[/bold] "
+            f"({key_idx + 1}/{len(api_keys)})"
         )
-        return 130
+
+        try:
+            result = subprocess.run(rc_cmd, env=env)
+            if result.returncode == 0:
+                console.print(
+                    "\n[bold green]✅ Pipeline sperimentale completata![/bold green]"
+                )
+                return 0
+
+            # RC fallito — se c'è un'altra key, riprova con --resume
+            if key_idx + 1 < len(api_keys):
+                console.print(
+                    f"\n[yellow]⚠️  RC terminato (codice {result.returncode}) "
+                    f"con key {key_label}. Passo a key successiva...[/yellow]"
+                )
+                continue
+            else:
+                console.print(
+                    f"\n[red]❌ ResearchClaw terminato con codice "
+                    f"{result.returncode} (tutte le key esaurite)[/red]"
+                )
+                return result.returncode
+        except KeyboardInterrupt:
+            console.print("\n[yellow]⚠️  Interrotto dall'utente.[/yellow]")
+            console.print(
+                f"Riprendi con: researchclaw run --output {rc_dir} --resume"
+            )
+            return 130
 
     return 0
 

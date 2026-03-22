@@ -1,8 +1,8 @@
-# PaperHunter v3.3
+# PaperHunter v3.4
 
 **End-to-end LLM Security Survey Generator — from PDF ingestion to Nature/ACL-style paper**
 
-PaperHunter è un sistema modulare e agentico che genera autonomamente un survey paper scientifico sulla sicurezza degli LLM. A partire da oltre 1.000 PDF scientifici categorizzati, esegue una pipeline completa: estrazione strutturata (GROBID), arricchimento metadati robusto a cascata (Semantic Scholar + MetadataEnricher), BibTeX garantito per ogni paper, summarization gerarchica RAPTOR con clustering semantico, GraphRAG community-driven, retrieval agentico multi-step con venue ranking (NeurIPS/ACL > arXiv), scrittura multi-agente (LangGraph ReAct) con figure selezionabili dal Writer, FigureResolver per l'inserimento automatico delle figure nel survey finale, ed export LaTeX — il tutto con citazioni verificabili e tracciamento della provenienza.
+PaperHunter è un sistema modulare e agentico che genera autonomamente un survey paper scientifico sulla sicurezza degli LLM. A partire da oltre 1.000 PDF scientifici categorizzati, esegue una pipeline completa: estrazione strutturata (GROBID), arricchimento metadati robusto a cascata (Semantic Scholar + MetadataEnricher), BibTeX garantito per ogni paper, summarization gerarchica RAPTOR con clustering semantico, GraphRAG community-driven, retrieval agentico multi-step con venue ranking (NeurIPS/ACL > arXiv), scrittura multi-agente (LangGraph ReAct) con figure selezionabili dal Writer, FigureResolver per l'inserimento automatico delle figure nel survey finale, **self-evolution con apprendimento dai fallimenti**, **FigureAgent per generazione automatica di figure scientifiche**, **skill injection con regole persistenti di dominio**, **bridge verso AutoResearchClaw per sperimentazione**, ed export LaTeX — il tutto con citazioni verificabili e tracciamento della provenienza.
 
 ---
 
@@ -45,6 +45,15 @@ PaperHunter è un sistema modulare e agentico che genera autonomamente un survey
   - [4.5 Assembler Agent — Assemblaggio Finale](#45-assembler-agent--assemblaggio-finale)
   - [4.6 Checkpoint e Ripresa da Errore](#46-checkpoint-e-ripresa-da-errore)
 - [Post-Processing e Output](#post-processing-e-output)
+- [Self-Evolution System](#self-evolution-system)
+  - [Lesson Store](#lesson-store)
+  - [Lesson Extractor](#lesson-extractor)
+  - [Prompt Overlay](#prompt-overlay)
+- [FigureAgent — Generazione Automatica Figure](#figureagent--generazione-automatica-figure)
+  - [Pipeline FigureAgent](#pipeline-figureagent)
+  - [Tipi di Figure Supportati](#tipi-di-figure-supportati)
+- [Skill Injection](#skill-injection)
+- [Bridge AutoResearchClaw](#bridge-autoresearchclaw)
 - [Architettura Complessiva — Schema di Flusso](#architettura-complessiva--schema-di-flusso)
 - [Le 7 Collezioni Qdrant](#le-7-collezioni-qdrant)
 - [Modelli LLM e Strategia di Utilizzo](#modelli-llm-e-strategia-di-utilizzo)
@@ -658,6 +667,143 @@ Il changelog tra versioni viene generato automaticamente e include: sezioni aggi
 
 ---
 
+## Self-Evolution System
+
+Il sistema di self-evolution consente a PaperHunter di **apprendere dai propri errori** e migliorare progressivamente la qualità dell'output. Ispirato al paradigma "lessons learned" di AutoResearchClaw.
+
+### Lesson Store
+
+**File:** `paperhunter/evolution/lesson_store.py`
+
+Ogni lezione è un record JSONL con timestamp, tipo di errore, contesto e suggerimento correttivo. Le lezioni sono persistite in `data/evolution/lessons.jsonl` e hanno un **decadimento temporale esponenziale**: le lezioni più recenti pesano di più, quelle oltre i 90 giorni vengono eliminate automaticamente.
+
+```
+weight = exp(-age_days × ln2 / half_life_days)
+```
+
+Operazioni: `add_lesson()`, `get_relevant_lessons(context, top_k)`, `prune_expired()`.
+
+### Lesson Extractor
+
+**File:** `paperhunter/evolution/lesson_extractor.py`
+
+Quattro funzioni di estrazione automatica dalle diverse fasi della pipeline:
+
+| Funzione | Trigger | Esempio |
+|---|---|---|
+| `extract_from_verification()` | Critic Agent rifiuta una sezione | "Non citare paper senza abstract completo" |
+| `extract_from_summarization()` | L2 summarization fallisce | "Categorie con <3 paper richiedono più contesto" |
+| `extract_from_pipeline_error()` | Pipeline interrotta | "Timeout dopo 120s su paper >50 pagine" |
+| `extract_from_quality_issue()` | Metriche sotto soglia | "BPB >1.5 indica testo troppo generico" |
+
+### Prompt Overlay
+
+**File:** `paperhunter/evolution/prompt_overlay.py`
+
+Genera overlay da iniettare nei system prompt degli agenti. La funzione principale `generate_full_overlay()` combina:
+1. **Skills persistenti** (da file .md) — regole fisse di dominio
+2. **Lessons temporali** (da JSONL) — errori recenti con peso decrescente
+
+L'overlay viene iniettato in 3 punti del Writer Agent, 1 nel Planner Agent, e il Critic Agent registra nuove lezioni. Se disabilitato (`evolution.enabled: false`), non ha overhead.
+
+---
+
+## FigureAgent — Generazione Automatica Figure
+
+**Package:** `paperhunter/agents/figure_agent/`
+**Comando:** `paperhunter figures`
+
+FigureAgent analizza il survey generato e produce automaticamente figure scientifiche: bar chart, timeline, heatmap, taxonomy tree, e altro.
+
+### Pipeline FigureAgent
+
+```
+Paper Markdown + L2 Summaries
+        │
+        ▼
+    ┌─────────┐
+    │ Planner │  → FigurePlan con FigureSpec per ogni figura
+    └────┬────┘
+         ▼
+    ┌──────────┐
+    │ Decision │  → Classifica: CODE (Matplotlib) o IMAGE (Gemini)
+    └────┬─────┘
+         ▼
+    ┌──────────┐
+    │ CodeGen  │  → Genera script Python (Matplotlib/Seaborn)
+    └────┬─────┘
+         ▼
+    ┌──────────┐
+    │ Renderer │  → Esegue subprocess, timeout 60s, retry con feedback
+    └────┬─────┘
+         ▼
+    ┌────────┐
+    │ Critic │  → Valutazione qualità (LLM + analisi statica codice)
+    └────┬───┘
+         ▼
+    ┌────────────┐
+    │ Integrator │  → Inserisce riferimenti figure nel paper Markdown
+    └────────────┘
+```
+
+### Tipi di Figure Supportati
+
+| Tipo | Chart Type | Strumento |
+|---|---|---|
+| Code | `bar_chart`, `grouped_bar`, `stacked_bar`, `line_chart`, `scatter`, `heatmap`, `timeline`, `radar` | Matplotlib/Seaborn |
+| Image | `taxonomy_tree`, `flowchart`, `architecture_diagram`, `venn_diagram`, `concept_map`, `comparison_table` | Gemini Vision |
+
+Ogni figura passa per un ciclo di rendering con retry (max 3 iterazioni): se l'esecuzione fallisce, l'errore viene passato al LLM che rigenera il codice corretto.
+
+---
+
+## Skill Injection
+
+**Files:** `paperhunter/evolution/skill_loader.py` + `data/skills/*.md`
+
+Il sistema di skill injection carica **regole persistenti di dominio** da file Markdown nella cartella `data/skills/`. A differenza delle lezioni (temporali), le skills sono sempre attive e non decadono.
+
+**Skills incluse:**
+
+| File | Contenuto |
+|---|---|
+| `academic_writing.md` | 10 regole per prosa accademica formale |
+| `citation_rules.md` | 10 regole per gestione citazioni |
+| `domain_llm_sec.md` | 12 definizioni + acronimi del dominio LLM Security |
+
+Le skills vengono combinate con le lezioni in `generate_full_overlay()` e iniettate nei prompt di Writer e Planner. Nuove skills si aggiungono semplicemente creando un file `.md` nella cartella.
+
+---
+
+## Bridge AutoResearchClaw
+
+**Package:** `paperhunter/bridge/`
+**Comando:** `paperhunter experiment`
+
+Il bridge consente di esportare i dati del survey PaperHunter nel formato atteso da [AutoResearchClaw](https://github.com/aiming-lab/AutoResearchClaw), permettendo di lanciare una pipeline sperimentale automatica partendo dalla ricerca già completata.
+
+**Flusso Export (PaperHunter → ResearchClaw):**
+
+| Export | Sorgente PH | Destinazione RC |
+|---|---|---|
+| Knowledge Cards | Property Graph (387 entità) | `stage-06/cards/*.md` |
+| Synthesis | L2 Summaries (Qdrant + disco) | `stage-07/synthesis.md` |
+| Hypotheses | L2 open_gaps | `stage-08/hypotheses.md` |
+| References | `output/references.bib` | `run_dir/references.bib` |
+| Checkpoint | — | `checkpoint.json` (stage 8) |
+
+Il checkpoint posiziona ResearchClaw allo stage 8 (HYPOTHESIS_GEN), cosicché `researchclaw run --resume` parte dallo stage 9 (EXPERIMENT_DESIGN).
+
+**Flusso Import (ResearchClaw → PaperHunter):**
+
+Dopo che ResearchClaw completa gli esperimenti, `paperhunter experiment --import-from RC_DIR` importa:
+- `stage-14/analysis.md` → analisi multi-prospettiva
+- `stage-14/experiment_summary.json` → tabella metriche (Min/Max/Mean)
+- `stage-14/charts/*.png` → figure sperimentali
+- Genera automaticamente una sezione "Experimental Validation" in Markdown
+
+---
+
 ## Architettura Complessiva — Schema di Flusso
 
 ```
@@ -814,8 +960,10 @@ Il toggle globale `recency_priority: true/false` in `config.yaml` abilita/disabi
 | Image Processing | **Pillow** + **NumPy** + **Gemini Vision** | Pipeline 3 stadi |
 | PDF Extraction | **GROBID 0.8.2** (Docker) + **PyMuPDF** | TEI-XML → sezioni strutturate |
 | Metadati | **Semantic Scholar API** (free) | BibTeX, venue, citation count, DOI |
-| Multi-Agent | **LangGraph** + **ReAct** | Planner → Writer → Critic → Assembler |
+| Multi-Agent | **LangGraph** + **ReAct** | Planner → Writer → Critic → Assembler + FigureAgent |
 | Knowledge Graph | **Neo4j Community + GDS** | PropertyGraph + Louvain/Leiden |
+| Figure Generation | **Matplotlib** + **Seaborn** | Code figures con subprocess rendering |
+| Experimental Bridge | **AutoResearchClaw** (opzionale) | Pipeline sperimentale da stage 9+ |
 | Output | **LaTeX** (ACL/IEEEtran) | + .bib, provenance JSON, versioning |
 
 ---
@@ -952,6 +1100,10 @@ paperhunter query "What defenses exist against prompt injection attacks?"
 | `paperhunter query` | Query interattiva sulla knowledge base |
 | `paperhunter stats` | Statistiche complete del sistema |
 | `paperhunter cleanup` | Elimina paper per intervallo di date |
+| `paperhunter figures` | Genera figure scientifiche automatiche (FigureAgent) |
+| `paperhunter experiment` | Bridge verso AutoResearchClaw (export/import/lancio) |
+| `paperhunter checkpoint` | Gestione checkpoint della pipeline |
+| `paperhunter reset` | Elimina tutti i checkpoint per ripartire da zero |
 
 Opzioni globali: `--config PATH`, `-v/--verbose` (DEBUG logging), `--version`.
 
@@ -964,6 +1116,10 @@ Opzioni globali: `--config PATH`, `-v/--verbose` (DEBUG logging), `--version`.
 - `paperhunter write --resume` — riprende dall'ultimo checkpoint
 - `paperhunter write --outline sample_outline.json` — usa outline custom
 - `paperhunter export --template acl|ieeetran|plain` — scelta template LaTeX
+- `paperhunter figures --input paper.md` — genera figure per un paper specifico
+- `paperhunter figures --plan-only` — solo pianificazione, senza rendering
+- `paperhunter experiment --export-only` — esporta dati senza lanciare ResearchClaw
+- `paperhunter experiment --import-from DIR` — importa risultati da run RC completata
 
 ---
 
@@ -986,7 +1142,7 @@ La modalità **`prefetch_agentic`** (default) riduce le chiamate Write di ~60-70
 
 ```
 paperhunter/
-├── main.py                           ← CLI con 8+ sottocomandi
+├── main.py                           ← CLI con 13 sottocomandi
 ├── config.py                         ← Loader YAML + pydantic-settings
 ├── models.py                         ← Modelli Pydantic v2
 │
@@ -1025,12 +1181,28 @@ paperhunter/
 ├── agents/                           ← Pipeline multi-agente LangGraph
 │   ├── state.py                      ← Stato condiviso tra agenti
 │   ├── pipeline.py                   ← Grafo LangGraph (orchestrazione)
-│   ├── planner_agent.py              ← Agent 1: genera outline
-│   ├── writer_agent.py               ← Agent 2: scrive sezioni (static/agentic)
-│   ├── critic_agent.py               ← Agent 3: verifica citazioni
+│   ├── planner_agent.py              ← Agent 1: genera outline (+ skill/lesson overlay)
+│   ├── writer_agent.py               ← Agent 2: scrive sezioni (+ skill/lesson overlay)
+│   ├── critic_agent.py               ← Agent 3: verifica citazioni (+ lesson recording)
 │   ├── assembler_agent.py            ← Agent 4: assembla survey finale
+│   ├── figure_agent/                 ← FigureAgent: generazione figure scientifiche
+│   │   ├── planner.py                ← Pianificazione figure (FigureSpec, FigurePlan)
+│   │   ├── decision.py               ← Classificatore tipo figura (CODE vs IMAGE)
+│   │   ├── codegen.py                ← Generazione codice Matplotlib/Seaborn
+│   │   ├── renderer.py               ← Esecuzione subprocess con retry
+│   │   ├── critic.py                 ← Valutazione qualità (LLM + analisi statica)
+│   │   └── integrator.py             ← Inserimento riferimenti figure nel paper
 │   └── tools/
 │       └── retrieval_tools.py        ← 5 tool di retrieval per ReAct agent (+ get_figure_for_section)
+│
+├── evolution/                        ← Self-Evolution + Skill Injection
+│   ├── lesson_store.py               ← LessonStore JSONL con decadimento temporale
+│   ├── lesson_extractor.py           ← Estrazione lezioni da errori pipeline
+│   ├── prompt_overlay.py             ← Overlay generator (skills + lessons → system prompt)
+│   └── skill_loader.py               ← Caricamento skill .md persistenti
+│
+├── bridge/                           ← Bridge verso tool esterni
+│   └── researchclaw_adapter.py       ← Export/Import PaperHunter ↔ AutoResearchClaw
 │
 ├── postprocessing/                   ← Generazione output
 │   ├── provenance_tracker.py         ← Tracciamento provenienza claim
@@ -1048,6 +1220,14 @@ paperhunter/
     ├── quality_metrics.py            ← Metrica BPB/perplexity per valutazione testo
     ├── device_utils.py               ← Helper device-agnostic (CUDA/MPS/CPU)
     └── logging_setup.py              ← Rich logging + progress bar
+
+data/
+├── skills/                           ← Skill files persistenti (.md)
+│   ├── academic_writing.md           ← 10 regole prosa accademica
+│   ├── citation_rules.md             ← 10 regole citazioni
+│   └── domain_llm_sec.md            ← 12 definizioni dominio LLM Security
+└── evolution/                        ← Lezioni apprese (JSONL)
+    └── lessons.jsonl                 ← Store lezioni con timestamp + decadimento
 ```
 
 ---

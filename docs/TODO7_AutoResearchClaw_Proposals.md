@@ -198,7 +198,9 @@ evolution:
 
 ---
 
-#### [ ] Task 2.2: Creare `decision.py` — agente decisionale tipo figura
+#### [x] Task 2.2: Creare `decision.py` — agente decisionale tipo figura
+
+> **Completato:** Creato `paperhunter/agents/figure_agent/decision.py` (~165 righe). Logica decisionale a 3 livelli: (1) mapping deterministico ChartType → FigureType (11 code types, 3 image types), (2) analisi keyword su title+description (~20 keyword per categoria), (3) fallback su presenza dati quantitativi in data_points. Default: CODE se nessun segnale forte. `classify_all()` reclassifica batch con logging. Nessuna chiamata LLM necessaria — decisione puramente rule-based.
 
 **File:** `paperhunter/agents/figure_agent/decision.py` (nuovo)  
 **Obiettivo:** Per ogni specifica nel piano, decidere se generare code figure o image figure.  

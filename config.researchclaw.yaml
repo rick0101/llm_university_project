@@ -28,7 +28,7 @@ runtime:
 experiment:
   mode: "sandbox"
   time_budget_sec: 600
-  max_iterations: 5
+  max_iterations: 6
   metric_key: "primary_metric"
   metric_direction: "maximize"
   sandbox:

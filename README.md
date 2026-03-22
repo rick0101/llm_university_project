@@ -813,6 +813,37 @@ Dopo che ResearchClaw completa gli esperimenti, `paperhunter experiment --import
 - `stage-14/charts/*.png` → figure sperimentali
 - Genera automaticamente una sezione "Experimental Validation" in Markdown
 
+**Come funziona internamente la pipeline sperimentale:**
+
+AutoResearchClaw **non esegue training di modelli ML**. Il ciclo è: l'LLM genera codice Python sperimentale, lo esegue in un sandbox (subprocess), legge i risultati, e migliora il codice iterativamente.
+
+| Stage | Cosa fa | Chiamate LLM | Dettagli |
+|---|---|---|---|
+| 9 - Experiment Design | Progetta l'esperimento | 1-3 | Genera design JSON con metriche target |
+| 10 - Code Generation | Scrive codice Python | 1-8 | Multi-file project + repair loop (max 5 retry) |
+| 11 - Resource Planning | Pianifica risorse | 1 | Schedule JSON per esecuzione |
+| 12 - Experiment Run | Esegue il codice | **0** | Solo `subprocess.run()` — nessuna chiamata LLM |
+| 13 - Iterative Refine | Migliora codice × 6 iter | 8-14 | Per iterazione: 1 improve + 1-2 repair se necessario |
+| 14 - Analysis | Analisi multi-prospettiva | 4-5 | 3 ruoli (optimist, skeptic, methodologist) + sintesi |
+| **Totale** | | **~20-30 chiamate** | Con Gemini Flash ≈ costo quasi nullo |
+
+**Loop di iterazione (Stage 13):**
+
+```
+Iterazione 1: LLM scrive codice → sandbox esegue → raccoglie metriche
+Iterazione 2: LLM riceve risultati + codice → migliora → ri-esegue
+    ...
+Iterazione 6: Ultima iterazione (o si ferma prima se metriche saturano)
+```
+
+**Condizioni di terminazione automatica:**
+- `max_iterations` raggiunto (configurato a 6)
+- Wall-clock timeout (1.5× `time_budget_sec` = 15 minuti)
+- Saturazione metriche (miglioramento < 0.1% per 2 iterazioni)
+- Troppi errori consecutivi di esecuzione
+
+**Durata stimata:** ~10-20 minuti per una run completa, ~20-30 chiamate a Gemini Flash.
+
 ---
 
 ## Architettura Complessiva — Schema di Flusso

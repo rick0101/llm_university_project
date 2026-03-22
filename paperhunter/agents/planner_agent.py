@@ -47,7 +47,7 @@ from paperhunter.agents.state import (
 )
 from paperhunter.config import settings
 from paperhunter.evolution.lesson_store import LessonStore
-from paperhunter.evolution.prompt_overlay import generate_overlay_for_planner
+from paperhunter.evolution.prompt_overlay import generate_full_overlay
 from paperhunter.models import L2Summary
 from paperhunter.utils.llm_factory import (
     get_llm,
@@ -627,23 +627,27 @@ def generate_outline(
     )
 
     # --- Self-evolution: inject lessons overlay for planner ---
-    if settings.evolution.enabled:
+    if settings.evolution.enabled or settings.skills.enabled:
         try:
             evo_store = LessonStore(
                 path=settings.evolution.lessons_path,
                 half_life_days=settings.evolution.half_life_days,
                 expiry_days=settings.evolution.expiry_days,
             )
-            overlay = generate_overlay_for_planner(
+            overlay = generate_full_overlay(
                 evo_store,
+                agent_type="planner",
+                skills_dir=settings.skills.skills_dir if settings.skills.enabled else None,
+                skills_enabled=settings.skills.enabled,
+                max_skill_chars=settings.skills.max_total_chars,
                 max_lessons=settings.evolution.max_overlay_lessons,
-                max_chars=settings.evolution.max_overlay_chars,
+                max_lesson_chars=settings.evolution.max_overlay_chars,
             )
             if overlay:
                 prompt = f"{prompt}\n\n{overlay}"
-                logger.info("[evolution] Injected %d-char lesson overlay for planner", len(overlay))
+                logger.info("[evolution] Injected %d-char overlay for planner", len(overlay))
         except Exception as e:
-            logger.warning("[evolution] Failed to load lessons overlay: %s", e)
+            logger.warning("[evolution] Failed to load overlay: %s", e)
 
     # Selezione modello
     tier = force_model or settings.agents.planner_model

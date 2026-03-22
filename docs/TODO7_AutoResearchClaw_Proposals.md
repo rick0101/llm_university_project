@@ -305,7 +305,9 @@ evolution:
 
 ---
 
-#### [ ] Task 3.3: Integrare skill nel pipeline di overlay
+#### [x] Task 3.3: Integrare skill nel pipeline di overlay
+
+> **Completato:** Aggiunta funzione `generate_full_overlay()` in `prompt_overlay.py` che combina Skills (persistenti, prima) + Lessons (temporali con decay, dopo). Aggiornati tutti i punti di iniezione in `writer_agent.py` (3 punti: prefetch_agentic, agentic, static) e `planner_agent.py` (1 punto) per usare `generate_full_overlay` al posto di `generate_overlay_for_writer/planner`. Guard condition aggiornata: `if settings.evolution.enabled or settings.skills.enabled`. Ordine: `[System Prompt] + [Skills] + [Lessons] + [Task-specific instructions]`.
 
 **File:** `paperhunter/evolution/prompt_overlay.py` (modifica)  
 **Obiettivo:** Concatenare skill + lezioni in un unico overlay iniettato nei prompt.  
@@ -395,9 +397,9 @@ FASE 2 — FigureAgent                                     [Alto impatto visivo,
 └── 2.6 Integrazione pipeline / comando standalone       [x]
 
 FASE 3 — Skill Injection                                 [Estensione Fase 1, bassa complessità]
-├── 3.1 skill_loader.py                                  [ ]
-├── 3.2 Skill iniziali dominio LLM Security              [ ]
-└── 3.3 Integrazione in prompt_overlay.py                [ ]
+├── 3.1 skill_loader.py                                  [x]
+├── 3.2 Skill iniziali dominio LLM Security              [x]
+└── 3.3 Integrazione in prompt_overlay.py                [x]
 
 FASE 4 — Bridge AutoResearchClaw                         [Opzionale, per sperimentazione avanzata]
 ├── 4.1 researchclaw_adapter.py                          [ ]

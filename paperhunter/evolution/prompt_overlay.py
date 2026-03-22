@@ -2,6 +2,9 @@
 
 The overlay is a short Markdown block inserted into the system prompt of
 writer / planner / critic agents so the LLM avoids repeating past mistakes.
+
+Skills (persistent rules) are loaded from Markdown files and prepended
+before the temporal lessons, forming the complete injection overlay.
 """
 
 from __future__ import annotations
@@ -12,6 +15,7 @@ from paperhunter.evolution.lesson_store import (
     LessonStore,
     ScoredLesson,
 )
+from paperhunter.evolution.skill_loader import load_skills
 from paperhunter.utils.logging_setup import get_logger
 
 logger = get_logger(__name__)
@@ -184,6 +188,62 @@ def generate_overlay_for_planner(
     body = "\n".join(lines)
     footer = "\nUse these lessons to improve the outline structure."
     return f"{header}\n{body}\n{footer}"
+
+
+def generate_full_overlay(
+    store: LessonStore,
+    *,
+    section_key: str | None = None,
+    agent_type: str = "writer",
+    skills_dir: str | None = None,
+    skills_enabled: bool = True,
+    max_skill_chars: int = 4000,
+    max_lessons: int = 5,
+    max_lesson_chars: int = 2000,
+) -> str:
+    """Genera overlay completo: [Skills] + [Lessons].
+
+    Ordine nel prompt: Skills (persistenti) → Lessons (temporali con decay).
+
+    Args:
+        store: LessonStore per le lezioni.
+        section_key: Sezione specifica (per writer).
+        agent_type: "writer" o "planner" — determina quale overlay lezioni usare.
+        skills_dir: Directory skill .md (None = skip skills).
+        skills_enabled: Se False, skip skills.
+        max_skill_chars: Limite caratteri per skills.
+        max_lessons: Massimo lezioni.
+        max_lesson_chars: Limite caratteri per lezioni.
+
+    Returns:
+        Overlay combinato (skills + lessons), oppure stringa vuota.
+    """
+    parts: list[str] = []
+
+    # --- Skills (persistenti, sempre prima) ---
+    if skills_enabled and skills_dir:
+        skills_text = load_skills(skills_dir, max_total_chars=max_skill_chars)
+        if skills_text:
+            parts.append(skills_text)
+
+    # --- Lessons (temporali con decay) ---
+    if agent_type == "planner":
+        lessons_text = generate_overlay_for_planner(
+            store, max_lessons=max_lessons, max_chars=max_lesson_chars,
+        )
+    else:
+        lessons_text = generate_overlay_for_writer(
+            store, section_key=section_key,
+            max_lessons=max_lessons, max_chars=max_lesson_chars,
+        )
+
+    if lessons_text:
+        parts.append(lessons_text)
+
+    if not parts:
+        return ""
+
+    return "\n\n".join(parts)
 
 
 # ---------------------------------------------------------------------------

@@ -211,7 +211,9 @@ evolution:
 
 ---
 
-#### [ ] Task 2.3: Creare `codegen.py` + `renderer.py` — generazione ed esecuzione code figures
+#### [x] Task 2.3: Creare `codegen.py` + `renderer.py` — generazione ed esecuzione code figures
+
+> **Completato:** Creati `codegen.py` (~195 righe) e `renderer.py` (~200 righe). `codegen.py`: prompt LLM dettagliato con stile accademico (DPI 300, font serif, colormap professionali), estrazione codice Python da response (3 fallback), validazione con auto-fix (OUTPUT_PATH, savefig, close). `renderer.py`: esecuzione in subprocess isolato con timeout 60s, verifica PNG (size 1KB-50MB), retry loop con feedback errore (max 3 iterazioni), salvataggio script debug, `render_all_code_figures()` batch con progress. Aggiunti `matplotlib>=3.8.0` e `seaborn>=0.13.0` a requirements.txt.
 
 **File:** `paperhunter/agents/figure_agent/codegen.py` (nuovo), `renderer.py` (nuovo)  
 **Obiettivo:** Generare codice Matplotlib/Seaborn e renderizzarlo in PNG.  

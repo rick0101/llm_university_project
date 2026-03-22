@@ -2095,6 +2095,151 @@ def cmd_figures(args: argparse.Namespace) -> int:
 
 
 # ═══════════════════════════════════════════════════════════════════════════
+# Subcommand: experiment
+# ═══════════════════════════════════════════════════════════════════════════
+
+def cmd_experiment(args: argparse.Namespace) -> int:
+    """Esporta dati PaperHunter e lancia pipeline sperimentale via AutoResearchClaw."""
+    import shutil
+    import subprocess
+    from pathlib import Path as _Path
+
+    from paperhunter.config import settings
+    from paperhunter.bridge.researchclaw_adapter import ResearchClawAdapter
+
+    logger = _get_logger("paperhunter.experiment")
+    console = _get_console()
+
+    console.print(
+        "[bold magenta]🔬 PaperHunter → AutoResearchClaw Bridge[/bold magenta]"
+    )
+    console.print()
+
+    # ── Step 0: Resolve paths ──
+    ph_root = _Path(args.project_root or ".")
+    output_dir = _Path(args.output or "./experiments")
+    run_id = args.run_id
+
+    # ── Step 1: Verify survey completeness ──
+    versions_dir = ph_root / "output" / "versions"
+    if not versions_dir.exists() or not list(versions_dir.glob("Survey_v*")):
+        console.print(
+            "[red]❌ Nessun survey trovato in output/versions/. "
+            "Esegui prima 'paperhunter write'.[/red]"
+        )
+        return 1
+
+    graph_path = ph_root / "data" / "property_graph" / "graph_store.json"
+    if not graph_path.exists():
+        console.print(
+            "[yellow]⚠️  Property graph non trovato. "
+            "Le knowledge cards saranno vuote.[/yellow]"
+        )
+
+    bib_found = any(
+        (ph_root / "output" / n).exists()
+        for n in ("references_final.bib", "references.bib")
+    )
+    if not bib_found:
+        console.print("[yellow]⚠️  Nessun file BibTeX trovato in output/.[/yellow]")
+
+    console.print("[green]✅ Survey verificato — dati pronti per export[/green]")
+
+    # ── Step 2: Create adapter and export ──
+    rc_dir = output_dir / (run_id or "run")
+    adapter = ResearchClawAdapter(
+        paperhunter_root=ph_root,
+        researchclaw_run_dir=rc_dir,
+        run_id=run_id,
+    )
+
+    console.print(f"\n📂 Export directory: {rc_dir}")
+    report = adapter.export_all()
+
+    # Print export results
+    console.print()
+    for exp in report.exports:
+        icon = "✅" if exp.success else "❌"
+        console.print(f"  {icon} {exp.stage}: {exp.message}")
+
+    ok_count = sum(1 for e in report.exports if e.success)
+    total_count = len(report.exports)
+    console.print(f"\n📊 Export: {ok_count}/{total_count} fasi completate")
+
+    if ok_count == 0:
+        console.print("[red]❌ Nessun export riuscito. Controlla i log.[/red]")
+        return 1
+
+    # ── Step 3: Check if ResearchClaw is installed ──
+    if args.export_only:
+        console.print(
+            "\n[cyan]--export-only: dati esportati. "
+            "Lancia manualmente:[/cyan]"
+        )
+        console.print(
+            f"  researchclaw run --run-dir {rc_dir} --resume"
+        )
+        return 0
+
+    # Verify researchclaw is available
+    rc_available = shutil.which("researchclaw") is not None
+    if not rc_available:
+        try:
+            subprocess.run(
+                [sys.executable, "-m", "researchclaw", "--version"],
+                capture_output=True, timeout=10,
+            )
+            rc_available = True
+        except Exception:
+            pass
+
+    if not rc_available:
+        console.print(
+            "\n[yellow]⚠️  AutoResearchClaw non trovato nel PATH.[/yellow]"
+        )
+        console.print(
+            "Installa con: pip install -e /path/to/AutoResearchClaw"
+        )
+        console.print(
+            f"\nPuoi lanciare manualmente:\n"
+            f"  researchclaw run --run-dir {rc_dir} --resume"
+        )
+        return 0
+
+    # ── Step 4: Launch ResearchClaw ──
+    from_stage = args.from_stage or "EXPERIMENT_DESIGN"
+    rc_cmd = [
+        sys.executable, "-m", "researchclaw", "run",
+        "--run-dir", str(rc_dir),
+        "--from-stage", from_stage,
+    ]
+
+    console.print(f"\n🚀 Lancio ResearchClaw da stage {from_stage}...")
+    console.print(f"   Comando: {' '.join(rc_cmd)}")
+    console.print()
+
+    try:
+        result = subprocess.run(rc_cmd, cwd=str(rc_dir))
+        if result.returncode == 0:
+            console.print(
+                "\n[bold green]✅ Pipeline sperimentale completata![/bold green]"
+            )
+        else:
+            console.print(
+                f"\n[red]❌ ResearchClaw terminato con codice {result.returncode}[/red]"
+            )
+            return result.returncode
+    except KeyboardInterrupt:
+        console.print("\n[yellow]⚠️  Interrotto dall'utente.[/yellow]")
+        console.print(
+            f"Riprendi con: researchclaw run --run-dir {rc_dir} --resume"
+        )
+        return 130
+
+    return 0
+
+
+# ═══════════════════════════════════════════════════════════════════════════
 # Subcommand: reset
 # ═══════════════════════════════════════════════════════════════════════════
 
@@ -2504,6 +2649,43 @@ def build_parser() -> argparse.ArgumentParser:
     p_figures.add_argument("--force", action="store_true",
                            help="Rigenera piano anche se esiste già")
 
+    # ── experiment ──
+    p_experiment = sub.add_parser(
+        "experiment",
+        help="Esporta dati e lancia pipeline sperimentale via AutoResearchClaw",
+        description=(
+            "Bridge PaperHunter → AutoResearchClaw: esporta property graph, L2\n"
+            "summaries e bibliografia nel formato ResearchClaw, poi lancia la\n"
+            "pipeline sperimentale da stage 9 (EXPERIMENT_DESIGN).\n\n"
+            "Esempi:\n"
+            "  paperhunter experiment                           # Export + lancio RC\n"
+            "  paperhunter experiment --export-only              # Solo export dati\n"
+            "  paperhunter experiment --output ./exp/run1        # Directory custom\n"
+            "  paperhunter experiment --from-stage PAPER_DRAFT   # Stage diverso\n"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    p_experiment.add_argument(
+        "--output", type=str, default="./experiments",
+        help="Directory di output per la run ResearchClaw (default: ./experiments)",
+    )
+    p_experiment.add_argument(
+        "--run-id", type=str, default=None,
+        help="Identificativo della run (default: auto-generato)",
+    )
+    p_experiment.add_argument(
+        "--project-root", type=str, default=None,
+        help="Root del progetto PaperHunter (default: directory corrente)",
+    )
+    p_experiment.add_argument(
+        "--export-only", action="store_true",
+        help="Solo export dati, non lanciare ResearchClaw",
+    )
+    p_experiment.add_argument(
+        "--from-stage", type=str, default=None,
+        help="Stage da cui partire in ResearchClaw (default: EXPERIMENT_DESIGN)",
+    )
+
     # ── reset ──
     p_reset = sub.add_parser(
         "reset", help="Elimina tutti i checkpoint per ripartire da zero",
@@ -2559,6 +2741,7 @@ def run() -> None:
         "checkpoint": cmd_checkpoint,
         "reset": cmd_reset,
         "figures": cmd_figures,
+        "experiment": cmd_experiment,
     }
 
     handler = handlers.get(args.command)

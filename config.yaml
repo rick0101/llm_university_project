@@ -232,3 +232,13 @@ logging:
   rich_enabled: true                           # Usa rich per output formattato
   log_file: "./logs/paperhunter.log"           # File di log (opzionale, stringa vuota per disabilitare)
   show_progress_bars: true                     # Progress bar con rich/tqdm
+
+# --- Self-Evolution (Lessons from Failures) ---
+evolution:
+  enabled: false                                 # Abilita sistema di self-evolution (false = nessun overhead)
+  lessons_path: "./data/evolution/lessons.jsonl"  # File JSONL append-only per le lezioni
+  half_life_days: 30.0                           # Decadimento esponenziale peso lezioni (giorni)
+  expiry_days: 90.0                              # Rimozione lezioni più vecchie di N giorni
+  max_overlay_lessons: 5                         # Massimo lezioni iniettate per prompt
+  max_overlay_chars: 2000                        # Lunghezza massima overlay in caratteri
+  auto_prune: true                               # Prune automatico lezioni scadute a ogni record()

@@ -145,7 +145,9 @@ config.yaml                             ← Nuove sezioni: evolution, figure_age
 
 ---
 
-#### [ ] Task 1.5: Aggiornare `config.yaml` con sezione `evolution`
+#### [x] Task 1.5: Aggiornare `config.yaml` con sezione `evolution`
+
+> **Completato:** Aggiunta sezione `evolution:` in `config.yaml` dopo `logging:`. 7 parametri con commenti italiani: `enabled: false` (default off, zero overhead), `lessons_path`, `half_life_days: 30`, `expiry_days: 90`, `max_overlay_lessons: 5`, `max_overlay_chars: 2000`, `auto_prune: true`. Verificato caricamento corretto tramite `settings.evolution.*`.
 
 **File:** `config.yaml` (modifica)  
 **Dettagli:**
@@ -365,8 +367,8 @@ FASE 1 — Self-Evolution System                          [Impatto immediato, ba
 ├── 1.1 lesson_store.py                                  [x]
 ├── 1.2 lesson_extractor.py                              [x]
 ├── 1.3 prompt_overlay.py                                [x]
-├── 1.4 Integrazione overlay in writer/critic/planner    [ ]
-└── 1.5 Config yaml sezione evolution                    [ ]
+├── 1.4 Integrazione overlay in writer/critic/planner    [x]
+└── 1.5 Config yaml sezione evolution                    [x]
 
 FASE 2 — FigureAgent                                     [Alto impatto visivo, alta complessità]
 ├── 2.1 planner.py                                       [ ]

@@ -293,7 +293,9 @@ evolution:
 
 ---
 
-#### [ ] Task 3.2: Creare skill iniziali per il dominio LLM Security
+#### [x] Task 3.2: Creare skill iniziali per il dominio LLM Security
+
+> **Completato:** Creati 3 file skill in `data/skills/`: `academic_writing.md` (892 chars, 10 regole: prosa formale, tempi verbali, transizioni, numeri esatti, citazioni obbligatorie), `citation_rules.md` (897 chars, 10 regole: no survey per risultati, formato [Author_Year_Keyword], contestualizzazione temporale, benchmark specifici), `domain_llm_sec.md` (1366 chars, 12 definizioni: jailbreak, prompt injection direct/indirect, ASR, safety alignment, red teaming, adversarial suffix, guardrails, perplexity filter, hallucination, data poisoning, backdoor + lista acronimi).
 
 **File:** `data/skills/academic_writing.md`, `data/skills/citation_rules.md`, `data/skills/domain_llm_sec.md` (nuovi)  
 **Dettagli:**

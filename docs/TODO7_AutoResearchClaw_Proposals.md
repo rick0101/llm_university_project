@@ -61,7 +61,9 @@ config.yaml                             ← Nuove sezioni: evolution, figure_age
 > **Complessità:** Media (~300-400 righe)  
 > **Principio:** Dopo ogni run il sistema registra errori/warning in un JSONL; nelle run successive le "lezioni" vengono iniettate come overlay nei prompt LLM con decadimento esponenziale (half-life 30gg, scadenza 90gg).
 
-#### [ ] Task 1.1: Creare `lesson_store.py` — storage JSONL con query e decadimento
+#### [x] Task 1.1: Creare `lesson_store.py` — storage JSONL con query e decadimento
+
+> **Completato:** Creato `paperhunter/evolution/lesson_store.py` (266 righe). Modello `Lesson` (Pydantic) con stage, node, category, severity, section_key, bibtex_keys. Classe `LessonStore` con `record()`, `query()`, `prune()`, `count()`, `clear()`. Decadimento esponenziale `exp(-age×ln2/30)`. Funzione `auto_classify()` per categorizzazione keyword-based. Thread-safe.
 
 **File:** `paperhunter/evolution/lesson_store.py` (nuovo)  
 **Obiettivo:** Modulo JSONL append-only per registrare e interrogare le lezioni apprese.  
@@ -93,7 +95,9 @@ config.yaml                             ← Nuove sezioni: evolution, figure_age
 
 ---
 
-#### [ ] Task 1.2: Creare `lesson_extractor.py` — estrazione lezioni dai risultati
+#### [x] Task 1.2: Creare `lesson_extractor.py` — estrazione lezioni dai risultati
+
+> **Completato:** Creato `paperhunter/evolution/lesson_extractor.py` (240 righe). 4 funzioni di estrazione: `extract_from_verification()` genera 1 lesson per sezione fallita + 1 per ogni citazione NOT_SUPPORTED (con claim e reasoning del critic); `extract_from_summarization()` per fallimenti L1/L2 con auto-classify; `extract_from_pipeline()` per errori generici; `extract_from_all_verifications()` batch helper. Accetta sia dict che oggetti VerificationResult.
 
 **File:** `paperhunter/evolution/lesson_extractor.py` (nuovo)  
 **Obiettivo:** Estrarre automaticamente lezioni utili dai risultati del pipeline.  
@@ -354,8 +358,8 @@ evolution:
 
 ```
 FASE 1 — Self-Evolution System                          [Impatto immediato, bassa complessità]
-├── 1.1 lesson_store.py                                  [ ]
-├── 1.2 lesson_extractor.py                              [ ]
+├── 1.1 lesson_store.py                                  [x]
+├── 1.2 lesson_extractor.py                              [x]
 ├── 1.3 prompt_overlay.py                                [ ]
 ├── 1.4 Integrazione overlay in writer/critic/planner    [ ]
 └── 1.5 Config yaml sezione evolution                    [ ]

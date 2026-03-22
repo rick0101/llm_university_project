@@ -1078,6 +1078,15 @@ paperhunter write
 # 6. Export LaTeX
 paperhunter export --template acl
 
+# 7. (Opzionale) Genera figure scientifiche per il survey
+paperhunter figures
+
+# 8. (Opzionale) Esporta dati verso AutoResearchClaw per sperimentazione
+paperhunter experiment --export-only --output ./experiments/run_001
+
+# 9. (Opzionale) Importa risultati sperimentali da ResearchClaw
+paperhunter experiment --import-from ./experiments/run_001
+
 # Statistiche sistema
 paperhunter stats
 

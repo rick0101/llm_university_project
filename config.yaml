@@ -154,7 +154,7 @@ agents:
   assembler_model: "pro"                       # Modello per l'Assembler
   writer_max_context_chars: 60000              # Max chars contesto per singola sezione writer
   writer_budget_mode: "proportional"           # "fixed" | "proportional" (divide budget per N sezioni)
-  writer_mode: "agentic"                        # "static" (RAG pre-calcolato) | "agentic" (ReAct multi-step)
+  writer_mode: "prefetch_agentic"               # "static" | "agentic" | "prefetch_agentic" (pre-fetch + ReAct leggero)
 
 # --- Output & Post-processing ---
 output:

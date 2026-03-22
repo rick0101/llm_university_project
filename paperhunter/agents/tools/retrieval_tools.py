@@ -979,69 +979,124 @@ def _query_figure_collection(
         return None
 
 
-def get_all_retrieval_tools() -> list[FunctionTool]:
+def get_all_retrieval_tools(
+    default_category: str | None = None,
+    light: bool = False,
+) -> list[FunctionTool]:
     """Restituisce tutti i retrieval tool come ``FunctionTool`` di LlamaIndex.
     I tool sono pronti per essere registrati in un ``ReActAgent`` o
     ``AgentRunner`` di LlamaIndex.
 
+    Args:
+        default_category: Se fornito, i tool di ricerca useranno questa
+            categoria come default (il LLM può comunque sovrascriverla).
+
     Returns:
-        Lista di 3 ``FunctionTool``:
+        Lista di ``FunctionTool``:
         - ``search_vector_database``: ricerca vettoriale Qdrant
         - ``search_keyword_index``: ricerca BM25 keyword
         - ``search_graph_communities``: ricerca community graph
+        - ``search_figure_descriptions``: ricerca descrizioni figure
+        - ``get_figure_for_section``: recupero figure specifiche
 
     Example::
 
         from paperhunter.agents.tools.retrieval_tools import get_all_retrieval_tools
         from llama_index.core.agent import ReActAgent
 
-        tools = get_all_retrieval_tools()
+        tools = get_all_retrieval_tools(default_category="Prompt Injection")
         agent = ReActAgent.from_tools(tools, llm=llm, verbose=True)
     """
+    # Se c'è una default_category, crea closure che forzano category
+    # nella signature visibile al LLM (partial NON funziona perché
+    # il parametro resta nello schema JSON e il LLM può passare None).
+    if default_category:
+        _cat = default_category  # cattura nella closure
+
+        def vec_fn(query: str, year_min: int | None = None, top_k: int = 5) -> str:
+            """Search the vector database (category pre-set)."""
+            return search_vector_database(query, category=_cat, year_min=year_min, top_k=top_k)
+
+        def kw_fn(query: str, top_k: int = 5) -> str:
+            """Search the keyword index (category pre-set)."""
+            return search_keyword_index(query, top_k=top_k, category=_cat)
+
+        def fig_fn(
+            query: str, top_k: int = 5, include_image_embeddings: bool = True,
+        ) -> str:
+            """Search figure descriptions (category pre-set)."""
+            return search_figure_descriptions(
+                query, category=_cat, top_k=top_k,
+                include_image_embeddings=include_image_embeddings,
+            )
+    else:
+        vec_fn = search_vector_database
+        kw_fn = search_keyword_index
+        fig_fn = search_figure_descriptions
+
+    # Aggiorna description se category è pre-impostata
+    cat_note = (
+        f" Category is pre-set to '{default_category}'."
+        if default_category else ""
+    )
+
     tools = [
         FunctionTool.from_defaults(
-            fn=search_vector_database,
+            fn=vec_fn,
             name="search_vector_database",
             description=(
                 "Search the vector database for semantically similar paper "
                 "chunks. Use for finding papers related to a research topic. "
-                "Supports optional category and year_min filters. "
+                "Supports optional year_min filter. "
                 "Returns formatted text with [bibtex_key] citations."
+                + cat_note
             ),
         ),
         FunctionTool.from_defaults(
-            fn=search_keyword_index,
+            fn=kw_fn,
             name="search_keyword_index",
             description=(
                 "Search the BM25 keyword index for exact term matches. "
                 "Best for finding specific technique names, model names, "
                 "dataset names, or benchmark results. "
                 "Returns formatted text with [bibtex_key] citations."
+                + cat_note
             ),
         ),
-        FunctionTool.from_defaults(
-            fn=search_graph_communities,
-            name="search_graph_communities",
-            description=(
-                "Search knowledge graph community summaries for macro-thematic "
-                "context. Use when you need a high-level overview of how "
-                "research topics connect across papers. "
-                "Returns narrative community descriptions."
-            ),
-        ),
-        FunctionTool.from_defaults(
-            fn=search_figure_descriptions,
-            name="search_figure_descriptions",
-            description=(
-                "Search AI-generated descriptions of figures, diagrams, "
-                "plots, and tables from paper PDFs. Also searches "
-                "multimodal image embeddings for cross-modal retrieval. "
-                "Use when you need information about experimental results, "
-                "architectures, or visual data from papers. "
-                "Returns formatted text with [bibtex_key] citations "
-                "and source indicator [description] or [image_embedding]."
-            ),
-        ),
+    ]
+
+    # In modalità light (prefetch_agentic), ometti graph_communities e figure_descriptions
+    # perché il contesto è già pre-caricato. Tieni solo search tools essenziali.
+    if not light:
+        tools.append(
+            FunctionTool.from_defaults(
+                fn=search_graph_communities,
+                name="search_graph_communities",
+                description=(
+                    "Search knowledge graph community summaries for macro-thematic "
+                    "context. Use when you need a high-level overview of how "
+                    "research topics connect across papers. "
+                    "Returns narrative community descriptions."
+                ),
+            )
+        )
+        tools.append(
+            FunctionTool.from_defaults(
+                fn=fig_fn,
+                name="search_figure_descriptions",
+                description=(
+                    "Search AI-generated descriptions of figures, diagrams, "
+                    "plots, and tables from paper PDFs. Also searches "
+                    "multimodal image embeddings for cross-modal retrieval. "
+                    "Use when you need information about experimental results, "
+                    "architectures, or visual data from papers. "
+                    "Returns formatted text with [bibtex_key] citations "
+                    "and source indicator [description] or [image_embedding]."
+                ),
+            )
+        )
+
+    tools.append(
         FunctionTool.from_defaults(
             fn=get_figure_for_section,
             name="get_figure_for_section",

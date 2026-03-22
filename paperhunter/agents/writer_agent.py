@@ -822,12 +822,305 @@ Your final answer must be the full section text in Markdown with [bibtex_key] ci
 _REACT_MAX_ITERATIONS = 15
 """Numero massimo di iterazioni ReAct (Thought→Action→Observation)."""
 
+_PREFETCH_MAX_ITERATIONS = 7
+"""Iterazioni ReAct ridotte per modalità prefetch (contesto già caricato)."""
 
-def _write_section_agentic(
+_PREFETCH_REACT_SYSTEM_PROMPT = """\
+You are an expert academic researcher writing a section for a comprehensive \
+survey paper on **LLM Security** targeting a top venue (Nature/ACL-level).
+
+## Your Task
+
+Write the section **"{title}"** for the survey paper.
+
+**Section description:** {description}
+**Key topics to cover:** {key_topics}
+**Related categories:** {related_categories}
+**Target length:** approximately {target_words} words
+
+{special_instructions}
+
+## Pre-fetched Context
+
+The following research context has been pre-retrieved for you. \
+Read it carefully — it covers the main papers and topics for this section.
+
+{prefetched_context}
+
+## Search Tools (use sparingly)
+
+You also have search tools available, but the pre-fetched context above \
+should cover most of what you need. **Use tools ONLY if:**
+- A specific topic from the key_topics list is NOT covered in the context above
+- You need a specific paper name or technique detail not found above
+- The critic feedback requests information not in the context
+
+**Budget: at most 3 additional tool calls.** Prefer writing with the context \
+provided rather than searching extensively.
+
+## IMPORTANT RULES
+
+1. **Write using the pre-fetched context first.** Only search for gaps.
+
+2. **Citations**: Every factual claim MUST include a citation in the format [bibtex_key]. \
+Only cite bibtex_keys that appear in the pre-fetched context or your search results.
+
+3. **Style**: Formal academic prose. Third person. Present tense for established \
+knowledge, past tense for specific study results.
+
+4. **Temporal Context**: State when methods were proposed and how they relate to prior work.
+
+5. **Structure**: Use clear paragraphs with topic sentences. You may use Markdown \
+subsection headers (###) if the section is long enough.
+
+6. **Figures**: You may embed a figure from a specific paper in the section text. \
+Follow this exact workflow:\
+\
+  a. First call ``get_figure_for_section(paper_bibtex_key, figure_type)`` to confirm \
+     the figure exists. Do NOT insert a figure tag without this confirmation step.\
+  b. If the tool returns figure metadata (not "NO_FIGURE_FOUND"), insert a placeholder \
+     tag on its own line, immediately after the sentence it illustrates:\
+\
+     ``{{FIGURE:bibtex_key:figure_type}}``\
+\
+  Valid figure_types: ``results_plot``, ``architecture_diagram``, ``flowchart``, \
+  ``comparison_table``, ``confusion_matrix``, ``attack_diagram``, ``defense_pipeline``, ``any``\
+\
+  Rules:\
+  - Use at most 1–2 figures per section.\
+  - Place the tag on its own line, preceded by a blank line.
+
+7. **No Fabrication**: Do NOT invent citations or facts. If you cannot find information \
+on a topic, state the gap explicitly.
+
+8. **Output**: Write the COMPLETE section. \
+Your final answer must be the full section text in Markdown with [bibtex_key] citations.
+
+{critic_feedback_section}
+"""
+
+
+def _write_section_prefetch_agentic(
     outline: SectionOutline,
     *,
     force_model: str | None = None,
     critic_feedback: str = "",
+    retriever=None,
+    reranker=None,
+    graph_builder=None,
+    n_rag_queries: int = 5,
+    top_k_retrieval: int = 25,
+    use_reranker: bool = True,
+    use_graph: bool = False,
+    n_total_sections: int | None = None,
+    max_context_chars: int | None = None,
+) -> dict | None:
+    """Scrive una sezione con modalità ibrida: pre-fetch + ReAct leggero.
+
+    Fase 1 (0 Pro calls): Genera query con Flash → retrieval ibrido → formatta contesto.
+    Fase 2 (~3-5 Pro calls): ReAct agent con contesto pre-caricato e tool limitati.
+
+    Args:
+        outline: Outline della sezione da scrivere.
+        force_model: Override del modello LLM ('flash' o 'pro').
+        critic_feedback: Feedback dal Critic Agent (per riscrittura).
+        retriever: HybridRetriever (lazy-init se None).
+        reranker: GeminiReranker (lazy-init se None).
+        graph_builder: PropertyGraphBuilder (opzionale).
+        n_rag_queries: Numero query RAG da generare.
+        top_k_retrieval: Risultati finali retrieval.
+        use_reranker: Se usare il reranker.
+        use_graph: Se usare il PropertyGraph.
+        n_total_sections: Numero totale sezioni (per budget).
+        max_context_chars: Override budget chars.
+
+    Returns:
+        Dict con {text, citations, notes} o None se fallisce.
+    """
+    from llama_index.core.agent import ReActAgent
+    from paperhunter.agents.tools.retrieval_tools import get_all_retrieval_tools
+
+    t0 = time.time()
+    tier = force_model or settings.agents.writer_model
+
+    logger.info(
+        f"[prefetch_agentic] Avvio per '{outline.title}' con {tier.upper()}"
+    )
+
+    # === FASE 1: Pre-fetch contesto (0 Pro calls) ===
+
+    # Step 1a: Genera query RAG con Flash
+    queries = _generate_rag_queries(outline, n_queries=n_rag_queries)
+    if critic_feedback:
+        queries.append(f"evidence for claims in {outline.title}")
+        queries = queries[:n_rag_queries + 2]
+
+    logger.info(
+        f"[prefetch_agentic] Query RAG ({len(queries)}): "
+        f"{[q[:50] for q in queries]}"
+    )
+
+    # Step 1b: Retrieval ibrido (0 LLM calls)
+    chunks, chunk_ids = _retrieve_context_for_section(
+        queries,
+        outline,
+        retriever=retriever,
+        reranker=reranker,
+        graph_builder=graph_builder,
+        top_k_final=top_k_retrieval,
+        use_reranker=use_reranker,
+        use_graph=use_graph,
+    )
+
+    # Step 1c: Formatta contesto
+    if n_total_sections is None:
+        n_total_sections = 10  # default ragionevole
+    context_text = _format_context_for_prompt(
+        chunks,
+        max_chars=max_context_chars,
+        n_total_sections=n_total_sections,
+        prefer_summaries=True,
+    )
+
+    prefetch_elapsed = time.time() - t0
+    logger.info(
+        f"[prefetch_agentic] Pre-fetch: {len(chunks)} chunk, "
+        f"{len(context_text):,} chars contesto in {prefetch_elapsed:.1f}s"
+    )
+
+    # === FASE 2: ReAct leggero con contesto pre-caricato ===
+
+    special_instructions = _get_special_instructions(outline.section_type)
+    critic_section = ""
+    if critic_feedback:
+        critic_section = (
+            "## CRITIC FEEDBACK (from previous iteration)\n\n"
+            "Address these issues in your rewrite:\n\n"
+            f"{critic_feedback}\n"
+        )
+
+    system_prompt = _PREFETCH_REACT_SYSTEM_PROMPT.format(
+        title=outline.title,
+        description=outline.description[:2000],
+        key_topics=", ".join(outline.key_topics) if outline.key_topics else "N/A",
+        related_categories=", ".join(outline.related_categories) if outline.related_categories else "all",
+        target_words=outline.target_length_words,
+        special_instructions=special_instructions,
+        prefetched_context=context_text,
+        critic_feedback_section=critic_section,
+    )
+
+    # Tool ridotti: solo vector + keyword + get_figure (no graph/figure_descriptions)
+    default_cat = outline.related_categories[0] if outline.related_categories else None
+    tools = get_all_retrieval_tools(default_category=default_cat, light=True)
+
+    llm = get_llm(tier, max_tokens=16384, timeout_seconds=600)
+
+    agent = ReActAgent(
+        name="SurveyWriterAgent",
+        description="Academic survey section writer with pre-fetched context",
+        system_prompt=system_prompt,
+        tools=tools,
+        llm=llm,
+        timeout=600.0,
+        verbose=logger.isEnabledFor(10),
+    )
+
+    user_msg = (
+        f"Write the section '{outline.title}' using the pre-fetched context. "
+        f"Cover these topics: {', '.join(outline.key_topics[:7])}. "
+        f"Target approximately {outline.target_length_words} words with [bibtex_key] citations. "
+        f"Search only if the pre-fetched context has gaps."
+    )
+
+    # Esegui ReAct con max_iterations ridotto e senza retry distruttivo
+    max_iter = _PREFETCH_MAX_ITERATIONS
+
+    try:
+        result = asyncio.run(
+            _run_react_agent(agent, user_msg, max_iterations=max_iter)
+        )
+    except MaxIterationsError:
+        # In prefetch mode, accetta il risultato parziale
+        logger.warning(
+            f"[prefetch_agentic] Max iterations ({max_iter}) per '{outline.title}' "
+            f"— tentativo di recupero risultato parziale"
+        )
+        result = None
+    except MaxTokensError:
+        logger.warning(
+            f"[prefetch_agentic] MAX_TOKENS per '{outline.title}' — fallback a static"
+        )
+        return None
+    except RuntimeError as e:
+        if "cannot be called from a running event loop" in str(e):
+            try:
+                import nest_asyncio
+                nest_asyncio.apply()
+                result = asyncio.run(
+                    _run_react_agent(agent, user_msg, max_iterations=max_iter)
+                )
+            except Exception:
+                logger.error(f"[prefetch_agentic] nest_asyncio fallback failed")
+                return None
+        else:
+            logger.error(f"[prefetch_agentic] RuntimeError: {e}")
+            return None
+    except Exception as e:
+        logger.error(f"[prefetch_agentic] ReAct agent failed: {e}", exc_info=True)
+        return None
+
+    elapsed = time.time() - t0
+
+    if result is None:
+        logger.warning(
+            f"[prefetch_agentic] ReAct returned None per '{outline.title}' "
+            f"dopo {elapsed:.1f}s"
+        )
+        return None
+
+    raw_text = result.response.content if result.response else ""
+    logger.info(
+        f"[prefetch_agentic] Completato per '{outline.title}': "
+        f"{len(raw_text)} chars in {elapsed:.1f}s "
+        f"(prefetch: {prefetch_elapsed:.1f}s)"
+    )
+
+    if not raw_text or len(raw_text.strip()) < 100:
+        logger.warning(
+            f"[prefetch_agentic] Risposta troppo corta ({len(raw_text)} chars)"
+        )
+        return None
+
+    # --- Parse output ---
+    parsed = _parse_writer_response(raw_text, outline.key)
+    if parsed is None:
+        citations = _extract_citations_from_text(raw_text)
+        parsed = {
+            "text": raw_text.strip(),
+            "citations": citations,
+            "notes": f"Produced by prefetch_agentic ({elapsed:.1f}s).",
+        }
+
+    if "notes" in parsed:
+        parsed["notes"] = (
+            f"[prefetch_agentic] {parsed['notes']}"
+            if not parsed["notes"].startswith("[prefetch_agentic]")
+            else parsed["notes"]
+        )
+    else:
+        parsed["notes"] = (
+            f"[prefetch_agentic] Completed in {elapsed:.1f}s "
+            f"(prefetch: {prefetch_elapsed:.1f}s)."
+        )
+
+    return parsed
+
+
+def _write_section_agentic(
+    outline: "SectionOutline",
+    force_model: str | None = None,
+    critic_feedback: str | None = None,
     max_iterations: int | None = None,
 ) -> dict | None:
     """Scrive una sezione usando il ReAct Agent multi-step.
@@ -876,7 +1169,12 @@ def _write_section_agentic(
     )
 
     # --- Inizializza tool e agente ---
-    tools = get_all_retrieval_tools()
+    default_cat = outline.related_categories[0] if outline.related_categories else None
+    tools = get_all_retrieval_tools(default_category=default_cat)
+    logger.info(
+        f"[agentic] default_category={default_cat!r} "
+        f"(related_categories={outline.related_categories})"
+    )
     llm = get_llm(tier, max_tokens=16384, timeout_seconds=600)
 
     agent = ReActAgent(
@@ -897,10 +1195,11 @@ def _write_section_agentic(
     )
 
     # --- Esegui il ReAct loop con retry ---
-    # Retry infinito per MaxIterationsError (aumenta iterazioni ogni volta)
-    # Retry limitato (3) per MaxTokensError (riduce iterazioni)
-    max_token_retries = 3
+    # Retry limitato: 1 retry per MaxIterationsError con +5 iter,
+    # 2 retry per MaxTokensError con -4 iter. Non ricostruisce l'agente.
+    max_token_retries = 2
     max_token_attempt = 0
+    max_iter_retried = False
     result = None
 
     while True:
@@ -911,29 +1210,52 @@ def _write_section_agentic(
             )
             break  # Successo, esci dal loop
 
-        except MaxIterationsError:
+        except MaxIterationsError as mie:
             elapsed_attempt = time.time() - t0
-            old_iter = max_iter
-            max_iter = max_iter + 5
-            logger.warning(
-                f"[agentic] Max iterations raggiunto per '{outline.title}' "
-                f"dopo {elapsed_attempt:.0f}s — retry con max_iter {old_iter}→{max_iter}"
-            )
-            print_warning(
-                f"Max iterations per '{outline.title}', "
-                f"retry con più iterazioni ({max_iter})..."
-            )
-            # Ricrea l'agente fresco
-            agent = ReActAgent(
-                name="SurveyWriterAgent",
-                description="Academic survey section writer with RAG tools",
-                system_prompt=system_prompt,
-                tools=tools,
-                llm=llm,
-                timeout=600.0,
-                verbose=logger.isEnabledFor(10),
-            )
-            continue
+            # Prova a estrarre risultato parziale dall'agente
+            partial = getattr(mie, "partial_result", None) or ""
+            if isinstance(partial, str) and len(partial.strip()) >= 100:
+                logger.info(
+                    f"[agentic] MaxIterations per '{outline.title}' dopo "
+                    f"{elapsed_attempt:.0f}s — accetto risultato parziale "
+                    f"({len(partial)} chars)"
+                )
+                # Crea un result mock con il testo parziale
+                from types import SimpleNamespace
+                result = SimpleNamespace(
+                    response=SimpleNamespace(content=partial.strip())
+                )
+                break
+
+            if not max_iter_retried:
+                max_iter_retried = True
+                old_iter = max_iter
+                max_iter = max_iter + 5
+                logger.warning(
+                    f"[agentic] Max iterations per '{outline.title}' "
+                    f"dopo {elapsed_attempt:.0f}s — unico retry "
+                    f"con max_iter {old_iter}→{max_iter}"
+                )
+                print_warning(
+                    f"Max iterations per '{outline.title}', "
+                    f"unico retry con più iterazioni ({max_iter})..."
+                )
+                agent = ReActAgent(
+                    name="SurveyWriterAgent",
+                    description="Academic survey section writer with RAG tools",
+                    system_prompt=system_prompt,
+                    tools=tools,
+                    llm=llm,
+                    timeout=600.0,
+                    verbose=logger.isEnabledFor(10),
+                )
+                continue
+            else:
+                logger.error(
+                    f"[agentic] MaxIterations anche al retry per "
+                    f"'{outline.title}' — rinuncio"
+                )
+                return None
 
         except MaxTokensError:
             max_token_attempt += 1
@@ -979,27 +1301,11 @@ def _write_section_agentic(
                         _run_react_agent(agent, user_msg, max_iterations=max_iter)
                     )
                     break
-                except MaxTokensError:
-                    logger.error(f"[agentic] MAX_TOKENS in nest_asyncio fallback")
+                except (MaxTokensError, MaxIterationsError) as inner:
+                    logger.error(
+                        f"[agentic] {type(inner).__name__} in nest_asyncio fallback"
+                    )
                     return None
-                except MaxIterationsError:
-                    # Anche in nest_asyncio, ritenta
-                    old_iter = max_iter
-                    max_iter = max_iter + 5
-                    logger.warning(
-                        f"[agentic] Max iterations in nest_asyncio — "
-                        f"retry con max_iter {old_iter}→{max_iter}"
-                    )
-                    agent = ReActAgent(
-                        name="SurveyWriterAgent",
-                        description="Academic survey section writer with RAG tools",
-                        system_prompt=system_prompt,
-                        tools=tools,
-                        llm=llm,
-                        timeout=600.0,
-                        verbose=logger.isEnabledFor(10),
-                    )
-                    continue
                 except Exception as nested_e:
                     logger.error(f"[agentic] nest_asyncio fallback failed: {nested_e}")
                     return None
@@ -1296,7 +1602,38 @@ def write_section(
                 f"ReAct agent fallito per '{section_key}', fallback a static"
             )
 
-    # --- Static mode (o fallback da agentic) ---
+    elif writer_mode == "prefetch_agentic":
+        logger.info(f"[prefetch_agentic] Modalità ibrida per '{section_key}'")
+        parsed = _write_section_prefetch_agentic(
+            target_outline,
+            force_model=force_model,
+            critic_feedback=critic_feedback,
+            retriever=retriever,
+            reranker=reranker,
+            graph_builder=graph_builder,
+            n_rag_queries=n_rag_queries,
+            top_k_retrieval=top_k_retrieval,
+            use_reranker=use_reranker,
+            use_graph=use_graph,
+            n_total_sections=n_total_sections,
+            max_context_chars=max_context_chars,
+        )
+        if parsed is not None:
+            elapsed = time.time() - t0
+            return _build_section_result(
+                parsed, target_outline, section_key,
+                current_iteration, elapsed, errors,
+                mode="prefetch_agentic",
+            )
+        else:
+            logger.warning(
+                f"[prefetch_agentic] Fallback a modalità static per '{section_key}'"
+            )
+            print_warning(
+                f"Prefetch-agentic fallito per '{section_key}', fallback a static"
+            )
+
+    # --- Static mode (o fallback da agentic/prefetch_agentic) ---
 
     # --- Step 1: Genera query RAG ---
     if critic_feedback:

@@ -297,7 +297,7 @@ class AgentsConfig(BaseModel):
     @field_validator("writer_mode")
     @classmethod
     def validate_writer_mode(cls, v: str) -> str:
-        allowed = {"static", "agentic"}
+        allowed = {"static", "agentic", "prefetch_agentic"}
         if v not in allowed:
             raise ValueError(f"writer_mode deve essere 'static' o 'agentic', ricevuto: {v}")
         return v

@@ -1,4 +1,4 @@
-# PaperHunter v3.2
+# PaperHunter v3.3
 
 **End-to-end LLM Security Survey Generator — from PDF ingestion to Nature/ACL-style paper**
 
@@ -532,7 +532,7 @@ Per ogni sezione, il Planner specifica: titolo, descrizione, lunghezza target, t
 
 ### 4.2 Writer Agent — Scrittura delle Sezioni
 
-Il Writer prende l'outline e scrive ogni sezione del survey. Supporta **due modalità operative**:
+Il Writer prende l'outline e scrive ogni sezione del survey. Supporta **tre modalità operative**:
 
 **Modalità "static" (classica):**
 1. Per ogni sezione, genera 3-5 query RAG dalla descrizione
@@ -541,7 +541,7 @@ Il Writer prende l'outline e scrive ogni sezione del survey. Supporta **due moda
 4. Assembla il contesto recuperato e lo passa a Gemini Pro con istruzioni di scrittura accademica
 5. Il risultato è un testo Markdown con citazioni `[bibtex_key]`
 
-**Modalità "agentic" (ReAct, preferita per corpora grandi):**
+**Modalità "agentic" (ReAct completo):**
 1. Il Writer viene istanziato come **ReAct Agent** con 5 tool di retrieval a disposizione:
    - `search_vector_database` — ricerca semantica su chunk, L1 e L2
    - `search_keyword_index` — ricerca BM25 per termini specifici
@@ -557,7 +557,16 @@ Il Writer prende l'outline e scrive ogni sezione del survey. Supporta **due moda
    - ... (fino a max 7 iterazioni)
    - *Final Answer:* testo della sezione con citazioni
 
-Il vantaggio della modalità agentica è che il Writer **decide autonomamente** quali informazioni cercare e da dove, adattandosi al contenuto specifico di ogni sezione. Con 1.000+ paper, questa flessibilità è essenziale perché query pre-calcolate non possono coprire tutte le sfumature.
+**Modalità "prefetch_agentic" (ibrida, default — consigliata per corpora grandi):**
+
+Approccio a due fasi che riduce drasticamente le chiamate a Gemini Pro (~70% in meno rispetto ad `agentic`):
+
+1. **Fase 1 — Pre-fetch (0 chiamate Pro):** genera automaticamente 4-6 query RAG con Gemini Flash a partire dal titolo, descrizione e key_topics della sezione. Esegue il retrieval ibrido (vettoriale + BM25 + reranking) per ciascuna query, de-duplica e assembla il contesto completo prima ancora di chiamare il Writer Pro.
+2. **Fase 2 — ReAct leggero (3-5 chiamate Pro):** il contesto pre-fetchato viene iniettato direttamente nel system prompt del ReAct Agent, che parte già informato. L'agente dispone di un set ridotto di tool (`light=True`: solo `search_vector_database`, `search_keyword_index` e `get_figure_for_section`) e ha un budget di massimo 7 iterazioni (tipicamente ne usa 3-5) per affinare la ricerca e scrivere la sezione.
+
+Il vantaggio è che il Writer ha **già il 70-80% del contesto necessario** prima di iniziare il loop ReAct, e usa le iterazioni residue solo per colmare gap specifici. Questo riduce le chiamate Pro per sezione da ~12-15 (agentic puro) a ~4-6 (prefetch_agentic).
+
+Il vantaggio delle modalità agentiche è che il Writer **decide autonomamente** quali informazioni cercare e da dove, adattandosi al contenuto specifico di ogni sezione. Con 1.000+ paper, questa flessibilità è essenziale perché query pre-calcolate non possono coprire tutte le sfumature.
 
 **Istruzioni speciali:** Il Writer riceve template diversi a seconda del tipo di sezione. Per esempio, la sezione "Testing Methodologies" ha l'obbligo di includere una tabella comparativa di benchmark e metriche; l'Introduction deve contenere una roadmap del paper; la Discussion deve analizzare criticamente le limitazioni del campo.
 
@@ -752,6 +761,11 @@ PaperHunter usa due tier di modelli Gemini:
 - **Strategia "autonomous"**: retry infiniti con delay incrementali — il sistema procede da solo senza intervento umano
 - **Strategia "interactive"**: dopo N retry falliti, chiede all'utente se usare OpenRouter come fallback
 - **Fallback OpenRouter**: se abilitato, quando Gemini non è raggiungibile il sistema instrada le richieste tramite OpenRouter (compatibile OpenAI), che funge da proxy per gli stessi modelli Gemini
+
+**Retry del ReAct Agent (non distruttivo):**
+- Su `MaxIterationsError`: se l'agente ha prodotto un risultato parziale ≥100 caratteri, viene accettato senza retry. Altrimenti: **1 solo retry** con +5 iterazioni; se fallisce ancora → `None` (fallback a static).
+- Su `MaxTokensError`: massimo **2 retry** riducendo progressivamente le iterazioni (-4 per tentativo).
+- Il loop non è più infinito e non ricostruisce l'agente inutilmente, preservando token già consumati.
 
 **Embedding:** Gemini Embedding 2 Preview produce vettori a 3072 dimensioni, sia per testo che per immagini (nello stesso spazio vettoriale).
 
@@ -955,16 +969,16 @@ Opzioni globali: `--config PATH`, `-v/--verbose` (DEBUG logging), `--version`.
 
 ## Stima Chiamate API
 
-Stima per un run tipico con **~120 paper**, **4 categorie**, **~11 sezioni**, **modalità agentica**:
+Stima per un run tipico con **~120 paper**, **4 categorie**, **~11 sezioni**:
 
-| Fase | Chiamate LLM | Chiamate Embedding | Totale |
-|---|---|---|---|
-| **Summarize** | ~130-138 (Pro) | ~14 | ~144-152 |
-| **Index** | ~128-148 (Flash + Pro) | ~1-3 | ~129-151 |
-| **Write** | ~175-280 (Pro + Flash) | ~35-55 | ~210-335 |
-| **TOTALE** | **~433-566** | **~50-72** | **~483-638** |
+| Fase | Chiamate LLM (agentic) | Chiamate LLM (prefetch_agentic) | Chiamate Embedding | Totale (prefetch) |
+|---|---|---|---|---|
+| **Summarize** | ~130-138 (Pro) | ~130-138 (Pro) | ~14 | ~144-152 |
+| **Index** | ~128-148 (Flash + Pro) | ~128-148 (Flash + Pro) | ~1-3 | ~129-151 |
+| **Write** | ~175-280 (Pro + Flash) | ~75-130 (Pro + Flash) | ~35-55 | ~110-185 |
+| **TOTALE** | **~433-566** | **~333-416** | **~50-72** | **~383-488** |
 
-La fase **write** è la più costosa per via del loop ReAct (ogni iterazione = 1 chiamata Pro) e del ciclo Writer↔Critic. La fase **summarize** è la più prevedibile (~1:1 con il numero di paper).
+La modalità **`prefetch_agentic`** (default) riduce le chiamate Write di ~60-70% rispetto ad `agentic`: la fase di pre-fetch usa solo Gemini Flash (economica) e il ReAct leggero usa 3-5 chiamate Pro per sezione anziché 12-15. La fase **summarize** è la più prevedibile (~1:1 con il numero di paper).
 
 ---
 

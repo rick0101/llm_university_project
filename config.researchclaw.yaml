@@ -60,7 +60,7 @@ experiment:
   metric_key: "primary_metric"
   metric_direction: "maximize"
   sandbox:
-    python_path: "python3"
+    python_path: "/Users/ricca/Desktop/llm_university_project/venv/bin/python3"
     gpu_required: false
     max_memory_mb: 4096
   opencode:

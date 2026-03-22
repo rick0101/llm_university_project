@@ -111,7 +111,9 @@ config.yaml                             ← Nuove sezioni: evolution, figure_age
 
 ---
 
-#### [ ] Task 1.3: Creare `prompt_overlay.py` — generazione overlay per prompt LLM
+#### [x] Task 1.3: Creare `prompt_overlay.py` — generazione overlay per prompt LLM
+
+> **Completato:** Creato `paperhunter/evolution/prompt_overlay.py` (200 righe). Funzione principale `generate_overlay()` con filtri stage/node/section_key/category + limiti max_lessons e max_chars. Shortcut dedicati: `generate_overlay_for_writer()` (sezione specifica + fill con writing generali, deduplicati) e `generate_overlay_for_planner()` (plan lessons + writing fallback). Output Markdown con emoji severità (❌/⚠️/ℹ️), bibtex keys, header/footer contestuali.
 
 **File:** `paperhunter/evolution/prompt_overlay.py` (nuovo)  
 **Obiettivo:** Generare blocco di testo "Lessons from Prior Runs" da iniettare nei prompt.  
@@ -360,7 +362,7 @@ evolution:
 FASE 1 — Self-Evolution System                          [Impatto immediato, bassa complessità]
 ├── 1.1 lesson_store.py                                  [x]
 ├── 1.2 lesson_extractor.py                              [x]
-├── 1.3 prompt_overlay.py                                [ ]
+├── 1.3 prompt_overlay.py                                [x]
 ├── 1.4 Integrazione overlay in writer/critic/planner    [ ]
 └── 1.5 Config yaml sezione evolution                    [ ]
 

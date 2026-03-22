@@ -1,0 +1,38 @@
+{
+  "paperId": "e38a1ae037aa9350fbfcbd07d8ef2e9b7fa093ea",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2505-24252",
+    "ArXiv": "2505.24252",
+    "DOI": "10.48550/arXiv.2505.24252",
+    "CorpusId": 279070594
+  },
+  "title": "A Reward-driven Automated Webshell Malicious-code Generator for Red-teaming",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 1,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.24252, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-05-30",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2505.24252"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Ding2025ARA,\n author = {Yizhong Ding},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {A Reward-driven Automated Webshell Malicious-code Generator for Red-teaming},\n volume = {abs/2505.24252},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2327635154",
+      "name": "Yizhong Ding"
+    }
+  ],
+  "abstract": "Frequent cyber-attacks have elevated WebShell exploitation and defense to a critical research focus within network security. However, there remains a significant shortage of publicly available, well-categorized malicious-code datasets organized by obfuscation method. Existing malicious-code generation methods, which primarily rely on prompt engineering, often suffer from limited diversity and high redundancy in the payloads they produce. To address these limitations, we propose \\textbf{RAWG}, a \\textbf{R}eward-driven \\textbf{A}utomated \\textbf{W}ebshell Malicious-code \\textbf{G}enerator designed for red-teaming applications. Our approach begins by categorizing webshell samples from common datasets into seven distinct types of obfuscation. We then employ a large language model (LLM) to extract and normalize key tokens from each sample, creating a standardized, high-quality corpus. Using this curated dataset, we perform supervised fine-tuning (SFT) on an open-source large model to enable the generation of diverse, highly obfuscated webshell malicious payloads. To further enhance generation quality, we apply Proximal Policy Optimization (PPO), treating malicious-code samples as\"chosen\"data and benign code as\"rejected\"data during reinforcement learning. Extensive experiments demonstrate that RAWG significantly outperforms current state-of-the-art methods in both payload diversity and escape effectiveness."
+}

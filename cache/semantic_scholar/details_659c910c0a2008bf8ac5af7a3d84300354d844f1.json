@@ -1,0 +1,49 @@
+{
+  "paperId": "659c910c0a2008bf8ac5af7a3d84300354d844f1",
+  "externalIds": {
+    "ArXiv": "2505.05196",
+    "DBLP": "journals/corr/abs-2505-05196",
+    "DOI": "10.1145/3708319.3733675",
+    "CorpusId": 278394259
+  },
+  "title": "Stealthy LLM-Driven Data Poisoning Attacks Against Embedding-Based Retrieval-Augmented Recommender Systems",
+  "venue": "User Modeling, Adaptation, and Personalization",
+  "year": 2025,
+  "citationCount": 4,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.05196, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-05-08",
+  "journal": {
+    "name": "Adjunct Proceedings of the 33rd ACM Conference on User Modeling, Adaptation and Personalization"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Nazary2025StealthyLD,\n author = {Fatemeh Nazary and Yashar Deldjoo and T. D. Noia and E. Sciascio},\n booktitle = {User Modeling, Adaptation, and Personalization},\n journal = {Adjunct Proceedings of the 33rd ACM Conference on User Modeling, Adaptation and Personalization},\n title = {Stealthy LLM-Driven Data Poisoning Attacks Against Embedding-Based Retrieval-Augmented Recommender Systems},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "30917303",
+      "name": "Fatemeh Nazary"
+    },
+    {
+      "authorId": "2614755",
+      "name": "Yashar Deldjoo"
+    },
+    {
+      "authorId": "1737962",
+      "name": "T. D. Noia"
+    },
+    {
+      "authorId": "1738818",
+      "name": "E. Sciascio"
+    }
+  ],
+  "abstract": "We present a systematic study of provider-side data poisoning in retrieval-augmented recommender systems (RAG-based). By modifying only a small fraction of tokens within item descriptions—for instance, adding emotional keywords or borrowing phrases from semantically related items—an attacker can significantly promote or demote targeted items. We formalize these attacks under token-edit and semantic-similarity constraints, and we examine their effectiveness in both promotion (long-tail items) and demotion (short-head items) scenarios. Our experiments on MovieLens, using two large language model (LLM) retrieval modules, show that even subtle attacks shift final rankings and item exposures while eluding naive detection. The results underscore the vulnerability of RAG-based pipelines to small-scale metadata rewrites, and emphasize the need for robust textual consistency checks and provenance tracking to thwart stealthy provider-side poisoning."
+}

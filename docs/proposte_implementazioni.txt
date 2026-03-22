@@ -1,0 +1,458 @@
+================================================================================
+  PROPOSTE DI IMPLEMENTAZIONE PER PAPERHUNTER
+  Ispirate da AutoResearchClaw — Valutazione di fattibilità e integrazione
+  Generato: 2026-03-22
+================================================================================
+
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║  SOMMARIO                                                                    ║
+║                                                                              ║
+║  1. Self-Evolution System (Lessons from Failures)       — Priorità: ALTA     ║
+║  2. FigureAgent (Generazione automatica di figure)      — Priorità: MEDIA    ║
+║  3. MetaClaw Skill Injection (Prompt Overlay)           — Priorità: BASSA    ║
+║  4. Integrazione sperimentale con AutoResearchClaw      — Priorità: MEDIA    ║
+║                                                                              ║
+║  ESCLUSO: Human-in-the-loop gates (come da richiesta)                        ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+
+================================================================================
+1. SELF-EVOLUTION SYSTEM — Imparare dagli errori tra un run e l'altro
+================================================================================
+
+COSA FA:
+  Dopo ogni esecuzione del pipeline (write, summarize, ecc.), il sistema
+  registra automaticamente gli errori, i warning e le decisioni prese.
+  Nelle esecuzioni successive, queste "lezioni" vengono iniettate nei
+  prompt LLM come overlay, così il modello evita di ripetere gli stessi
+  errori. Le lezioni hanno un peso temporale con decadimento esponenziale
+  (half-life 30 giorni, scadenza 90 giorni).
+
+PERCHÉ È UTILE PER PAPERHUNTER:
+  - Il writer agent spesso produce citazioni non supportate (pass_rate < 0.80)
+    → con le lezioni, il prompt gli ricorda quali errori ha fatto prima
+  - Il summarizer potrebbe fallire su certi paper (timeout, formato strano)
+    → le lezioni successive saltano o gestiscono meglio quei casi
+  - Il pipeline write↔verify può loopare 3 volte senza migliorare
+    → le lezioni guidano il writer verso claim verificabili
+
+COMPLESSITÀ: Media (~300-400 righe di codice)
+
+DOVE IMPLEMENTARE:
+  paperhunter/
+  └── evolution/
+      ├── __init__.py
+      ├── lesson_store.py      # Store JSONL con append + query
+      ├── lesson_extractor.py  # Estrae lezioni da risultati pipeline
+      └── prompt_overlay.py    # Genera overlay per prompt LLM
+
+STRUTTURA DATI (lessons.jsonl):
+  Ogni riga è un JSON con:
+  {
+    "stage_name": "write",           // quale fase del pipeline
+    "node_name": "verify",           // nodo specifico (plan/write/verify/assemble)
+    "category": "writing",           // writing|literature|analysis|system|pipeline
+    "severity": "warning",           // info|warning|error
+    "description": "Sezione 'prompt_injection' ha 4/10 citazioni NOT_SUPPORTED...",
+    "section_key": "prompt_injection",
+    "bibtex_keys_involved": ["Zou_2023_GCG", "Liu_2024_Jailbreak"],
+    "timestamp": "2026-03-22T11:00:00Z",
+    "run_id": "write_20260322_110000"
+  }
+
+PUNTI DI INTEGRAZIONE IN PAPERHUNTER:
+
+  A) Dopo verify (critic_agent.py):
+     - Per ogni sezione con pass_rate < threshold:
+       → Registra lezione con i bibtex_key non supportati
+       → Registra il tipo di errore (NOT_SUPPORTED vs SOURCE_NOT_FOUND)
+
+  B) Dopo summarize falliti (level1_summarizer.py):
+     - Se un L1 fallisce (timeout, JSON malformato):
+       → Registra lezione con paper_id e tipo errore
+     - Se L2 è troppo lungo/corto:
+       → Registra lezione sulla categoria
+
+  C) Prima di write (writer_agent.py):
+     - Carica overlay da lesson_store per la sezione corrente
+     - Inietta nel system prompt del writer:
+       "## Lezioni da esecuzioni precedenti
+        1. ⚠️ [writing] La sezione 'prompt_injection' aveva citazioni
+           non supportate per Zou_2023_GCG. Verifica con tool search.
+        2. ❌ [writing] Il claim 'GCG achieves 98% ASR' non era nel
+           paper originale. Usa solo dati verificabili."
+
+  D) Prima di plan (planner_agent.py):
+     - Se outline precedenti erano sbilanciati:
+       → Overlay suggerisce distribuzione migliore delle sezioni
+
+FORMULA PESO TEMPORALE:
+  weight = exp(-age_days × ln(2) / 30)
+  - 0 giorni:  weight = 1.00
+  - 30 giorni: weight = 0.50
+  - 60 giorni: weight = 0.25
+  - 90 giorni: weight = 0.00 (scaduta, ignorata)
+
+FILE DI STORAGE:
+  data/evolution/lessons.jsonl     (append-only, ~1KB per lezione)
+
+CLASSIFICAZIONE AUTOMATICA ERRORI (keyword-based):
+  - "timeout|connection|memory"     → category: "system"
+  - "NOT_SUPPORTED|SOURCE_NOT_FOUND" → category: "writing"
+  - "JSON|parse|format"             → category: "pipeline"
+  - "hallucin|fabricat|invent"      → category: "writing"
+  - "stale|invalidat"               → category: "literature"
+
+ESEMPIO DI OVERLAY GENERATO:
+  ┌─────────────────────────────────────────────────────────┐
+  │ ## Lessons from Prior Runs                              │
+  │                                                         │
+  │ 1. ❌ [writing] Section 'adversarial_attacks' had 3     │
+  │    citations marked NOT_SUPPORTED. Avoid citing         │
+  │    Chowdhury_2024_Breaking for ASR claims without       │
+  │    exact numbers from the paper.                        │
+  │                                                         │
+  │ 2. ⚠️ [writing] Section 'hallucinations' exceeded       │
+  │    target length by 40%. Keep within 1500 words.        │
+  │                                                         │
+  │ Use these lessons to avoid repeating past mistakes.     │
+  └─────────────────────────────────────────────────────────┘
+
+
+================================================================================
+2. FIGURE AGENT — Generazione automatica di figure per il survey
+================================================================================
+
+COSA FA:
+  Analizza il paper generato e produce automaticamente figure scientifiche:
+  - Figure "code" (bar chart, line plot, heatmap) → Matplotlib/Seaborn
+  - Figure "image" (architetture, flowchart, taxonomy) → Gemini image generation
+  Un Decision Agent decide quale tipo usare per ogni figura.
+
+PERCHÉ È UTILE PER PAPERHUNTER:
+  - Il survey attuale ha 11 sezioni ma poche/nessuna figura generata
+  - Figure come timeline di attacchi, tassonomie, confronti di metriche
+    migliorerebbero enormemente la qualità del paper
+  - Per un survey universitario, le figure sono essenziali
+
+COMPLESSITÀ: Alta (~800-1000 righe di codice, nuovo package)
+
+DOVE IMPLEMENTARE:
+  paperhunter/
+  └── agents/
+      └── figure_agent/
+          ├── __init__.py
+          ├── planner.py       # Analizza paper e decide quali figure servono
+          ├── decision.py      # Decide: code_figure vs image_figure
+          ├── codegen.py       # Genera codice Matplotlib/Seaborn
+          ├── renderer.py      # Esegue codice e salva PNG
+          ├── critic.py        # Valuta qualità delle figure
+          └── integrator.py    # Inserisce figure nel Markdown/LaTeX
+
+TIPI DI FIGURE PER UN SURVEY LLM SECURITY:
+
+  A) Code Figures (Matplotlib):
+     - Bar chart: confronto metriche tra attacchi/difese
+       Es: "Attack Success Rate (ASR) comparison across methods"
+     - Timeline: evoluzione temporale degli approcci per categoria
+       Es: "Timeline of Prompt Injection defenses (2022-2026)"
+     - Heatmap: matrice attacco×difesa con efficacia
+       Es: "Defense effectiveness matrix"
+     - Radar chart: confronto multi-dimensionale di metodi
+       Es: "GCG vs AutoDAN vs PAIR across 5 metrics"
+
+  B) Image Figures (Gemini/TikZ):
+     - Taxonomy diagram: tassonomia gerarchica delle minacce
+       Es: "Taxonomy of LLM Security Threats"
+     - Architecture diagram: pipeline di un attacco/difesa
+     - Flowchart: decisionale del survey
+
+FLUSSO DI ESECUZIONE:
+
+  1. PLAN: Analizza paper_markdown → identifica punti dove figure servono
+     Input:  final_paper_markdown + l2_summaries
+     Output: figure_plan = [
+       {
+         "figure_id": "fig_attack_timeline",
+         "type": "code",                    # code | image
+         "location": "section_adversarial_attacks",
+         "description": "Timeline of adversarial attacks on LLMs",
+         "data_sources": ["l2_adversarial_attacks", "property_graph"],
+         "chart_type": "timeline"            # bar|line|heatmap|timeline|radar
+       },
+       ...
+     ]
+
+  2. GENERATE: Per ogni figura nel piano:
+     - Se type == "code":
+       → LLM genera codice Python (Matplotlib/Seaborn)
+       → Sandbox esegue → cattura PNG
+       → Critic valuta (leggibilità, accuratezza, stile accademico)
+       → Se bocciata: rigenera (max 3 iterazioni)
+     - Se type == "image":
+       → Prompt a Gemini image generation
+       → Critic valuta
+       → Opzionale: TikZ/PGFPlots per LaTeX nativo
+
+  3. INTEGRATE: Inserisce riferimenti nel Markdown
+     ![Attack Success Rate Comparison](figures/fig_attack_comparison.png)
+
+DATI GIÀ DISPONIBILI IN PAPERHUNTER PER LE FIGURE:
+  ✅ L2 summaries con temporal_trends → timeline
+  ✅ Property graph con 387 entità e 319 relazioni → network diagram
+  ✅ L1 summaries con results_summary → bar chart metriche
+  ✅ Qdrant collection figure_descriptions → figure esistenti dai paper
+  ✅ BibTeX con anni → distribuzione temporale del corpus
+
+INTEGRAZIONE NEL PIPELINE WRITE:
+  - Aggiungere nodo "figure" nel LangGraph DOPO "assemble":
+    plan → write ↔ verify → assemble → figure → END
+  - Oppure come comando standalone: `paperhunter figures`
+
+CONFIG SUGGERITA (config.yaml):
+  figure_agent:
+    enabled: true
+    min_figures: 3
+    max_figures: 8
+    max_iterations: 3         # tentativi per figura
+    output_format: "python"   # python | tikz
+    dpi: 300
+    style: "seaborn-v0_8-paper"  # stile accademico
+
+
+================================================================================
+3. METACLAW-STYLE SKILL INJECTION (Prompt Overlay da skill persistenti)
+================================================================================
+
+COSA FA:
+  Evoluzione del punto 1. Oltre alle lezioni automatiche, permette di
+  creare "skill" persistenti — regole/pattern che il pipeline deve
+  sempre seguire. Le skill NON scadono (a differenza delle lezioni).
+
+PERCHÉ È UTILE:
+  - Codifica le preferenze dello stile di scrittura del prof/relatore
+  - Regole specifiche del dominio LLM security
+  - Best practice per citazioni, formato, lunghezza sezioni
+
+COMPLESSITÀ: Bassa (~150 righe, estensione del punto 1)
+
+DOVE IMPLEMENTARE:
+  data/skills/
+  ├── academic_writing.md    # Skill: stile accademico
+  ├── citation_rules.md      # Skill: regole citazioni
+  └── domain_llm_sec.md      # Skill: terminologia LLM security
+
+FORMATO SKILL (Markdown):
+
+  ```
+  # Skill: Citation Accuracy
+  
+  ## Rules
+  - Never cite a paper for a claim unless the exact metric/result
+    appears in the source text
+  - When citing survey papers (e.g., "A Survey of..."), cite the
+    ORIGINAL paper referenced within, not the survey itself
+  - Use temporal context: "Zou et al. (2023) introduced GCG..."
+  
+  ## Anti-patterns
+  - ❌ "Several studies have shown..." without specific citations
+  - ❌ Citing paper A for a result that only appears in paper B
+  - ❌ Using round numbers ("~90% accuracy") when exact is available
+  ```
+
+INTEGRAZIONE:
+  - Le skill vengono caricate all'avvio di ogni comando
+  - Concatenate all'overlay delle lezioni (punto 1)
+  - Iniettate nel system prompt di writer/planner/critic
+
+PRIORITÀ: Bassa perché è un'estensione naturale del punto 1.
+           Implementare dopo che il self-evolution funziona.
+
+
+================================================================================
+4. INTEGRAZIONE SPERIMENTALE CON AUTORESEARCHCLAW
+================================================================================
+
+VALUTAZIONE DI FATTIBILITÀ:
+
+  ✅ SÌ, È POSSIBILE usare AutoResearchClaw dopo che PaperHunter ha
+     completato il suo pipeline. Ecco come.
+
+COSA SIGNIFICA IN PRATICA:
+  Dopo aver generato il survey con PaperHunter (con tutte le summary,
+  il knowledge graph, e il paper finale), si può usare AutoResearchClaw
+  per:
+  - Formulare ipotesi basate sui gap identificati nel survey
+  - Progettare esperimenti (es: testare un nuovo attacco/difesa)
+  - Generare ed eseguire codice sperimentale in sandbox
+  - Analizzare risultati e integrarli nel paper
+
+ARCHITETTURA DEL BRIDGE:
+
+  PaperHunter (completo)
+       │
+       ▼
+  ┌─────────────────────┐
+  │  Bridge Adapter      │ ← Nuovo modulo da creare
+  │  (paperhunter →      │
+  │   researchclaw)      │
+  └─────────────────────┘
+       │
+       ▼
+  AutoResearchClaw
+  (da Stage 9: EXPERIMENT_DESIGN)
+
+DATI DA ESPORTARE (PaperHunter → AutoResearchClaw):
+
+  A) L2 open_gaps → hypotheses.md (Stage 8 output)
+     ┌─────────────────────────────────────────────────────┐
+     │ Sorgente: L2Summary.open_gaps per ogni categoria    │
+     │ Formato target: Markdown con ipotesi strutturate    │
+     │                                                     │
+     │ Esempio:                                            │
+     │ # Research Hypotheses                               │
+     │                                                     │
+     │ ## H1: Cross-modal Transfer of Adversarial Attacks  │
+     │ Based on gap in "Adversarial Attacks" L2 summary:   │
+     │ adversarial perturbations designed for text may     │
+     │ transfer to multimodal LLMs with >60% ASR.          │
+     │                                                     │
+     │ ## H2: Defense Composition                          │
+     │ From "Prompt Injection" open gaps: combining        │
+     │ perplexity filtering + instruction hierarchy may    │
+     │ reduce jailbreak success rate below 5%.             │
+     └─────────────────────────────────────────────────────┘
+
+  B) L2 synthesis → synthesis.md (Stage 7 output)
+     Sorgente: L2Summary.synthesis + L2Summary.taxonomy
+     Permette a ResearchClaw di capire lo stato dell'arte
+
+  C) Property Graph → knowledge cards (Stage 6 output)
+     Sorgente: graph_store.json (387 entità, 319 relazioni)
+     Converte: entità → cards/ directory con JSON per entity
+
+  D) BibTeX → references per citation_verify (Stage 23)
+     Sorgente: output/references.bib
+     Copia diretta nella run directory di ResearchClaw
+
+BRIDGE SCRIPT (paperhunter/bridge/researchclaw_adapter.py):
+
+  class ResearchClawAdapter:
+      """Esporta dati PaperHunter nel formato AutoResearchClaw."""
+      
+      def __init__(self, paperhunter_output_dir, researchclaw_run_dir):
+          self.ph_dir = Path(paperhunter_output_dir)
+          self.rc_dir = Path(researchclaw_run_dir)
+      
+      def export_hypotheses(self):
+          """L2 open_gaps → stage-08/hypotheses.md"""
+          # Legge L2 summaries da Qdrant o da checkpoint
+          # Estrae open_gaps per categoria
+          # Formatta come ipotesi numeriate
+          
+      def export_synthesis(self):
+          """L2 synthesis → stage-07/synthesis.md"""
+          
+      def export_knowledge_cards(self):
+          """Property Graph → stage-06/cards/"""
+          
+      def create_checkpoint(self):
+          """Crea checkpoint.json per partire da stage 9"""
+          checkpoint = {
+              "last_completed_stage": 8,
+              "last_completed_name": "HYPOTHESIS_GEN",
+              "run_id": f"from-paperhunter-{timestamp}",
+              "timestamp": now_iso
+          }
+          
+      def run(self):
+          """Esporta tutto e lancia ResearchClaw da stage 9"""
+          self.export_hypotheses()
+          self.export_synthesis()
+          self.export_knowledge_cards()
+          self.create_checkpoint()
+          # subprocess: researchclaw run --from-stage EXPERIMENT_DESIGN \
+          #   --output self.rc_dir --approve-gates
+
+COMANDO CLI PROPOSTO:
+  paperhunter experiment --output ./experiments/run_001
+
+  Questo comando:
+  1. Verifica che il survey sia completo (checkpoints OK)
+  2. Estrae ipotesi dai gap del survey
+  3. Crea la struttura per AutoResearchClaw
+  4. Lancia il pipeline sperimentale da stage 9
+  5. Al termine, importa risultati e figure nel survey
+
+REQUISITI:
+  - AutoResearchClaw installato (`pip install researchclaw`)
+  - Config AutoResearchClaw con LLM API key
+  - Sandbox configurato (locale o Docker)
+
+VANTAGGI:
+  - Usa i gap del TUO survey come base per esperimenti
+  - Esperimenti verificabili in sandbox (non inventati)
+  - Risultati reali integrabili nel paper finale
+  - Ciclo completo: survey → gap → experiment → results → update survey
+
+LIMITAZIONI:
+  - Richiede API key aggiuntive (OpenAI o altro per ResearchClaw)
+  - Gli esperimenti sandbox richiedono tempo (5-30 min per esperimento)
+  - Non tutti i gap del survey sono sperimentabili programmaticamente
+  - Il bridge richiede manutenzione se i formati cambiano
+
+NOTA IMPORTANTE:
+  AutoResearchClaw è pensato per RICERCA ORIGINALE. Per un survey
+  universitario, gli "esperimenti" più utili sarebbero:
+  - Analisi quantitativa comparativa (metriche tra paper)
+  - Riproduzione di risultati chiave da paper citati
+  - Benchmark su dataset pubblici (es: AdvBench, TruthfulQA)
+  - Analisi statistica delle tendenze temporali
+  NON serve per: esperimenti con nuove architetture/modelli propri
+
+
+================================================================================
+ROADMAP DI IMPLEMENTAZIONE SUGGERITA
+================================================================================
+
+  FASE 1 (Impatto immediato, bassa complessità):
+  ├─ 1. Self-Evolution System (lesson_store + extractor + overlay)
+  │     → Migliora ogni run successivo automaticamente
+  │     → ~300-400 righe, testabile subito
+  │
+  FASE 2 (Alto impatto visivo):
+  ├─ 2. FigureAgent (almeno le code figures con Matplotlib)
+  │     → Migliora enormemente la qualità del survey
+  │     → ~500 righe per MVP (solo code figures)
+  │     → Image figures opzionali in seguito
+  │
+  FASE 3 (Estensione naturale della fase 1):
+  ├─ 3. Skill Injection (prompt overlay persistenti)
+  │     → ~150 righe, estende lesson_store
+  │     → Codifica regole permanenti del dominio
+  │
+  FASE 4 (Opzionale, per sperimentazione avanzata):
+  └─ 4. Bridge AutoResearchClaw (adapter + CLI command)
+        → ~400 righe per il bridge
+        → Richiede installazione ResearchClaw separata
+        → Utile solo se vuoi aggiungere risultati sperimentali
+
+
+================================================================================
+NOTE FINALI
+================================================================================
+
+- Tutte le implementazioni sono ADDITIVE: non richiedono modifiche al
+  codice esistente di PaperHunter, solo nuovi moduli
+- Il Self-Evolution è l'unico che richiede piccole modifiche ai prompt
+  esistenti (aggiunta dell'overlay nel system prompt)
+- Il FigureAgent può essere un comando standalone (`paperhunter figures`)
+  senza toccare il pipeline write esistente
+- Il bridge ResearchClaw è completamente opzionale e indipendente
+
+Stato attuale PaperHunter:
+  - 22 paper indicizzati in 4 categorie (LLM Security)
+  - 387 entità + 319 relazioni nel knowledge graph
+  - Survey v1.2 generato con 11 sezioni
+  - Sistema di checkpoint completo e funzionante

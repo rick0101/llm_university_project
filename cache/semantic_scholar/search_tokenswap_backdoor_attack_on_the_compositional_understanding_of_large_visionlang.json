@@ -1,0 +1,46 @@
+{
+  "paperId": "075d2a99391f9f049f27b64585b9368e37e66829",
+  "externalIds": {
+    "ArXiv": "2509.24566",
+    "DBLP": "journals/corr/abs-2509-24566",
+    "DOI": "10.48550/arXiv.2509.24566",
+    "CorpusId": 281674389
+  },
+  "title": "TokenSwap: Backdoor Attack on the Compositional Understanding of Large Vision-Language Models",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 1,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2509.24566, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2337811139",
+      "name": "Zhifang Zhang"
+    },
+    {
+      "authorId": "2305685713",
+      "name": "Qiqi Tao"
+    },
+    {
+      "authorId": "144798906",
+      "name": "Jiaqi Lv"
+    },
+    {
+      "authorId": "2293461825",
+      "name": "Na Zhao"
+    },
+    {
+      "authorId": "2346051838",
+      "name": "Lei Feng"
+    },
+    {
+      "authorId": "2265459104",
+      "name": "Joey Tianyi Zhou"
+    }
+  ],
+  "abstract": "Large vision-language models (LVLMs) have achieved impressive performance across a wide range of vision-language tasks, while they remain vulnerable to backdoor attacks. Existing backdoor attacks on LVLMs aim to force the victim model to generate a predefined target pattern, which is either inserted into or replaces the original content. We find that these fixed-pattern attacks are relatively easy to detect, because the attacked LVLM tends to memorize such frequent patterns in the training dataset, thereby exhibiting overconfidence on these targets given poisoned inputs. To address these limitations, we introduce TokenSwap, a more evasive and stealthy backdoor attack that focuses on the compositional understanding capabilities of LVLMs. Instead of enforcing a fixed targeted content, TokenSwap subtly disrupts the understanding of object relationships in text. Specifically, it causes the backdoored model to generate outputs that mention the correct objects in the image but misrepresent their relationships (i.e., bags-of-words behavior). During training, TokenSwap injects a visual trigger into selected samples and simultaneously swaps the grammatical roles of key tokens in the corresponding textual answers. However, the poisoned samples exhibit only subtle differences from the original ones, making it challenging for the model to learn the backdoor behavior. To address this, TokenSwap employs an adaptive token-weighted loss that explicitly emphasizes the learning of swapped tokens, such that the visual triggers and bags-of-words behavior are associated. Extensive experiments demonstrate that TokenSwap achieves high attack success rates while maintaining superior evasiveness and stealthiness across multiple benchmarks and various LVLM architectures."
+}

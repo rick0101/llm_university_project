@@ -1,0 +1,61 @@
+{
+  "section_key": "background_preliminaries",
+  "saved_at": "2026-03-22T10:24:51.572581",
+  "data": {
+    "section_key": "background_preliminaries",
+    "title": "Background and Preliminaries",
+    "text": "# Background and Preliminaries\n\n## 1. Large Language Model Architectures\nLarge Language Models (LLMs) have fundamentally transformed the landscape of Natural Language Processing (NLP) and artificial intelligence at large. At their core, these models are predominantly built upon the Transformer architecture, which relies heavily on self-attention mechanisms to process and generate text [Akil_2025_Llmalmorph]. Unlike earlier recurrent neural networks that processed data sequentially, the self-attention mechanism allows Transformers to weigh the importance of different words\u2014or tokens\u2014in a sequence simultaneously. This parallel processing capability enables the model to capture long-range dependencies and deep contextual relationships with unprecedented efficacy. \n\nThe lifecycle of an LLM typically begins with a massive pre-training phase. During this stage, the model is trained on vast, diverse corpora of text data in a self-supervised manner, most commonly utilizing a next-token prediction objective. This extensive pre-training enables the model to internalize syntax, semantics, factual knowledge, and even rudimentary reasoning capabilities [Akil_2025_Llmalmorph]. Following pre-training, these foundational models can be fine-tuned for specific downstream tasks such as translation, summarization, and complex software engineering tasks like code generation and refactoring. The scaling of these architectures\u2014characterized by increasing the number of parameters, the volume of training data, and the computational compute\u2014has led to the manifestation of \"emergent abilities,\" where models suddenly demonstrate proficiencies in complex, multi-step reasoning tasks they were not explicitly programmed to perform.\n\n## 2. Multimodal Large Language Models (MLLMs)\nCapitalizing on the potent capabilities of text-based LLMs, recent advancements have sought to seamlessly integrate additional data modalities, paving the way for Multimodal Large Language Models (MLLMs) [Jia_2025_Adversarial]. MLLMs extend the cognitive and reasoning prowess of traditional LLMs to encompass visual, auditory, and other sensory inputs, enabling robust performance across complex applications such as multimodal dialogue systems, visual question answering, and detailed image captioning. \n\nArchitecturally, an MLLM typically consists of three primary components: a pre-trained modality encoder (such as a Vision Transformer or a CLIP model), a modality adapter or projection layer, and the core LLM backbone. The encoder processes the raw non-text input\u2014for instance, an image\u2014into a sequence of continuous embeddings. The adapter then maps these visual embeddings into the same latent semantic space as the LLM's text tokens. This allows the LLM to process visual and textual information jointly, interleaving image tokens with text tokens. While early methods often relied on aligning global features, such as the CLIP [CLS] token, between different modalities, more sophisticated approaches now leverage the rich local information encoded in patch tokens to achieve finer-grained multimodal understanding [Jia_2025_Adversarial]. However, the integration of continuous visual inputs introduces significant new attack vectors. MLLMs remain highly vulnerable to transferable adversarial examples, where imperceptible perturbations in the image space can drastically alter the model's textual output, bypassing text-based safety filters entirely [Jia_2025_Adversarial].\n\n## 3. RLHF and Model Alignment\nWhile pre-training endows LLMs with vast knowledge, it also causes them to internalize biases, toxic language, and potentially harmful behaviors present in the uncurated training corpora. To mitigate these issues and ensure that model outputs are helpful, honest, and harmless, researchers employ a rigorous process known as alignment. The alignment pipeline traditionally begins with Supervised Fine-Tuning (SFT), where the model is trained on high-quality, human-curated demonstration data to learn the desired format, tone, and structure of responses [Liu_2025_Purpcode]. \n\nHowever, SFT alone is often insufficient for complex reasoning and safety alignment because it heavily depends on expensive, exhaustive collections of responses and struggles to generalize to out-of-distribution adversarial prompts. To address this limitation, Reinforcement Learning from Human Feedback (RLHF) has become the industry standard [Liu_2025_Purpcode]. RLHF involves training a separate reward model based on human preference rankings of different model outputs. This reward model is then used to optimize the LLM's policy via reinforcement learning algorithms, such as Proximal Policy Optimization (PPO). By explicitly optimizing for human preferences, RLHF significantly improves the safety and utility of the model. Recent innovations in alignment also explore automated red-teaming and rule-based learning to teach models explicit safety reasoning\u2014such as cybersafety guidelines\u2014without solely relying on human feedback [Liu_2025_Purpcode]. Furthermore, reward-driven automated generation techniques are being developed to curate high-fidelity training benchmarks for red-teaming, ensuring models can withstand sophisticated evasion tactics [Ding_2025_Reward].\n\n## 4. Threat Model Taxonomy in Generative AI\nAs LLMs and MLLMs are increasingly deployed in sensitive and high-stakes domains, understanding their vulnerabilities requires a rigorous threat model taxonomy. A threat model defines the assumptions about the adversary's goals, knowledge, and operational capabilities. In the context of generative AI, threat models are broadly categorized based on the adversary's access to the target system. \n\nIn a **White-box** setting, the attacker has complete, transparent knowledge of the model's architecture, parameters, gradients, and training data. This unrestricted access allows for the calculation of exact gradients, enabling highly optimized and potent attacks. Conversely, a **Black-box** threat model assumes the adversary has no internal knowledge of the model and can only interact with it via its input-output interface [Wang_2024_Advqdet]. A common and highly realistic paradigm within this category is the query-based black-box attack. Here, the adversary generates adversarial examples by making multiple queries to the target model and utilizing the returned probability vectors or text outputs to iteratively optimize the malicious input [Wang_2024_Advqdet]. \n\nThreat models are further delineated by the attacker's intent. **Targeted attacks** aim to force the model to generate a specific predetermined output, such as a specific malicious payload, a targeted misclassification, or a precise string of text. In contrast, **Untargeted attacks** merely seek to degrade the model's overall performance, cause a denial of service, or provoke it into producing any incorrect, nonsensical, or unsafe response [Thang_2026_LLM].\n\n## 5. Training vs. Inference Phase Threats\nThe vulnerabilities of LLMs can be temporally classified into threats that occur during the model's training phase and those executed during the inference phase, each requiring distinct defensive paradigms.\n\n**Training Phase Threats:** These attacks occur before the model is deployed and typically involve the manipulation of the training data or the learning process itself. **Data Poisoning** is a prominent training-time threat where an adversary injects malicious, mislabeled, or subtly altered examples into the massive datasets used for pre-training or fine-tuning. Because LLMs consume vast amounts of data scraped from the open web, they are particularly susceptible to poisoning attacks that can degrade performance or introduce systemic biases [Yang_2024_Adversarial]. A more insidious variant is the **Backdoor Attack**, where the adversary poisons the training data such that the model learns to associate a specific, secret trigger (e.g., a rare word, a specific phrasing, or an image patch) with a malicious behavior. During normal operation, the backdoored model behaves benignly, but when the trigger is present in the input, it reliably executes the attacker's payload. Furthermore, vulnerabilities can be introduced during the fine-tuning phase; research indicates that models attacked via malicious fine-tuning often exhibit altered weight norms, highlighting the critical necessity for robust security safeguards during model updates [Yang_2024_Adversarial].\n\n**Inference Phase Threats:** These attacks target a deployed, frozen model during its standard operation. The most prevalent inference-time threats are **Adversarial Examples** and **Prompt Injection/Jailbreaking**. Adversarial examples involve applying carefully crafted, often imperceptible perturbations to the input\u2014such as altering pixels in an MLLM's image prompt or appending adversarial suffixes to a text prompt\u2014that cause the model to fail or bypass its safety filters [Jia_2025_Adversarial]. Jailbreaking specifically refers to the practice of engineering complex, deceptive prompts designed to circumvent the model's RLHF alignment, tricking it into generating restricted content, such as hate speech, malware code, or instructions for illegal activities [Akil_2025_Llmalmorph]. In black-box settings, adversaries utilize query-based optimization to estimate adversarial gradients and iteratively refine these malicious prompts [Wang_2024_Advqdet]. The dynamic nature of inference threats makes them particularly challenging to defend against, as attackers continuously evolve their prompt engineering strategies to exploit the inherent flexibility of natural language understanding.",
+    "citations": [
+      {
+        "bibtex_key": "Akil_2025_Llmalmorph",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Jia_2025_Adversarial",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Liu_2025_Purpcode",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Ding_2025_Reward",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Wang_2024_Advqdet",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Thang_2026_LLM",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Yang_2024_Adversarial",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      }
+    ],
+    "word_count": 1279,
+    "status": "drafted",
+    "iteration": 1,
+    "rag_queries": [],
+    "retrieved_chunk_ids": [],
+    "writer_notes": "[agentic] Response was not valid JSON. Citations extracted via regex.",
+    "critic_feedback": "",
+    "drafted_at": "2026-03-22T10:24:51.571099"
+  }
+}

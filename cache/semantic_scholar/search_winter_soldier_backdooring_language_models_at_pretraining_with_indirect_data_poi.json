@@ -1,0 +1,38 @@
+{
+  "paperId": "8ba39021c8c14a13664fcb14f9c37328e0995168",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2506-14913",
+    "ArXiv": "2506.14913",
+    "DOI": "10.48550/arXiv.2506.14913",
+    "CorpusId": 279447681
+  },
+  "title": "Winter Soldier: Backdooring Language Models at Pre-Training with Indirect Data Poisoning",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 4,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2506.14913, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "1791507",
+      "name": "Wassim Bouaziz"
+    },
+    {
+      "authorId": "2093405908",
+      "name": "Mathurin Videau"
+    },
+    {
+      "authorId": "2306053042",
+      "name": "Nicolas Usunier"
+    },
+    {
+      "authorId": "1412478053",
+      "name": "El-Mahdi El-Mhamdi"
+    }
+  ],
+  "abstract": "The pre-training of large language models (LLMs) relies on massive text datasets sourced from diverse and difficult-to-curate origins. Although membership inference attacks and hidden canaries have been explored to trace data usage, such methods rely on memorization of training data, which LM providers try to limit. In this work, we demonstrate that indirect data poisoning (where the targeted behavior is absent from training data) is not only feasible but also allow to effectively protect a dataset and trace its use. Using gradient-based optimization prompt-tuning, we make a model learn arbitrary secret sequences: secret responses to secret prompts that are absent from the training corpus. We validate our approach on language models pre-trained from scratch and show that less than 0.005% of poisoned tokens are sufficient to covertly make a LM learn a secret and detect it with extremely high confidence ($p<10^{-55}$) with a theoretically certifiable scheme. Crucially, this occurs without performance degradation (on LM benchmarks) and despite secrets never appearing in the training set."
+}

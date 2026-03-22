@@ -1,0 +1,66 @@
+{
+  "paperId": "3b0531744415d84f84295251fe7761b1379d0094",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2509-13154",
+    "ArXiv": "2509.13154",
+    "DOI": "10.48550/arXiv.2509.13154",
+    "CorpusId": 281675432
+  },
+  "title": "LLM Hallucination Detection: A Fast Fourier Transform Method Based on Hidden Layer Temporal Signals",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 1,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2509.13154, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-09-16",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2509.13154"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Li2025LLMHD,\n author = {Jinxin Li and Gang Tu and ShengYu Cheng and Junjie Hu and Jinting Wang and Rui Chen and Zhilong Zhou and Dongbo Shan},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {LLM Hallucination Detection: A Fast Fourier Transform Method Based on Hidden Layer Temporal Signals},\n volume = {abs/2509.13154},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2380568893",
+      "name": "Jinxin Li"
+    },
+    {
+      "authorId": "2380529866",
+      "name": "Gang Tu"
+    },
+    {
+      "authorId": "2380516321",
+      "name": "ShengYu Cheng"
+    },
+    {
+      "authorId": "2380809225",
+      "name": "Junjie Hu"
+    },
+    {
+      "authorId": "2380569873",
+      "name": "Jinting Wang"
+    },
+    {
+      "authorId": "2380763961",
+      "name": "Rui Chen"
+    },
+    {
+      "authorId": "2381201733",
+      "name": "Zhilong Zhou"
+    },
+    {
+      "authorId": "2380516999",
+      "name": "Dongbo Shan"
+    }
+  ],
+  "abstract": "Hallucination remains a critical barrier for deploying large language models (LLMs) in reliability-sensitive applications. Existing detection methods largely fall into two categories: factuality checking, which is fundamentally constrained by external knowledge coverage, and static hidden-state analysis, that fails to capture deviations in reasoning dynamics. As a result, their effectiveness and robustness remain limited. We propose HSAD (Hidden Signal Analysis-based Detection), a novel hallucination detection framework that models the temporal dynamics of hidden representations during autoregressive generation. HSAD constructs hidden-layer signals by sampling activations across layers, applies Fast Fourier Transform (FFT) to obtain frequency-domain representations, and extracts the strongest non-DC frequency component as spectral features. Furthermore, by leveraging the autoregressive nature of LLMs, HSAD identifies optimal observation points for effective and reliable detection. Across multiple benchmarks, including TruthfulQA, HSAD achieves over 10 percentage points improvement compared to prior state-of-the-art methods. By integrating reasoning-process modeling with frequency-domain analysis, HSAD establishes a new paradigm for robust hallucination detection in LLMs."
+}

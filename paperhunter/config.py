@@ -367,7 +367,7 @@ class OpenRouterConfig(BaseModel):
 
 class EvolutionConfig(BaseModel):
     """Configurazione Self-Evolution System (lessons from failures)."""
-    enabled: bool = False
+    enabled: bool = True
     lessons_path: str = "./data/evolution/lessons.jsonl"
     half_life_days: float = 30.0
     expiry_days: float = 90.0

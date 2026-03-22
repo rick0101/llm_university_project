@@ -1,0 +1,46 @@
+{
+  "paperId": "444654a304f7469500428e36f2eb40a28df5c2f0",
+  "externalIds": {
+    "ArXiv": "2510.09269",
+    "DBLP": "journals/corr/abs-2510-09269",
+    "DOI": "10.48550/arXiv.2510.09269",
+    "CorpusId": 282056480
+  },
+  "title": "Goal-oriented Backdoor Attack against Vision-Language-Action Models via Physical Objects",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 5,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.09269, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2375865005",
+      "name": "Zirun Zhou"
+    },
+    {
+      "authorId": "2346335331",
+      "name": "Zhengyang Xiao"
+    },
+    {
+      "authorId": "2387166580",
+      "name": "Haochuan Xu"
+    },
+    {
+      "authorId": "2156016815",
+      "name": "Jingwei Sun"
+    },
+    {
+      "authorId": "2385558936",
+      "name": "Di Wang"
+    },
+    {
+      "authorId": "47539929",
+      "name": "Jingfeng Zhang"
+    }
+  ],
+  "abstract": "Recent advances in vision-language-action (VLA) models have greatly improved embodied AI, enabling robots to follow natural language instructions and perform diverse tasks. However, their reliance on uncurated training datasets raises serious security concerns. Existing backdoor attacks on VLAs mostly assume white-box access and result in task failures instead of enforcing specific actions. In this work, we reveal a more practical threat: attackers can manipulate VLAs by simply injecting physical objects as triggers into the training dataset. We propose goal-oriented backdoor attacks (GoBA), where the VLA behaves normally in the absence of physical triggers but executes predefined and goal-oriented actions in the presence of physical triggers. Specifically, based on a popular VLA benchmark LIBERO, we introduce BadLIBERO that incorporates diverse physical triggers and goal-oriented backdoor actions. In addition, we propose a three-level evaluation that categorizes the victim VLA's actions under GoBA into three states: nothing to do, try to do, and success to do. Experiments show that GoBA enables the victim VLA to successfully achieve the backdoor goal in 97 percentage of inputs when the physical trigger is present, while causing zero performance degradation on clean inputs. Finally, by investigating factors related to GoBA, we find that the action trajectory and trigger color significantly influence attack performance, while trigger size has surprisingly little effect. The code and BadLIBERO dataset are accessible via the project page at https://goba-attack.github.io/."
+}

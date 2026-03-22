@@ -1,0 +1,54 @@
+{
+  "paperId": "ff8ba8d59b3c6bdf2c463bfc4044adcfc56d5cae",
+  "externalIds": {
+    "ArXiv": "2507.13123",
+    "DBLP": "journals/corr/abs-2507-13123",
+    "DOI": "10.48550/arXiv.2507.13123",
+    "CorpusId": 280297703
+  },
+  "title": "Detecting LLM-generated Code with Subtle Modification by Adversarial Training",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 2,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2507.13123, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-07-17",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2507.13123"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Yin2025DetectingLC,\n author = {Xin Yin and Xinrui Li and Chao Ni and Xiaodan Xu and Xiaohu Yang},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {Detecting LLM-generated Code with Subtle Modification by Adversarial Training},\n volume = {abs/2507.13123},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2202556931",
+      "name": "Xin Yin"
+    },
+    {
+      "authorId": "2316361363",
+      "name": "Xinrui Li"
+    },
+    {
+      "authorId": "2294574801",
+      "name": "Chao Ni"
+    },
+    {
+      "authorId": "2223160487",
+      "name": "Xiaodan Xu"
+    },
+    {
+      "authorId": "2265717851",
+      "name": "Xiaohu Yang"
+    }
+  ],
+  "abstract": "With the rapid development of Large Language Models (LLMs), their powerful code-generation capabilities have been widely applied in tasks like code completion and automated development, demonstrating the value of improving coding efficiency. However, the extensive use of LLM-generated code also raises several new challenges. On the one hand, issues such as the regulation of code provenance, copyright disputes, and code quality have become increasingly concerning. How to effectively detect LLM-generated code and ensure its compliant and responsible use has become a critical and urgent issue. On the other hand, in practical applications, LLM-generated code is often subject to manual modifications, such as variable renaming or structural adjustments. Although some recent studies have proposed training-based and zero-shot methods for detecting LLM-generated code, these approaches show insufficient robustness when facing modified LLM-generated code, and there is a lack of an effective solution. To address the real-world scenario where LLM-generated code may undergo minor modifications, we propose CodeGPTSensor+, an enhanced version of CodeGPTSensor, which employs adversarial training to improve robustness against input perturbations. CodeGPTSensor+ integrates an adversarial sample generation module, Multi-objective Identifier and Structure Transformation (MIST), which systematically generates both high-quality and representative adversarial samples. This module effectively enhances the model's resistance against diverse adversarial attacks. Experimental results on the HMCorp dataset demonstrate that CodeGPTSensor+ significantly improves detection accuracy on the adversarial test set while maintaining high accuracy on the original test set, showcasing superior robustness compared to CodeGPTSensor."
+}

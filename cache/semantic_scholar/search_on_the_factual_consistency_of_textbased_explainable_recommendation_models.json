@@ -1,0 +1,30 @@
+{
+  "paperId": "b20be7a9b6c7801bbf0f11616c729dccd17a8a10",
+  "externalIds": {
+    "ArXiv": "2512.24366",
+    "DBLP": "journals/corr/abs-2512-24366",
+    "DOI": "10.48550/arXiv.2512.24366",
+    "CorpusId": 284350736
+  },
+  "title": "On the Factual Consistency of Text-based Explainable Recommendation Models",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2512.24366, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2377798722",
+      "name": "Ben Kabongo"
+    },
+    {
+      "authorId": "2377798231",
+      "name": "Vincent Guigue"
+    }
+  ],
+  "abstract": "Text-based explainable recommendation aims to generate natural-language explanations that justify item recommendations, to improve user trust and system transparency. Although recent advances leverage LLMs to produce fluent outputs, a critical question remains underexplored: are these explanations factually consistent with the available evidence? We introduce a comprehensive framework for evaluating the factual consistency of text-based explainable recommenders. We design a prompting-based pipeline that uses LLMs to extract atomic explanatory statements from reviews, thereby constructing a ground truth that isolates and focuses on their factual content. Applying this pipeline to five categories from the Amazon Reviews dataset, we create augmented benchmarks for fine-grained evaluation of explanation quality. We further propose statement-level alignment metrics that combine LLM- and NLI-based approaches to assess both factual consistency and relevance of generated explanations. Across extensive experiments on six state-of-the-art explainable recommendation models, we uncover a critical gap: while models achieve high semantic similarity scores (BERTScore F1: 0.81-0.90), all our factuality metrics reveal alarmingly low performance (LLM-based statement-level precision: 4.38%-32.88%). These findings underscore the need for factuality-aware evaluation in explainable recommendation and provide a foundation for developing more trustworthy explanation systems."
+}

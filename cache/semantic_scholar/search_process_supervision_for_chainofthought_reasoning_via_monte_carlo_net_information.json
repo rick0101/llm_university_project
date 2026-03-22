@@ -1,0 +1,40 @@
+{
+  "paperId": "628efa87f486728453f5ae07ebcbaca9f0c5518f",
+  "externalIds": {
+    "ArXiv": "2603.17815",
+    "CorpusId": 286643328
+  },
+  "title": "Process Supervision for Chain-of-Thought Reasoning via Monte Carlo Net Information Gain",
+  "venue": "",
+  "year": 2026,
+  "citationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.17815, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2284064242",
+      "name": "Corentin Royer"
+    },
+    {
+      "authorId": "3237019",
+      "name": "D. Bhattacharjya"
+    },
+    {
+      "authorId": "3415700",
+      "name": "Gaetano Rossiello"
+    },
+    {
+      "authorId": "2277960688",
+      "name": "Andrea Giovannini"
+    },
+    {
+      "authorId": "2319214676",
+      "name": "Mennatallah El-Assady"
+    }
+  ],
+  "abstract": "Multi-step reasoning improves the capabilities of large language models (LLMs) but increases the risk of errors propagating through intermediate steps. Process reward models (PRMs) mitigate this by scoring each step individually, enabling fine-grained supervision and improved reliability. Existing methods for training PRMs rely on costly human annotations or computationally intensive automatic labeling. We propose a novel approach to automatically generate step-level labels using Information Theory. Our method estimates how each reasoning step affects the likelihood of the correct answer, providing a signal of step quality. Importantly, it reduces computational complexity to $\\mathcal{O}(N)$, improving over the previous $\\mathcal{O}(N \\log N)$ methods. We demonstrate that these labels enable effective chain-of-thought selection in best-of-$K$ evaluation settings across diverse reasoning benchmarks, including mathematics, Python programming, SQL, and scientific question answering. This work enables scalable and efficient supervision of LLM reasoning, particularly for tasks where error propagation is critical."
+}

@@ -235,7 +235,7 @@ logging:
 
 # --- Self-Evolution (Lessons from Failures) ---
 evolution:
-  enabled: false                                 # Abilita sistema di self-evolution (false = nessun overhead)
+  enabled: true                                 # Abilita sistema di self-evolution (false = nessun overhead)
   lessons_path: "./data/evolution/lessons.jsonl"  # File JSONL append-only per le lezioni
   half_life_days: 30.0                           # Decadimento esponenziale peso lezioni (giorni)
   expiry_days: 90.0                              # Rimozione lezioni più vecchie di N giorni

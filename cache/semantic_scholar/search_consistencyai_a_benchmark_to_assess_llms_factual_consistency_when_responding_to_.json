@@ -1,0 +1,38 @@
+{
+  "paperId": "24acb427f732d4cc612a21c07b05378f2e2a9235",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2510-13852",
+    "ArXiv": "2510.13852",
+    "DOI": "10.48550/arXiv.2510.13852",
+    "CorpusId": 282138718
+  },
+  "title": "ConsistencyAI: A Benchmark to Assess LLMs' Factual Consistency When Responding to Different Demographic Groups",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.13852, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2386015690",
+      "name": "Peter Banyas"
+    },
+    {
+      "authorId": "2392628979",
+      "name": "Shristi Sharma"
+    },
+    {
+      "authorId": "2386026994",
+      "name": "Alistair Simmons"
+    },
+    {
+      "authorId": "2296793556",
+      "name": "Atharva Vispute"
+    }
+  ],
+  "abstract": "Is an LLM telling you different facts than it's telling me? This paper introduces ConsistencyAI, an independent benchmark for measuring the factual consistency of large language models (LLMs) for different personas. ConsistencyAI tests whether, when users of different demographics ask identical questions, the model responds with factually inconsistent answers. Designed without involvement from LLM providers, this benchmark offers impartial evaluation and accountability. In our experiment, we queried 19 LLMs with prompts that requested 5 facts for each of 15 topics. We repeated this query 100 times for each LLM, each time adding prompt context from a different persona selected from a subset of personas modeling the general population. We processed the responses into sentence embeddings, computed cross-persona cosine similarity, and computed the weighted average of cross-persona cosine similarity to calculate factual consistency scores. In 100-persona experiments, scores ranged from 0.9065 to 0.7896, and the mean was 0.8656, which we adopt as a benchmark threshold. xAI's Grok-3 is most consistent, while several lightweight models rank lowest. Consistency varies by topic: the job market is least consistent, G7 world leaders most consistent, and issues like vaccines or the Israeli-Palestinian conflict diverge by provider. These results show that both the provider and the topic shape the factual consistency. We release our code and interactive demo to support reproducible evaluation and encourage persona-invariant prompting strategies."
+}

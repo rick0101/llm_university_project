@@ -1,7 +1,7 @@
 # ─────────────────────────────────────────────────────────────────────
 # AutoResearchClaw config per PaperHunter Bridge
 # Usa Gemini Flash via endpoint OpenAI-compatible di Google
-# Nessuna API key aggiuntiva — riutilizza GOOGLE_API_KEY dal .env
+# Nessuna API key aggiuntiva — riutilizza GOOGLE_API_KEY_FREE dal .env
 # ─────────────────────────────────────────────────────────────────────
 
 project:
@@ -11,6 +11,33 @@ project:
 research:
   topic: "Security vulnerabilities and defenses in Large Language Models"
   domains: ["llm-security", "adversarial-ml", "prompt-injection"]
+  daily_paper_count: 10
+  quality_threshold: 4.0
+
+runtime:
+  timezone: "Europe/Rome"
+  max_parallel_tasks: 1
+  approval_timeout_hours: 12
+  retry_limit: 2
+
+notifications:
+  channel: "console"
+  target: ""
+  on_stage_start: true
+  on_stage_fail: true
+  on_gate_required: true
+
+knowledge_base:
+  backend: "markdown"
+  root: "docs/kb"
+
+openclaw_bridge:
+  use_cron: false
+  use_message: false
+  use_memory: false
+  use_sessions_spawn: false
+  use_web_fetch: false
+  use_browser: false
 
 llm:
   provider: "openai-compatible"
@@ -21,9 +48,10 @@ llm:
   fallback_models:
     - "gemini-3-flash-preview"
 
-runtime:
-  max_parallel_tasks: 1
-  timeout_sec: 120
+security:
+  hitl_required_stages: []
+  allow_publish_without_approval: true
+  redact_sensitive_logs: true
 
 experiment:
   mode: "sandbox"
@@ -35,3 +63,10 @@ experiment:
     python_path: "python3"
     gpu_required: false
     max_memory_mb: 4096
+  opencode:
+    enabled: false
+  figure_agent:
+    enabled: false
+
+metaclaw_bridge:
+  enabled: false

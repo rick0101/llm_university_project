@@ -48,6 +48,7 @@ import asyncio
 import json
 import logging
 import re
+import os
 import sys
 import time
 from pathlib import Path
@@ -2210,7 +2211,7 @@ def cmd_experiment(args: argparse.Namespace) -> int:
             "Lancia manualmente:[/cyan]"
         )
         console.print(
-            f"  researchclaw run --config config.researchclaw.yaml --run-dir {rc_dir} --resume"
+            f"  researchclaw run --config config.researchclaw.yaml --output {rc_dir} --resume"
         )
         return 0
 
@@ -2235,24 +2236,30 @@ def cmd_experiment(args: argparse.Namespace) -> int:
         )
         console.print(
             f"\nPuoi lanciare manualmente:\n"
-            f"  researchclaw run --config config.researchclaw.yaml --run-dir {rc_dir} --resume"
+            f"  researchclaw run --config config.researchclaw.yaml --output {rc_dir} --resume"
         )
         return 0
 
     # ── Step 4: Launch ResearchClaw ──
     from_stage = args.from_stage or "EXPERIMENT_DESIGN"
 
-    # Resolve config path
+    # Resolve config path (must be absolute for subprocess cwd)
     rc_config = args.rc_config
     if not rc_config:
         default_cfg = ph_root / "config.researchclaw.yaml"
         if default_cfg.exists():
-            rc_config = str(default_cfg)
+            rc_config = str(default_cfg.resolve())
+    elif rc_config and not _Path(rc_config).is_absolute():
+        rc_config = str(_Path(rc_config).resolve())
 
+    rc_dir_abs = str(rc_dir.resolve())
     rc_cmd = [
         sys.executable, "-m", "researchclaw", "run",
-        "--run-dir", str(rc_dir),
+        "--output", rc_dir_abs,
         "--from-stage", from_stage,
+        "--resume",
+        "--auto-approve",
+        "--skip-preflight",
     ]
     if rc_config:
         rc_cmd.extend(["--config", rc_config])
@@ -2261,8 +2268,16 @@ def cmd_experiment(args: argparse.Namespace) -> int:
     console.print(f"   Comando: {' '.join(rc_cmd)}")
     console.print()
 
+    # Fix macOS SSL: ResearchClaw usa urllib senza certifi
+    env = os.environ.copy()
     try:
-        result = subprocess.run(rc_cmd, cwd=str(rc_dir))
+        import certifi
+        env.setdefault("SSL_CERT_FILE", certifi.where())
+    except ImportError:
+        pass
+
+    try:
+        result = subprocess.run(rc_cmd, env=env)
         if result.returncode == 0:
             console.print(
                 "\n[bold green]✅ Pipeline sperimentale completata![/bold green]"
@@ -2275,7 +2290,7 @@ def cmd_experiment(args: argparse.Namespace) -> int:
     except KeyboardInterrupt:
         console.print("\n[yellow]⚠️  Interrotto dall'utente.[/yellow]")
         console.print(
-            f"Riprendi con: researchclaw run --run-dir {rc_dir} --resume"
+            f"Riprendi con: researchclaw run --output {rc_dir} --resume"
         )
         return 130
 

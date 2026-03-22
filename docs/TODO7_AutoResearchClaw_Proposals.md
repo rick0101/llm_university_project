@@ -170,7 +170,9 @@ evolution:
 > **Complessità:** Alta (~800-1000 righe, nuovo sub-package)  
 > **Principio:** Analizza il survey generato e produce figure scientifiche: code figures (bar chart, timeline, heatmap → Matplotlib) e image figures (tassonomie, flowchart → Gemini). Un Decision Agent decide il tipo per ogni figura.
 
-#### [ ] Task 2.1: Creare `planner.py` — pianificazione figure necessarie
+#### [x] Task 2.1: Creare `planner.py` — pianificazione figure necessarie
+
+> **Completato:** Creato `paperhunter/agents/figure_agent/planner.py` (~320 righe) + `__init__.py`. Modelli Pydantic: `FigureSpec` (figure_id, figure_type CODE/IMAGE, chart_type con 14 tipi, title, caption, description, section_key, data_sources, data_points, priority, rationale), `FigurePlan` (con helper code_figures/image_figures/for_section), `ChartType` enum, `FigureType` enum. Prompt LLM dettagliato con vincoli min/max figure, tipi supportati, formato output JSON. Parser multi-livello (4 fallback). Funzione `plan_figures()` con truncation paper a 60k chars, rich console output. Utility `save_figure_plan`/`load_figure_plan` per persistenza JSON. Tutti i test passati: modelli, parsing, validazione, save/load, gestione spec invalide.
 
 **File:** `paperhunter/agents/figure_agent/planner.py` (nuovo)  
 **Obiettivo:** Analizzare il paper finale e decidere quali figure servono e dove.  

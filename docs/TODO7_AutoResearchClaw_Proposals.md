@@ -280,7 +280,9 @@ evolution:
 > **Complessità:** Bassa (~150 righe)  
 > **Principio:** Oltre alle lezioni con scadenza, permette di definire "skill" persistenti in Markdown — regole/pattern che il pipeline deve SEMPRE seguire (stile del relatore, regole citazioni, terminologia dominio).
 
-#### [ ] Task 3.1: Creare `skill_loader.py` — caricamento skill da Markdown
+#### [x] Task 3.1: Creare `skill_loader.py` — caricamento skill da Markdown
+
+> **Completato:** Creato `paperhunter/evolution/skill_loader.py` (~100 righe). `load_skills(skills_dir, max_total_chars)`: carica tutti i `.md`, li formatta con header "Persistent Skills", separatori, titoli auto-generati da filename, troncamento per max_total_chars. `list_skills()`: metadata (name, path, size). Aggiunta `SkillsConfig` in `config.py` (enabled, skills_dir, max_total_chars) e sezione `skills:` in `config.yaml`.
 
 **File:** `paperhunter/evolution/skill_loader.py` (nuovo)  
 **Obiettivo:** Caricare file `.md` dalla directory `data/skills/` e combinarli con l'overlay lezioni.  

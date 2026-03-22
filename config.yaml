@@ -253,3 +253,9 @@ figure_agent:
   dpi: 300                                         # Risoluzione figure (DPI)
   style: "seaborn-v0_8-paper"                      # Stile matplotlib
   figures_dir: "./output/generated_figures"         # Directory output figure PNG
+
+# --- Skill Injection (Prompt Overlay persistenti) ---
+skills:
+  enabled: true                                      # Abilita skill persistenti nei prompt
+  skills_dir: "./data/skills"                        # Directory file .md skill
+  max_total_chars: 4000                              # Lunghezza massima totale skill

@@ -388,6 +388,13 @@ class FigureAgentConfig(BaseModel):
     figures_dir: str = "./output/generated_figures"
 
 
+class SkillsConfig(BaseModel):
+    """Configurazione Skill Injection (prompt overlay persistenti)."""
+    enabled: bool = True
+    skills_dir: str = "./data/skills"
+    max_total_chars: int = 4000
+
+
 class LoggingConfig(BaseModel):
     """Configurazione logging (rich + tqdm)."""
     level: str = "INFO"
@@ -492,6 +499,7 @@ class Settings(BaseSettings):
     logging: LoggingConfig = Field(default_factory=LoggingConfig)
     evolution: EvolutionConfig = Field(default_factory=EvolutionConfig)
     figure_agent: FigureAgentConfig = Field(default_factory=FigureAgentConfig)
+    skills: SkillsConfig = Field(default_factory=SkillsConfig)
     
     model_config = {
         "env_file": ".env",

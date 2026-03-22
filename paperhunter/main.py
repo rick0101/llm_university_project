@@ -1970,6 +1970,131 @@ def cmd_checkpoint(args: argparse.Namespace) -> int:
 
 
 # ═══════════════════════════════════════════════════════════════════════════
+# Subcommand: figures
+# ═══════════════════════════════════════════════════════════════════════════
+
+def cmd_figures(args: argparse.Namespace) -> int:
+    """Genera figure scientifiche per il survey paper."""
+    import json as _json
+    from pathlib import Path as _Path
+
+    from paperhunter.config import settings
+    from paperhunter.agents.figure_agent.planner import (
+        plan_figures, save_figure_plan, load_figure_plan, FigurePlan,
+    )
+    from paperhunter.agents.figure_agent.decision import classify_all
+    from paperhunter.agents.figure_agent.renderer import render_all_code_figures
+    from paperhunter.agents.figure_agent.integrator import (
+        integrate_figures, copy_figures_to_output,
+    )
+
+    logger = _get_logger("paperhunter.figures")
+    console = _get_console()
+
+    console.print("[bold magenta]🎨 FigureAgent — Generazione Figure Scientifiche[/bold magenta]")
+    console.print()
+
+    fig_cfg = settings.figure_agent
+    output_dir = _Path(fig_cfg.figures_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    # ── Step 1: Load paper markdown ──
+    paper_path = args.input_file
+    if not paper_path:
+        # Cerca l'ultima versione
+        latest = _Path("output/latest")
+        if latest.exists() and latest.is_symlink():
+            target = latest.resolve()
+            md_files = list(target.glob("*.md"))
+            if md_files:
+                paper_path = str(md_files[0])
+
+    if not paper_path or not _Path(paper_path).exists():
+        console.print("[red]❌ Nessun paper trovato. Specifica --input PATH[/red]")
+        return 1
+
+    paper_markdown = _Path(paper_path).read_text(encoding="utf-8")
+    console.print(f"📄 Paper: {paper_path} ({len(paper_markdown):,} chars)")
+
+    # ── Step 2: Load L2 summaries (optional) ──
+    l2_summaries = None
+    l2_dir = _Path("output/l2_metadata")
+    if l2_dir.exists():
+        l2_files = list(l2_dir.glob("*.json"))
+        if l2_files:
+            l2_summaries = []
+            for f in l2_files:
+                try:
+                    data = _json.loads(f.read_text(encoding="utf-8"))
+                    if isinstance(data, dict):
+                        l2_summaries.append(data)
+                except Exception:
+                    pass
+            console.print(f"📊 Loaded {len(l2_summaries)} L2 summaries")
+
+    # ── Step 3: Plan or load existing plan ──
+    plan_path = output_dir / "figure_plan.json"
+    plan: FigurePlan | None = None
+
+    if args.plan_file:
+        plan = load_figure_plan(args.plan_file)
+        console.print(f"📋 Loaded plan from {args.plan_file}")
+    elif plan_path.exists() and not args.force:
+        plan = load_figure_plan(plan_path)
+        console.print(f"📋 Loaded existing plan ({plan.total_figures} figures)")
+    else:
+        plan = plan_figures(
+            paper_markdown=paper_markdown,
+            l2_summaries=l2_summaries,
+            min_figures=fig_cfg.min_figures,
+            max_figures=fig_cfg.max_figures,
+            force_model=args.model,
+        )
+        save_figure_plan(plan, output_dir)
+
+    if not plan or not plan.figures:
+        console.print("[yellow]⚠️ Nessuna figura pianificata[/yellow]")
+        return 0
+
+    # ── Step 4: Classify figure types ──
+    classify_all(plan.figures)
+
+    # ── Step 5: Render code figures ──
+    if not args.plan_only:
+        rendered = render_all_code_figures(
+            specs=plan.figures,
+            output_dir=output_dir,
+            max_iterations=fig_cfg.max_iterations,
+            force_model=args.model,
+        )
+
+        # ── Step 6: Integrate into paper ──
+        if not args.no_integrate and rendered:
+            result_paper, insertions = integrate_figures(
+                paper_markdown=paper_markdown,
+                plan=plan,
+                rendered_figures=rendered,
+                figures_dir="generated_figures",
+                output_format=fig_cfg.output_format,
+            )
+
+            # Salva paper con figure
+            out_paper = output_dir / "paper_with_figures.md"
+            out_paper.write_text(result_paper, encoding="utf-8")
+            console.print(f"\n📝 Paper con figure: {out_paper}")
+
+            inserted = sum(1 for ins in insertions if ins.inserted)
+            console.print(
+                f"[bold green]✅ {inserted} figure integrate nel paper[/bold green]"
+            )
+        else:
+            console.print("📸 Figure renderizzate (--no-integrate: non integrate nel paper)")
+
+    console.print(f"\n📂 Output: {output_dir}")
+    return 0
+
+
+# ═══════════════════════════════════════════════════════════════════════════
 # Subcommand: reset
 # ═══════════════════════════════════════════════════════════════════════════
 
@@ -2353,6 +2478,32 @@ def build_parser() -> argparse.ArgumentParser:
     ckpt_del.add_argument("section_key", type=str, help="Chiave sezione da eliminare")
     ckpt_sub.add_parser("clear", help="Elimina tutti i checkpoint sezione")
 
+    # ── figures ──
+    p_figures = sub.add_parser(
+        "figures", help="Genera figure scientifiche per il survey",
+        description=(
+            "Analizza il paper e genera automaticamente figure accademiche.\n\n"
+            "Esempi:\n"
+            "  paperhunter figures                        # Genera figure per l'ultimo paper\n"
+            "  paperhunter figures --input paper.md       # Paper specifico\n"
+            "  paperhunter figures --plan-only             # Solo pianificazione\n"
+            "  paperhunter figures --force                 # Rigenera piano da zero\n"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    p_figures.add_argument("--input", dest="input_file", type=str, metavar="PATH",
+                           help="File Markdown del paper (default: ultima versione)")
+    p_figures.add_argument("--plan-file", type=str, metavar="PATH",
+                           help="Carica piano figure da file JSON esistente")
+    p_figures.add_argument("--plan-only", action="store_true",
+                           help="Solo pianificazione, non renderizzare")
+    p_figures.add_argument("--no-integrate", action="store_true",
+                           help="Renderizza ma non integrare nel paper")
+    p_figures.add_argument("--model", type=str, choices=["flash", "pro"],
+                           help="Override modello LLM (default: config)")
+    p_figures.add_argument("--force", action="store_true",
+                           help="Rigenera piano anche se esiste già")
+
     # ── reset ──
     p_reset = sub.add_parser(
         "reset", help="Elimina tutti i checkpoint per ripartire da zero",
@@ -2407,6 +2558,7 @@ def run() -> None:
         "cleanup": cmd_cleanup,
         "checkpoint": cmd_checkpoint,
         "reset": cmd_reset,
+        "figures": cmd_figures,
     }
 
     handler = handlers.get(args.command)

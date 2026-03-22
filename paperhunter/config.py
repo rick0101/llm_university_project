@@ -376,6 +376,18 @@ class EvolutionConfig(BaseModel):
     auto_prune: bool = True
 
 
+class FigureAgentConfig(BaseModel):
+    """Configurazione FigureAgent (generazione automatica figure)."""
+    enabled: bool = True
+    min_figures: int = 3
+    max_figures: int = 8
+    max_iterations: int = 3
+    output_format: str = "markdown"
+    dpi: int = 300
+    style: str = "seaborn-v0_8-paper"
+    figures_dir: str = "./output/generated_figures"
+
+
 class LoggingConfig(BaseModel):
     """Configurazione logging (rich + tqdm)."""
     level: str = "INFO"
@@ -479,6 +491,7 @@ class Settings(BaseSettings):
     rate_limiting: RateLimitingConfig = Field(default_factory=RateLimitingConfig)
     logging: LoggingConfig = Field(default_factory=LoggingConfig)
     evolution: EvolutionConfig = Field(default_factory=EvolutionConfig)
+    figure_agent: FigureAgentConfig = Field(default_factory=FigureAgentConfig)
     
     model_config = {
         "env_file": ".env",

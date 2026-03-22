@@ -242,3 +242,14 @@ evolution:
   max_overlay_lessons: 5                         # Massimo lezioni iniettate per prompt
   max_overlay_chars: 2000                        # Lunghezza massima overlay in caratteri
   auto_prune: true                               # Prune automatico lezioni scadute a ogni record()
+
+# --- FigureAgent (Generazione automatica figure) ---
+figure_agent:
+  enabled: true                                    # Abilita generazione automatica figure
+  min_figures: 3                                   # Minimo figure da generare
+  max_figures: 8                                   # Massimo figure da generare
+  max_iterations: 3                                # Massimo iterazioni codegen → render per figura
+  output_format: "markdown"                        # Formato output: "markdown" o "latex"
+  dpi: 300                                         # Risoluzione figure (DPI)
+  style: "seaborn-v0_8-paper"                      # Stile matplotlib
+  figures_dir: "./output/generated_figures"         # Directory output figure PNG

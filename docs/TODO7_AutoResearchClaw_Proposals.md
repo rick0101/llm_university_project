@@ -251,7 +251,9 @@ evolution:
 
 ---
 
-#### [ ] Task 2.6: Integrare FigureAgent nel pipeline o come comando standalone
+#### [x] Task 2.6: Integrare FigureAgent nel pipeline o come comando standalone
+
+> **Completato:** Aggiunto comando CLI `paperhunter figures` in `main.py` (~100 righe) con flusso completo: load paper → load L2 summaries → plan/load plan → classify types → render code figures → integrate into paper. Args: `--input`, `--plan-file`, `--plan-only`, `--no-integrate`, `--model`, `--force`. Aggiunta `FigureAgentConfig` in `config.py` (enabled, min/max_figures, max_iterations, output_format, dpi, style, figures_dir). Sezione `figure_agent:` in `config.yaml`. Aggiornato `__init__.py` con export completi da tutti i 5 moduli.
 
 **File:** `paperhunter/main.py` (modifica), opzionalmente `paperhunter/agents/pipeline.py` (modifica)  
 **Obiettivo:** Rendere il FigureAgent invocabile.  
@@ -381,12 +383,12 @@ FASE 1 — Self-Evolution System                          [Impatto immediato, ba
 └── 1.5 Config yaml sezione evolution                    [x]
 
 FASE 2 — FigureAgent                                     [Alto impatto visivo, alta complessità]
-├── 2.1 planner.py                                       [ ]
-├── 2.2 decision.py                                      [ ]
-├── 2.3 codegen.py + renderer.py                         [ ]
-├── 2.4 critic.py                                        [ ]
-├── 2.5 integrator.py                                    [ ]
-└── 2.6 Integrazione pipeline / comando standalone       [ ]
+├── 2.1 planner.py                                       [x]
+├── 2.2 decision.py                                      [x]
+├── 2.3 codegen.py + renderer.py                         [x]
+├── 2.4 critic.py                                        [x]
+├── 2.5 integrator.py                                    [x]
+└── 2.6 Integrazione pipeline / comando standalone       [x]
 
 FASE 3 — Skill Injection                                 [Estensione Fase 1, bassa complessità]
 ├── 3.1 skill_loader.py                                  [ ]

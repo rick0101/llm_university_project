@@ -238,7 +238,9 @@ evolution:
 
 ---
 
-#### [ ] Task 2.5: Creare `integrator.py` — inserimento figure nel paper
+#### [x] Task 2.5: Creare `integrator.py` — inserimento figure nel paper
+
+> **Completato:** Creato `paperhunter/agents/figure_agent/integrator.py` (~275 righe). Modello `FigureInsertion` con metadata inserimento. `_find_section_in_markdown()`: ricerca sezione via heading pattern + keyword matching flessibile. Generazione ref Markdown (`![Figure N: caption](path)`) e LaTeX (`\includegraphics` + `\caption` + `\label`). `integrate_figures()`: inserimento dalla fine verso l'inizio per mantenere validità posizioni, supporto position='end'/'after_first_paragraph', gestione figure non renderizzate. `copy_figures_to_output()` per deployment finale.
 
 **File:** `paperhunter/agents/figure_agent/integrator.py` (nuovo)  
 **Obiettivo:** Inserire riferimenti alle figure nel Markdown/LaTeX finale.  

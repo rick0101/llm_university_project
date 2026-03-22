@@ -15,7 +15,7 @@ research:
 llm:
   provider: "openai-compatible"
   base_url: "https://generativelanguage.googleapis.com/v1beta/openai/"
-  api_key_env: "GOOGLE_API_KEY"
+  api_key_env: "GOOGLE_API_KEY_FREE"
   api_key: ""
   primary_model: "gemini-3-flash-preview"
   fallback_models:

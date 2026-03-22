@@ -125,24 +125,108 @@ def get_pro_tracker() -> ProAvailabilityTracker:
 # Helpers
 # ---------------------------------------------------------------------------
 
+class ApiKeyManager:
+    """Gestisce la rotazione delle API key Google (FREE → PAID).
+
+    Usa la chiave gratuita (GOOGLE_API_KEY_FREE) come primaria.
+    Quando si raggiunge il rate limit, ruota alla chiave a pagamento
+    (GOOGLE_API_KEY). Thread-safe, singleton.
+    """
+
+    _instance: "ApiKeyManager | None" = None
+    _lock = threading.Lock()
+
+    def __new__(cls) -> "ApiKeyManager":
+        with cls._lock:
+            if cls._instance is None:
+                inst = super().__new__(cls)
+                inst._keys: list[tuple[str, str]] = []
+                inst._current_idx = 0
+                inst._initialized = False
+                cls._instance = inst
+            return cls._instance
+
+    def _init_keys(self) -> None:
+        if self._initialized:
+            return
+        from paperhunter.config import settings
+        keys: list[tuple[str, str]] = []
+        if settings.google_api_key_free:
+            keys.append(("FREE", settings.google_api_key_free))
+        if settings.google_api_key:
+            keys.append(("PAID", settings.google_api_key))
+        self._keys = keys
+        self._initialized = True
+
+    @property
+    def current_key(self) -> str:
+        """Restituisce la API key attualmente attiva."""
+        self._init_keys()
+        if not self._keys:
+            raise ValueError(
+                "Nessuna GOOGLE_API_KEY configurata. "
+                "Imposta GOOGLE_API_KEY_FREE e/o GOOGLE_API_KEY nel file .env."
+            )
+        return self._keys[self._current_idx][1]
+
+    @property
+    def current_label(self) -> str:
+        """Restituisce l'etichetta della key attiva (FREE/PAID)."""
+        self._init_keys()
+        if not self._keys:
+            return "NONE"
+        return self._keys[self._current_idx][0]
+
+    def rotate(self) -> bool:
+        """Ruota alla prossima API key disponibile.
+
+        Returns:
+            True se la rotazione è avvenuta, False se non ci sono altre chiavi.
+        """
+        with self._lock:
+            self._init_keys()
+            next_idx = self._current_idx + 1
+            if next_idx < len(self._keys):
+                old_label = self._keys[self._current_idx][0]
+                self._current_idx = next_idx
+                new_label = self._keys[self._current_idx][0]
+                logger.warning(
+                    f"🔑 API key rotata: {old_label} → {new_label}"
+                )
+                return True
+            return False
+
+    def reset(self) -> None:
+        """Torna alla prima key (FREE) per il prossimo ciclo."""
+        with self._lock:
+            if self._current_idx != 0:
+                old_label = self._keys[self._current_idx][0] if self._keys else "?"
+                self._current_idx = 0
+                new_label = self._keys[0][0] if self._keys else "?"
+                logger.info(f"🔑 API key reset: {old_label} → {new_label}")
+
+    @property
+    def has_fallback(self) -> bool:
+        """True se esiste un'altra key dopo quella corrente."""
+        self._init_keys()
+        return self._current_idx + 1 < len(self._keys)
+
+
+def _get_key_manager() -> ApiKeyManager:
+    """Ottieni il singleton ApiKeyManager."""
+    return ApiKeyManager()
+
+
 def _get_api_key() -> str:
-    """Ottieni la Google API key dalla configurazione.
+    """Ottieni la Google API key attiva (FREE → PAID fallback).
 
     Returns:
         API key come stringa.
 
     Raises:
-        ValueError: Se la API key non è configurata.
+        ValueError: Se nessuna API key è configurata.
     """
-    from paperhunter.config import settings
-
-    key = settings.google_api_key
-    if not key:
-        raise ValueError(
-            "GOOGLE_API_KEY non configurata. "
-            "Impostala nel file .env o come variabile d'ambiente."
-        )
-    return key
+    return _get_key_manager().current_key
 
 
 def _get_http_options(timeout_seconds: Optional[float] = None):
@@ -691,16 +775,50 @@ def llm_call_with_retry(
         )
 
 
+def _recreate_llm_with_new_key(llm):
+    """Ricrea un'istanza LLM con la API key attualmente attiva nel KeyManager.
+
+    Copia modello, temperatura, max_tokens dall'istanza originale.
+
+    Args:
+        llm: Istanza GoogleGenAI da clonare con nuova key.
+
+    Returns:
+        Nuova istanza GoogleGenAI con la key aggiornata.
+    """
+    from llama_index.llms.google_genai import GoogleGenAI
+
+    new_key = _get_api_key()
+    model = getattr(llm, "model", None)
+    temperature = getattr(llm, "temperature", None)
+    max_tokens = getattr(llm, "max_tokens", None)
+
+    new_llm = GoogleGenAI(
+        model=model,
+        api_key=new_key,
+        temperature=temperature,
+        max_tokens=max_tokens,
+        http_options=_get_http_options(),
+        max_retries=0,
+    )
+    logger.info(
+        f"LLM ricreato con key {_get_key_manager().current_label}: "
+        f"{model} (temp={temperature})"
+    )
+    return new_llm
+
+
 def _llm_call_autonomous(
     llm,
     prompt: str,
     base_delay: float = 2.0,
     max_delay: float = 120.0,
 ) -> str:
-    """Strategia autonoma: solo Google API, retry infiniti con delay incrementali.
+    """Strategia autonoma: Google API con rotazione chiavi FREE → PAID.
 
-    Il delay cresce esponenzialmente ad ogni errore consecutivo e si
-    resetta a ``base_delay`` appena il modello torna a rispondere.
+    Prima usa GOOGLE_API_KEY_FREE. Quando raggiunge il rate limit,
+    ruota automaticamente a GOOGLE_API_KEY. Il delay cresce
+    esponenzialmente e si resetta appena il modello risponde.
 
     Non richiede nessuna interazione utente.
 
@@ -714,16 +832,16 @@ def _llm_call_autonomous(
         Testo della risposta.
     """
     consecutive_errors = 0
+    key_mgr = _get_key_manager()
 
     while True:
         try:
             _enforce_call_cooldown()
             response = llm.complete(prompt)
-            # Successo → reset contatore errori
             if consecutive_errors > 0:
                 logger.info(
-                    f"Google API tornata disponibile dopo {consecutive_errors} "
-                    f"errori consecutivi. Delay resettato."
+                    f"Google API ({key_mgr.current_label}) tornata disponibile "
+                    f"dopo {consecutive_errors} errori consecutivi. Delay resettato."
                 )
             return str(response)
         except Exception as e:
@@ -748,17 +866,33 @@ def _llm_call_autonomous(
                     time.sleep(delay)
                     continue
 
-            # Errori transient → retry con backoff crescente
-            transient_keywords = (
+            # Errori quota/rate → prova rotazione chiavi
+            quota_keywords = (
                 "rate", "429", "quota", "resource_exhausted",
+            )
+            transient_keywords = (
                 "503", "500", "504", "overloaded", "temporarily",
                 "deadline", "unavailable",
             )
-            if any(kw in error_str for kw in transient_keywords):
+            is_quota = any(kw in error_str for kw in quota_keywords)
+            is_transient = any(kw in error_str for kw in transient_keywords)
+
+            if is_quota and key_mgr.has_fallback:
+                logger.warning(
+                    f"[autonomous] Quota/rate limit raggiunto con key "
+                    f"{key_mgr.current_label}: {e}"
+                )
+                key_mgr.rotate()
+                llm = _recreate_llm_with_new_key(llm)
+                consecutive_errors = 0
+                continue
+
+            if is_quota or is_transient:
                 consecutive_errors += 1
                 delay = min(base_delay * (2 ** consecutive_errors), max_delay)
                 logger.warning(
-                    f"[autonomous] Google API errore #{consecutive_errors}: {e}. "
+                    f"[autonomous] Google API ({key_mgr.current_label}) "
+                    f"errore #{consecutive_errors}: {e}. "
                     f"Attesa {delay:.0f}s prima di riprovare..."
                 )
                 time.sleep(delay)
@@ -826,12 +960,26 @@ def _llm_call_interactive(
                         last_error = cont_err
                         break
 
-                transient_keywords = (
+                quota_keywords = (
                     "rate", "429", "quota", "resource_exhausted",
+                )
+                transient_keywords = (
                     "503", "500", "504", "overloaded", "temporarily",
                     "deadline", "unavailable",
                 )
-                if any(kw in error_str for kw in transient_keywords):
+                is_quota = any(kw in error_str for kw in quota_keywords)
+                is_transient = any(kw in error_str for kw in transient_keywords)
+
+                if is_quota and _get_key_manager().has_fallback:
+                    logger.warning(
+                        f"Quota raggiunta con key {_get_key_manager().current_label}. "
+                        f"Rotazione chiave..."
+                    )
+                    _get_key_manager().rotate()
+                    llm = _recreate_llm_with_new_key(llm)
+                    break  # Ricomincia il ciclo for con nuova key
+
+                if is_quota or is_transient:
                     delay = min(base_delay * (2 ** attempt), max_delay)
                     remaining = retries - attempt
                     logger.warning(
@@ -843,6 +991,14 @@ def _llm_call_interactive(
                     logger.error(f"LLM call fallita con errore non recuperabile: {e}")
                     last_error = e
                     break
+        else:
+            # for loop exhausted without break → all retries consumed
+            pass
+
+        # Se abbiamo fatto break per key rotation, continua il while loop
+        if _get_key_manager().current_label != "FREE" or not _get_key_manager().has_fallback:
+            # Abbiamo già ruotato o non c'è più fallback → continua normalmente
+            pass
 
         # --- Fase 2: Google esaurita, proponi fallback OpenRouter ---
         if not (openrouter_fallback and _is_openrouter_available()):

@@ -473,7 +473,8 @@ class Settings(BaseSettings):
     recency_priority: bool = True  # Se True, paper recenti hanno priorità in ingestion, retrieval, L2
 
     # --- API Keys (da .env) ---
-    google_api_key: str = ""
+    google_api_key_free: str = ""  # Chiave gratuita (prioritaria)
+    google_api_key: str = ""       # Chiave a pagamento (fallback)
     anthropic_api_key: str = ""
     openrouter_api_key: str = ""
     semantic_scholar_api_key: str = ""

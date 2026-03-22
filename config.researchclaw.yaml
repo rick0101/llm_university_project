@@ -1,0 +1,37 @@
+# ─────────────────────────────────────────────────────────────────────
+# AutoResearchClaw config per PaperHunter Bridge
+# Usa Gemini Flash via endpoint OpenAI-compatible di Google
+# Nessuna API key aggiuntiva — riutilizza GOOGLE_API_KEY dal .env
+# ─────────────────────────────────────────────────────────────────────
+
+project:
+  name: "paperhunter-experiment"
+  mode: "full-auto"
+
+research:
+  topic: "Security vulnerabilities and defenses in Large Language Models"
+  domains: ["llm-security", "adversarial-ml", "prompt-injection"]
+
+llm:
+  provider: "openai-compatible"
+  base_url: "https://generativelanguage.googleapis.com/v1beta/openai/"
+  api_key_env: "GOOGLE_API_KEY"
+  api_key: ""
+  primary_model: "gemini-2.0-flash"
+  fallback_models:
+    - "gemini-2.0-flash-lite"
+
+runtime:
+  max_parallel_tasks: 1
+  timeout_sec: 120
+
+experiment:
+  mode: "sandbox"
+  time_budget_sec: 600
+  max_iterations: 5
+  metric_key: "primary_metric"
+  metric_direction: "maximize"
+  sandbox:
+    python_path: "python3"
+    gpu_required: false
+    max_memory_mb: 4096

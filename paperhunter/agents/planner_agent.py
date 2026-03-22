@@ -46,6 +46,8 @@ from paperhunter.agents.state import (
     get_outline_from_state,
 )
 from paperhunter.config import settings
+from paperhunter.evolution.lesson_store import LessonStore
+from paperhunter.evolution.prompt_overlay import generate_overlay_for_planner
 from paperhunter.models import L2Summary
 from paperhunter.utils.llm_factory import (
     get_llm,
@@ -623,6 +625,25 @@ def generate_outline(
         target_sections=target_sections,
         total_words=total_words,
     )
+
+    # --- Self-evolution: inject lessons overlay for planner ---
+    if settings.evolution.enabled:
+        try:
+            evo_store = LessonStore(
+                path=settings.evolution.lessons_path,
+                half_life_days=settings.evolution.half_life_days,
+                expiry_days=settings.evolution.expiry_days,
+            )
+            overlay = generate_overlay_for_planner(
+                evo_store,
+                max_lessons=settings.evolution.max_overlay_lessons,
+                max_chars=settings.evolution.max_overlay_chars,
+            )
+            if overlay:
+                prompt = f"{prompt}\n\n{overlay}"
+                logger.info("[evolution] Injected %d-char lesson overlay for planner", len(overlay))
+        except Exception as e:
+            logger.warning("[evolution] Failed to load lessons overlay: %s", e)
 
     # Selezione modello
     tier = force_model or settings.agents.planner_model

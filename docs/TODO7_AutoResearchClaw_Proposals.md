@@ -132,7 +132,9 @@ config.yaml                             ← Nuove sezioni: evolution, figure_age
 
 ---
 
-#### [ ] Task 1.4: Integrare overlay nel writer e nel critic
+#### [x] Task 1.4: Integrare overlay nel writer e nel critic
+
+> **Completato:** Integrazione self-evolution in 4 file. `config.py`: aggiunta classe `EvolutionConfig` (enabled, lessons_path, half_life_days, expiry_days, max_overlay_lessons, max_overlay_chars, auto_prune) e campo `evolution` in `Settings`. `writer_agent.py`: iniettato overlay lezioni in 3 punti (agentic, prefetch_agentic, static) dopo costruzione system prompt, con guard `settings.evolution.enabled` e try/except. `critic_agent.py`: aggiunta registrazione lezioni dopo `compute_pass_rate()` in `verify_section()` quando la verifica fallisce. `planner_agent.py`: iniettato overlay planner dopo `_PLANNER_PROMPT_TEMPLATE.format()`. Tutti i punti sono non-breaking (disabilitati di default, wrap try/except). Test import + integrazione end-to-end passati.
 
 **File:** `paperhunter/agents/writer_agent.py` (modifica), `paperhunter/agents/critic_agent.py` (modifica), `paperhunter/agents/planner_agent.py` (modifica)  
 **Obiettivo:** Iniettare l'overlay delle lezioni apprese nei system prompt degli agenti.  

@@ -365,6 +365,17 @@ class OpenRouterConfig(BaseModel):
     max_retries: int = 3  # Retry con OpenRouter
 
 
+class EvolutionConfig(BaseModel):
+    """Configurazione Self-Evolution System (lessons from failures)."""
+    enabled: bool = False
+    lessons_path: str = "./data/evolution/lessons.jsonl"
+    half_life_days: float = 30.0
+    expiry_days: float = 90.0
+    max_overlay_lessons: int = 5
+    max_overlay_chars: int = 2000
+    auto_prune: bool = True
+
+
 class LoggingConfig(BaseModel):
     """Configurazione logging (rich + tqdm)."""
     level: str = "INFO"
@@ -467,6 +478,7 @@ class Settings(BaseSettings):
     download: DownloadConfig = Field(default_factory=DownloadConfig)
     rate_limiting: RateLimitingConfig = Field(default_factory=RateLimitingConfig)
     logging: LoggingConfig = Field(default_factory=LoggingConfig)
+    evolution: EvolutionConfig = Field(default_factory=EvolutionConfig)
     
     model_config = {
         "env_file": ".env",

@@ -51,6 +51,8 @@ from paperhunter.agents.state import (
     get_verifications_from_state,
 )
 from paperhunter.config import settings
+from paperhunter.evolution.lesson_extractor import extract_from_verification
+from paperhunter.evolution.lesson_store import LessonStore
 from paperhunter.models import VerificationStatus
 from paperhunter.utils.llm_factory import (
     get_llm,
@@ -1047,6 +1049,26 @@ def verify_section(
 
     # --- Provenance records ---
     provenance_records = _build_provenance_records(section_key, verification_details)
+
+    # --- Self-evolution: record lessons from failed verifications ---
+    if settings.evolution.enabled and not vr.passed:
+        try:
+            evo_store = LessonStore(
+                path=settings.evolution.lessons_path,
+                half_life_days=settings.evolution.half_life_days,
+                expiry_days=settings.evolution.expiry_days,
+            )
+            lessons = extract_from_verification(
+                section_key=section_key,
+                verification_result=vr,
+                threshold=settings.agents.verification_threshold,
+            )
+            for lesson in lessons:
+                evo_store.record(lesson)
+            if lessons:
+                logger.info("[evolution] Recorded %d lesson(s) from '%s' verification", len(lessons), section_key)
+        except Exception as e:
+            logger.warning("[evolution] Failed to record lessons: %s", e)
 
     return {
         "verification_results": {section_key: vr.to_dict()},

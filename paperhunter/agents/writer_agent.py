@@ -63,6 +63,8 @@ from paperhunter.agents.state import (
     get_sections_from_state,
 )
 from paperhunter.config import settings
+from paperhunter.evolution.lesson_store import LessonStore
+from paperhunter.evolution.prompt_overlay import generate_overlay_for_writer
 from paperhunter.utils.llm_factory import (
     get_llm,
     llm_call_with_retry,
@@ -1010,6 +1012,26 @@ def _write_section_prefetch_agentic(
         critic_feedback_section=critic_section,
     )
 
+    # --- Self-evolution: inject lessons overlay ---
+    if settings.evolution.enabled:
+        try:
+            evo_store = LessonStore(
+                path=settings.evolution.lessons_path,
+                half_life_days=settings.evolution.half_life_days,
+                expiry_days=settings.evolution.expiry_days,
+            )
+            overlay = generate_overlay_for_writer(
+                evo_store,
+                section_key=outline.key,
+                max_lessons=settings.evolution.max_overlay_lessons,
+                max_chars=settings.evolution.max_overlay_chars,
+            )
+            if overlay:
+                system_prompt = f"{system_prompt}\n\n{overlay}"
+                logger.info("[evolution] Injected %d-char lesson overlay for '%s'", len(overlay), outline.key)
+        except Exception as e:
+            logger.warning("[evolution] Failed to load lessons overlay: %s", e)
+
     # Tool ridotti: solo vector + keyword + get_figure (no graph/figure_descriptions)
     default_cat = outline.related_categories[0] if outline.related_categories else None
     tools = get_all_retrieval_tools(default_category=default_cat, light=True)
@@ -1167,6 +1189,26 @@ def _write_section_agentic(
         special_instructions=special_instructions,
         critic_feedback_section=critic_section,
     )
+
+    # --- Self-evolution: inject lessons overlay ---
+    if settings.evolution.enabled:
+        try:
+            evo_store = LessonStore(
+                path=settings.evolution.lessons_path,
+                half_life_days=settings.evolution.half_life_days,
+                expiry_days=settings.evolution.expiry_days,
+            )
+            overlay = generate_overlay_for_writer(
+                evo_store,
+                section_key=outline.key,
+                max_lessons=settings.evolution.max_overlay_lessons,
+                max_chars=settings.evolution.max_overlay_chars,
+            )
+            if overlay:
+                system_prompt = f"{system_prompt}\n\n{overlay}"
+                logger.info("[evolution] Injected %d-char lesson overlay for '%s'", len(overlay), outline.key)
+        except Exception as e:
+            logger.warning("[evolution] Failed to load lessons overlay: %s", e)
 
     # --- Inizializza tool e agente ---
     default_cat = outline.related_categories[0] if outline.related_categories else None
@@ -1693,6 +1735,26 @@ def write_section(
         retrieved_context=context_text,
         special_instructions=special_instructions,
     )
+
+    # --- Self-evolution: inject lessons overlay (static mode) ---
+    if settings.evolution.enabled:
+        try:
+            evo_store = LessonStore(
+                path=settings.evolution.lessons_path,
+                half_life_days=settings.evolution.half_life_days,
+                expiry_days=settings.evolution.expiry_days,
+            )
+            overlay = generate_overlay_for_writer(
+                evo_store,
+                section_key=section_key,
+                max_lessons=settings.evolution.max_overlay_lessons,
+                max_chars=settings.evolution.max_overlay_chars,
+            )
+            if overlay:
+                prompt = f"{prompt}\n\n{overlay}"
+                logger.info("[evolution] Injected %d-char lesson overlay for '%s' (static)", len(overlay), section_key)
+        except Exception as e:
+            logger.warning("[evolution] Failed to load lessons overlay: %s", e)
 
     # --- Step 4: Genera testo con LLM ---
     tier = force_model or settings.agents.writer_model

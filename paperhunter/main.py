@@ -2210,7 +2210,7 @@ def cmd_experiment(args: argparse.Namespace) -> int:
             "Lancia manualmente:[/cyan]"
         )
         console.print(
-            f"  researchclaw run --run-dir {rc_dir} --resume"
+            f"  researchclaw run --config config.researchclaw.yaml --run-dir {rc_dir} --resume"
         )
         return 0
 
@@ -2235,17 +2235,27 @@ def cmd_experiment(args: argparse.Namespace) -> int:
         )
         console.print(
             f"\nPuoi lanciare manualmente:\n"
-            f"  researchclaw run --run-dir {rc_dir} --resume"
+            f"  researchclaw run --config config.researchclaw.yaml --run-dir {rc_dir} --resume"
         )
         return 0
 
     # ── Step 4: Launch ResearchClaw ──
     from_stage = args.from_stage or "EXPERIMENT_DESIGN"
+
+    # Resolve config path
+    rc_config = args.rc_config
+    if not rc_config:
+        default_cfg = ph_root / "config.researchclaw.yaml"
+        if default_cfg.exists():
+            rc_config = str(default_cfg)
+
     rc_cmd = [
         sys.executable, "-m", "researchclaw", "run",
         "--run-dir", str(rc_dir),
         "--from-stage", from_stage,
     ]
+    if rc_config:
+        rc_cmd.extend(["--config", rc_config])
 
     console.print(f"\n🚀 Lancio ResearchClaw da stage {from_stage}...")
     console.print(f"   Comando: {' '.join(rc_cmd)}")
@@ -2722,6 +2732,10 @@ def build_parser() -> argparse.ArgumentParser:
     p_experiment.add_argument(
         "--import-from", type=str, default=None, metavar="RC_DIR",
         help="Importa risultati sperimentali da una run RC completata",
+    )
+    p_experiment.add_argument(
+        "--rc-config", type=str, default=None, metavar="YAML",
+        help="Config ResearchClaw (default: config.researchclaw.yaml)",
     )
 
     # ── reset ──

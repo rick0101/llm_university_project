@@ -17,9 +17,9 @@ llm:
   base_url: "https://generativelanguage.googleapis.com/v1beta/openai/"
   api_key_env: "GOOGLE_API_KEY"
   api_key: ""
-  primary_model: "gemini-2.0-flash"
+  primary_model: "gemini-3-flash-preview"
   fallback_models:
-    - "gemini-2.0-flash-lite"
+    - "gemini-3-flash-preview"
 
 runtime:
   max_parallel_tasks: 1

@@ -782,6 +782,17 @@ Le skills vengono combinate con le lezioni in `generate_full_overlay()` e iniett
 
 Il bridge consente di esportare i dati del survey PaperHunter nel formato atteso da [AutoResearchClaw](https://github.com/aiming-lab/AutoResearchClaw), permettendo di lanciare una pipeline sperimentale automatica partendo dalla ricerca già completata.
 
+**Configurazione LLM:** Il file `config.researchclaw.yaml` configura Gemini Flash come provider LLM via endpoint OpenAI-compatible di Google. Riutilizza la `GOOGLE_API_KEY` esistente nel `.env` — nessuna API key aggiuntiva necessaria.
+
+```yaml
+# config.researchclaw.yaml (già incluso nel progetto)
+llm:
+  provider: "openai-compatible"
+  base_url: "https://generativelanguage.googleapis.com/v1beta/openai/"
+  api_key_env: "GOOGLE_API_KEY"    # riutilizza la key esistente
+  primary_model: "gemini-3-flash-preview"
+```
+
 **Flusso Export (PaperHunter → ResearchClaw):**
 
 | Export | Sorgente PH | Destinazione RC |
@@ -1084,6 +1095,9 @@ paperhunter figures
 # 8. (Opzionale) Esporta dati verso AutoResearchClaw per sperimentazione
 paperhunter experiment --export-only --output ./experiments/run_001
 
+# 8b. (Opzionale) Lancio completo: export + avvio ResearchClaw con Gemini Flash
+paperhunter experiment --output ./experiments/run_001
+
 # 9. (Opzionale) Importa risultati sperimentali da ResearchClaw
 paperhunter experiment --import-from ./experiments/run_001
 
@@ -1129,6 +1143,7 @@ Opzioni globali: `--config PATH`, `-v/--verbose` (DEBUG logging), `--version`.
 - `paperhunter figures --plan-only` — solo pianificazione, senza rendering
 - `paperhunter experiment --export-only` — esporta dati senza lanciare ResearchClaw
 - `paperhunter experiment --import-from DIR` — importa risultati da run RC completata
+- `paperhunter experiment --rc-config FILE` — config YAML per ResearchClaw (default: `config.researchclaw.yaml`)
 
 ---
 

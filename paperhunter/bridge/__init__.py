@@ -3,6 +3,7 @@
 from paperhunter.bridge.researchclaw_adapter import (
     BridgeReport,
     ExportResult,
+    ImportReport,
     KnowledgeCard,
     ResearchClawAdapter,
 )
@@ -10,6 +11,7 @@ from paperhunter.bridge.researchclaw_adapter import (
 __all__ = [
     "BridgeReport",
     "ExportResult",
+    "ImportReport",
     "KnowledgeCard",
     "ResearchClawAdapter",
 ]

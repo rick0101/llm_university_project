@@ -2115,8 +2115,41 @@ def cmd_experiment(args: argparse.Namespace) -> int:
     )
     console.print()
 
-    # ── Step 0: Resolve paths ──
     ph_root = _Path(args.project_root or ".")
+
+    # ── Import mode: import results from existing RC run ──
+    if args.import_from:
+        rc_dir = _Path(args.import_from)
+        if not rc_dir.exists():
+            console.print(f"[red]❌ Directory non trovata: {rc_dir}[/red]")
+            return 1
+
+        adapter = ResearchClawAdapter(
+            paperhunter_root=ph_root,
+            researchclaw_run_dir=rc_dir,
+            run_id=args.run_id or rc_dir.name,
+        )
+        report = adapter.import_results()
+
+        console.print(f"📂 Import da: {rc_dir}")
+        console.print(f"  Analysis: {'✅' if report.analysis_loaded else '❌'}"
+                       f" ({report.analysis_chars:,} chars)")
+        console.print(f"  Summary:  {'✅' if report.summary_loaded else '❌'}")
+        console.print(f"  Charts:   {len(report.charts_imported)} importati")
+
+        if report.section_path:
+            console.print(
+                f"\n[bold green]✅ Sezione 'Experimental Validation' creata: "
+                f"{report.section_path} ({report.section_chars:,} chars)[/bold green]"
+            )
+        else:
+            console.print(
+                "\n[yellow]⚠️  Nessun risultato sperimentale trovato. "
+                "Verifica che RC abbia completato stage 14+.[/yellow]"
+            )
+        return 0 if report.success else 1
+
+    # ── Export mode (default) ──
     output_dir = _Path(args.output or "./experiments")
     run_id = args.run_id
 
@@ -2662,6 +2695,7 @@ def build_parser() -> argparse.ArgumentParser:
             "  paperhunter experiment --export-only              # Solo export dati\n"
             "  paperhunter experiment --output ./exp/run1        # Directory custom\n"
             "  paperhunter experiment --from-stage PAPER_DRAFT   # Stage diverso\n"
+            "  paperhunter experiment --import-from ./exp/run1   # Importa risultati\n"
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
@@ -2684,6 +2718,10 @@ def build_parser() -> argparse.ArgumentParser:
     p_experiment.add_argument(
         "--from-stage", type=str, default=None,
         help="Stage da cui partire in ResearchClaw (default: EXPERIMENT_DESIGN)",
+    )
+    p_experiment.add_argument(
+        "--import-from", type=str, default=None, metavar="RC_DIR",
+        help="Importa risultati sperimentali da una run RC completata",
     )
 
     # ── reset ──

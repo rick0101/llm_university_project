@@ -519,3 +519,190 @@ class ResearchClawAdapter:
         logger.info("Bridge export complete: %d/%d stages succeeded", ok, total)
 
         return report
+
+    # ── import methods (RC output → PaperHunter) ────────────────────────
+
+    def import_results(self) -> ImportReport:
+        """Import ResearchClaw experimental results into PaperHunter.
+
+        Reads analysis, figures, and experiment summary from the RC run
+        directory and creates an "Experimental Validation" Markdown section
+        ready to be appended to the PaperHunter survey.
+        """
+        report = ImportReport(
+            run_id=self.run_id,
+            run_dir=self.rc_dir,
+        )
+
+        logger.info("Importing RC results from %s", self.rc_dir)
+
+        # Load analysis.md
+        analysis = self._load_rc_analysis()
+        if analysis:
+            report.analysis_loaded = True
+            report.analysis_chars = len(analysis)
+
+        # Load experiment_summary.json
+        summary = self._load_rc_experiment_summary()
+        if summary:
+            report.summary_loaded = True
+
+        # Copy charts to PaperHunter output
+        charts_imported = self._copy_rc_charts()
+        report.charts_imported = charts_imported
+
+        # Build "Experimental Validation" section
+        section_md = self._build_validation_section(analysis, summary, charts_imported)
+        if section_md:
+            out_path = self.ph_root / "output" / "experimental_validation.md"
+            out_path.write_text(section_md, encoding="utf-8")
+            report.section_path = out_path
+            report.section_chars = len(section_md)
+            logger.info(
+                "Written experimental validation section (%d chars) to %s",
+                len(section_md),
+                out_path,
+            )
+
+        report.success = report.analysis_loaded or report.summary_loaded
+        return report
+
+    def _load_rc_analysis(self) -> str:
+        """Load ``stage-14/analysis.md`` from the RC run directory."""
+        analysis_path = self.rc_dir / "stage-14" / "analysis.md"
+        if not analysis_path.exists():
+            logger.warning("RC analysis not found: %s", analysis_path)
+            return ""
+        content = analysis_path.read_text(encoding="utf-8")
+        logger.info("Loaded RC analysis (%d chars)", len(content))
+        return content
+
+    def _load_rc_experiment_summary(self) -> dict[str, Any] | None:
+        """Load ``stage-14/experiment_summary.json``."""
+        summary_path = self.rc_dir / "stage-14" / "experiment_summary.json"
+        if not summary_path.exists():
+            logger.warning("RC experiment summary not found: %s", summary_path)
+            return None
+        try:
+            data = json.loads(summary_path.read_text(encoding="utf-8"))
+            logger.info("Loaded RC experiment summary (%d keys)", len(data))
+            return data
+        except Exception as exc:
+            logger.error("Cannot parse experiment_summary.json: %s", exc)
+            return None
+
+    def _copy_rc_charts(self) -> list[str]:
+        """Copy ``stage-14/charts/*.png`` to PaperHunter output/figures/."""
+        import shutil
+
+        charts_src = self.rc_dir / "stage-14" / "charts"
+        if not charts_src.exists():
+            logger.warning("RC charts directory not found: %s", charts_src)
+            return []
+
+        dest = self.ph_root / "output" / "figures" / "experimental"
+        dest.mkdir(parents=True, exist_ok=True)
+
+        imported: list[str] = []
+        for png in sorted(charts_src.glob("*.png")):
+            dst = dest / png.name
+            shutil.copy2(png, dst)
+            imported.append(png.name)
+
+        logger.info("Copied %d charts to %s", len(imported), dest)
+        return imported
+
+    def _build_validation_section(
+        self,
+        analysis: str,
+        summary: dict[str, Any] | None,
+        charts: list[str],
+    ) -> str:
+        """Compose the 'Experimental Validation' Markdown section."""
+        ts = datetime.now(timezone.utc).isoformat()
+        parts = [
+            "## Experimental Validation\n",
+            (
+                f"*Results imported from AutoResearchClaw run "
+                f"`{self.run_id}` — {ts}*\n"
+            ),
+        ]
+
+        # Metrics summary table
+        if summary:
+            metrics = summary.get("metrics_summary", {})
+            total_runs = summary.get("total_runs", 0)
+            parts.append(f"### Overview\n")
+            parts.append(f"Total experimental runs: **{total_runs}**\n")
+
+            if metrics:
+                parts.append("### Metrics Summary\n")
+                parts.append("| Metric | Min | Max | Mean | N |")
+                parts.append("|--------|-----|-----|------|---|")
+                for metric_key, vals in metrics.items():
+                    name = metric_key.rsplit("/", 1)[-1] if "/" in metric_key else metric_key
+                    parts.append(
+                        f"| {name} "
+                        f"| {vals.get('min', '-'):.4f} "
+                        f"| {vals.get('max', '-'):.4f} "
+                        f"| {vals.get('mean', '-'):.4f} "
+                        f"| {vals.get('count', '-')} |"
+                    )
+                parts.append("")
+
+            # Condition summaries
+            conditions = summary.get("condition_summaries", {})
+            if conditions:
+                parts.append("### Condition Analysis\n")
+                for cond_name, cond_data in conditions.items():
+                    n_seeds = cond_data.get("n_seeds", "?")
+                    sr = cond_data.get("success_rate", 0)
+                    parts.append(
+                        f"- **{cond_name}**: {n_seeds} seeds, "
+                        f"success rate {sr:.1%}"
+                    )
+                parts.append("")
+
+            # Ablation warnings
+            warnings = summary.get("ablation_warnings", [])
+            if warnings:
+                parts.append("### ⚠️ Ablation Warnings\n")
+                for w in warnings:
+                    parts.append(f"- {w}")
+                parts.append("")
+
+        # Analysis (multi-perspective debate)
+        if analysis:
+            parts.append("### Detailed Analysis\n")
+            parts.append(analysis)
+            parts.append("")
+
+        # Figure references
+        if charts:
+            parts.append("### Experimental Figures\n")
+            for chart_name in charts:
+                caption = chart_name.replace("_", " ").replace(".png", "").title()
+                parts.append(
+                    f"![{caption}](figures/experimental/{chart_name})"
+                )
+            parts.append("")
+
+        return "\n".join(parts)
+
+
+class ImportReport(BaseModel):
+    """Summary of an import from ResearchClaw."""
+
+    run_id: str = Field(..., description="ResearchClaw run identifier")
+    run_dir: Path = Field(..., description="ResearchClaw run directory")
+    success: bool = Field(False, description="Whether import produced output")
+    analysis_loaded: bool = Field(False, description="analysis.md found")
+    analysis_chars: int = Field(0, description="Characters in analysis")
+    summary_loaded: bool = Field(False, description="experiment_summary.json found")
+    charts_imported: list[str] = Field(
+        default_factory=list, description="Chart filenames imported"
+    )
+    section_path: Path | None = Field(
+        None, description="Path to generated validation section"
+    )
+    section_chars: int = Field(0, description="Characters in validation section")

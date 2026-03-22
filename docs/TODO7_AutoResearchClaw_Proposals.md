@@ -328,7 +328,9 @@ evolution:
 > **Complessità:** Media (~400 righe)  
 > **Principio:** Dopo aver completato il survey con PaperHunter, esporta dati (gap, ipotesi, knowledge graph) nel formato AutoResearchClaw e lancia il pipeline sperimentale dal Stage 9 (EXPERIMENT_DESIGN).
 
-#### [ ] Task 4.1: Creare `researchclaw_adapter.py` — export dati PaperHunter → ResearchClaw
+#### [x] Task 4.1: Creare `researchclaw_adapter.py` — export dati PaperHunter → ResearchClaw
+
+> **Completato:** Creato `paperhunter/bridge/` package con `ResearchClawAdapter` class (~530 righe). 5 metodi di export: `export_knowledge_cards()` (property graph → 387 cards Markdown in stage-06/cards/), `export_synthesis()` (L2 summaries da Qdrant → stage-07/synthesis.md con taxonomy, trends, convergences), `export_hypotheses()` (L2 open_gaps → stage-08/hypotheses.md), `export_references()` (copia BibTeX 5226 chars), `create_checkpoint()` (checkpoint.json a stage 8 HYPOTHESIS_GEN). Modelli Pydantic: KnowledgeCard, ExportResult, BridgeReport. Dual data source: Qdrant (primario) con fallback a disco l2_metadata/. `export_all()` orchestra tutte le fasi con report strutturato. Testato con dati reali: 5/5 export successo.
 
 **File:** `paperhunter/bridge/researchclaw_adapter.py` (nuovo)  
 **Obiettivo:** Esportare i dati del survey nel formato atteso da AutoResearchClaw.  
@@ -337,17 +339,19 @@ evolution:
 - Metodi:
   - `export_hypotheses()` — `L2Summary.open_gaps` → `stage-08/hypotheses.md`
   - `export_synthesis()` — `L2Summary.synthesis + taxonomy` → `stage-07/synthesis.md`
-  - `export_knowledge_cards()` — Property Graph (387 entità) → `stage-06/cards/*.json`
+  - `export_knowledge_cards()` — Property Graph (387 entità) → `stage-06/cards/*.md`
   - `create_checkpoint()` — genera `checkpoint.json` con `last_completed_stage: 8`
   - `export_references()` — copia BibTeX per citation_verify (Stage 23)
 - Mapping dati:
   - L2 `open_gaps` → ipotesi numerate con contesto categoria
-  - Graph `entities + relations` → knowledge cards JSON
+  - Graph `entities + relations` → knowledge cards Markdown
   - `output/references.bib` → copia diretta
 
 ---
 
-#### [ ] Task 4.2: Creare comando CLI `paperhunter experiment`
+#### [x] Task 4.2: Creare comando CLI `paperhunter experiment`
+
+> **Completato:** Aggiunto `cmd_experiment()` in main.py (~135 righe). Flusso: (1) verifica survey completo (output/versions/, property graph, BibTeX), (2) crea ResearchClawAdapter ed esegue export_all() con report strutturato, (3) se non --export-only, verifica installazione RC e lancia `researchclaw run --from-stage EXPERIMENT_DESIGN`. Flag: --output, --run-id, --project-root, --export-only, --from-stage. Subparser con descrizione ed esempi. Testato con dati reali: 5/5 export, help text corretto.
 
 **File:** `paperhunter/main.py` (modifica)  
 **Obiettivo:** Aggiungere sottocomando per lanciare esperimenti via AutoResearchClaw.  
@@ -362,7 +366,9 @@ evolution:
 
 ---
 
-#### [ ] Task 4.3: Importare risultati sperimentali nel survey
+#### [x] Task 4.3: Importare risultati sperimentali nel survey
+
+> **Completato:** Esteso ResearchClawAdapter con pipeline di import: `import_results()` orchestra lettura `stage-14/analysis.md`, parsing `experiment_summary.json` (metriche, condizioni, ablation warnings), copia charts PNG in `output/figures/experimental/`. Genera sezione Markdown "Experimental Validation" con tabella metriche (Min/Max/Mean/N), condition analysis, figure references, e analisi multi-prospettiva. Nuovo modello `ImportReport`. CLI: aggiunto flag `--import-from RC_DIR` al comando experiment. Degradazione graceful per output parziali. Tutti i test passati (dati simulati + fallback dir vuota).
 
 **File:** `paperhunter/bridge/researchclaw_adapter.py` (estensione)  
 **Obiettivo:** Dopo che ResearchClaw completa, importare risultati nel paper PaperHunter.  
@@ -402,10 +408,12 @@ FASE 3 — Skill Injection                                 [Estensione Fase 1, b
 └── 3.3 Integrazione in prompt_overlay.py                [x]
 
 FASE 4 — Bridge AutoResearchClaw                         [Opzionale, per sperimentazione avanzata]
-├── 4.1 researchclaw_adapter.py                          [ ]
-├── 4.2 Comando CLI `paperhunter experiment`             [ ]
-└── 4.3 Import risultati nel survey                      [ ]
+├── 4.1 researchclaw_adapter.py                          [x]
+├── 4.2 Comando CLI `paperhunter experiment`             [x]
+└── 4.3 Import risultati nel survey                      [x]
 ```
+
+**🎉 TODO7 COMPLETATO: 17/17 task implementati!**
 
 ---
 

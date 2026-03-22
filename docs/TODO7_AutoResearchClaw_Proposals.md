@@ -225,7 +225,9 @@ evolution:
 
 ---
 
-#### [ ] Task 2.4: Creare `critic.py` — valutazione qualità figure
+#### [x] Task 2.4: Creare `critic.py` — valutazione qualità figure
+
+> **Completato:** Creato `paperhunter/agents/figure_agent/critic.py` (~260 righe). Modelli: `FigureVerdict` (APPROVED/NEEDS_REVISION), `FigureCritique` (score 0-1 per readability, accuracy, style + overall pesato 35/35/30 + feedback + issues). Due modalità: `critique_figure()` via LLM con prompt dettagliato e fallback JSON parsing, e `critique_code_only()` analisi statica rapida senza LLM (controlla DPI, figsize, label, title, tight_layout, plt.show(), backend Agg). Pre-filtro euristic per skip LLM su figure già buone.
 
 **File:** `paperhunter/agents/figure_agent/critic.py` (nuovo)  
 **Obiettivo:** Verificare che le figure siano leggibili, accurate e in stile accademico.  

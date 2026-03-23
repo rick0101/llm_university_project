@@ -23,7 +23,7 @@ Con il dataset attuale, emergono **5 problemi critici** che degradano qualità e
 
 - [x] **FIX 3 — Category-Aware Writer Context**: Filtrare gli L2 summary passati al Writer in base alla categoria della sezione corrente. Il Planner già specifica `key_topics` per sezione — usarli per selezionare solo gli L2 pertinenti invece di passarli tutti. → **Implementato**: `_format_context_for_prompt()` ora accetta `related_categories` e filtra i chunk L2/L1 summary di categorie non pertinenti prima dell'assemblaggio del contesto. Entrambi i call site (prefetch_agentic e static) ora passano `outline.related_categories`.
 
-- [ ] **FIX 4 — Batch Entity Extraction**: Raggruppare 3-5 L1 summary per singola chiamata di entity extraction nel GraphRAG. Riduce 400 → ~80-130 chiamate LLM. Richiede modifica del prompt template per accettare multipli paper.
+- [x] **FIX 4 — Batch Entity Extraction**: Raggruppare 3-5 L1 summary per singola chiamata di entity extraction nel GraphRAG. Riduce 400 → ~80-130 chiamate LLM. Richiede modifica del prompt template per accettare multipli paper. → **Implementato**: `extract_batch()` ora raggruppa 3 paper per chiamata LLM tramite `_build_batch_prompt()`. La risposta JSON include un campo `source_paper` per attribuire entità/relazioni ai paper corretti. In caso di fallimento del batch, fallback automatico a estrazione singola per il gruppo. Riduce le chiamate da 400 a ~134.
 
 - [ ] **FIX 5 — Embedding Batch Size Aumentato**: Aumentare il batch size degli embedding da 10 a 100 in `qdrant_store.py`. Riduce 1200 → 120 chiamate API embedding. Verificare compatibilità con Gemini Embedding API.
 

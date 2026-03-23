@@ -554,6 +554,7 @@ def _format_context_for_prompt(
     *,
     n_total_sections: int | None = None,
     prefer_summaries: bool = True,
+    related_categories: list[str] | None = None,
 ) -> str:
     """Formatta i chunk recuperati per il prompt del Writer.
 
@@ -567,17 +568,46 @@ def _format_context_for_prompt(
     L1_SUMMARY e L2_SUMMARY vengono posizionati prima dei chunk
     di tipo original, a parità di score.
 
+    Quando *related_categories* è fornito, i chunk L2/L1 summary
+    di categorie non pertinenti vengono deprioritizzati per evitare
+    di sprecare budget su contesto irrilevante.
+
     Args:
         chunks: Chunk recuperati dal retrieval.
         max_chars: Budget diretto (legacy). Se None, calcolato da config.
         n_total_sections: Numero totale di sezioni (per modalità proportional).
         prefer_summaries: Se True, riordina dando priorità a summary chunks.
+        related_categories: Categorie pertinenti per la sezione corrente.
+            Se fornito, i summary di altre categorie vengono penalizzati.
 
     Returns:
         Testo formattato pronto per il prompt del Writer.
     """
     if not chunks:
         return "(No relevant context retrieved. Write based on general knowledge.)"
+
+    # --- Filtra summary di categorie irrilevanti ---
+    if related_categories:
+        _cats_lower = {c.lower() for c in related_categories}
+
+        def _is_relevant(chunk: dict) -> bool:
+            meta = chunk.get("metadata", {})
+            chunk_type = meta.get("chunk_type", "original")
+            # Solo summary L1/L2 vengono filtrati per categoria
+            if chunk_type in ("L2_SUMMARY", "l2_summary", "L1_SUMMARY", "l1_summary"):
+                cat = (meta.get("category") or "").lower()
+                if cat and cat not in _cats_lower:
+                    return False
+            return True
+
+        n_before = len(chunks)
+        chunks = [c for c in chunks if _is_relevant(c)]
+        n_filtered = n_before - len(chunks)
+        if n_filtered > 0:
+            logger.debug(
+                f"Category filter: rimossi {n_filtered} summary chunk "
+                f"di categorie non pertinenti (kept: {related_categories})"
+            )
 
     # --- Calcola budget ---
     effective_max = _compute_section_budget(
@@ -982,6 +1012,7 @@ def _write_section_prefetch_agentic(
         max_chars=max_context_chars,
         n_total_sections=n_total_sections,
         prefer_summaries=True,
+        related_categories=outline.related_categories or None,
     )
 
     prefetch_elapsed = time.time() - t0
@@ -1724,6 +1755,7 @@ def write_section(
         max_chars=max_context_chars,
         n_total_sections=n_total_sections,
         prefer_summaries=True,
+        related_categories=target_outline.related_categories or None,
     )
     special_instructions = _get_special_instructions(target_outline.section_type)
 

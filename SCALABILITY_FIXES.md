@@ -21,7 +21,7 @@ Con il dataset attuale, emergono **5 problemi critici** che degradano qualità e
 
 - [x] **FIX 2 — Chunk Relevance Filter per L1**: Aggiungere filtro TF-IDF/keyword pre-LLM in `_prepare_chunks_text()`. Invece di concatenare tutti i chunk in ordine, calcolare rilevanza rispetto al titolo+abstract e mandare solo i top-K più informativi. Risparmio: ~30-40% token input per chiamata L1. → **Implementato**: `_prepare_chunks_text()` ora accetta `reference_text` (titolo+abstract) e usa TF-IDF cosine scoring per ordinare i chunk per rilevanza. Sezioni a bassa informazione (acknowledgements, references, appendix, funding...) vengono penalizzate. Abstract e Introduction restano sempre prioritari.
 
-- [ ] **FIX 3 — Category-Aware Writer Context**: Filtrare gli L2 summary passati al Writer in base alla categoria della sezione corrente. Il Planner già specifica `key_topics` per sezione — usarli per selezionare solo gli L2 pertinenti invece di passarli tutti.
+- [x] **FIX 3 — Category-Aware Writer Context**: Filtrare gli L2 summary passati al Writer in base alla categoria della sezione corrente. Il Planner già specifica `key_topics` per sezione — usarli per selezionare solo gli L2 pertinenti invece di passarli tutti. → **Implementato**: `_format_context_for_prompt()` ora accetta `related_categories` e filtra i chunk L2/L1 summary di categorie non pertinenti prima dell'assemblaggio del contesto. Entrambi i call site (prefetch_agentic e static) ora passano `outline.related_categories`.
 
 - [ ] **FIX 4 — Batch Entity Extraction**: Raggruppare 3-5 L1 summary per singola chiamata di entity extraction nel GraphRAG. Riduce 400 → ~80-130 chiamate LLM. Richiede modifica del prompt template per accettare multipli paper.
 

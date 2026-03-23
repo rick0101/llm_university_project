@@ -344,7 +344,9 @@ class QdrantStore:
         limiter = get_gemini_limiter()
 
         embeddings: list[list[float]] = []
-        batch_size = getattr(embed_model, "embed_batch_size", 10)
+        # Prefer the model's batch size, but use at least 100 for throughput.
+        # Gemini Embedding API supports up to 100 texts per request.
+        batch_size = max(getattr(embed_model, "embed_batch_size", 100), 100)
 
         for i in range(0, len(texts), batch_size):
             batch = texts[i:i + batch_size]

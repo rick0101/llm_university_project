@@ -263,11 +263,59 @@ def generate_l2_summary(
     # RAPTOR path: prova a caricare L1.5 summary (cluster) dalla Qdrant
     # ================================================================
     from paperhunter.summarization.level1_5_summarizer import (
+        generate_all_cluster_summaries,
         load_l1_5_summaries_for_category,
     )
 
     l1_5_summaries = load_l1_5_summaries_for_category(category, store=store)
     use_l1_5_path = len(l1_5_summaries) > 0
+
+    # ------------------------------------------------------------------
+    # Auto-generate L1.5 se mancanti e ci sono abbastanza L1 da causare
+    # context overflow nel legacy path (>50 paper/categoria).
+    # Con 100 L1 × 2k token = 200k > budget 150k → overflow certo.
+    # ------------------------------------------------------------------
+    _L1_5_AUTO_THRESHOLD = 50
+
+    if not use_l1_5_path:
+        _auto_l1s = l1_summaries
+        if _auto_l1s is None:
+            _auto_l1s = load_l1_summaries_for_category(category, store=store)
+
+        if _auto_l1s and len(_auto_l1s) > _L1_5_AUTO_THRESHOLD:
+            logger.warning(
+                f"Nessun L1.5 per '{category}' ma {len(_auto_l1s)} L1 "
+                f"(>{_L1_5_AUTO_THRESHOLD}): il legacy path causerebbe "
+                f"context overflow. Generazione automatica L1.5 RAPTOR..."
+            )
+            try:
+                from paperhunter.summarization.clustering_utils import (
+                    cluster_summaries,
+                    fetch_l1_embeddings_from_qdrant,
+                )
+
+                embeddings = fetch_l1_embeddings_from_qdrant(
+                    _auto_l1s, qdrant_store=store,
+                )
+                clusters = cluster_summaries(_auto_l1s, embeddings)
+                l1_5_summaries = generate_all_cluster_summaries(
+                    clusters,
+                    category=category,
+                    force_model=force_model,
+                    save_to_store=True,
+                    store=store,
+                )
+                use_l1_5_path = len(l1_5_summaries) > 0
+                if use_l1_5_path:
+                    logger.info(
+                        f"Auto-generati {len(l1_5_summaries)} L1.5 "
+                        f"per '{category}' da {len(_auto_l1s)} L1"
+                    )
+            except Exception as e:
+                logger.error(
+                    f"Errore nella generazione automatica L1.5 per "
+                    f"'{category}': {e}. Fallback al legacy path."
+                )
 
     if use_l1_5_path:
         return _generate_l2_from_l1_5(
@@ -281,6 +329,7 @@ def generate_l2_summary(
 
     # ================================================================
     # Fallback path: usa i singoli L1 summary (logica legacy)
+    # Solo per categorie con ≤50 paper, dove il budget è sufficiente.
     # ================================================================
     logger.info(
         f"Nessun L1.5 trovato per '{category}', "

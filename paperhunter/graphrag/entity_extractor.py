@@ -681,6 +681,115 @@ Return a JSON object with exactly two keys:
 
 
 # ============================================================================
+# Multi-paper batch prompt template (FIX 4: reduces API calls ~67%)
+# ============================================================================
+
+_BATCH_EXTRACTION_PROMPT_TEMPLATE = """\
+You are an expert in LLM security research. Extract structured entities and \
+relations from the following {n_papers} paper summaries to build a knowledge graph.
+
+{papers_section}
+
+---
+
+## Extraction Instructions
+
+Extract **entities** and **relations** from ALL summaries above. Be thorough \
+but precise — only extract entities explicitly mentioned or clearly implied.
+
+### Entity Types (use EXACTLY these labels):
+- **Attack** — specific attack technique or class (e.g., GCG, AutoDAN, prompt injection, backdoor attack)
+- **Defense** — specific defense mechanism or approach (e.g., perplexity filter, SmoothLLM, RLHF)
+- **Model** — specific LLM or family (e.g., GPT-4, LLaMA-2, Vicuna)
+- **Dataset** — specific dataset used (e.g., AdvBench, TruthfulQA, HaluEval)
+- **Benchmark** — evaluation framework/benchmark (e.g., HarmBench, JailbreakBench, MMLU)
+- **Metric** — evaluation metric (e.g., ASR, BLEU, F1, perplexity)
+- **Author** — key author (only first/last author of the paper or frequently cited authors)
+- **Venue** — publication venue (e.g., NeurIPS, ACL, arXiv)
+
+### Relation Types (use EXACTLY these labels):
+- **DEFENDS_AGAINST** — (Defense) defends against (Attack)
+- **TESTED_ON** — (Attack|Defense) was tested on (Dataset|Benchmark)
+- **UPDATES** — (Attack|Defense) updates/improves on a previous (Attack|Defense)
+- **INTRODUCED_IN** — (Entity) was introduced at (Venue) in a specific year
+- **EXTENDS** — (Attack|Defense) extends (Attack|Defense)
+- **OUTPERFORMS** — (Attack|Defense) outperforms (Attack|Defense) on a specific metric
+- **EVALUATED_WITH** — (Attack|Defense) was evaluated using (Metric)
+- **TARGETS** — (Attack) targets/attacks (Model)
+- **USES_MODEL** — (Defense|Benchmark) uses/builds upon (Model)
+
+## Output Format
+Return a JSON object with exactly two keys. Include a "source_paper" field \
+in each entity and relation to track which paper it came from:
+
+```json
+{{{{
+  "entities": [
+    {{{{
+      "type": "Attack|Defense|Model|Dataset|Benchmark|Metric|Author|Venue",
+      "name": "canonical name",
+      "aliases": ["alt name"],
+      "description": "brief description",
+      "year": 2023,
+      "source_paper": "bibtex_key"
+    }}}}
+  ],
+  "relations": [
+    {{{{
+      "type": "RELATION_TYPE",
+      "source": "source entity name",
+      "source_type": "EntityType",
+      "target": "target entity name",
+      "target_type": "EntityType",
+      "description": "brief description",
+      "year": 2023,
+      "source_paper": "bibtex_key"
+    }}}}
+  ]
+}}}}
+```
+
+### Important Rules:
+1. Use EXACT type labels from the lists above.
+2. Entity names should be specific (e.g., "GCG" not "gradient-based attack").
+3. Include year only if explicitly mentioned.
+4. Every entity in a relation MUST also appear in the entities list.
+5. Do NOT extract generic concepts (e.g., "machine learning").
+6. Extract 5-20 entities and 3-15 relations PER PAPER.
+7. Use the source_paper field to tag which paper each entity/relation comes from.
+8. Return ONLY the JSON object.
+"""
+
+
+def _build_batch_prompt(l1_summaries: list[L1Summary]) -> str:
+    """Costruisce un prompt multi-paper per estrazione batch."""
+    paper_sections = []
+    for i, l1 in enumerate(l1_summaries, 1):
+        title_hint = l1.bibtex_key.replace("_", " ") if l1.bibtex_key else ""
+        key_contributions = "\n".join(
+            f"- {c}" for c in l1.key_contributions
+        ) if l1.key_contributions else "Not available."
+
+        section = (
+            f"## Paper {i}: {l1.bibtex_key or l1.paper_id}\n"
+            f"- **BibTeX Key:** {l1.bibtex_key or 'unknown'}\n"
+            f"- **Title (from key):** {title_hint}\n"
+            f"- **Category:** {l1.category or 'unknown'}\n"
+            f"- **Year:** {l1.year or 'unknown'}\n\n"
+            f"### Key Contributions\n{key_contributions}\n\n"
+            f"### Methodology\n{l1.methodology or 'Not available.'}\n\n"
+            f"### Testing Methodology\n{l1.testing_methodology or 'Not available.'}\n\n"
+            f"### Results Summary\n{l1.results_summary or 'Not available.'}\n"
+        )
+        paper_sections.append(section)
+
+    return _BATCH_EXTRACTION_PROMPT_TEMPLATE.format(
+        n_papers=len(l1_summaries),
+        papers_section="\n---\n\n".join(paper_sections),
+    )
+
+
+# ============================================================================
 # Main extraction functions
 # ============================================================================
 
@@ -741,6 +850,11 @@ def extract_with_details(
     )
 
 
+# Number of L1 summaries to group in a single LLM call for entity extraction.
+# 3 keeps the prompt well under the 65k token limit while cutting API calls ~67%.
+_BATCH_GROUP_SIZE = 3
+
+
 def extract_batch(
     l1_summaries: list[L1Summary],
     *,
@@ -748,8 +862,13 @@ def extract_batch(
     merge_results: bool = True,
     skip_errors: bool = True,
     show_progress: bool = True,
+    batch_group_size: int = _BATCH_GROUP_SIZE,
 ) -> tuple[list[Entity], list[Relation], list[ExtractionResult]]:
     """Estrae entità e relazioni da un batch di L1 summaries.
+
+    Uses multi-paper prompts to reduce API calls: groups ``batch_group_size``
+    summaries per LLM call (default 3).  Falls back to single-paper extraction
+    when a multi-paper call fails.
 
     Args:
         l1_summaries: Lista di summary L1.
@@ -757,6 +876,7 @@ def extract_batch(
         merge_results: Se True, merge entità/relazioni duplicate tra paper.
         skip_errors: Se True, continua in caso di errore su un singolo paper.
         show_progress: Se True, mostra progress bar.
+        batch_group_size: Number of papers per LLM call (default 3).
 
     Returns:
         Tuple (all_entities, all_relations, extraction_results).
@@ -766,49 +886,51 @@ def extract_batch(
         return [], [], []
 
     if llm is None:
-        # Thinking model usa token per ragionamento interno → servono 65K
         llm = get_flash_llm(timeout_seconds=120, max_tokens=65536)
 
     all_entities: list[Entity] = []
     all_relations: list[Relation] = []
     all_results: list[ExtractionResult] = []
 
-    iterable = l1_summaries
+    # Build groups of papers for multi-paper extraction
+    groups: list[list[L1Summary]] = []
+    for i in range(0, len(l1_summaries), max(1, batch_group_size)):
+        groups.append(l1_summaries[i : i + max(1, batch_group_size)])
+
+    n_calls = len(groups)
+    logger.info(
+        f"Batch entity extraction: {len(l1_summaries)} papers → "
+        f"{n_calls} LLM calls (group size {batch_group_size})"
+    )
+
+    iterable = groups
     if show_progress:
         iterable = progress_bar(
-            l1_summaries,
+            groups,
             description="Extracting entities & relations",
-            total=len(l1_summaries),
+            total=n_calls,
         )
 
     success = 0
     failed = 0
-    for summary in iterable:
-        try:
-            result = _extract_with_result(summary, llm=llm)
-            all_results.append(result)
+    for group in iterable:
+        if len(group) == 1:
+            # Single paper — use original path
+            results = _extract_single_papers(group, llm, skip_errors)
+        else:
+            # Multi-paper extraction with fallback
+            results = _extract_multi_paper_group(group, llm, skip_errors)
 
+        for result in results:
+            all_results.append(result)
             if result.error:
                 failed += 1
                 if not skip_errors:
-                    logger.error(f"Estrazione fallita per {summary.paper_id}: {result.error}")
                     raise RuntimeError(result.error)
             else:
                 success += 1
                 all_entities.extend(result.entities)
                 all_relations.extend(result.relations)
-
-        except Exception as exc:
-            failed += 1
-            logger.error(f"Errore estrazione per {summary.paper_id}: {exc}")
-            all_results.append(ExtractionResult(
-                paper_id=summary.paper_id,
-                bibtex_key=summary.bibtex_key,
-                error=str(exc),
-                extracted_at=datetime.now(),
-            ))
-            if not skip_errors:
-                raise
 
     # Merge se richiesto
     if merge_results:
@@ -823,6 +945,138 @@ def extract_batch(
     )
 
     return all_entities, all_relations, all_results
+
+
+def _extract_single_papers(
+    summaries: list[L1Summary],
+    llm,
+    skip_errors: bool,
+) -> list[ExtractionResult]:
+    """Extract entities from papers one at a time (original path)."""
+    results = []
+    for summary in summaries:
+        try:
+            result = _extract_with_result(summary, llm=llm)
+            results.append(result)
+        except Exception as exc:
+            logger.error(f"Errore estrazione per {summary.paper_id}: {exc}")
+            results.append(ExtractionResult(
+                paper_id=summary.paper_id,
+                bibtex_key=summary.bibtex_key,
+                error=str(exc),
+                extracted_at=datetime.now(),
+            ))
+            if not skip_errors:
+                raise
+    return results
+
+
+def _extract_multi_paper_group(
+    group: list[L1Summary],
+    llm,
+    skip_errors: bool,
+) -> list[ExtractionResult]:
+    """Extract entities from multiple papers in a single LLM call.
+
+    On failure, falls back to single-paper extraction for the entire group.
+    """
+    start_time = time.monotonic()
+    bibtex_keys = [s.bibtex_key or s.paper_id for s in group]
+    key_to_l1 = {(s.bibtex_key or s.paper_id): s for s in group}
+
+    logger.info(
+        f"Multi-paper extraction for {len(group)} papers: "
+        f"{', '.join(bibtex_keys)}"
+    )
+
+    prompt = _build_batch_prompt(group)
+
+    try:
+        raw_response = llm_call_with_retry(
+            llm, prompt, max_retries=3, base_delay=5.0, max_delay=60.0,
+        )
+    except Exception as exc:
+        logger.warning(
+            f"Multi-paper LLM call failed ({exc}), falling back to single-paper"
+        )
+        return _extract_single_papers(group, llm, skip_errors)
+
+    parsed = _parse_json_response(raw_response, f"batch({','.join(bibtex_keys)})")
+    if parsed is None:
+        logger.warning(
+            "Multi-paper JSON parse failed, falling back to single-paper"
+        )
+        return _extract_single_papers(group, llm, skip_errors)
+
+    # Route entities and relations to their source papers
+    elapsed = time.monotonic() - start_time
+    model_name = _get_model_name(llm)
+    raw_entities = parsed.get("entities", [])
+    raw_relations = parsed.get("relations", [])
+
+    # Group raw items by source_paper
+    entities_by_paper: dict[str, list[dict]] = {k: [] for k in bibtex_keys}
+    relations_by_paper: dict[str, list[dict]] = {k: [] for k in bibtex_keys}
+    unmatched_entities: list[dict] = []
+    unmatched_relations: list[dict] = []
+
+    for raw_ent in raw_entities:
+        src = raw_ent.get("source_paper", "")
+        if src in entities_by_paper:
+            entities_by_paper[src].append(raw_ent)
+        else:
+            unmatched_entities.append(raw_ent)
+
+    for raw_rel in raw_relations:
+        src = raw_rel.get("source_paper", "")
+        if src in relations_by_paper:
+            relations_by_paper[src].append(raw_rel)
+        else:
+            unmatched_relations.append(raw_rel)
+
+    # Distribute unmatched items to the first paper as fallback
+    if unmatched_entities:
+        entities_by_paper[bibtex_keys[0]].extend(unmatched_entities)
+        logger.debug(
+            f"{len(unmatched_entities)} entities without source_paper, "
+            f"assigned to {bibtex_keys[0]}"
+        )
+    if unmatched_relations:
+        relations_by_paper[bibtex_keys[0]].extend(unmatched_relations)
+
+    # Build ExtractionResult for each paper
+    results = []
+    for key in bibtex_keys:
+        l1 = key_to_l1[key]
+        paper_entities = _build_entities(entities_by_paper[key], l1)
+        paper_relations = _build_relations(
+            relations_by_paper[key], paper_entities, l1,
+        )
+
+        # Validate relation coherence
+        entity_names = {e.canonical_name.lower() for e in paper_entities}
+        valid_relations = []
+        for rel in paper_relations:
+            if (rel.source.lower() in entity_names
+                    and rel.target.lower() in entity_names):
+                valid_relations.append(rel)
+
+        logger.info(
+            f"[batch] {key}: {len(paper_entities)} entità, "
+            f"{len(valid_relations)} relazioni"
+        )
+
+        results.append(ExtractionResult(
+            paper_id=l1.paper_id,
+            bibtex_key=l1.bibtex_key,
+            entities=paper_entities,
+            relations=valid_relations,
+            extracted_at=datetime.now(),
+            model_used=model_name,
+            extraction_time_seconds=elapsed / len(group),
+        ))
+
+    return results
 
 
 # ============================================================================

@@ -25,10 +25,10 @@ Uso::
 
 from __future__ import annotations
 
+import datetime
 import tempfile
 import threading
 import time
-from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
@@ -131,10 +131,15 @@ class ApiKeyManager:
     Usa la chiave gratuita (GOOGLE_API_KEY_FREE) come primaria.
     Quando si raggiunge il rate limit, ruota alla chiave a pagamento
     (GOOGLE_API_KEY). Thread-safe, singleton.
+
+    A daily cooldown file persists the exhausted state of the FREE key
+    across process restarts so that subsequent runs skip straight to PAID
+    without wasting a failed call + retry delay.
     """
 
     _instance: "ApiKeyManager | None" = None
     _lock = threading.Lock()
+    _COOLDOWN_FILE = ".free_key_exhausted"
 
     def __new__(cls) -> "ApiKeyManager":
         with cls._lock:
@@ -157,6 +162,14 @@ class ApiKeyManager:
             keys.append(("PAID", settings.google_api_key))
         self._keys = keys
         self._initialized = True
+
+        # If FREE key was exhausted today, skip straight to PAID
+        if len(self._keys) > 1 and self._is_free_key_cooled_down():
+            self._current_idx = 1
+            logger.info(
+                "🔑 FREE key esaurita oggi (cooldown attivo) — "
+                "uso diretto della key PAID"
+            )
 
     @property
     def current_key(self) -> str:
@@ -193,6 +206,8 @@ class ApiKeyManager:
                 logger.warning(
                     f"🔑 API key rotata: {old_label} → {new_label}"
                 )
+                if old_label == "FREE":
+                    self._set_free_key_cooldown()
                 return True
             return False
 
@@ -210,6 +225,33 @@ class ApiKeyManager:
         """True se esiste un'altra key dopo quella corrente."""
         self._init_keys()
         return self._current_idx + 1 < len(self._keys)
+
+    # -- Daily cooldown helpers ------------------------------------------
+
+    def _cooldown_path(self) -> Path:
+        from paperhunter.config import settings
+        return Path(settings.output_base_dir) / self._COOLDOWN_FILE
+
+    def _set_free_key_cooldown(self) -> None:
+        """Write today's date to the cooldown file."""
+        try:
+            self._cooldown_path().write_text(
+                datetime.date.today().isoformat(), encoding="utf-8",
+            )
+            logger.debug("Cooldown FREE key scritto per oggi")
+        except OSError:
+            pass  # non-critical
+
+    def _is_free_key_cooled_down(self) -> bool:
+        """Return True if the FREE key was exhausted today."""
+        try:
+            p = self._cooldown_path()
+            if not p.exists():
+                return False
+            stored = p.read_text(encoding="utf-8").strip()
+            return stored == datetime.date.today().isoformat()
+        except OSError:
+            return False
 
 
 def _get_key_manager() -> ApiKeyManager:
@@ -600,7 +642,7 @@ def _complete_with_continuation(
         RuntimeError: Se la prima chiamata non produce nessun testo.
     """
     # Crea directory per questa sessione di continuazione
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     model_short = llm.model.split("/")[-1] if "/" in llm.model else llm.model
     session_dir = _get_temp_output_dir() / f"{timestamp}_{model_short}"
     session_dir.mkdir(parents=True, exist_ok=True)
@@ -1079,7 +1121,7 @@ def _openrouter_fallback_call(
     if finish_reason == "length":
         max_continuations = 5
         parts = [text]
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
         session_dir = _get_temp_output_dir() / f"{timestamp}_openrouter"
         session_dir.mkdir(parents=True, exist_ok=True)
         _save_partial_output(text, session_dir, 0)

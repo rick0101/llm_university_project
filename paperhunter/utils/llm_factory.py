@@ -463,7 +463,7 @@ def _get_openrouter_model_config(google_llm) -> Optional[dict]:
 
 def get_embedding_model(
     model_name: Optional[str] = None,
-    embed_batch_size: int = 10,
+    embed_batch_size: int = 100,
 ):
     """Crea un'istanza del modello di embedding Gemini.
 

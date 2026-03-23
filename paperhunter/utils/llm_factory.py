@@ -739,6 +739,10 @@ def _complete_with_continuation(
 # Evita di bombardare l'API con richieste ravvicinate che
 # provocano risposte 503 UNAVAILABLE a cascata.
 _MIN_CALL_INTERVAL = 5.0  # secondi
+
+# Fallback model when primary Pro model returns 503 for too long
+_FALLBACK_PRO_MODEL = "gemini-2.5-pro"
+_FALLBACK_AFTER_MAX_DELAY_HITS = 3  # switch after 3 retries at max_delay cap
 _last_llm_call_time = 0.0
 _call_time_lock = threading.Lock()
 
@@ -850,6 +854,22 @@ def _recreate_llm_with_new_key(llm):
     return new_llm
 
 
+def _recreate_llm_with_model(llm, model_name: str):
+    """Ricrea un'istanza LLM cambiando il modello ma mantenendo key e parametri."""
+    from llama_index.llms.google_genai import GoogleGenAI
+
+    new_llm = GoogleGenAI(
+        model=model_name,
+        api_key=getattr(llm, "api_key", _get_api_key()),
+        temperature=getattr(llm, "temperature", None),
+        max_tokens=getattr(llm, "max_tokens", None),
+        http_options=_get_http_options(),
+        max_retries=0,
+    )
+    logger.info(f"🔄 LLM ricreato con modello fallback: {model_name}")
+    return new_llm
+
+
 def _llm_call_autonomous(
     llm,
     prompt: str,
@@ -875,15 +895,24 @@ def _llm_call_autonomous(
     """
     consecutive_errors = 0
     key_mgr = _get_key_manager()
+    original_model = getattr(llm, "model", None)
+    using_fallback = False
+    at_max_delay_hits = 0  # consecutive retries at the delay cap
 
     while True:
         try:
             _enforce_call_cooldown()
             response = llm.complete(prompt)
             if consecutive_errors > 0:
+                label = "FALLBACK" if using_fallback else key_mgr.current_label
                 logger.info(
-                    f"Google API ({key_mgr.current_label}) tornata disponibile "
+                    f"Google API ({label}) tornata disponibile "
                     f"dopo {consecutive_errors} errori consecutivi. Delay resettato."
+                )
+            if using_fallback:
+                logger.info(
+                    f"✅ Risposta ottenuta con fallback {_FALLBACK_PRO_MODEL}. "
+                    f"La prossima chiamata userà di nuovo {original_model}."
                 )
             return str(response)
         except Exception as e:
@@ -927,11 +956,39 @@ def _llm_call_autonomous(
                 key_mgr.rotate()
                 llm = _recreate_llm_with_new_key(llm)
                 consecutive_errors = 0
+                at_max_delay_hits = 0
                 continue
 
             if is_quota or is_transient:
                 consecutive_errors += 1
                 delay = min(base_delay * (2 ** consecutive_errors), max_delay)
+
+                # Track hits at the delay cap for model fallback
+                if delay >= max_delay:
+                    at_max_delay_hits += 1
+                else:
+                    at_max_delay_hits = 0
+
+                # Fallback: after N retries stuck at max_delay, try gemini-2.5-pro
+                if (
+                    at_max_delay_hits >= _FALLBACK_AFTER_MAX_DELAY_HITS
+                    and not using_fallback
+                    and is_transient
+                    and original_model
+                    and original_model != _FALLBACK_PRO_MODEL
+                ):
+                    logger.warning(
+                        f"⚠️  {original_model} non risponde dopo "
+                        f"{consecutive_errors} errori ({at_max_delay_hits} al cap "
+                        f"di {max_delay:.0f}s). Fallback temporaneo a "
+                        f"{_FALLBACK_PRO_MODEL} per questa chiamata."
+                    )
+                    llm = _recreate_llm_with_model(llm, _FALLBACK_PRO_MODEL)
+                    using_fallback = True
+                    consecutive_errors = 0
+                    at_max_delay_hits = 0
+                    continue
+
                 logger.warning(
                     f"[autonomous] Google API ({key_mgr.current_label}) "
                     f"errore #{consecutive_errors}: {e}. "

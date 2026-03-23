@@ -850,8 +850,11 @@ def export_latex(
         bib_source = Path(bib_source_path)
         if bib_source.exists():
             bib_dest = output_path.parent / f"{bib_file}.bib"
-            shutil.copy2(bib_source, bib_dest)
-            logger.info("File .bib copiato: %s → %s", bib_source, bib_dest)
+            if bib_dest.exists() and bib_source.resolve() == bib_dest.resolve():
+                logger.debug("File .bib sorgente e destinazione coincidono, skip copia")
+            else:
+                shutil.copy2(bib_source, bib_dest)
+                logger.info("File .bib copiato: %s → %s", bib_source, bib_dest)
         else:
             print_warning(f"File .bib sorgente non trovato: {bib_source}")
 

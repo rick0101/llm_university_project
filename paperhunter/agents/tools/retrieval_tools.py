@@ -1108,8 +1108,8 @@ def get_all_retrieval_tools(
                 "Valid figure_types: any, results_plot, architecture_diagram, flowchart, "
                 "comparison_table, confusion_matrix, attack_diagram, defense_pipeline."
             ),
-        ),
-    ]
+        )
+    )
 
     logger.info(
         f"Retrieval tools inizializzati: {len(tools)} tool "

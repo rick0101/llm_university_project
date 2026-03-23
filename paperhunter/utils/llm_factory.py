@@ -230,7 +230,7 @@ class ApiKeyManager:
 
     def _cooldown_path(self) -> Path:
         from paperhunter.config import settings
-        return Path(settings.output_base_dir) / self._COOLDOWN_FILE
+        return Path(settings.output.base_dir) / self._COOLDOWN_FILE
 
     def _set_free_key_cooldown(self) -> None:
         """Write today's date to the cooldown file."""

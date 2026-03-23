@@ -19,7 +19,7 @@ Con il dataset attuale, emergono **5 problemi critici** che degradano qualità e
 
 - [x] **FIX 1 — L1.5 RAPTOR Obbligatorio**: Rendere il percorso L1.5 (clustering RAPTOR) obbligatorio per L2 generation. Se L1.5 non è disponibile, generarlo automaticamente prima di procedere con L2. Elimina il rischio di context overflow nel legacy path. → **Implementato**: `level2_summarizer.py` ora auto-genera L1.5 quando >50 paper/categoria e L1.5 mancanti. Il legacy path resta come fallback per categorie piccole (≤50 paper).
 
-- [ ] **FIX 2 — Chunk Relevance Filter per L1**: Aggiungere filtro TF-IDF/keyword pre-LLM in `_prepare_chunks_text()`. Invece di concatenare tutti i chunk in ordine, calcolare rilevanza rispetto al titolo+abstract e mandare solo i top-K più informativi. Risparmio: ~30-40% token input per chiamata L1.
+- [x] **FIX 2 — Chunk Relevance Filter per L1**: Aggiungere filtro TF-IDF/keyword pre-LLM in `_prepare_chunks_text()`. Invece di concatenare tutti i chunk in ordine, calcolare rilevanza rispetto al titolo+abstract e mandare solo i top-K più informativi. Risparmio: ~30-40% token input per chiamata L1. → **Implementato**: `_prepare_chunks_text()` ora accetta `reference_text` (titolo+abstract) e usa TF-IDF cosine scoring per ordinare i chunk per rilevanza. Sezioni a bassa informazione (acknowledgements, references, appendix, funding...) vengono penalizzate. Abstract e Introduction restano sempre prioritari.
 
 - [ ] **FIX 3 — Category-Aware Writer Context**: Filtrare gli L2 summary passati al Writer in base alla categoria della sezione corrente. Il Planner già specifica `key_topics` per sezione — usarli per selezionare solo gli L2 pertinenti invece di passarli tutti.
 

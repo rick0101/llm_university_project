@@ -332,8 +332,11 @@ def generate_l1_summary(
 
     llm = get_pro_llm() if tier == "pro" else get_flash_llm()
 
-    # --- Preparazione testo chunk ---
-    chunks_text = _prepare_chunks_text(chunks, max_chars=max_chunk_chars)
+    # --- Preparazione testo chunk (con filtro rilevanza) ---
+    ref_text = f"{paper.title or ''} {paper.abstract or ''}"
+    chunks_text = _prepare_chunks_text(
+        chunks, max_chars=max_chunk_chars, reference_text=ref_text,
+    )
 
     # --- Costruzione prompt con template adatto al tier ---
     prompt_template = _get_l1_prompt_template(c_tier)
@@ -664,38 +667,93 @@ def _l1_exists_in_store(paper_id: str, store: Any) -> bool:
 def _prepare_chunks_text(
     chunks: list[PaperChunk],
     max_chars: int = 50_000,
+    reference_text: str = "",
 ) -> str:
     """Prepara il testo dei chunk per il prompt LLM.
 
-    Ordina i chunk per section_name e chunk_index, poi li concatena
-    fino al limite di caratteri. Aggiunge header per sezione.
+    Se ``reference_text`` è fornito (es. titolo + abstract del paper),
+    i chunk vengono filtrati per rilevanza TF-IDF prima della selezione,
+    evitando di sprecare token su appendici, ringraziamenti e sezioni
+    poco informative.
+
+    I chunk di tipo abstract/introduction sono sempre inclusi per primi
+    (priority 0/1), indipendentemente dal punteggio di rilevanza.
 
     Args:
         chunks: Lista di PaperChunk.
         max_chars: Limite massimo di caratteri.
+        reference_text: Testo di riferimento per il filtraggio
+            (tipicamente titolo + abstract). Se vuoto, nessun filtro.
 
     Returns:
         Testo formattato per il prompt.
     """
-    # Ordina: prima per section_name (abstract prima), poi per chunk_index
-    def sort_key(c: PaperChunk) -> tuple:
-        section = c.section_name or ""
-        # Abstract e Introduction prima di tutto
-        priority = 2
-        lower = section.lower()
-        if "abstract" in lower:
-            priority = 0
-        elif "introduction" in lower or "intro" in lower:
-            priority = 1
-        return (priority, section, c.chunk_index)
+    # --- Sezioni a bassa informazione da penalizzare ---
+    _LOW_VALUE_SECTIONS = {
+        "acknowledgement", "acknowledgements", "acknowledgment",
+        "references", "bibliography", "appendix", "appendices",
+        "supplementary", "supplementary material",
+        "author contributions", "funding", "declaration",
+        "conflict of interest", "data availability",
+    }
 
-    sorted_chunks = sorted(chunks, key=sort_key)
+    def _section_priority(section_name: str) -> int:
+        lower = (section_name or "").lower()
+        if "abstract" in lower:
+            return 0
+        if "introduction" in lower or "intro" in lower:
+            return 1
+        if any(lv in lower for lv in _LOW_VALUE_SECTIONS):
+            return 4  # bassa priorità
+        return 2  # sezioni normali
+
+    # --- Scoring TF-IDF leggero per rilevanza ---
+    relevance_scores: dict[int, float] = {}
+    if reference_text and len(chunks) > 15:
+        try:
+            from collections import Counter
+            import math as _math
+
+            def _tokenize(text: str) -> list[str]:
+                return [w.lower() for w in text.split() if len(w) > 2]
+
+            ref_tokens = _tokenize(reference_text)
+            ref_counter = Counter(ref_tokens)
+
+            for idx, chunk in enumerate(chunks):
+                chunk_tokens = _tokenize(chunk.text)
+                if not chunk_tokens:
+                    relevance_scores[idx] = 0.0
+                    continue
+                chunk_counter = Counter(chunk_tokens)
+                # Cosine-like overlap con IDF weighting
+                shared = set(ref_counter) & set(chunk_counter)
+                if not shared:
+                    relevance_scores[idx] = 0.0
+                    continue
+                score = sum(
+                    ref_counter[w] * chunk_counter[w]
+                    for w in shared
+                ) / (_math.sqrt(sum(v**2 for v in ref_counter.values()))
+                     * _math.sqrt(sum(v**2 for v in chunk_counter.values())))
+                relevance_scores[idx] = score
+        except Exception:
+            relevance_scores = {}
+
+    # --- Sort: priority, poi rilevanza (decrescente), poi posizione ---
+    def sort_key(item: tuple[int, PaperChunk]) -> tuple:
+        idx, c = item
+        priority = _section_priority(c.section_name or "")
+        rel = -(relevance_scores.get(idx, 0.5))  # negato per desc
+        return (priority, rel, c.chunk_index)
+
+    indexed_chunks = sorted(enumerate(chunks), key=sort_key)
 
     parts: list[str] = []
     total_chars = 0
     current_section = None
 
-    for chunk in sorted_chunks:
+    for _idx, chunk in indexed_chunks:
         # Header di sezione
         section = chunk.section_name or "Unknown Section"
         if section != current_section:
@@ -729,6 +787,7 @@ def _prepare_chunks_text(
     logger.debug(
         f"Chunks preparati: {n_included}/{len(chunks)} inclusi, "
         f"{total_chars}/{max_chars} chars"
+        + (f", relevance filter attivo" if relevance_scores else "")
     )
 
     return result

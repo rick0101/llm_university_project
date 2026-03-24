@@ -1132,6 +1132,31 @@ paperhunter experiment --output ./experiments/run_001
 # 9. (Opzionale) Importa risultati sperimentali da ResearchClaw
 paperhunter experiment --import-from ./experiments/run_001
 
+# 10. (Opzionale) Testing: Jailbreak Evaluation con Ollama
+#
+# Valuta la robustezza di un LLM locale contro attacchi di jailbreak.
+# Richiede Ollama in esecuzione su una macchina raggiungibile in rete.
+#
+# ⚙️  Configurazione: modifica experiments/ollama_jailbreak_eval/config.py
+#     - OLLAMA_HOST: IP e porta della macchina con Ollama (default: "http://192.168.1.63:11434")
+#     - MODEL: nome del modello caricato su Ollama (default: "gemma3:4b")
+#
+cd experiments/ollama_jailbreak_eval
+
+# Esegui la valutazione completa (attacchi × difese × prompt)
+python run_evaluation.py
+
+# Oppure esegui solo specifici attacchi
+python run_evaluation.py --attacks DAN AIM
+
+# Dry-run: mostra il piano senza eseguire
+python run_evaluation.py --dry-run
+
+# Genera grafici dai risultati
+python generate_charts.py
+
+cd ../..
+
 # Statistiche sistema
 paperhunter stats
 

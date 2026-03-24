@@ -1065,8 +1065,9 @@ def get_all_retrieval_tools(
         ),
     ]
 
-    # In modalità light (prefetch_agentic), ometti graph_communities e figure_descriptions
-    # perché il contesto è già pre-caricato. Tieni solo search tools essenziali.
+    # In modalità light (prefetch_agentic), ometti graph_communities
+    # perché il contesto è già pre-caricato. Tieni figure tools per
+    # permettere all'agente di scoprire e inserire figure autonomamente.
     if not light:
         tools.append(
             FunctionTool.from_defaults(
@@ -1080,21 +1081,24 @@ def get_all_retrieval_tools(
                 ),
             )
         )
-        tools.append(
-            FunctionTool.from_defaults(
-                fn=fig_fn,
-                name="search_figure_descriptions",
-                description=(
-                    "Search AI-generated descriptions of figures, diagrams, "
-                    "plots, and tables from paper PDFs. Also searches "
-                    "multimodal image embeddings for cross-modal retrieval. "
-                    "Use when you need information about experimental results, "
-                    "architectures, or visual data from papers. "
-                    "Returns formatted text with [bibtex_key] citations "
-                    "and source indicator [description] or [image_embedding]."
-                ),
-            )
+
+    # search_figure_descriptions è disponibile in entrambe le modalità
+    # (full e light) per permettere al writer di scoprire figure rilevanti
+    tools.append(
+        FunctionTool.from_defaults(
+            fn=fig_fn,
+            name="search_figure_descriptions",
+            description=(
+                "Search AI-generated descriptions of figures, diagrams, "
+                "plots, and tables from paper PDFs. Also searches "
+                "multimodal image embeddings for cross-modal retrieval. "
+                "Use when you need information about experimental results, "
+                "architectures, or visual data from papers. "
+                "Returns formatted text with [bibtex_key] citations "
+                "and source indicator [description] or [image_embedding]."
+            ),
         )
+    )
 
     tools.append(
         FunctionTool.from_defaults(

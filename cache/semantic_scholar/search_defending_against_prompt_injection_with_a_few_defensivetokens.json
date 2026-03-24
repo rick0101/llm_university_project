@@ -1,0 +1,42 @@
+{
+  "paperId": "b02a3849d5482d9933468225713ed0c2a4ddc9e2",
+  "externalIds": {
+    "DBLP": "conf/aisec-ws/ChenWCSW25",
+    "ArXiv": "2507.07974",
+    "DOI": "10.1145/3733799.3762982",
+    "CorpusId": 280296638
+  },
+  "title": "Defending Against Prompt Injection With a Few DefensiveTokens",
+  "venue": "AISec@CCS",
+  "year": 2025,
+  "citationCount": 24,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2507.07974, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2265760726",
+      "name": "Sizhe Chen"
+    },
+    {
+      "authorId": "2373424652",
+      "name": "Yizhu Wang"
+    },
+    {
+      "authorId": "2365115791",
+      "name": "Nicholas Carlini"
+    },
+    {
+      "authorId": "30175233",
+      "name": "Chawin Sitawarin"
+    },
+    {
+      "authorId": "2265651533",
+      "name": "David Wagner"
+    }
+  ],
+  "abstract": "When large language model (LLM) systems interact with external data to perform complex tasks, a new attack, namely prompt injection, becomes a significant threat. By injecting instructions into the data accessed by the system, the attacker is able to override the initial user task with an arbitrary task directed by the attacker. To secure the system, test-time defenses, e.g., defensive prompting, have been proposed for system developers to attain security only when needed in a flexible manner. However, they are much less effective than training-time defenses that change the model parameters. Motivated by this, we propose DefensiveToken, a test-time defense with prompt injection robustness comparable to training-time alternatives. DefensiveTokens are newly inserted as special tokens, whose embeddings are optimized for security. In security-sensitive cases, system developers can append a few DefensiveTokens before the LLM input to achieve security with a minimal utility drop. In scenarios where security is less of a concern, developers can simply skip DefensiveTokens; the LLM system remains the same as there is no defense, generating high-quality responses. Thus, DefensiveTokens, if released alongside the model, allow a flexible switch between the state-of-the-art (SOTA) utility and almost-SOTA security at test time. The code is available here."
+}

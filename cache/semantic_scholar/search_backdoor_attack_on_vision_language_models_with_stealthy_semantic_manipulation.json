@@ -1,0 +1,42 @@
+{
+  "paperId": "2f250c5e59ed224af72f0146e896cadf5d0e377b",
+  "externalIds": {
+    "ArXiv": "2506.07214",
+    "DBLP": "journals/corr/abs-2506-07214",
+    "DOI": "10.48550/arXiv.2506.07214",
+    "CorpusId": 279251654
+  },
+  "title": "Backdoor Attack on Vision Language Models with Stealthy Semantic Manipulation",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 8,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2506.07214, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2326047973",
+      "name": "Zhiyuan Zhong"
+    },
+    {
+      "authorId": "2310595263",
+      "name": "Zhen Sun"
+    },
+    {
+      "authorId": "2385116335",
+      "name": "Yepang Liu"
+    },
+    {
+      "authorId": "2333402745",
+      "name": "Xinlei He"
+    },
+    {
+      "authorId": "2344089184",
+      "name": "Guanhong Tao"
+    }
+  ],
+  "abstract": "Vision Language Models (VLMs) have shown remarkable performance, but are also vulnerable to backdoor attacks whereby the adversary can manipulate the model's outputs through hidden triggers. Prior attacks primarily rely on single-modality triggers, leaving the crucial cross-modal fusion nature of VLMs largely unexplored. Unlike prior work, we identify a novel attack surface that leverages cross-modal semantic mismatches as implicit triggers. Based on this insight, we propose BadSem (Backdoor Attack with Semantic Manipulation), a data poisoning attack that injects stealthy backdoors by deliberately misaligning image-text pairs during training. To perform the attack, we construct SIMBad, a dataset tailored for semantic manipulation involving color and object attributes. Extensive experiments across four widely used VLMs show that BadSem achieves over 98% average ASR, generalizes well to out-of-distribution datasets, and can transfer across poisoning modalities. Our detailed analysis using attention visualization shows that backdoored models focus on semantically sensitive regions under mismatched conditions while maintaining normal behavior on clean inputs. To mitigate the attack, we try two defense strategies based on system prompt and supervised fine-tuning but find that both of them fail to mitigate the semantic backdoor. Our findings highlight the urgent need to address semantic vulnerabilities in VLMs for their safer deployment."
+}

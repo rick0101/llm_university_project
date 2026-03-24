@@ -1,0 +1,46 @@
+{
+  "paperId": "01d47770bf7cb7541ed536a47baf734c97d5df06",
+  "externalIds": {
+    "ArXiv": "2508.20038",
+    "DBLP": "journals/corr/abs-2508-20038",
+    "DOI": "10.48550/arXiv.2508.20038",
+    "CorpusId": 280919297
+  },
+  "title": "Forewarned is Forearmed: Pre-Synthesizing Jailbreak-like Instructions to Enhance LLM Safety Guardrail to Potential Attacks",
+  "venue": "Conference on Empirical Methods in Natural Language Processing",
+  "year": 2025,
+  "citationCount": 3,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2508.20038, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2157282907",
+      "name": "Sheng Liu"
+    },
+    {
+      "authorId": "46630548",
+      "name": "Qiang Sheng"
+    },
+    {
+      "authorId": "37292975",
+      "name": "Danding Wang"
+    },
+    {
+      "authorId": "2244866324",
+      "name": "Yang Li"
+    },
+    {
+      "authorId": "2258943540",
+      "name": "Guang Yang"
+    },
+    {
+      "authorId": "2243364250",
+      "name": "Juan Cao"
+    }
+  ],
+  "abstract": "Despite advances in improving large language model (LLM) to refuse to answer malicious instructions, widely used LLMs remain vulnerable to jailbreak attacks where attackers generate instructions with distributions differing from safety alignment corpora. New attacks expose LLMs'inability to recognize unseen malicious instructions, highlighting a critical distributional mismatch between training data and real-world attacks that forces developers into reactive patching cycles. To tackle this challenge, we propose IMAGINE, a synthesis framework that leverages embedding space distribution analysis to generate jailbreak-like instructions. This approach effectively fills the distributional gap between authentic jailbreak patterns and safety alignment corpora. IMAGINE follows an iterative optimization process that dynamically evolves text generation distributions across iterations, thereby augmenting the coverage of safety alignment data distributions through synthesized data examples. Based on the safety-aligned corpus enhanced through IMAGINE, our framework demonstrates significant decreases in attack success rate on Qwen2.5, Llama3.1, and Llama3.2 without compromising their utility."
+}

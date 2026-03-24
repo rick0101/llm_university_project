@@ -1,0 +1,46 @@
+{
+  "paperId": "59b9972c80b7c9c4df9a70dafe29f78b469608bc",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2510-26829",
+    "ArXiv": "2510.26829",
+    "DOI": "10.48550/arXiv.2510.26829",
+    "CorpusId": 282719662
+  },
+  "title": "Layer of Truth: Probing Belief Shifts under Continual Pre-Training Poisoning",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 0,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.26829, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-10-29",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2510.26829"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Churina2025LayerOT,\n author = {S. Churina and Niranjan Chebrolu and Kokil Jaidka},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {Layer of Truth: Probing Belief Shifts under Continual Pre-Training Poisoning},\n volume = {abs/2510.26829},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2257530680",
+      "name": "S. Churina"
+    },
+    {
+      "authorId": "2390203058",
+      "name": "Niranjan Chebrolu"
+    },
+    {
+      "authorId": "2798221",
+      "name": "Kokil Jaidka"
+    }
+  ],
+  "abstract": "We show that continual pretraining on plausible misinformation can overwrite specific factual knowledge in large language models without degrading overall performance. Unlike prior poisoning work under static pretraining, we study repeated exposure to counterfactual claims during continual updates. Using paired fact-counterfact items with graded poisoning ratios, we track how internal preferences between competing facts evolve across checkpoints, layers, and model scales. Even moderate poisoning (50-100%) flips over 55% of responses from correct to counterfactual while leaving ambiguity nearly unchanged. These belief flips emerge abruptly, concentrate in late layers (e.g., Layers 29-36 in 3B models), and are partially reversible via patching (up to 56.8%). The corrupted beliefs generalize beyond poisoned prompts, selectively degrading commonsense reasoning while leaving alignment benchmarks largely intact and transferring imperfectly across languages. These results expose a failure mode of continual pre-training in which targeted misinformation replaces internal factual representations without triggering broad performance collapse, motivating representation-level monitoring of factual integrity during model updates."
+}

@@ -1,0 +1,57 @@
+{
+  "paperId": "c87a76ebb3df5edcbd7a03699e798d2be1806a9b",
+  "externalIds": {
+    "DBLP": "conf/emnlp/ChenLLLSH25",
+    "ArXiv": "2507.13686",
+    "DOI": "10.48550/arXiv.2507.13686",
+    "CorpusId": 280047769
+  },
+  "title": "TopicAttack: An Indirect Prompt Injection Attack via Topic Transition",
+  "venue": "Conference on Empirical Methods in Natural Language Processing",
+  "year": 2025,
+  "citationCount": 9,
+  "influentialCitationCount": 2,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2507.13686, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-07-18",
+  "journal": {
+    "pages": "7327-7345"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Chen2025TopicAttackAI,\n author = {Yulin Chen and Haoran Li and Yuexin Li and Yue Liu and Yangqiu Song and Bryan Hooi},\n booktitle = {Conference on Empirical Methods in Natural Language Processing},\n pages = {7327-7345},\n title = {TopicAttack: An Indirect Prompt Injection Attack via Topic Transition},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2258786348",
+      "name": "Yulin Chen"
+    },
+    {
+      "authorId": "2260286743",
+      "name": "Haoran Li"
+    },
+    {
+      "authorId": "2290047127",
+      "name": "Yuexin Li"
+    },
+    {
+      "authorId": "2343583785",
+      "name": "Yue Liu"
+    },
+    {
+      "authorId": "2258804099",
+      "name": "Yangqiu Song"
+    },
+    {
+      "authorId": "2283877888",
+      "name": "Bryan Hooi"
+    }
+  ],
+  "abstract": "Large language models (LLMs) have shown remarkable performance across a range of NLP tasks. However, their strong instruction-following capabilities and inability to distinguish instructions from data content make them vulnerable to indirect prompt injection attacks. In such attacks, instructions with malicious purposes are injected into external data sources, such as web documents. When LLMs retrieve this injected data through tools, such as a search engine and execute the injected instructions, they provide misled responses. Recent attack methods have demonstrated potential, but their abrupt instruction injection often undermines their effectiveness. Motivated by the limitations of existing attack methods, we propose TopicAttack, which prompts the LLM to generate a fabricated conversational transition prompt that gradually shifts the topic toward the injected instruction, making the injection smoother and enhancing the plausibility and success of the attack. Through comprehensive experiments, TopicAttack achieves state-of-the-art performance, with an attack success rate (ASR) over 90\\% in most cases, even when various defense methods are applied. We further analyze its effectiveness by examining attention scores. We find that a higher injected-to-original attention ratio leads to a greater success probability, and our method achieves a much higher ratio than the baseline methods."
+}

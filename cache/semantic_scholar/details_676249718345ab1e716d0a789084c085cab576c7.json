@@ -1,0 +1,41 @@
+{
+  "paperId": "676249718345ab1e716d0a789084c085cab576c7",
+  "externalIds": {
+    "DBLP": "conf/camlis/AyubM24",
+    "ArXiv": "2410.22284",
+    "DOI": "10.48550/arXiv.2410.22284",
+    "CorpusId": 273661910
+  },
+  "title": "Embedding-based classifiers can detect prompt injection attacks",
+  "venue": "CAMLIS",
+  "year": 2024,
+  "citationCount": 27,
+  "influentialCitationCount": 3,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.22284, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2024-10-29",
+  "journal": {
+    "pages": "257-268"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Ayub2024EmbeddingbasedCC,\n author = {Md. Ahsan Ayub and Subhabrata Majumdar},\n booktitle = {CAMLIS},\n pages = {257-268},\n title = {Embedding-based classifiers can detect prompt injection attacks},\n year = {2024}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "1452343097",
+      "name": "Md. Ahsan Ayub"
+    },
+    {
+      "authorId": "2263442133",
+      "name": "Subhabrata Majumdar"
+    }
+  ],
+  "abstract": "Large Language Models (LLMs) are seeing significant adoption in every type of organization due to their exceptional generative capabilities. However, LLMs are found to be vulnerable to various adversarial attacks, particularly prompt injection attacks, which trick them into producing harmful or inappropriate content. Adversaries execute such attacks by crafting malicious prompts to deceive the LLMs. In this paper, we propose a novel approach based on embedding-based Machine Learning (ML) classifiers to protect LLM-based applications against this severe threat. We leverage three commonly used embedding models to generate embeddings of malicious and benign prompts and utilize ML classifiers to predict whether an input prompt is malicious. Out of several traditional ML methods, we achieve the best performance with classifiers built using Random Forest and XGBoost. Our classifiers outperform state-of-the-art prompt injection classifiers available in open-source implementations, which use encoder-only neural networks."
+}

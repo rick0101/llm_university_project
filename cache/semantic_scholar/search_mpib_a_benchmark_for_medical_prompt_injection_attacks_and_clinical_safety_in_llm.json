@@ -1,0 +1,34 @@
+{
+  "paperId": "86aa57b899c911e29d574992f50c03b5bb266ed6",
+  "externalIds": {
+    "ArXiv": "2602.06268",
+    "DBLP": "journals/corr/abs-2602-06268",
+    "DOI": "10.48550/arXiv.2602.06268",
+    "CorpusId": 285401694
+  },
+  "title": "MPIB: A Benchmark for Medical Prompt Injection Attacks and Clinical Safety in LLMs",
+  "venue": "arXiv.org",
+  "year": 2026,
+  "citationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2602.06268, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2260610141",
+      "name": "Junhyeok Lee"
+    },
+    {
+      "authorId": "2384818081",
+      "name": "Han Jang"
+    },
+    {
+      "authorId": "2383239631",
+      "name": "Kyu Sung Choi"
+    }
+  ],
+  "abstract": "Large Language Models (LLMs) and Retrieval-Augmented Generation (RAG) systems are increasingly integrated into clinical workflows; however, prompt injection attacks can steer these systems toward clinically unsafe or misleading outputs. We introduce the Medical Prompt Injection Benchmark (MPIB), a dataset-and-benchmark suite for evaluating clinical safety under both direct prompt injection and indirect, RAG-mediated injection across clinically grounded tasks. MPIB emphasizes outcome-level risk via the Clinical Harm Event Rate (CHER), which measures high-severity clinical harm events under a clinically grounded taxonomy, and reports CHER alongside Attack Success Rate (ASR) to disentangle instruction compliance from downstream patient risk. The benchmark comprises 9,697 curated instances constructed through multi-stage quality gates and clinical safety linting. Evaluating MPIB across a diverse set of baseline LLMs and defense configurations, we find that ASR and CHER can diverge substantially, and that robustness depends critically on whether adversarial instructions appear in the user query or in retrieved context. We release MPIB with evaluation code, adversarial baselines, and comprehensive documentation to support reproducible and systematic research on clinical prompt injection. Code and data are available at GitHub (code) and Hugging Face (data)."
+}

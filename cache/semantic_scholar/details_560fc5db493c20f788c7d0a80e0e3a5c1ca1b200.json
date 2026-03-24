@@ -1,0 +1,98 @@
+{
+  "paperId": "560fc5db493c20f788c7d0a80e0e3a5c1ca1b200",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2507-15219",
+    "ArXiv": "2507.15219",
+    "DOI": "10.48550/arXiv.2507.15219",
+    "CorpusId": 280282510
+  },
+  "title": "PromptArmor: Simple yet Effective Prompt Injection Defenses",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 51,
+  "influentialCitationCount": 9,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2507.15219, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-07-21",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2507.15219"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Shi2025PromptArmorSY,\n author = {Tianneng Shi and Kaijie Zhu and Zhun Wang and Yuqi Jia and Will Cai and Weida Liang and Haonan Wang and Hend Alzahrani and Joshua Lu and Kenji Kawaguchi and Basel Alomair and Xuandong Zhao and William Yang Wang and N. Gong and Wenbo Guo and D. Song},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {PromptArmor: Simple yet Effective Prompt Injection Defenses},\n volume = {abs/2507.15219},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2178419835",
+      "name": "Tianneng Shi"
+    },
+    {
+      "authorId": "2363534562",
+      "name": "Kaijie Zhu"
+    },
+    {
+      "authorId": "2316920439",
+      "name": "Zhun Wang"
+    },
+    {
+      "authorId": "2260844526",
+      "name": "Yuqi Jia"
+    },
+    {
+      "authorId": "2350451277",
+      "name": "Will Cai"
+    },
+    {
+      "authorId": "2374382863",
+      "name": "Weida Liang"
+    },
+    {
+      "authorId": "2267866973",
+      "name": "Haonan Wang"
+    },
+    {
+      "authorId": "2338887693",
+      "name": "Hend Alzahrani"
+    },
+    {
+      "authorId": "2373459249",
+      "name": "Joshua Lu"
+    },
+    {
+      "authorId": "2373347585",
+      "name": "Kenji Kawaguchi"
+    },
+    {
+      "authorId": "1687501",
+      "name": "Basel Alomair"
+    },
+    {
+      "authorId": "150345512",
+      "name": "Xuandong Zhao"
+    },
+    {
+      "authorId": "2346440100",
+      "name": "William Yang Wang"
+    },
+    {
+      "authorId": "2372910573",
+      "name": "N. Gong"
+    },
+    {
+      "authorId": "2344688908",
+      "name": "Wenbo Guo"
+    },
+    {
+      "authorId": "2325723129",
+      "name": "D. Song"
+    }
+  ],
+  "abstract": "Despite their potential, recent research has demonstrated that LLM agents are vulnerable to prompt injection attacks, where malicious prompts are injected into the agent's input, causing it to perform an attacker-specified task rather than the intended task provided by the user. In this paper, we present PromptArmor, a simple yet effective defense against prompt injection attacks. Specifically, PromptArmor prompts an off-the-shelf LLM to detect and remove potential injected prompts from the input before the agent processes it. Our results show that PromptArmor can accurately identify and remove injected prompts. For example, using GPT-4o, GPT-4.1, or o4-mini, PromptArmor achieves both a false positive rate and a false negative rate below 1% on the AgentDojo benchmark. Moreover, after removing injected prompts with PromptArmor, the attack success rate drops to below 1%. We also demonstrate PromptArmor's effectiveness against adaptive attacks and explore different strategies for prompting an LLM. We recommend that PromptArmor be adopted as a standard baseline for evaluating new defenses against prompt injection attacks."
+}

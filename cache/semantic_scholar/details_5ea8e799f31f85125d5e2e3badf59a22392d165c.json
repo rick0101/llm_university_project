@@ -1,0 +1,54 @@
+{
+  "paperId": "5ea8e799f31f85125d5e2e3badf59a22392d165c",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2511-07176",
+    "ArXiv": "2511.07176",
+    "DOI": "10.48550/arXiv.2511.07176",
+    "CorpusId": 282912535
+  },
+  "title": "Graph Representation-based Model Poisoning on the Heterogeneous Internet of Agents",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 1,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2511.07176, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-11-10",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2511.07176"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Cai2025GraphRM,\n author = {Hanlin Cai and Houtianfu Wang and Haofan Dong and Kai Li and Özgür B. Akan},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {Graph Representation-based Model Poisoning on the Heterogeneous Internet of Agents},\n volume = {abs/2511.07176},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2346791629",
+      "name": "Hanlin Cai"
+    },
+    {
+      "authorId": "2338964074",
+      "name": "Houtianfu Wang"
+    },
+    {
+      "authorId": "2319595326",
+      "name": "Haofan Dong"
+    },
+    {
+      "authorId": "2373544450",
+      "name": "Kai Li"
+    },
+    {
+      "authorId": "2269742826",
+      "name": "Özgür B. Akan"
+    }
+  ],
+  "abstract": "Internet of Agents (IoA) envisions a unified, agent-centric paradigm where heterogeneous large language model (LLM) agents can interconnect and collaborate at scale. Within this paradigm, federated fine-tuning (FFT) serves as a key enabler that allows distributed LLM agents to co-train an intelligent global LLM without centralizing local datasets. However, the FFT-enabled IoA systems remain vulnerable to model poisoning attacks, where adversaries can upload malicious updates to the server to degrade the performance of the aggregated global LLM. This paper proposes a graph representation-based model poisoning (GRMP) attack, which exploits overheard benign updates to construct a feature correlation graph and employs a variational graph autoencoder to capture structural dependencies and generate malicious updates. A novel attack algorithm is developed based on augmented Lagrangian and subgradient descent methods to optimize malicious updates that preserve benign-like statistics while embedding adversarial objectives. Experimental results show that the proposed GRMP attack can substantially decrease accuracy across different LLM models while remaining statistically consistent with benign updates, thereby evading detection by existing defense mechanisms and underscoring a severe threat to the ambitious IoA paradigm."
+}

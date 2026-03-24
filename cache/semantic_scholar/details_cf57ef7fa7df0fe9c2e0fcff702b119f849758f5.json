@@ -1,0 +1,42 @@
+{
+  "paperId": "cf57ef7fa7df0fe9c2e0fcff702b119f849758f5",
+  "externalIds": {
+    "MAG": "2945355900",
+    "DOI": "10.1117/12.2523260",
+    "CorpusId": 181668493
+  },
+  "title": "Signal analysis-based detection of train track",
+  "venue": "Other Conferences",
+  "year": 2019,
+  "citationCount": 0,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://api.unpaywall.org/v2/10.1117/12.2523260?email=<INSERT_YOUR_EMAIL> or https://doi.org/10.1117/12.2523260, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science",
+    "Engineering"
+  ],
+  "publicationDate": "2019-05-10",
+  "journal": {
+    "pages": "110680H - 110680H-8",
+    "volume": "11068"
+  },
+  "citationStyles": {
+    "bibtex": "@Conference{Xu2019SignalAD,\n author = {Ning Xu and Yannan Yang},\n booktitle = {Other Conferences},\n pages = {110680H - 110680H-8},\n title = {Signal analysis-based detection of train track},\n volume = {11068},\n year = {2019}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2072804861",
+      "name": "Ning Xu"
+    },
+    {
+      "authorId": "2376284578",
+      "name": "Yannan Yang"
+    }
+  ],
+  "abstract": "Thanks to the rapid development of phase sensitive optical fiber sensing technology, it provides advanced solution to detect the track of trains. In this study, by the use of signals collected from optical fiber sensors, a time-frequency analysis method called short-time Fourier transform (STFT) is used to extract the time-frequency characteristics, based on which power spectrum can be obtained. The power spectrum with high values can be clustered via k-means, which is then used for tracking the train positions. The experimental results show that the proposed method can effectively eliminate effects caused by different subgrades on the vibration signal, reduce false alarm rate, and verify the flexibility and reliability."
+}

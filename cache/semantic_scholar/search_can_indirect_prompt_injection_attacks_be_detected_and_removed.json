@@ -1,0 +1,50 @@
+{
+  "paperId": "20723b734e2838c22f921a0fc343d32e1d6d84e7",
+  "externalIds": {
+    "DBLP": "conf/acl/ChenLSH0SH25",
+    "ArXiv": "2502.16580",
+    "DOI": "10.48550/arXiv.2502.16580",
+    "CorpusId": 276576129
+  },
+  "title": "Can Indirect Prompt Injection Attacks Be Detected and Removed?",
+  "venue": "Annual Meeting of the Association for Computational Linguistics",
+  "year": 2025,
+  "citationCount": 37,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2502.16580, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2258786348",
+      "name": "Yulin Chen"
+    },
+    {
+      "authorId": "2260286743",
+      "name": "Haoran Li"
+    },
+    {
+      "authorId": "2325156180",
+      "name": "Yuan Sui"
+    },
+    {
+      "authorId": "2285087612",
+      "name": "Yufei He"
+    },
+    {
+      "authorId": "2343583785",
+      "name": "Yue Liu"
+    },
+    {
+      "authorId": "2258804099",
+      "name": "Yangqiu Song"
+    },
+    {
+      "authorId": "2283877888",
+      "name": "Bryan Hooi"
+    }
+  ],
+  "abstract": "Prompt injection attacks manipulate large language models (LLMs) by misleading them to deviate from the original input instructions and execute maliciously injected instructions, because of their instruction-following capabilities and inability to distinguish between the original input instructions and maliciously injected instructions. To defend against such attacks, recent studies have developed various detection mechanisms. If we restrict ourselves specifically to works which perform detection rather than direct defense, most of them focus on direct prompt injection attacks, while there are few works for the indirect scenario, where injected instructions are indirectly from external tools, such as a search engine. Moreover, current works mainly investigate injection detection methods and pay less attention to the post-processing method that aims to mitigate the injection after detection. In this paper, we investigate the feasibility of detecting and removing indirect prompt injection attacks, and we construct a benchmark dataset for evaluation. For detection, we assess the performance of existing LLMs and open-source detection models, and we further train detection models using our crafted training datasets. For removal, we evaluate two intuitive methods: (1) the segmentation removal method, which segments the injected document and removes parts containing injected instructions, and (2) the extraction removal method, which trains an extraction model to identify and remove injected instructions."
+}

@@ -1,0 +1,46 @@
+{
+  "paperId": "edd63168ea32a84ef63b3f34495cb8b65222ee32",
+  "externalIds": {
+    "ArXiv": "2505.11717",
+    "DBLP": "conf/emnlp/WangBSHZG25",
+    "DOI": "10.18653/v1/2025.emnlp-main.104",
+    "CorpusId": 278739963
+  },
+  "title": "WebInject: Prompt Injection Attack to Web Agents",
+  "venue": "Conference on Empirical Methods in Natural Language Processing",
+  "year": 2025,
+  "citationCount": 18,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.11717, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2323790525",
+      "name": "Xilong Wang"
+    },
+    {
+      "authorId": "2260728831",
+      "name": "John Bloch"
+    },
+    {
+      "authorId": "2310058116",
+      "name": "Zedian Shao"
+    },
+    {
+      "authorId": "2293409460",
+      "name": "Yuepeng Hu"
+    },
+    {
+      "authorId": "2285767456",
+      "name": "Shuyan Zhou"
+    },
+    {
+      "authorId": "2293169847",
+      "name": "N. Gong"
+    }
+  ],
+  "abstract": "Multi-modal large language model (MLLM)-based web agents interact with webpage environments by generating actions based on screenshots of the webpages. In this work, we propose WebInject, a prompt injection attack that manipulates the webpage environment to induce a web agent to perform an attacker-specified action. Our attack adds a perturbation to the raw pixel values of the rendered webpage. After these perturbed pixels are mapped into a screenshot, the perturbation induces the web agent to perform the attacker-specified action. We formulate the task of finding the perturbation as an optimization problem. A key challenge in solving this problem is that the mapping between raw pixel values and screenshot is non-differentiable, making it difficult to backpropagate gradients to the perturbation. To overcome this, we train a neural network to approximate the mapping and apply projected gradient descent to solve the reformulated optimization problem. Extensive evaluation on multiple datasets shows that WebInject is highly effective and significantly outperforms baselines."
+}

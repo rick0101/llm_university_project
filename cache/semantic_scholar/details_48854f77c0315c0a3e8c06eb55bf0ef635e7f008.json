@@ -1,0 +1,61 @@
+{
+  "paperId": "48854f77c0315c0a3e8c06eb55bf0ef635e7f008",
+  "externalIds": {
+    "ArXiv": "2603.15611",
+    "CorpusId": 286573856
+  },
+  "title": "Code-A1: Adversarial Evolving of Code LLM and Test LLM via Reinforcement Learning",
+  "venue": "",
+  "year": 2026,
+  "citationCount": 0,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.15611, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2026-03-16",
+  "journal": null,
+  "citationStyles": {
+    "bibtex": "@Inproceedings{Wang2026CodeA1AE,\n author = {Aozhe Wang and Yuchen Yan and Nan Zhou and Zhengxi Lu and Weiming Lu and Jun Xiao and Yueting Zhuang and Yongliang Shen},\n title = {Code-A1: Adversarial Evolving of Code LLM and Test LLM via Reinforcement Learning},\n year = {2026}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2424117495",
+      "name": "Aozhe Wang"
+    },
+    {
+      "authorId": "2284984220",
+      "name": "Yuchen Yan"
+    },
+    {
+      "authorId": "2372588699",
+      "name": "Nan Zhou"
+    },
+    {
+      "authorId": "2373465967",
+      "name": "Zhengxi Lu"
+    },
+    {
+      "authorId": "2263704330",
+      "name": "Weiming Lu"
+    },
+    {
+      "authorId": "2355794722",
+      "name": "Jun Xiao"
+    },
+    {
+      "authorId": "2249249521",
+      "name": "Yueting Zhuang"
+    },
+    {
+      "authorId": "2337846158",
+      "name": "Yongliang Shen"
+    }
+  ],
+  "abstract": "Reinforcement learning for code generation relies on verifiable rewards from unit test pass rates. Yet high-quality test suites are scarce, existing datasets offer limited coverage, and static rewards fail to adapt as models improve. Recent self-play methods unify code and test generation in a single model, but face a inherent dilemma: white-box access leads to self-collusion where the model produces trivial tests for easy rewards, yet black-box restriction yields generic tests that miss implementation-specific bugs. We introduce Code-A1, an adversarial co-evolution framework that jointly optimizes a Code LLM and a Test LLM with opposing objectives. The Code LLM is rewarded for passing more tests, while the Test LLM is rewarded for exposing more defects. This architectural separation eliminates self-collusion risks and safely enables white-box test generation, where the Test LLM can inspect candidate code to craft targeted adversarial tests. We further introduce a Mistake Book mechanism for experience replay and a composite reward balancing test validity with adversarial difficulty. Experiments on Qwen2.5-Coder models demonstrate that Code-A1 achieves code generation performance matching or exceeding models trained on human-annotated tests, while significantly improving test generation capability."
+}

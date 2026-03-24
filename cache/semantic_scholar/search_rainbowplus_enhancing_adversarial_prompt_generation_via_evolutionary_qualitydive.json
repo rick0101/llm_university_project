@@ -1,0 +1,34 @@
+{
+  "paperId": "29678fc094dd52fe3a3dd2f9c27e4d6e60ee607e",
+  "externalIds": {
+    "ArXiv": "2504.15047",
+    "DBLP": "journals/corr/abs-2504-15047",
+    "DOI": "10.48550/arXiv.2504.15047",
+    "CorpusId": 277955526
+  },
+  "title": "RainbowPlus: Enhancing Adversarial Prompt Generation via Evolutionary Quality-Diversity Search",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 4,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2504.15047, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2315296298",
+      "name": "Quy-Anh Dang"
+    },
+    {
+      "authorId": "2328975967",
+      "name": "Chris Ngo"
+    },
+    {
+      "authorId": "2308040088",
+      "name": "Truong-Son Hy"
+    }
+  ],
+  "abstract": "Large Language Models (LLMs) exhibit remarkable capabilities but are susceptible to adversarial prompts that exploit vulnerabilities to produce unsafe or biased outputs. Existing red-teaming methods often face scalability challenges, resource-intensive requirements, or limited diversity in attack strategies. We propose RainbowPlus, a novel red-teaming framework rooted in evolutionary computation, enhancing adversarial prompt generation through an adaptive quality-diversity (QD) search that extends classical evolutionary algorithms like MAP-Elites with innovations tailored for language models. By employing a multi-element archive to store diverse high-quality prompts and a comprehensive fitness function to evaluate multiple prompts concurrently, RainbowPlus overcomes the constraints of single-prompt archives and pairwise comparisons in prior QD methods like Rainbow Teaming. Experiments comparing RainbowPlus to QD methods across six benchmark datasets and four open-source LLMs demonstrate superior attack success rate (ASR) and diversity (Diverse-Score $\\approx 0.84$), generating up to 100 times more unique prompts (e.g., 10,418 vs. 100 for Ministral-8B-Instruct-2410). Against nine state-of-the-art methods on the HarmBench dataset with twelve LLMs (ten open-source, two closed-source), RainbowPlus achieves an average ASR of 81.1%, surpassing AutoDAN-Turbo by 3.9%, and is 9 times faster (1.45 vs. 13.50 hours). Our open-source implementation fosters further advancements in LLM safety, offering a scalable tool for vulnerability assessment. Code and resources are publicly available at https://github.com/knoveleng/rainbowplus, supporting reproducibility and future research in LLM red-teaming."
+}

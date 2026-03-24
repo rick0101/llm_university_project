@@ -1,0 +1,54 @@
+{
+  "paperId": "bb5cd74e28059073b0f50ba42b1dcec41d29af82",
+  "externalIds": {
+    "DBLP": "conf/issre/ZhangKDBH24",
+    "ArXiv": "2408.03515",
+    "DOI": "10.1109/ISSREW63542.2024.00103",
+    "CorpusId": 271745011
+  },
+  "title": "A Study on Prompt Injection Attack Against LLM-Integrated Mobile Robotic Systems",
+  "venue": "2024 IEEE 35th International Symposium on Software Reliability Engineering Workshops (ISSREW)",
+  "year": 2024,
+  "citationCount": 19,
+  "influentialCitationCount": 1,
+  "openAccessPdf": {
+    "url": "http://arxiv.org/pdf/2408.03515",
+    "status": "GREEN",
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2408.03515, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2024-08-07",
+  "journal": {
+    "name": "2024 IEEE 35th International Symposium on Software Reliability Engineering Workshops (ISSREW)",
+    "pages": "361-368"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Zhang2024ASO,\n author = {Wenxiao Zhang and Xiangrui Kong and Conan Dewitt and Thomas Bräunl and Jin B. Hong},\n booktitle = {2024 IEEE 35th International Symposium on Software Reliability Engineering Workshops (ISSREW)},\n journal = {2024 IEEE 35th International Symposium on Software Reliability Engineering Workshops (ISSREW)},\n pages = {361-368},\n title = {A Study on Prompt Injection Attack Against LLM-Integrated Mobile Robotic Systems},\n year = {2024}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2304895352",
+      "name": "Wenxiao Zhang"
+    },
+    {
+      "authorId": "2307577187",
+      "name": "Xiangrui Kong"
+    },
+    {
+      "authorId": "2315124371",
+      "name": "Conan Dewitt"
+    },
+    {
+      "authorId": "2356527225",
+      "name": "Thomas Bräunl"
+    },
+    {
+      "authorId": "2309268014",
+      "name": "Jin B. Hong"
+    }
+  ],
+  "abstract": "The integration of Large Language Models (LLMs) like GPT-4o into robotic systems represents a significant advancement in embodied artificial intelligence. These models can process multi-modal prompts, enabling them to generate more context-aware responses. However, this integration is not without challenges. One of the primary concerns is the potential security risks associated with using LLMs in robotic navigation tasks. These tasks require precise and reliable responses to ensure safe and effective operation. Multi-modal prompts, while enhancing the robot’s understanding, also introduce complexities that can be exploited maliciously. For instance, adversarial inputs designed to mislead the model can lead to incorrect or dangerous navigational decisions. This study investigates the impact of prompt injections on mobile robot performance in LLM-integrated systems and explores secure prompt strategies to mitigate these risks. Our findings demonstrate a substantial overall improvement of approximately 30.8% in both attack detection and system performance with the implementation of robust defence mechanisms, highlighting their critical role in enhancing security and reliability in mission-oriented tasks."
+}

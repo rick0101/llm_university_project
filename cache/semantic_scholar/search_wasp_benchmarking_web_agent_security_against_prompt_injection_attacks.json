@@ -1,0 +1,42 @@
+{
+  "paperId": "b5fdd8fd5f398c81136fa7dac941f52b9568ad0a",
+  "externalIds": {
+    "ArXiv": "2504.18575",
+    "DBLP": "journals/corr/abs-2504-18575",
+    "DOI": "10.48550/arXiv.2504.18575",
+    "CorpusId": 278166059
+  },
+  "title": "WASP: Benchmarking Web Agent Security Against Prompt Injection Attacks",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 65,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2504.18575, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2264288587",
+      "name": "Ivan Evtimov"
+    },
+    {
+      "authorId": "2347204734",
+      "name": "A. Zharmagambetov"
+    },
+    {
+      "authorId": "2233294011",
+      "name": "Aaron Grattafiori"
+    },
+    {
+      "authorId": "2298951327",
+      "name": "Chuan Guo"
+    },
+    {
+      "authorId": "2256991985",
+      "name": "Kamalika Chaudhuri"
+    }
+  ],
+  "abstract": "Autonomous UI agents powered by AI have tremendous potential to boost human productivity by automating routine tasks such as filing taxes and paying bills. However, a major challenge in unlocking their full potential is security, which is exacerbated by the agent's ability to take action on their user's behalf. Existing tests for prompt injections in web agents either over-simplify the threat by testing unrealistic scenarios or giving the attacker too much power, or look at single-step isolated tasks. To more accurately measure progress for secure web agents, we introduce WASP -- a new publicly available benchmark for end-to-end evaluation of Web Agent Security against Prompt injection attacks. Evaluating with WASP shows that even top-tier AI models, including those with advanced reasoning capabilities, can be deceived by simple, low-effort human-written injections in very realistic scenarios. Our end-to-end evaluation reveals a previously unobserved insight: while attacks partially succeed in up to 86% of the case, even state-of-the-art agents often struggle to fully complete the attacker goals -- highlighting the current state of security by incompetence."
+}

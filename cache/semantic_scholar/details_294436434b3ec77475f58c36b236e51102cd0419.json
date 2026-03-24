@@ -1,0 +1,38 @@
+{
+  "paperId": "294436434b3ec77475f58c36b236e51102cd0419",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2509-05831",
+    "ArXiv": "2509.05831",
+    "DOI": "10.48550/arXiv.2509.05831",
+    "CorpusId": 281203757
+  },
+  "title": "Decoding Latent Attack Surfaces in LLMs: Prompt Injection via HTML in Web Summarization",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 0,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2509.05831, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-09-06",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2509.05831"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Verma2025DecodingLA,\n author = {Ishaan Verma},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {Decoding Latent Attack Surfaces in LLMs: Prompt Injection via HTML in Web Summarization},\n volume = {abs/2509.05831},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2176887820",
+      "name": "Ishaan Verma"
+    }
+  ],
+  "abstract": "Large Language Models (LLMs) are increasingly integrated into web-based systems for content summarization, yet their susceptibility to prompt injection attacks remains a pressing concern. In this study, we explore how non-visible HTML elements such as, aria-label, and alt attributes can be exploited to embed adversarial instructions without altering the visible content of a webpage. We introduce a novel dataset comprising 280 static web pages, evenly divided between clean and adversarial injected versions, crafted using diverse HTML-based strategies. These pages are processed through a browser automation pipeline to extract both raw HTML and rendered text, closely mimicking real-world LLM deployment scenarios. We evaluate two state-of-the-art open-source models, Llama 4 Scout (Meta) and Gemma 9B IT (Google), on their ability to summarize this content. Using both lexical (ROUGE-L) and semantic (SBERT cosine similarity) metrics, along with manual annotations, we assess the impact of these covert injections. Our findings reveal that over 29% of injected samples led to noticeable changes in the Llama 4 Scout summaries, while Gemma 9B IT showed a lower, yet non-trivial, success rate of 15%. These results highlight a critical and largely overlooked vulnerability in LLM driven web pipelines, where hidden adversarial content can subtly manipulate model outputs. Our work offers a reproducible framework and benchmark for evaluating HTML-based prompt injection and underscores the urgent need for robust mitigation strategies in LLM applications involving web content."
+}

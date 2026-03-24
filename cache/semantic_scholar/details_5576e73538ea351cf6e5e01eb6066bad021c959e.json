@@ -1,0 +1,50 @@
+{
+  "paperId": "5576e73538ea351cf6e5e01eb6066bad021c959e",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2511-03900",
+    "ArXiv": "2511.03900",
+    "DOI": "10.48550/arXiv.2511.03900",
+    "CorpusId": 282812205
+  },
+  "title": "GRAD: Graph-Retrieved Adaptive Decoding for Hallucination Mitigation",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 1,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2511.03900, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-11-05",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2511.03900"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Nguyen2025GRADGA,\n author = {Manh Nguyen and Sunil Gupta and Dai Do and Hung Le},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {GRAD: Graph-Retrieved Adaptive Decoding for Hallucination Mitigation},\n volume = {abs/2511.03900},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2375351501",
+      "name": "Manh Nguyen"
+    },
+    {
+      "authorId": "2374500817",
+      "name": "Sunil Gupta"
+    },
+    {
+      "authorId": "2314472541",
+      "name": "Dai Do"
+    },
+    {
+      "authorId": "2361386448",
+      "name": "Hung Le"
+    }
+  ],
+  "abstract": "Hallucination mitigation remains a persistent challenge for large language models (LLMs), even as model scales grow. Existing approaches often rely on external knowledge sources, such as structured databases or knowledge graphs, accessed through prompting or retrieval. However, prompt-based grounding is fragile and domain-sensitive, while symbolic knowledge integration incurs heavy retrieval and formatting costs. Motivated by knowledge graphs, we introduce Graph-Retrieved Adaptive Decoding (GRAD), a decoding-time method that grounds generation in corpus-derived evidence without retraining. GRAD constructs a sparse token transition graph by accumulating next-token logits across a small retrieved corpus in a single forward pass. During decoding, graph-retrieved logits are max-normalized and adaptively fused with model logits to favor high-evidence continuations while preserving fluency. Across three models and a range of question-answering benchmarks spanning intrinsic, extrinsic hallucination, and factuality tasks, GRAD consistently surpasses baselines, achieving up to 9.7$\\%$ higher intrinsic accuracy, 8.6$\\%$ lower hallucination rates, and 6.9$\\%$ greater correctness compared to greedy decoding, while attaining the highest truth--informativeness product score among all methods. GRAD offers a lightweight, plug-and-play alternative to contrastive decoding and knowledge graph augmentation, demonstrating that statistical evidence from corpus-level token transitions can effectively steer generation toward more truthful and verifiable outputs."
+}

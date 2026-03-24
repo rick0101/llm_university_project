@@ -1,0 +1,53 @@
+{
+  "paperId": "685dd83fb88fa7d5546f2624ac5b9fe8a484de13",
+  "externalIds": {
+    "ArXiv": "2501.15145",
+    "DBLP": "conf/codaspy/JacobAHA025",
+    "DOI": "10.1145/3714393.3726501",
+    "CorpusId": 275921134
+  },
+  "title": "PromptShield: Deployable Detection for Prompt Injection Attacks",
+  "venue": "Conference on Data and Application Security and Privacy",
+  "year": 2024,
+  "citationCount": 33,
+  "influentialCitationCount": 4,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2501.15145, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2024-06-19",
+  "journal": {
+    "name": "Proceedings of the Fifteenth ACM Conference on Data and Application Security and Privacy"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Jacob2024PromptShieldDD,\n author = {Dennis Jacob and Hend Alzahrani and Zhanhao Hu and Basel Alomair and David Wagner},\n booktitle = {Conference on Data and Application Security and Privacy},\n journal = {Proceedings of the Fifteenth ACM Conference on Data and Application Security and Privacy},\n title = {PromptShield: Deployable Detection for Prompt Injection Attacks},\n year = {2024}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2342413435",
+      "name": "Dennis Jacob"
+    },
+    {
+      "authorId": "2338887693",
+      "name": "Hend Alzahrani"
+    },
+    {
+      "authorId": "2303804408",
+      "name": "Zhanhao Hu"
+    },
+    {
+      "authorId": "1687501",
+      "name": "Basel Alomair"
+    },
+    {
+      "authorId": "2342414385",
+      "name": "David Wagner"
+    }
+  ],
+  "abstract": "Application designers have moved to integrate large language models (LLMs) into their products. However, many LLM-integrated applications are vulnerable to prompt injections. While attempts have been made to address this problem by building prompt injection detectors, many are not yet suitable for practical deployment. To support research in this area, we introduce PromptShield, a benchmark for training and evaluating deployable prompt injection detectors. Our benchmark is carefully curated and includes both conversational and application-structured data. In addition, we use insights from our curation process to fine-tune a new prompt injection detector that achieves significantly higher performance in the low false positive rate (FPR) evaluation regime compared to prior schemes. Our work suggests that careful curation of training data and larger models can contribute to strong detector performance."
+}

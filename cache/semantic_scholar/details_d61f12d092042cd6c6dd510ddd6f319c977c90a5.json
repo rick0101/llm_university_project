@@ -1,0 +1,78 @@
+{
+  "paperId": "d61f12d092042cd6c6dd510ddd6f319c977c90a5",
+  "externalIds": {
+    "DBLP": "conf/emnlp/ZhaoGHDZSHZQCL25",
+    "ArXiv": "2504.09466",
+    "DOI": "10.48550/arXiv.2504.09466",
+    "CorpusId": 277780799
+  },
+  "title": "AdaSteer: Your Aligned LLM is Inherently an Adaptive Jailbreak Defender",
+  "venue": "Conference on Empirical Methods in Natural Language Processing",
+  "year": 2025,
+  "citationCount": 16,
+  "influentialCitationCount": 1,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2504.09466, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-04-13",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2504.09466"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Zhao2025AdaSteerYA,\n author = {Weixiang Zhao and Jiahe Guo and Yulin Hu and Yang Deng and An Zhang and Xingyu Sui and Xinyang Han and Yanyan Zhao and Bing Qin and Tat-Seng Chua and Ting Liu},\n booktitle = {Conference on Empirical Methods in Natural Language Processing},\n journal = {ArXiv},\n title = {AdaSteer: Your Aligned LLM is Inherently an Adaptive Jailbreak Defender},\n volume = {abs/2504.09466},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "29757826",
+      "name": "Weixiang Zhao"
+    },
+    {
+      "authorId": "2324795903",
+      "name": "Jiahe Guo"
+    },
+    {
+      "authorId": "2279742153",
+      "name": "Yulin Hu"
+    },
+    {
+      "authorId": "2324836424",
+      "name": "Yang Deng"
+    },
+    {
+      "authorId": "2311074323",
+      "name": "An Zhang"
+    },
+    {
+      "authorId": "2324795821",
+      "name": "Xingyu Sui"
+    },
+    {
+      "authorId": "2348197622",
+      "name": "Xinyang Han"
+    },
+    {
+      "authorId": "49339265",
+      "name": "Yanyan Zhao"
+    },
+    {
+      "authorId": "2277468940",
+      "name": "Bing Qin"
+    },
+    {
+      "authorId": "2257036129",
+      "name": "Tat-Seng Chua"
+    },
+    {
+      "authorId": "2324948610",
+      "name": "Ting Liu"
+    }
+  ],
+  "abstract": "Despite extensive efforts in safety alignment, large language models (LLMs) remain vulnerable to jailbreak attacks. Activation steering offers a training-free defense method but relies on fixed steering coefficients, resulting in suboptimal protection and increased false rejections of benign inputs. To address this, we propose AdaSteer, an adaptive activation steering method that dynamically adjusts model behavior based on input characteristics. We identify two key properties: Rejection Law (R-Law), which shows that stronger steering is needed for jailbreak inputs opposing the rejection direction, and Harmfulness Law (H-Law), which differentiates adversarial and benign inputs. AdaSteer steers input representations along both the Rejection Direction (RD) and Harmfulness Direction (HD), with adaptive coefficients learned via logistic regression, ensuring robust jailbreak defense while preserving benign input handling. Experiments on LLaMA-3.1, Gemma-2, and Qwen2.5 show that AdaSteer outperforms baseline methods across multiple jailbreak attacks with minimal impact on utility. Our results highlight the potential of interpretable model internals for real-time, flexible safety enforcement in LLMs."
+}

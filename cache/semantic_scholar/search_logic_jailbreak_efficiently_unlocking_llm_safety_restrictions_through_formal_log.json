@@ -1,0 +1,50 @@
+{
+  "paperId": "41c82c209195c1e3b50e59ab26ef2e4675617280",
+  "externalIds": {
+    "ArXiv": "2505.13527",
+    "DBLP": "journals/corr/abs-2505-13527",
+    "DOI": "10.48550/arXiv.2505.13527",
+    "CorpusId": 278770002
+  },
+  "title": "Logic Jailbreak: Efficiently Unlocking LLM Safety Restrictions Through Formal Logical Expression",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 7,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.13527, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2228304875",
+      "name": "Jingyu Peng"
+    },
+    {
+      "authorId": "2262447141",
+      "name": "Maolin Wang"
+    },
+    {
+      "authorId": "2167294557",
+      "name": "Na Wang"
+    },
+    {
+      "authorId": "2267385868",
+      "name": "Xiangyu Zhao"
+    },
+    {
+      "authorId": "2237588755",
+      "name": "Jiatong Li"
+    },
+    {
+      "authorId": "2362431882",
+      "name": "Kai Zhang"
+    },
+    {
+      "authorId": "2363450058",
+      "name": "Qi Liu"
+    }
+  ],
+  "abstract": "Despite substantial advancements in aligning large language models (LLMs) with human values, current safety mechanisms remain susceptible to jailbreak attacks. We hypothesize that this vulnerability stems from distributional discrepancies between alignment-oriented prompts and malicious prompts. To investigate this, we introduce LogiBreak, a novel and universal black-box jailbreak method that leverages logical expression translation to circumvent LLM safety systems. By converting harmful natural language prompts into formal logical expressions, LogiBreak exploits the distributional gap between alignment data and logic-based inputs, preserving the underlying semantic intent and readability while evading safety constraints. We evaluate LogiBreak on a multilingual jailbreak dataset spanning three languages, demonstrating its effectiveness across various evaluation settings and linguistic contexts."
+}

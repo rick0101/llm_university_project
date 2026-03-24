@@ -1,0 +1,63 @@
+{
+  "paperId": "149ab16bed8554e71358b3642cb6979884c786b9",
+  "externalIds": {
+    "ArXiv": "2406.04031",
+    "DBLP": "journals/tifs/YingLZYLLT25",
+    "DOI": "10.1109/TIFS.2025.3583249",
+    "CorpusId": 270285994
+  },
+  "title": "Jailbreak Vision Language Models via Bi-Modal Adversarial Prompt",
+  "venue": "IEEE Transactions on Information Forensics and Security",
+  "year": 2024,
+  "citationCount": 89,
+  "influentialCitationCount": 7,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2406.04031, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2024-06-06",
+  "journal": {
+    "name": "IEEE Transactions on Information Forensics and Security",
+    "pages": "7153-7165",
+    "volume": "20"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Ying2024JailbreakVL,\n author = {Zonghao Ying and Aishan Liu and Tianyuan Zhang and Zhengmin Yu and Siyuan Liang and Xianglong Liu and Dacheng Tao},\n booktitle = {IEEE Transactions on Information Forensics and Security},\n journal = {IEEE Transactions on Information Forensics and Security},\n pages = {7153-7165},\n title = {Jailbreak Vision Language Models via Bi-Modal Adversarial Prompt},\n volume = {20},\n year = {2024}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2304955104",
+      "name": "Zonghao Ying"
+    },
+    {
+      "authorId": "2257572247",
+      "name": "Aishan Liu"
+    },
+    {
+      "authorId": "2300719164",
+      "name": "Tianyuan Zhang"
+    },
+    {
+      "authorId": "2305061690",
+      "name": "Zhengmin Yu"
+    },
+    {
+      "authorId": "2114786732",
+      "name": "Siyuan Liang"
+    },
+    {
+      "authorId": "2237942988",
+      "name": "Xianglong Liu"
+    },
+    {
+      "authorId": "2237906923",
+      "name": "Dacheng Tao"
+    }
+  ],
+  "abstract": "In the realm of large vision language models (LVLMs), jailbreak attacks serve as a red-teaming approach to bypass guardrails and uncover safety implications. Existing jailbreaks predominantly focus on the visual modality, perturbing solely visual inputs in the prompt for attacks. However, they fall short when confronted with aligned models that fuse visual and textual features simultaneously for generation. To address this limitation, this paper introduces the Bi-Modal Adversarial Prompt Attack (BAP), which executes jailbreaks by optimizing textual and visual prompts cohesively. Initially, we adversarially embed universally adversarial perturbations in an image, guided by a few-shot query-agnostic corpus (e.g., affirmative prefixes and negative inhibitions). This process ensures that the adversarial image prompt LVLMs to respond positively to harmful queries. Subsequently, leveraging the image, we optimize textual prompts with specific harmful intent. In particular, we utilize a large language model to analyze jailbreak failures and employ chain-of-thought reasoning to refine textual prompts through a feedback-iteration manner. To validate the efficacy of our approach, we conducted extensive evaluations on various datasets and LVLMs, demonstrating that our BAP significantly outperforms other methods by large margins (+29.03% in attack success rate on average). Additionally, we showcase the potential of our attacks on black-box commercial LVLMs, such as GPT-4o and Gemini. Our code is available at https://anonymous.4open.science/r/BAP-Jailbreak-Vision-Language-Models-via-Bi-Modal-Adversarial-Prompt-5496"
+}

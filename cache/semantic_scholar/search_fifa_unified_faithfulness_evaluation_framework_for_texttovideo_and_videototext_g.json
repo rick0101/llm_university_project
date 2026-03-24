@@ -1,0 +1,42 @@
+{
+  "paperId": "fb6859bcbb5cb0155bb0d73ee8f32d15d51b4e41",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2507-06523",
+    "ArXiv": "2507.06523",
+    "DOI": "10.48550/arXiv.2507.06523",
+    "CorpusId": 280150361
+  },
+  "title": "FIFA: Unified Faithfulness Evaluation Framework for Text-to-Video and Video-to-Text Generation",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 1,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2507.06523, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2336528838",
+      "name": "Liqiang Jing"
+    },
+    {
+      "authorId": "1405279380",
+      "name": "Viet Dac Lai"
+    },
+    {
+      "authorId": "2110654003",
+      "name": "Seunghyun Yoon"
+    },
+    {
+      "authorId": "2265648617",
+      "name": "Trung Bui"
+    },
+    {
+      "authorId": "2265463653",
+      "name": "Xinya Du"
+    }
+  ],
+  "abstract": "Video Multimodal Large Language Models (VideoMLLMs) have achieved remarkable progress in both Video-to-Text and Text-to-Video tasks. However, they often suffer fro hallucinations, generating content that contradicts the visual input. Existing evaluation methods are limited to one task (e.g., V2T) and also fail to assess hallucinations in open-ended, free-form responses. To address this gap, we propose FIFA, a unified FaIthFulness evAluation framework that extracts comprehensive descriptive facts, models their semantic dependencies via a Spatio-Temporal Semantic Dependency Graph, and verifies them using VideoQA models. We further introduce Post-Correction, a tool-based correction framework that revises hallucinated content. Extensive experiments demonstrate that FIFA aligns more closely with human judgment than existing evaluation methods, and that Post-Correction effectively improves factual consistency in both text and video generation."
+}

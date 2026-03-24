@@ -1,0 +1,46 @@
+{
+  "paperId": "2d201e0e03c86092e17134ea4fc7f77aed5079ac",
+  "externalIds": {
+    "ArXiv": "2511.14140",
+    "DBLP": "journals/corr/abs-2511-14140",
+    "DOI": "10.48550/arXiv.2511.14140",
+    "CorpusId": 283080556
+  },
+  "title": "Beyond Fixed and Dynamic Prompts: Embedded Jailbreak Templates for Advancing LLM Security",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 1,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2511.14140, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-11-18",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2511.14140"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Kim2025BeyondFA,\n author = {Hajun Kim and Hyunsik Na and Daeseon Choi},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {Beyond Fixed and Dynamic Prompts: Embedded Jailbreak Templates for Advancing LLM Security},\n volume = {abs/2511.14140},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2389074215",
+      "name": "Hajun Kim"
+    },
+    {
+      "authorId": "51288274",
+      "name": "Hyunsik Na"
+    },
+    {
+      "authorId": "2379922516",
+      "name": "Daeseon Choi"
+    }
+  ],
+  "abstract": "As the use of large language models (LLMs) continues to expand, ensuring their safety and robustness has become a critical challenge. In particular, jailbreak attacks that bypass built-in safety mechanisms are increasingly recognized as a tangible threat across industries, driving the need for diverse templates to support red-teaming efforts and strengthen defensive techniques. However, current approaches predominantly rely on two limited strategies: (i) substituting harmful queries into fixed templates, and (ii) having the LLM generate entire templates, which often compromises intent clarity and reproductibility. To address this gap, this paper introduces the Embedded Jailbreak Template, which preserves the structure of existing templates while naturally embedding harmful queries within their context. We further propose a progressive prompt-engineering methodology to ensure template quality and consistency, alongside standardized protocols for generation and evaluation. Together, these contributions provide a benchmark that more accurately reflects real-world usage scenarios and harmful intent, facilitating its application in red-teaming and policy regression testing."
+}

@@ -1,0 +1,34 @@
+{
+  "paperId": "b40ab8d23dd129cfa393a93eea37082b1391da1c",
+  "externalIds": {
+    "ArXiv": "2512.05700",
+    "DBLP": "journals/corr/abs-2512-05700",
+    "DOI": "10.48550/arXiv.2512.05700",
+    "CorpusId": 283672258
+  },
+  "title": "Faithfulness metric fusion: Improving the evaluation of LLM trustworthiness across domains",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2512.05700, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2202091335",
+      "name": "B. Malin"
+    },
+    {
+      "authorId": "2214770675",
+      "name": "T. Kalganova"
+    },
+    {
+      "authorId": "1778768",
+      "name": "N. Boulgouris"
+    }
+  ],
+  "abstract": "We present a methodology for improving the accuracy of faithfulness evaluation in Large Language Models (LLMs). The proposed methodology is based on the combination of elementary faithfulness metrics into a combined (fused) metric, for the purpose of improving the faithfulness of LLM outputs. The proposed strategy for metric fusion deploys a tree-based model to identify the importance of each metric, which is driven by the integration of human judgements evaluating the faithfulness of LLM responses. This fused metric is demonstrated to correlate more strongly with human judgements across all tested domains for faithfulness. Improving the ability to evaluate the faithfulness of LLMs, allows for greater confidence to be placed within models, allowing for their implementation in a greater diversity of scenarios. Additionally, we homogenise a collection of datasets across question answering and dialogue-based domains and implement human judgements and LLM responses within this dataset, allowing for the reproduction and trialling of faithfulness evaluation across domains."
+}

@@ -1,0 +1,46 @@
+{
+  "paperId": "9cfaa1cad9f1601bdd75d1de89dd56e18f24ff58",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2411-00459",
+    "ArXiv": "2411.00459",
+    "DOI": "10.48550/arXiv.2411.00459",
+    "CorpusId": 273798736
+  },
+  "title": "Defense Against Prompt Injection Attack by Leveraging Attack Techniques",
+  "venue": "Annual Meeting of the Association for Computational Linguistics",
+  "year": 2024,
+  "citationCount": 32,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2411.00459, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2258786348",
+      "name": "Yulin Chen"
+    },
+    {
+      "authorId": "2260286743",
+      "name": "Haoran Li"
+    },
+    {
+      "authorId": "2301174367",
+      "name": "Zihao Zheng"
+    },
+    {
+      "authorId": "2258804099",
+      "name": "Yangqiu Song"
+    },
+    {
+      "authorId": "2390150",
+      "name": "Dekai Wu"
+    },
+    {
+      "authorId": "2325153754",
+      "name": "Bryan Hooi"
+    }
+  ],
+  "abstract": "With the advancement of technology, large language models (LLMs) have achieved remarkable performance across various natural language processing (NLP) tasks, powering LLM-integrated applications like Microsoft Copilot. However, as LLMs continue to evolve, new vulnerabilities, especially prompt injection attacks arise. These attacks trick LLMs into deviating from the original input instructions and executing the attacker's instructions injected in data content, such as retrieved results. Recent attack methods leverage LLMs'instruction-following abilities and their inabilities to distinguish instructions injected in the data content, and achieve a high attack success rate (ASR). When comparing the attack and defense methods, we interestingly find that they share similar design goals, of inducing the model to ignore unwanted instructions and instead to execute wanted instructions. Therefore, we raise an intuitive question: Could these attack techniques be utilized for defensive purposes? In this paper, we invert the intention of prompt injection methods to develop novel defense methods based on previous training-free attack methods, by repeating the attack process but with the original input instruction rather than the injected instruction. Our comprehensive experiments demonstrate that our defense techniques outperform existing training-free defense approaches, achieving state-of-the-art results."
+}

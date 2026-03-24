@@ -1,0 +1,54 @@
+{
+  "paperId": "fde97b99a946bc96d79e0f9d73ef1359594b7d3e",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2510-04261",
+    "ArXiv": "2510.04261",
+    "DOI": "10.48550/arXiv.2510.04261",
+    "CorpusId": 281843792
+  },
+  "title": "VortexPIA: Indirect Prompt Injection Attack against LLMs for Efficient Extraction of User Privacy",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 3,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.04261, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-10-05",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2510.04261"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Cui2025VortexPIAIP,\n author = {Yu Cui and Sicheng Pan and Yifei Liu and Haibin Zhang and Cong Zuo},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {VortexPIA: Indirect Prompt Injection Attack against LLMs for Efficient Extraction of User Privacy},\n volume = {abs/2510.04261},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2345863039",
+      "name": "Yu Cui"
+    },
+    {
+      "authorId": "2384421228",
+      "name": "Sicheng Pan"
+    },
+    {
+      "authorId": "2363373652",
+      "name": "Yifei Liu"
+    },
+    {
+      "authorId": "2345867026",
+      "name": "Haibin Zhang"
+    },
+    {
+      "authorId": "2360367836",
+      "name": "Cong Zuo"
+    }
+  ],
+  "abstract": "Large language models (LLMs) have been widely deployed in Conversational AIs (CAIs), while exposing privacy and security threats. Recent research shows that LLM-based CAIs can be manipulated to extract private information from human users, posing serious security threats. However, the methods proposed in that study rely on a white-box setting that adversaries can directly modify the system prompt. This condition is unlikely to hold in real-world deployments. The limitation raises a critical question: can unprivileged attackers still induce such privacy risks in practical LLM-integrated applications? To address this question, we propose \\textsc{VortexPIA}, a novel indirect prompt injection attack that induces privacy extraction in LLM-integrated applications under black-box settings. By injecting token-efficient data containing false memories, \\textsc{VortexPIA} misleads LLMs to actively request private information in batches. Unlike prior methods, \\textsc{VortexPIA} allows attackers to flexibly define multiple categories of sensitive data. We evaluate \\textsc{VortexPIA} on six LLMs, covering both traditional and reasoning LLMs, across four benchmark datasets. The results show that \\textsc{VortexPIA} significantly outperforms baselines and achieves state-of-the-art (SOTA) performance. It also demonstrates efficient privacy requests, reduced token consumption, and enhanced robustness against defense mechanisms. We further validate \\textsc{VortexPIA} on multiple realistic open-source LLM-integrated applications, demonstrating its practical effectiveness."
+}

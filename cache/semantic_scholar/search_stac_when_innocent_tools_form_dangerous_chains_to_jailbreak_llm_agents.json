@@ -1,0 +1,58 @@
+{
+  "paperId": "dff2c98594f3591cadb99ffe43b3692e814c36d9",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2509-25624",
+    "ArXiv": "2509.25624",
+    "DOI": "10.48550/arXiv.2509.25624",
+    "CorpusId": 281681176
+  },
+  "title": "STAC: When Innocent Tools Form Dangerous Chains to Jailbreak LLM Agents",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 4,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2509.25624, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2327112125",
+      "name": "Jing-Jing Li"
+    },
+    {
+      "authorId": "2290199349",
+      "name": "Jianfeng He"
+    },
+    {
+      "authorId": "2382927439",
+      "name": "Chao Shang"
+    },
+    {
+      "authorId": "38321735",
+      "name": "Devang Kulshreshtha"
+    },
+    {
+      "authorId": "1603059979",
+      "name": "Xun Xian"
+    },
+    {
+      "authorId": "2383099189",
+      "name": "Yi Zhang"
+    },
+    {
+      "authorId": "2386090479",
+      "name": "Hang Su"
+    },
+    {
+      "authorId": "2382929178",
+      "name": "Sandesh Swamy"
+    },
+    {
+      "authorId": "2385500212",
+      "name": "Yanjun Qi"
+    }
+  ],
+  "abstract": "As LLMs advance into autonomous agents with tool-use capabilities, they introduce security challenges that extend beyond traditional content-based LLM safety concerns. This paper introduces Sequential Tool Attack Chaining (STAC), a novel multi-turn attack framework that exploits agent tool use. STAC chains together tool calls that each appear harmless in isolation but, when combined, collectively enable harmful operations that only become apparent at the final execution step. We apply our framework to automatically generate and systematically evaluate 483 STAC cases, featuring 1,352 sets of user-agent-environment interactions and spanning diverse domains, tasks, agent types, and 10 failure modes. Our evaluations show that state-of-the-art LLM agents, including GPT-4.1, are highly vulnerable to STAC, with attack success rates (ASR) exceeding 90% in most cases. The core design of STAC's automated framework is a closed-loop pipeline that synthesizes executable multi-step tool chains, validates them through in-environment execution, and reverse-engineers stealthy multi-turn prompts that reliably induce agents to execute the verified malicious sequence. We further perform defense analysis against STAC and find that existing prompt-based defenses provide limited protection. To address this gap, we propose a new reasoning-driven defense prompt that achieves far stronger protection, cutting ASR by up to 28.8%. These results highlight a crucial gap: defending tool-enabled agents requires reasoning over entire action sequences and their cumulative effects, rather than evaluating isolated prompts or responses."
+}

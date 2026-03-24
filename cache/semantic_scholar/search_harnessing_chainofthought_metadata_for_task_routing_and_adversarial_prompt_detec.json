@@ -1,0 +1,34 @@
+{
+  "paperId": "29ab2b1566ed4f45d91a1208a5fcdafd5449f94a",
+  "externalIds": {
+    "ArXiv": "2503.21464",
+    "DBLP": "journals/corr/abs-2503-21464",
+    "DOI": "10.48550/arXiv.2503.21464",
+    "CorpusId": 277349330
+  },
+  "title": "Harnessing Chain-of-Thought Metadata for Task Routing and Adversarial Prompt Detection",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 4,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2503.21464, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2353384709",
+      "name": "R. Marinelli"
+    },
+    {
+      "authorId": "2352272176",
+      "name": "Josef Pichlmeier"
+    },
+    {
+      "authorId": "2385460985",
+      "name": "Tamas Bisztray"
+    }
+  ],
+  "abstract": "In this work, we propose a metric called Number of Thoughts (NofT) to determine the difficulty of tasks pre-prompting and support Large Language Models (LLMs) in production contexts. By setting thresholds based on the number of thoughts, this metric can discern the difficulty of prompts and support more effective prompt routing. A 2% decrease in latency is achieved when routing prompts from the MathInstruct dataset through quantized, distilled versions of Deepseek with 1.7 billion, 7 billion, and 14 billion parameters. Moreover, this metric can be used to detect adversarial prompts used in prompt injection attacks with high efficacy. The Number of Thoughts can inform a classifier that achieves 95% accuracy in adversarial prompt detection. Our experiments ad datasets used are available on our GitHub page: https://github.com/rymarinelli/Number_Of_Thoughts/tree/main."
+}

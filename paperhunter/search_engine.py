@@ -88,12 +88,16 @@ def _paper_in_date_range(
 ) -> bool:
     """Return True if *paper.published_date* falls within [date_from, date_to].
 
-    Papers without a ``published_date`` are kept (conservative approach).
+    Papers without a ``published_date`` are **rejected** when a date filter
+    is active, to avoid letting undated (potentially old) papers through.
     ``date_to`` is treated as *inclusive* of the entire month
     (i.e. ``2026-03`` means "up to end of March 2026").
     """
     if paper.published_date is None:
-        return True  # keep papers without a date
+        if date_from or date_to:
+            logger.warning("Paper senza data scartato dal filtro: %s", paper.title[:80])
+            return False
+        return True
     pd = paper.published_date
     # Normalize to UTC-aware so comparisons never fail
     if pd.tzinfo is None:

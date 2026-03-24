@@ -1064,14 +1064,19 @@ curl -s http://localhost:8070/api/isalive   # Deve restituire: true
 
 **Neo4j** (opzionale — per GraphRAG + Community Detection):
 
+Il progetto include un `docker-compose.yml` che avvia Neo4j con volume persistente (i dati sopravvivono ai riavvii):
+
 ```bash
-# Con plugin GDS (necessario per community detection)
-docker run --rm -d --name neo4j \
-    -p 7474:7474 -p 7687:7687 \
-    -e NEO4J_AUTH=neo4j/password \
-    -e NEO4J_PLUGINS='["graph-data-science"]' \
-    neo4j:2026.02.2-community
+# Avvio (anche dopo riavvio del PC — i dati vengono ricaricati automaticamente)
+docker compose up -d
+
+# Verifica: http://localhost:7474 (browser UI)
+
+# Spegnimento (i dati restano nel volume)
+docker compose down
 ```
+
+> **Nota:** Il vecchio comando `docker run --rm` cancellava i dati allo stop. Con `docker compose` i dati Neo4j sono persistiti in un named volume (`neo4j_data`).
 
 ---
 

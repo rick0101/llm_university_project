@@ -204,6 +204,16 @@ def _sanitize_latex(latex_content: str, bib_keys: set[str] | None = None) -> str
 
     text = re.sub(r"\\textbf\{([^}]*&[^}]*)\}", _fix_textbf_ampersand, text)
 
+    # 3b. Escape bare % (commento LaTeX) dentro il testo generato dal LLM.
+    #     Tocca solo righe che contengono testo visibile prima del %;
+    #     non tocca % già escaped (\%) né righe che iniziano con %.
+    def _escape_percent(line: str) -> str:
+        if line.lstrip().startswith("%"):
+            return line  # commento LaTeX legittimo
+        return re.sub(r"(?<!\\)%", r"\\%", line)
+
+    text = "\n".join(_escape_percent(l) for l in text.split("\n"))
+
     # 4. Subscript bare → math mode (es. ASR_k → ASR$_{k}$)
     #    Proteggi comandi LaTeX che usano legittimamente _
     _prot: dict[str, str] = {}
@@ -215,10 +225,12 @@ def _sanitize_latex(latex_content: str, bib_keys: set[str] | None = None) -> str
         _prot[key] = m.group(0)
         return key
 
-    # Proteggi \cite{...}, \label{...}, \ref{...}, \url{...}, $...$
+    # Proteggi comandi LaTeX che usano legittimamente _ nei loro argomenti
     text = re.sub(r"\\(?:cite|label|ref|url|cref|Cref|href)\{[^}]*\}", _protect, text)
+    text = re.sub(r"\\includegraphics(?:\[[^\]]*\])?\{[^}]*\}", _protect, text)
+    text = re.sub(r"\\(?:caption|bibliography)\{[^}]*\}", _protect, text)
     text = re.sub(r"\$[^$]+\$", _protect, text)
-    text = re.sub(r"%.*$", _protect, text, flags=re.MULTILINE)
+    text = re.sub(r"(?<!\\)%.*$", _protect, text, flags=re.MULTILINE)
     # Fix bare subscripts
     text = re.sub(
         r"(?<![\\$])(\b[A-Za-z][A-Za-z0-9]*)_([A-Za-z0-9]+)\b",
@@ -643,7 +655,8 @@ def _convert_images(text: str) -> str:
             f"\\end{{figure}}"
         )
 
-    return re.sub(r"!\[([^\]]*)\]\(([^)]+)\)", _img_replacer, text)
+    # Regex gestisce anche [] annidati nell'alt text (es. ![Figure from [key]](path))
+    return re.sub(r"!\[((?:[^\[\]]|\[[^\]]*\])*)\]\(([^)]+)\)", _img_replacer, text)
 
 
 def _strip_title_and_shift_headings(md_content: str) -> str:
@@ -941,6 +954,25 @@ def export_latex(
         logger.info("Sanitizzazione LaTeX completata (%d chiavi .bib caricate)", len(bib_keys))
     else:
         logger.info("Sanitizzazione LaTeX completata (nessun .bib per validazione citazioni)")
+
+    # Rimuovi figure environments che referenziano file inesistenti
+    def _remove_missing_figures(content: str, base_dir: Path) -> str:
+        def _check_fig(m: re.Match) -> str:
+            fig_path = re.search(r"\\includegraphics(?:\[[^\]]*\])?\{([^}]+)\}", m.group(0))
+            if fig_path:
+                full = base_dir / fig_path.group(1)
+                if not full.exists():
+                    logger.warning("Rimossa figura con file mancante: %s", fig_path.group(1))
+                    return ""
+            return m.group(0)
+        return re.sub(
+            r"\\begin\{figure\}.*?\\end\{figure\}",
+            _check_fig,
+            content,
+            flags=re.DOTALL,
+        )
+
+    latex_content = _remove_missing_figures(latex_content, output_path.parent)
 
     # Scrivi file
     output_path.write_text(latex_content, encoding="utf-8")

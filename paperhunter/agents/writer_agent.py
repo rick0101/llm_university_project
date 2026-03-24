@@ -76,6 +76,7 @@ from paperhunter.utils.logging_setup import (
     print_table,
     print_warning,
 )
+from paperhunter.utils.prompt_loader import get_prompt
 from paperhunter.utils.token_counter import (
     compute_writer_budget,
     get_writer_max_context_chars,
@@ -103,104 +104,9 @@ class MaxIterationsError(RuntimeError):
 # Prompt templates
 # ============================================================================
 
-_QUERY_GENERATION_PROMPT = """\
-You are an expert academic researcher writing a survey paper on LLM Security.
+_QUERY_GENERATION_PROMPT = get_prompt("QUERY_GENERATION_PROMPT")
 
-You need to write the section: **{title}**
-
-Section description:
-{description}
-
-Key topics to cover:
-{key_topics}
-
-Related categories: {related_categories}
-
-Generate exactly {n_queries} specific search queries to retrieve the most \
-relevant research papers and information for writing this section. \
-Each query should target a different aspect or subtopic of the section.
-
-Output ONLY a JSON array of strings, no other text:
-["query 1", "query 2", "query 3"]
-"""
-
-_WRITER_PROMPT_TEMPLATE = """\
-You are an expert academic researcher writing a section for a comprehensive \
-survey paper on **LLM Security** targeting a top venue (Nature/ACL-level).
-
-## Section Details
-
-**Title:** {title}
-**Description:** {description}
-**Key Topics:** {key_topics}
-**Target Length:** approximately {target_words} words
-
-## Retrieved Context
-
-The following chunks were retrieved from the research paper corpus. \
-Use ONLY information from these chunks to write the section. \
-Each chunk includes metadata (paper key, category, year, section).
-
-{retrieved_context}
-
-## Writing Instructions
-
-1. **Style**: Formal academic prose. Third person. Present tense for established knowledge, \
-past tense for specific study results.
-
-2. **Citations**: Every factual claim MUST include a citation in the format [bibtex_key]. \
-Example: "Recent work has demonstrated that adversarial suffixes can transfer across \
-LLM families [Zou_2023_GCG]."
-
-3. **Temporal Context**: When discussing methods, explicitly state when they were \
-proposed and how they relate to prior work. Use phrases like "Building on earlier \
-work by [Author_YYYY]..." or "In YYYY, [Author] introduced..."
-
-4. **Structure**: Use clear paragraphs with topic sentences. You may use Markdown \
-subsection headers (###) if the section is long enough. Use bullet lists sparingly \
-and only for enumerations.
-
-5. **Completeness**: Cover ALL key topics listed above. If a topic is not covered \
-by the retrieved context, state this gap explicitly rather than making claims \
-without sources.
-
-6. **Figures**: If the retrieved context contains figure descriptions with IMAGE_PATH, \
-you can include the actual figure using Markdown image syntax: \
-``![Caption](figures/filename.png)``. \
-Include figures when they effectively illustrate key results or architectures. \
-Always cite the source: ``![Caption](figures/file.png) [bibtex_key]``. \
-Do NOT include more than 2-3 figures per section.
-
-7. **No Fabrication**: Do NOT invent citations or facts. If a bibtex_key is [Unknown] \
-or missing, do not cite it. Only cite keys that appear in the retrieved context.
-
-{special_instructions}
-
-## Output Format
-
-Respond with a valid JSON object:
-
-```json
-{{
-  "text": "The full section text in Markdown with [bibtex_key] citations...",
-  "citations": [
-    {{
-      "bibtex_key": "Author_YYYY_Keyword",
-      "claim": "The specific claim being cited",
-      "chunk_id": "The chunk_id from which this information was derived"
-    }}
-  ],
-  "notes": "Any notes about the writing process, difficulties, or gaps found"
-}}
-```
-
-IMPORTANT:
-- The "text" field should contain the COMPLETE section text.
-- Every [bibtex_key] in the text MUST have a corresponding entry in "citations".
-- The "chunk_id" in citations should reference the actual chunk from the context.
-- Do NOT wrap the JSON output in markdown code fences.
-- Target approximately {target_words} words in the text.
-"""
+_WRITER_PROMPT_TEMPLATE = get_prompt("WRITER_PROMPT")
 
 _TESTING_SPECIAL_INSTRUCTIONS = """\
 
@@ -786,70 +692,7 @@ def _count_words(text: str) -> int:
 # Agentic ReAct Writer
 # ============================================================================
 
-_REACT_SYSTEM_PROMPT = """\
-You are an expert academic researcher writing a section for a comprehensive \
-survey paper on **LLM Security** targeting a top venue (Nature/ACL-level).
-
-You have access to search tools to find relevant research papers. \
-Use them proactively to gather evidence before writing.
-
-## Your Task
-
-Write the section **"{title}"** for the survey paper.
-
-**Section description:** {description}
-**Key topics to cover:** {key_topics}
-**Related categories:** {related_categories}
-**Target length:** approximately {target_words} words
-
-{special_instructions}
-
-## IMPORTANT RULES
-
-1. **Search First**: Before writing, use your tools to search for relevant papers. \
-Make multiple searches covering different aspects of the section.
-
-2. **Citations**: Every factual claim MUST include a citation in the format [bibtex_key]. \
-Only cite bibtex_keys that appear in your search results.
-
-3. **Style**: Formal academic prose. Third person. Present tense for established \
-knowledge, past tense for specific study results.
-
-4. **Temporal Context**: State when methods were proposed and how they relate to prior work.
-
-5. **Structure**: Use clear paragraphs with topic sentences. You may use Markdown \
-subsection headers (###) if the section is long enough.
-
-6. **Figures**: You may embed a figure from a specific paper in the section text. \
-Follow this exact workflow:\
-\
-  a. First call ``get_figure_for_section(paper_bibtex_key, figure_type)`` to confirm \
-     the figure exists. Do NOT insert a figure tag without this confirmation step.\
-  b. If the tool returns figure metadata (not "NO_FIGURE_FOUND"), insert a placeholder \
-     tag on its own line, immediately after the sentence it illustrates:\
-\
-     ``{{FIGURE:bibtex_key:figure_type}}``\
-\
-     Example: ``{{FIGURE:Zou_2023_GCG:architecture_diagram}}``\
-\
-  Valid figure_types: ``results_plot``, ``architecture_diagram``, ``flowchart``, \
-  ``comparison_table``, ``confusion_matrix``, ``attack_diagram``, ``defense_pipeline``, ``any``\
-\
-  Rules:\
-  - Use at most 1–2 figures per section.\
-  - Place the tag on its own line, preceded by a blank line.\
-  - Do NOT use Markdown image syntax (``![...](...)``) directly; use the tag instead.\
-  - You may also use ``search_figure_descriptions`` for textual figure context \
-    without embedding.
-
-7. **No Fabrication**: Do NOT invent citations or facts. If you cannot find information \
-on a topic, state the gap explicitly.
-
-8. **Output**: When you have gathered enough information, write the COMPLETE section. \
-Your final answer must be the full section text in Markdown with [bibtex_key] citations.
-
-{critic_feedback_section}
-"""
+_REACT_SYSTEM_PROMPT = get_prompt("REACT_SYSTEM_PROMPT")
 
 _REACT_MAX_ITERATIONS = 15
 """Numero massimo di iterazioni ReAct (Thought→Action→Observation)."""
@@ -857,79 +700,7 @@ _REACT_MAX_ITERATIONS = 15
 _PREFETCH_MAX_ITERATIONS = 7
 """Iterazioni ReAct ridotte per modalità prefetch (contesto già caricato)."""
 
-_PREFETCH_REACT_SYSTEM_PROMPT = """\
-You are an expert academic researcher writing a section for a comprehensive \
-survey paper on **LLM Security** targeting a top venue (Nature/ACL-level).
-
-## Your Task
-
-Write the section **"{title}"** for the survey paper.
-
-**Section description:** {description}
-**Key topics to cover:** {key_topics}
-**Related categories:** {related_categories}
-**Target length:** approximately {target_words} words
-
-{special_instructions}
-
-## Pre-fetched Context
-
-The following research context has been pre-retrieved for you. \
-Read it carefully — it covers the main papers and topics for this section.
-
-{prefetched_context}
-
-## Search Tools (use sparingly)
-
-You also have search tools available, but the pre-fetched context above \
-should cover most of what you need. **Use tools ONLY if:**
-- A specific topic from the key_topics list is NOT covered in the context above
-- You need a specific paper name or technique detail not found above
-- The critic feedback requests information not in the context
-
-**Budget: at most 3 additional tool calls.** Prefer writing with the context \
-provided rather than searching extensively.
-
-## IMPORTANT RULES
-
-1. **Write using the pre-fetched context first.** Only search for gaps.
-
-2. **Citations**: Every factual claim MUST include a citation in the format [bibtex_key]. \
-Only cite bibtex_keys that appear in the pre-fetched context or your search results.
-
-3. **Style**: Formal academic prose. Third person. Present tense for established \
-knowledge, past tense for specific study results.
-
-4. **Temporal Context**: State when methods were proposed and how they relate to prior work.
-
-5. **Structure**: Use clear paragraphs with topic sentences. You may use Markdown \
-subsection headers (###) if the section is long enough.
-
-6. **Figures**: You may embed a figure from a specific paper in the section text. \
-Follow this exact workflow:\
-\
-  a. First call ``get_figure_for_section(paper_bibtex_key, figure_type)`` to confirm \
-     the figure exists. Do NOT insert a figure tag without this confirmation step.\
-  b. If the tool returns figure metadata (not "NO_FIGURE_FOUND"), insert a placeholder \
-     tag on its own line, immediately after the sentence it illustrates:\
-\
-     ``{{FIGURE:bibtex_key:figure_type}}``\
-\
-  Valid figure_types: ``results_plot``, ``architecture_diagram``, ``flowchart``, \
-  ``comparison_table``, ``confusion_matrix``, ``attack_diagram``, ``defense_pipeline``, ``any``\
-\
-  Rules:\
-  - Use at most 1–2 figures per section.\
-  - Place the tag on its own line, preceded by a blank line.
-
-7. **No Fabrication**: Do NOT invent citations or facts. If you cannot find information \
-on a topic, state the gap explicitly.
-
-8. **Output**: Write the COMPLETE section. \
-Your final answer must be the full section text in Markdown with [bibtex_key] citations.
-
-{critic_feedback_section}
-"""
+_PREFETCH_REACT_SYSTEM_PROMPT = get_prompt("PREFETCH_REACT_SYSTEM_PROMPT")
 
 
 def _write_section_prefetch_agentic(

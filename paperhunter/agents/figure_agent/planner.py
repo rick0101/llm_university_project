@@ -17,6 +17,7 @@ from pydantic import BaseModel, Field, field_validator
 from paperhunter.config import settings
 from paperhunter.utils.llm_factory import get_llm, llm_call_with_retry
 from paperhunter.utils.logging_setup import get_logger
+from paperhunter.utils.prompt_loader import get_prompt
 
 logger = get_logger(__name__)
 
@@ -134,80 +135,7 @@ class FigurePlan(BaseModel):
 # Prompt template
 # ---------------------------------------------------------------------------
 
-_FIGURE_PLANNER_PROMPT = """\
-You are an expert academic researcher specializing in data visualization \
-for scientific survey papers on **LLM Security**.
-
-## Task
-
-Analyze the following survey paper and its category-level summaries, \
-then produce a detailed plan of **scientific figures** that would enhance \
-the paper's quality and readability.
-
-## Paper Content (Markdown)
-
-{paper_content}
-
-## L2 Category Summaries
-
-{l2_summaries}
-
-## Figure Generation Constraints
-
-- Minimum figures: {min_figures}
-- Maximum figures: {max_figures}
-- Each figure MUST serve a clear analytical purpose (not decorative)
-- Prefer quantitative figures (charts, plots) over conceptual diagrams
-- Every figure must reference data from the paper or L2 summaries
-
-## Supported Figure Types
-
-### Code Figures (type: "code") — Generated via Matplotlib/Seaborn:
-- **bar / grouped_bar / stacked_bar**: Compare metrics across categories
-- **timeline**: Show temporal evolution of research topics
-- **heatmap**: Attack×Defense effectiveness matrix
-- **radar**: Multi-dimensional method comparison
-- **line**: Trends over time (publication count, ASR rates)
-- **scatter**: Correlation between variables
-
-### Image Figures (type: "image") — Conceptual diagrams:
-- **taxonomy**: Hierarchical threat/defense classification
-- **flowchart**: Attack pipeline or defense workflow
-- **architecture**: System architecture diagrams
-
-## Required Output Format
-
-Return a JSON object with this exact structure:
-```json
-{{
-  "figures": [
-    {{
-      "figure_id": "fig_attack_timeline",
-      "figure_type": "code",
-      "chart_type": "timeline",
-      "title": "Timeline of Major Adversarial Attacks on LLMs (2022–2026)",
-      "caption": "Figure N: Chronological overview of key adversarial attack ...",
-      "description": "A horizontal timeline showing major attack papers ...",
-      "section_key": "adversarial_attacks",
-      "data_sources": ["l2_adversarial_attacks"],
-      "data_points": [
-        {{"label": "GCG (Zou et al., 2023)", "year": 2023, "category": "gradient-based"}},
-        {{"label": "AutoDAN (Liu et al., 2024)", "year": 2024, "category": "genetic"}}
-      ],
-      "priority": 1,
-      "rationale": "Provides temporal context for the evolution of attack strategies"
-    }}
-  ]
-}}
-```
-
-IMPORTANT:
-- `figure_id` must follow pattern `fig_<snake_case_name>`
-- `data_points` should contain actual data extracted from the paper/summaries
-- Order figures by priority (1 = most important)
-- Every figure must be placed in an existing section via `section_key`
-- Prefer data-driven code figures over conceptual image figures
-"""
+_FIGURE_PLANNER_PROMPT = get_prompt("FIGURE_PLANNER_PROMPT")
 
 
 # ---------------------------------------------------------------------------

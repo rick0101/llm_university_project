@@ -14,6 +14,7 @@ from paperhunter.agents.figure_agent.planner import ChartType, FigureSpec, Figur
 from paperhunter.config import settings
 from paperhunter.utils.llm_factory import get_llm, llm_call_with_retry
 from paperhunter.utils.logging_setup import get_logger
+from paperhunter.utils.prompt_loader import get_prompt
 
 logger = get_logger(__name__)
 
@@ -21,65 +22,9 @@ logger = get_logger(__name__)
 # Prompt template
 # ---------------------------------------------------------------------------
 
-_CODEGEN_PROMPT = """\
-You are an expert Python data visualization developer specializing in \
-academic figures for scientific survey papers.
+_CODEGEN_PROMPT = get_prompt("FIGURE_CODEGEN_PROMPT")
 
-## Task
-
-Generate a **complete, self-contained Python script** that produces a \
-publication-quality figure as a PNG image.
-
-## Figure Specification
-
-- **Title:** {title}
-- **Chart Type:** {chart_type}
-- **Description:** {description}
-- **Caption:** {caption}
-
-## Data Points
-
-{data_points_json}
-
-## Technical Requirements
-
-1. The script MUST be **self-contained** — include all data inline (no external files)
-2. Use **matplotlib** and optionally **seaborn** (both are available)
-3. Use **numpy** if needed for data manipulation
-4. Output: save the figure to the path specified in the variable `OUTPUT_PATH`
-5. The first line MUST be: `OUTPUT_PATH = "{output_path}"`
-6. The last line MUST call: `plt.savefig(OUTPUT_PATH, dpi=300, bbox_inches='tight')`
-7. Call `plt.close()` after saving
-
-## Style Requirements (Academic Paper)
-
-- DPI: 300
-- Font: serif family, size 10-12 for labels, 14 for title
-- Colors: use a professional colormap (viridis, Set2, or custom academic palette)
-- Grid: light grid for quantitative charts
-- Legend: if multiple series, include clear legend
-- Axis labels: clear, with units where applicable
-- Title: concise, descriptive, placed above the figure
-- Figure size: (10, 6) for landscape, (8, 8) for square, (6, 10) for portrait
-- No unnecessary decoration — clean, minimalist academic style
-
-## Output Format
-
-Return ONLY the Python code, wrapped in a single ```python ... ``` block.
-Do NOT include any explanatory text outside the code block.
-
-{error_feedback}
-"""
-
-_ERROR_FEEDBACK_TEMPLATE = """\
-## Previous Error
-
-The previous attempt to generate this figure failed with the following error:
-```
-{error}
-```
-Please fix the code to avoid this error.
-"""
+_ERROR_FEEDBACK_TEMPLATE = get_prompt("FIGURE_ERROR_FEEDBACK")
 
 
 # ---------------------------------------------------------------------------

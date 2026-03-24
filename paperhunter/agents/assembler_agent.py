@@ -66,6 +66,7 @@ from paperhunter.utils.logging_setup import (
     print_table,
     print_warning,
 )
+from paperhunter.utils.prompt_loader import get_prompt
 
 logger = get_logger(__name__)
 
@@ -74,117 +75,13 @@ logger = get_logger(__name__)
 # Prompt templates
 # ============================================================================
 
-_ABSTRACT_PROMPT_TEMPLATE = """\
-You are an expert scientific writer. Generate an ABSTRACT for a survey paper \
-on LLM Security. The abstract should be 200-300 words, written in formal \
-academic style.
+_ABSTRACT_PROMPT_TEMPLATE = get_prompt("ABSTRACT_PROMPT")
 
-The survey covers the following sections:
+_INTRODUCTION_PROMPT_TEMPLATE = get_prompt("INTRODUCTION_PROMPT")
 
-{sections_overview}
+_CONCLUSION_PROMPT_TEMPLATE = get_prompt("CONCLUSION_PROMPT")
 
-Key statistics:
-- Total sections: {total_sections}
-- Total unique citations: {total_citations}
-- Categories covered: {categories}
-
-Write a concise abstract that:
-1. States the motivation and scope of the survey
-2. Briefly describes the methodology (systematic literature review, categorization)
-3. Summarizes the key findings across categories
-4. Highlights practical contributions (testing methodologies, defense mechanisms)
-5. Mentions the number of papers surveyed
-
-Output ONLY the abstract text, no title or labels. Write in third person. \
-Do NOT include citation keys [like_this]. The abstract should stand alone \
-without references.
-"""
-
-_INTRODUCTION_PROMPT_TEMPLATE = """\
-You are an expert scientific writer. Generate or refine the INTRODUCTION \
-section for a survey paper on LLM Security.
-
-## Survey structure
-{outline_overview}
-
-## Category summaries (from L2 meta-summaries)
-{l2_overview}
-
-## Key statistics
-- Total papers surveyed: {paper_count}
-- Categories: {categories}
-- Time span: {time_span}
-
-{existing_intro}
-
-Write a comprehensive introduction (800-1200 words) that:
-1. Provides context on LLM adoption and the importance of security
-2. Describes the threat landscape (prompt injection, adversarial attacks, \
-data poisoning, hallucinations, etc.)
-3. States the contribution of this survey clearly
-4. Provides a roadmap of the paper (brief description of each section)
-5. Uses [bibtex_key] citations where appropriate, referencing major works
-
-Use formal academic language. Every factual claim should be supported by \
-a citation [bibtex_key] from the surveyed papers.
-
-Output the introduction text in Markdown format. Begin directly with the \
-content (no "## Introduction" heading — the assembler adds it).
-"""
-
-_CONCLUSION_PROMPT_TEMPLATE = """\
-You are an expert scientific writer. Generate the CONCLUSION and FUTURE WORK \
-section for a survey paper on LLM Security.
-
-## Sections written in the survey
-{sections_summary}
-
-## Open gaps identified
-{open_gaps}
-
-## Key findings
-{key_findings}
-
-Write a comprehensive conclusion (600-1000 words) that:
-1. Summarizes the main findings across all categories
-2. Highlights the most important trends and patterns discovered
-3. Discusses practical implications for LLM deployment
-4. Identifies critical open challenges and future research directions
-5. Provides actionable recommendations for practitioners and researchers
-
-Use formal academic language. Use [bibtex_key] citations sparingly, only \
-for the most significant references.
-
-Output the conclusion text in Markdown format. Begin directly with the \
-content (no heading — the assembler adds it).
-"""
-
-_CHANGELOG_PROMPT_TEMPLATE = """\
-You are an assistant that generates concise changelogs for academic survey papers.
-
-## Previous version
-- Version: {old_version}
-- Date: {old_date}
-- Paper count: {old_paper_count}
-- Categories: {old_categories}
-- Sections: {old_sections}
-
-## New version
-- Version: {new_version}
-- Date: {new_date}
-- Paper count: {new_paper_count}
-- Categories: {new_categories}
-- Sections: {new_sections}
-
-Generate a concise changelog (3-8 bullet points) describing the differences \
-between versions. Focus on:
-- Number of new papers added (total and per category)
-- New categories or sections added
-- Major content changes
-- Updated statistics
-
-Output a Markdown bullet list. Be factual and precise.
-"""
+_CHANGELOG_PROMPT_TEMPLATE = get_prompt("CHANGELOG_PROMPT")
 
 
 # ============================================================================

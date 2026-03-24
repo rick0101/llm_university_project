@@ -61,6 +61,7 @@ from paperhunter.utils.logging_setup import (
     print_table,
     print_warning,
 )
+from paperhunter.utils.prompt_loader import get_prompt
 
 logger = get_logger(__name__)
 
@@ -69,93 +70,7 @@ logger = get_logger(__name__)
 # Prompt template
 # ============================================================================
 
-_PLANNER_PROMPT_TEMPLATE = """\
-You are an expert academic researcher planning a comprehensive survey paper \
-on **LLM Security** for a top venue (Nature/ACL-level).
-
-You have the following {n_categories} category-level meta-summaries (Level 2) \
-produced by analyzing approximately {total_papers} individual research papers:
-
-{l2_texts}
-
----
-
-## Instructions
-
-Based on the L2 summaries above, generate a **complete, detailed outline** \
-for the survey paper. The outline must follow academic conventions for a \
-comprehensive survey.
-
-### Required Structure
-
-The outline MUST include these standard sections in this exact order:
-
-1. **Abstract** (section_type: "abstract") — Will be generated last by the \
-Assembler, but include it in the outline for completeness.
-2. **Introduction** (section_type: "introduction") — Motivation, scope, \
-contribution summary.
-3. **Background and Preliminaries** (section_type: "body") — Key definitions, \
-LLM architecture basics, threat model overview.
-4-N. **Core body sections** — One or more sections per category of threats, \
-ordered logically (from training-time to inference-time threats when possible). \
-Each section should have a clear focus and may have subsections.
-{n_plus_1}. **Testing Methodologies and Evaluation** (section_type: "testing") — \
-MANDATORY dedicated section covering: benchmarks, datasets, metrics, tools, \
-and evaluation frameworks across ALL categories. This is critical.
-{n_plus_2}. **Cross-Cutting Defenses and Mitigation Strategies** (section_type: "body") — \
-Holistic defense overview across categories.
-{n_plus_3}. **Discussion and Open Challenges** (section_type: "discussion") — \
-Gaps, limitations, future directions.
-{n_plus_4}. **Conclusion** (section_type: "conclusion") — Synthesis and \
-practical recommendations.
-
-### Output Format
-
-Respond with a valid JSON array of section objects. Each section:
-
-```json
-[
-  {{
-    "key": "section_key_snake_case",
-    "title": "Section Title",
-    "description": "Detailed description of what the section should cover (100-300 words). Be specific about which papers, methods, and concepts to include.",
-    "target_length_words": 1500,
-    "key_topics": ["topic1", "topic2", "topic3"],
-    "related_categories": ["Category Name 1", "Category Name 2"],
-    "order": 0,
-    "section_type": "body",
-    "parent_key": null,
-    "subsections": []
-  }}
-]
-```
-
-### Guidelines
-
-- **Order**: Use a logical flow: background → training-time threats → \
-inference-time threats → testing → defenses → discussion → conclusion.
-- **Balance**: Each body section should target 1000-3000 words. \
-Larger categories may be split into subsections.
-- **Granularity**: Provide at least {min_sections} sections total (including \
-abstract, intro, conclusion). Aim for {target_sections} sections.
-- **Temporal perspective**: Descriptions should mention the chronological \
-evolution when appropriate.
-- **Testing section**: The "Testing Methodologies" section is CRITICAL for \
-the thesis. Its description should reference specific benchmarks, datasets, \
-and metrics mentioned across ALL categories in the L2 summaries.
-- **key_topics**: List 3-7 specific topics for each section.
-- **related_categories**: List the corpus categories relevant to each section.
-- The "key" field must be unique, lowercase, and use underscores. Examples: \
-"introduction", "prompt_injection_attacks", "testing_methodologies".
-- Do NOT add markdown fences around the JSON output. Output ONLY the JSON array.
-
-IMPORTANT:
-- Cover ALL categories from the L2 summaries.
-- Every body section MUST reference relevant papers from L2 summaries in \
-its description.
-- The total target word count across all body sections should be approximately \
-{total_words} words.
-"""
+_PLANNER_PROMPT_TEMPLATE = get_prompt("PLANNER_PROMPT")
 
 
 # ============================================================================

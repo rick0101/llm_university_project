@@ -58,6 +58,7 @@ from paperhunter.utils.llm_factory import (
     get_llm,
     llm_call_with_retry,
 )
+from paperhunter.utils.prompt_loader import get_prompt
 from paperhunter.utils.logging_setup import (
     get_logger,
     print_error,
@@ -73,121 +74,11 @@ logger = get_logger(__name__)
 # Prompt templates
 # ============================================================================
 
-_VERIFICATION_PROMPT_TEMPLATE = """\
-You are an expert academic citation verifier. Your task is to determine whether
-a CLAIM made in a survey paper is supported by the provided SOURCE TEXT.
+_VERIFICATION_PROMPT_TEMPLATE = get_prompt("VERIFICATION_PROMPT")
 
-## Claim from the survey
-"{claim}"
+_BATCH_VERIFICATION_PROMPT_TEMPLATE = get_prompt("BATCH_VERIFICATION_PROMPT")
 
-The claim cites: [{bibtex_key}]
-
-## Source text from the cited paper
-{source_text}
-
-## Instructions
-
-Analyze whether the claim is supported by the source text. Consider:
-
-1. **SUPPORTED**: The source text clearly and directly supports the claim.
-   The facts, numbers, methods, or conclusions in the claim match the source.
-
-2. **PARTIALLY_SUPPORTED**: The source text partially supports the claim.
-   Some aspects are confirmed, but the claim includes details or nuances
-   not fully present in the source (e.g., different numbers, slightly
-   different conclusion, or extra interpretation).
-
-3. **NOT_SUPPORTED**: The source text does not support the claim, or the
-   claim contradicts the source text. The cited paper discusses a different
-   topic or makes different conclusions.
-
-4. **SOURCE_NOT_FOUND**: Only use this if the source text is empty or
-   clearly not from the cited paper.
-
-## Output
-
-Respond with a valid JSON object:
-
-```json
-{{
-  "status": "SUPPORTED | PARTIALLY_SUPPORTED | NOT_SUPPORTED | SOURCE_NOT_FOUND",
-  "confidence": 0.0-1.0,
-  "reasoning": "Brief explanation of your verification decision"
-}}
-```
-
-Output ONLY the JSON, nothing else.
-"""
-
-_BATCH_VERIFICATION_PROMPT_TEMPLATE = """\
-You are an expert academic citation verifier. Verify each claim against its source.
-
-## Citations to verify
-
-{citations_block}
-
-## Instructions
-
-For each citation, determine if the CLAIM is supported by the SOURCE TEXT:
-- **SUPPORTED**: Source clearly confirms the claim
-- **PARTIALLY_SUPPORTED**: Source partially confirms, some details differ
-- **NOT_SUPPORTED**: Source does not support or contradicts the claim
-- **SOURCE_NOT_FOUND**: Source text is empty or clearly unrelated
-
-## Output
-
-Respond with a valid JSON array. Each element corresponds to one citation \
-in the same order:
-
-```json
-[
-  {{
-    "citation_index": 0,
-    "bibtex_key": "Author_YYYY_Key",
-    "status": "SUPPORTED",
-    "confidence": 0.95,
-    "reasoning": "Brief explanation"
-  }},
-  ...
-]
-```
-
-Output ONLY the JSON array, nothing else.
-"""
-
-_FEEDBACK_GENERATION_PROMPT_TEMPLATE = """\
-You are an academic writing critic reviewing a survey paper section.
-
-## Section: {title}
-
-## Verification Results
-
-The following citations were verified:
-
-{verification_summary}
-
-## Overall Statistics
-- Total citations: {total_citations}
-- Supported: {supported}
-- Partially supported: {partially_supported}
-- Not supported: {not_supported}
-- Source not found: {source_not_found}
-- Pass rate: {pass_rate:.1%}
-
-## Task
-
-Write concise, actionable feedback (max 300 words) for the Writer agent to \
-improve the section. Focus on:
-
-1. Which specific claims need better source support
-2. Which citations should be replaced or removed
-3. Which sections need more evidence from the corpus
-
-Be specific: refer to actual bibtex_keys and claims. Do NOT suggest adding \
-new content — only fix existing citation issues.
-
-Output ONLY the feedback text, no JSON or formatting.
-"""
+_FEEDBACK_GENERATION_PROMPT_TEMPLATE = get_prompt("FEEDBACK_GENERATION_PROMPT")
 
 
 # ============================================================================

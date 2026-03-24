@@ -18,6 +18,7 @@ from paperhunter.agents.figure_agent.planner import FigureSpec
 from paperhunter.config import settings
 from paperhunter.utils.llm_factory import get_llm, llm_call_with_retry
 from paperhunter.utils.logging_setup import get_logger
+from paperhunter.utils.prompt_loader import get_prompt
 
 logger = get_logger(__name__)
 
@@ -64,69 +65,7 @@ class FigureCritique(BaseModel):
 # Prompt template
 # ---------------------------------------------------------------------------
 
-_CRITIC_PROMPT = """\
-You are an expert reviewer of scientific figures for academic survey papers. \
-Evaluate the following figure based on its specification and generated code.
-
-## Figure Specification
-
-- **Title:** {title}
-- **Chart Type:** {chart_type}
-- **Description:** {description}
-- **Caption:** {caption}
-
-## Generated Code
-
-```python
-{code}
-```
-
-## Evaluation Criteria
-
-Rate each criterion from 0.0 to 1.0:
-
-### 1. Readability (readability_score)
-- Labels are clear and not overlapping
-- Font sizes are appropriate (10-14pt for academic papers)
-- Colors have sufficient contrast
-- Axes have proper labels and units
-- Legend is clear (if applicable)
-
-### 2. Data Accuracy (accuracy_score)
-- Data points match the specification
-- Scale is appropriate and not misleading
-- No truncated axes that distort proportions
-- Proper number formatting
-
-### 3. Academic Style (style_score)
-- Professional color scheme (not garish)
-- Clean, minimalist design
-- DPI >= 300 for print quality
-- Proper title placement
-- Grid lines are subtle (if present)
-- Appropriate figure size
-
-## Required Output Format
-
-Return a JSON object:
-```json
-{{
-  "verdict": "APPROVED",
-  "overall_score": 0.85,
-  "readability_score": 0.9,
-  "accuracy_score": 0.8,
-  "style_score": 0.85,
-  "feedback": "Overall good figure. Minor suggestions: ...",
-  "issues": ["Label overlap on x-axis", "Consider adding units to y-axis"]
-}}
-```
-
-Rules:
-- "APPROVED" if overall_score >= 0.7 AND no critical issues
-- "NEEDS_REVISION" if overall_score < 0.7 OR has critical issues
-- overall_score = weighted average: readability×0.35 + accuracy×0.35 + style×0.30
-- Be specific in feedback — what exactly should change
-"""
+_CRITIC_PROMPT = get_prompt("FIGURE_CRITIC_PROMPT")
 
 
 # ---------------------------------------------------------------------------

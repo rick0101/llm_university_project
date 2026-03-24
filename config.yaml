@@ -51,7 +51,7 @@ neo4j:
 
 # --- Qdrant (Vector DB locale, no server needed) ---
 qdrant:
-  persist_dir: "./qdrant_db_test"                    # Storage locale su disco
+  persist_dir: "./qdrant_db"                          # Storage locale su disco
   collection_paper_chunks: "paper_chunks"
   collection_l1_summaries: "l1_summaries"
   collection_l2_summaries: "l2_summaries"
@@ -75,7 +75,7 @@ semantic_scholar:
 
 # --- Ingestion Pipeline ---
 ingestion:
-  pdf_base_dir: "./scaricati_test"                  # Directory radice PDF categorizzati
+  pdf_base_dir: "./scaricati"                       # Directory radice PDF categorizzati
   hash_registry_path: "./data/hash_registry.json"
   chunk_size: 1500                             # Token per chunk (approssimativo in caratteri)
   chunk_overlap: 200                           # Overlap tra chunk consecutivi

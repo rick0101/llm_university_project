@@ -1,27 +1,28 @@
 {
   "category": "Data and Model Poisoning",
-  "version": 2,
-  "paper_count": 9,
+  "version": 3,
+  "paper_count": 20,
   "paper_ids": [
-    "Chowdhury_2024_Breaking",
-    "Duan_2025_RLHF",
-    "Li_2024_Backdoorllm",
-    "Nazary_2025_LLM",
-    "Liu_2025_Natural",
-    "Li_2024_Badedit",
-    "Zhou_2025_Goal",
-    "Zhang_2025_Tokenswap",
-    "Bouaziz_2025_Winter"
+    "Li_2026_Slowba",
+    "Li_2025_Autobackdoor",
+    "Wang_2026_Badtemplate",
+    "Panaitesculiess_2025_Poisonedparrot",
+    "Yan_2024_LLM",
+    "Lyu_2024_Trojvlm",
+    "Zhu_2025_Think",
+    "Ye_2025_Visualtrap",
+    "Li_2025_LLM",
+    "Li_2025_Iag"
   ],
   "invalidated": false,
-  "generated_at": "2026-03-20T10:44:30.220185",
+  "generated_at": "2026-03-24T17:15:46.993620",
   "model_used": "pro",
   "recency_tier_stats": {
     "path": "raptor_l1_5",
     "cluster_count": 1,
-    "total_paper_count": 9,
-    "avg_papers_per_cluster": 9.0,
-    "l1_5_chars": 4434,
+    "total_paper_count": 20,
+    "avg_papers_per_cluster": 20.0,
+    "l1_5_chars": 4309,
     "budget_pct": 0
   }
 }

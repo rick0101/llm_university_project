@@ -999,9 +999,23 @@ def _build_graph_index(args, logger) -> int:
         if settings.neo4j.enabled and not args.skip_neo4j:
             try:
                 from paperhunter.graphrag import Neo4jManager
+
+                # Se non ci sono nuove entità ma il graph store ha dati,
+                # esportiamo dal graph store locale per il bulk import
+                entities_to_import = report.entities
+                relations_to_import = report.relations
+                if not entities_to_import and builder.entity_count > 0:
+                    entities_to_import, relations_to_import = (
+                        builder.export_entities_and_relations()
+                    )
+                    logger.info(
+                        f"Neo4j import: uso {len(entities_to_import)} entità "
+                        f"e {len(relations_to_import)} relazioni da graph store"
+                    )
+
                 with Neo4jManager() as mgr:
                     stats_neo = mgr.import_entities_and_relations(
-                        report.entities, report.relations,
+                        entities_to_import, relations_to_import,
                         clear_before=args.clear_graph,
                     )
                     logger.info(

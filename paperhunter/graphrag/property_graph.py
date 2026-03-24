@@ -924,6 +924,86 @@ class PropertyGraphBuilder:
         return result
 
     # ------------------------------------------------------------------
+    # Export helpers
+    # ------------------------------------------------------------------
+
+    def export_entities_and_relations(self) -> tuple[list[Entity], list[PaperhunterRelation]]:
+        """Export all entities and relations from the graph store.
+
+        Converts the internal LabelledPropertyGraph nodes/relations back
+        into Entity/PaperhunterRelation objects suitable for Neo4j import.
+        """
+        if self._graph_store is None:
+            return [], []
+
+        g = self._graph_store.graph
+        entities: list[Entity] = []
+        for name, node in g.nodes.items():
+            props = dict(node.properties) if node.properties else {}
+            try:
+                entities.append(Entity(
+                    id=props.pop("paperhunter_id", ""),
+                    type=EntityType(props.pop("entity_type", "Concept")),
+                    canonical_name=str(name),
+                    aliases=props.pop("aliases", []),
+                    description=props.pop("description", ""),
+                    year=props.pop("year", None),
+                    source_paper_id=props.pop("source_paper_id", None),
+                    source_bibtex_key=props.pop("source_bibtex_key", None),
+                    properties=props,
+                ))
+            except Exception as e:
+                logger.debug(f"Skip nodo '{name}': {e}")
+
+        relations: list[PaperhunterRelation] = []
+        for rel_key, rel in g.relations.items():
+            props = dict(rel.properties) if rel.properties else {}
+            # Relation key format: "Source_RELTYPE_Target"
+            parts = rel_key.split("_")
+            # Find source and target from triplets
+            source_name = target_name = ""
+            rel_type_str = str(rel.label) if hasattr(rel, "label") else str(rel)
+            # Extract from the key pattern
+            for src, rtype, tgt in g.triplets:
+                if rtype == rel_type_str:
+                    src_key = f"{src}_{rtype}_{tgt}"
+                    if src_key == rel_key:
+                        source_name = src
+                        target_name = tgt
+                        break
+
+            if not source_name:
+                # Fallback: parse the key
+                continue
+
+            # Lookup source/target types from nodes
+            src_node = g.nodes.get(source_name)
+            tgt_node = g.nodes.get(target_name)
+            src_type = EntityType(src_node.properties.get("entity_type", "Concept")) if src_node else EntityType.CONCEPT
+            tgt_type = EntityType(tgt_node.properties.get("entity_type", "Concept")) if tgt_node else EntityType.CONCEPT
+
+            try:
+                relations.append(PaperhunterRelation(
+                    type=RelationType(rel_type_str),
+                    source=source_name,
+                    source_type=src_type,
+                    target=target_name,
+                    target_type=tgt_type,
+                    description=props.pop("description", ""),
+                    year=props.pop("year", None),
+                    source_paper_id=props.pop("source_paper_id", None),
+                    source_bibtex_key=props.pop("source_bibtex_key", None),
+                    properties=props,
+                ))
+            except Exception as e:
+                logger.debug(f"Skip relazione '{rel_key}': {e}")
+
+        logger.info(
+            f"Export dal graph store: {len(entities)} entità, {len(relations)} relazioni"
+        )
+        return entities, relations
+
+    # ------------------------------------------------------------------
     # Persistence
     # ------------------------------------------------------------------
 

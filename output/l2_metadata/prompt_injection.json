@@ -1,27 +1,28 @@
 {
   "category": "Prompt Injection",
-  "version": 100,
-  "paper_count": 9,
+  "version": 101,
+  "paper_count": 13,
   "paper_ids": [
-    "Wang_2026_LLM",
-    "Li_2025_LLM",
-    "Zhang_2025_Real",
-    "Liu_2025_Aegis",
-    "Corll_2026_Mirror",
-    "Zhan_2025_LLM",
-    "Wang_2025_LLM",
-    "Slms_2025_Efficient",
-    "Maloyan_2025_LLM"
+    "Weng_2025_LLMs",
+    "Liu_2025_AI",
+    "Liu_2024_Flipattack",
+    "Kritz_2025_Jailbreaking",
+    "Chugh_2026_Recap",
+    "Kumar_2024_LLMs",
+    "Zhao_2024_SQL",
+    "Liu_2024_Autodan",
+    "Wang_2024_LLMs",
+    "Yung_2025_Geometry"
   ],
   "invalidated": false,
-  "generated_at": "2026-03-20T10:50:46.926001",
+  "generated_at": "2026-03-24T17:25:39.373784",
   "model_used": "pro",
   "recency_tier_stats": {
     "path": "raptor_l1_5",
     "cluster_count": 1,
-    "total_paper_count": 9,
-    "avg_papers_per_cluster": 9.0,
-    "l1_5_chars": 4001,
+    "total_paper_count": 13,
+    "avg_papers_per_cluster": 13.0,
+    "l1_5_chars": 4374,
     "budget_pct": 0
   }
 }

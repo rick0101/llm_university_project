@@ -2,6 +2,10 @@
 
 Esegue lo script generato da codegen in un subprocess isolato con timeout,
 cattura errori per il retry loop, e verifica che il PNG sia valido.
+
+Miglioramenti:
+- Critic quality gate (analisi statica post-render)
+- Validazione PNG con PIL (contenuto, non solo size)
 """
 
 from __future__ import annotations
@@ -60,18 +64,62 @@ def _execute_code(code: str, timeout: int = _EXECUTION_TIMEOUT) -> tuple[bool, s
         return False, f"Execution failed: {e}"
 
 
-def _verify_png(path: Path) -> bool:
-    """Verifica che il file PNG esista e abbia dimensione ragionevole."""
+def _verify_png(path: Path) -> tuple[bool, str]:
+    """Verifica che il file PNG esista, abbia dimensione ragionevole e sia valido.
+
+    Returns:
+        Tupla (valid: bool, reason: str).
+    """
     if not path.exists():
-        return False
+        return False, "PNG file does not exist"
+
     size = path.stat().st_size
-    if size < 1000:  # < 1KB → probabilmente corrotto
-        logger.warning("PNG too small (%d bytes): %s", size, path)
-        return False
-    if size > 50_000_000:  # > 50MB → qualcosa non va
-        logger.warning("PNG too large (%d bytes): %s", size, path)
-        return False
-    return True
+    if size < 1000:
+        return False, f"PNG too small ({size} bytes) — likely corrupted or empty"
+    if size > 50_000_000:
+        return False, f"PNG too large ({size} bytes) — likely runaway rendering"
+
+    # Validazione contenuto con PIL
+    try:
+        from PIL import Image
+        with Image.open(path) as img:
+            img.verify()
+        # verify() chiude il file — riapri per check blank
+        with Image.open(path) as img:
+            extrema = img.convert("RGB").getextrema()
+            # Se tutti i canali hanno min==max, l'immagine è uniforme (blank)
+            if all(lo == hi for lo, hi in extrema):
+                return False, "PNG is a blank/uniform image — no visible content"
+    except ImportError:
+        logger.debug("PIL not available — skipping image content validation")
+    except Exception as e:
+        return False, f"PNG validation failed: {e}"
+
+    return True, "OK"
+
+
+# ---------------------------------------------------------------------------
+# Static quality gate
+# ---------------------------------------------------------------------------
+
+def _static_quality_check(spec: FigureSpec, code: str) -> tuple[bool, str]:
+    """Quality gate rapido basato su analisi statica del codice (no LLM).
+
+    Returns:
+        Tupla (passed: bool, feedback: str con problemi trovati).
+    """
+    from paperhunter.agents.figure_agent.critic import critique_code_only
+    critique = critique_code_only(spec, code)
+
+    if critique.verdict.value == "APPROVED":
+        return True, ""
+
+    feedback = "; ".join(critique.issues) if critique.issues else critique.feedback
+    logger.info(
+        "Figure %s: static critique → NEEDS_REVISION (score=%.2f): %s",
+        spec.figure_id, critique.overall_score, feedback,
+    )
+    return False, feedback
 
 
 # ---------------------------------------------------------------------------
@@ -86,7 +134,7 @@ def render_figure(
 ) -> tuple[bool, Path | None, str | None]:
     """Genera e renderizza una code figure con retry automatico.
 
-    Flow: codegen → execute → verify PNG → retry on failure.
+    Flow: codegen → execute → verify PNG → critic → retry on failure.
 
     Args:
         spec: La specifica della figura da generare.
@@ -136,24 +184,35 @@ def render_figure(
         # Esegui
         success, output = _execute_code(code)
 
-        if success and _verify_png(output_path):
-            size_kb = output_path.stat().st_size / 1024
-            logger.info(
-                "Figure %s: rendered successfully (%.1f KB) at iteration %d",
-                spec.figure_id, size_kb, iteration,
-            )
-            return True, output_path, code
-
-        # Errore → prepara feedback per retry
         if not success:
             logger.warning(
                 "Figure %s: execution failed at iteration %d: %s",
                 spec.figure_id, iteration, output[:200],
             )
             error_feedback = output
-        elif not _verify_png(output_path):
-            error_feedback = "The script executed without errors but did not produce a valid PNG file at the expected path."
-            logger.warning("Figure %s: PNG not found/invalid after execution", spec.figure_id)
+            continue
+
+        # Verifica PNG (contenuto + size + PIL validation)
+        png_valid, png_reason = _verify_png(output_path)
+        if not png_valid:
+            logger.warning("Figure %s: PNG invalid — %s", spec.figure_id, png_reason)
+            error_feedback = f"The script executed but the PNG is invalid: {png_reason}"
+            continue
+
+        # Quality gate: analisi statica del codice
+        quality_ok, quality_feedback = _static_quality_check(spec, code)
+        if not quality_ok and iteration < max_iterations:
+            error_feedback = f"Code quality issues: {quality_feedback}"
+            logger.info("Figure %s: quality gate failed, retrying...", spec.figure_id)
+            continue
+
+        # Successo (o ultima iterazione con quality issues non bloccanti)
+        size_kb = output_path.stat().st_size / 1024
+        logger.info(
+            "Figure %s: rendered successfully (%.1f KB) at iteration %d",
+            spec.figure_id, size_kb, iteration,
+        )
+        return True, output_path, code
 
     logger.error(
         "Figure %s: failed after %d iterations",

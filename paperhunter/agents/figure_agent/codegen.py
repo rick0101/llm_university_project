@@ -59,6 +59,28 @@ def _validate_code(code: str, output_path: str) -> str:
     """Valida e correggi il codice generato."""
     lines = code.split("\n")
 
+    # Rimuovi plt.show() — causa hang in headless mode
+    lines = [l for l in lines if "plt.show()" not in l]
+
+    # Assicura backend Agg in testa (prima di qualsiasi import matplotlib)
+    has_agg = any("matplotlib.use" in l for l in lines)
+    if not has_agg:
+        agg_lines = ["import matplotlib", "matplotlib.use('Agg')"]
+        # Inserisci prima del primo import matplotlib/pyplot/seaborn
+        insert_idx = 0
+        for i, line in enumerate(lines):
+            stripped = line.strip()
+            if any(stripped.startswith(f"import {m}") or stripped.startswith(f"from {m}")
+                   for m in ("matplotlib", "seaborn", "mpl_toolkits")):
+                insert_idx = i
+                break
+        # Se il primo import è già 'import matplotlib', serve solo use('Agg')
+        if lines[insert_idx].strip() == "import matplotlib":
+            lines.insert(insert_idx + 1, "matplotlib.use('Agg')")
+        else:
+            for j, agg_line in enumerate(agg_lines):
+                lines.insert(insert_idx + j, agg_line)
+
     # Assicura OUTPUT_PATH
     if "OUTPUT_PATH" not in code:
         lines.insert(0, f'OUTPUT_PATH = "{output_path}"')

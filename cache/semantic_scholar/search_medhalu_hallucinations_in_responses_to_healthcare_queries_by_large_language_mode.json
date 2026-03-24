@@ -1,0 +1,46 @@
+{
+  "paperId": "d00ed4adc27d33f0a0206fde58225c6b420ce05b",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2409-19492",
+    "ArXiv": "2409.19492",
+    "DOI": "10.48550/arXiv.2409.19492",
+    "CorpusId": 272987286
+  },
+  "title": "MedHalu: Hallucinations in Responses to Healthcare Queries by Large Language Models",
+  "venue": "arXiv.org",
+  "year": 2024,
+  "citationCount": 24,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2409.19492, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "153758068",
+      "name": "Vibhor Agarwal"
+    },
+    {
+      "authorId": "2261890759",
+      "name": "Yiqiao Jin"
+    },
+    {
+      "authorId": "32556330",
+      "name": "Mohit Chandra"
+    },
+    {
+      "authorId": "2256118804",
+      "name": "Munmun De Choudhury"
+    },
+    {
+      "authorId": "2309661459",
+      "name": "Srijan Kumar"
+    },
+    {
+      "authorId": "2316398684",
+      "name": "Nishanth R. Sastry"
+    }
+  ],
+  "abstract": "Large language models (LLMs) are starting to complement traditional information seeking mechanisms such as web search. LLM-powered chatbots like ChatGPT are gaining prominence among the general public. AI chatbots are also increasingly producing content on social media platforms. However, LLMs are also prone to hallucinations, generating plausible yet factually incorrect or fabricated information. This becomes a critical problem when laypeople start seeking information about sensitive issues such as healthcare. Existing works in LLM hallucinations in the medical domain mainly focus on testing the medical knowledge of LLMs through standardized medical exam questions which are often well-defined and clear-cut with definitive answers. However, these approaches may not fully capture how these LLMs perform during real-world interactions with patients. This work conducts a pioneering study on hallucinations in LLM-generated responses to real-world healthcare queries from patients.We introduce MedHalu, a novel medical hallucination benchmark featuring diverse health-related topics and hallucinated responses from LLMs, with detailed annotation of the hallucination types and text spans. We also propose MedHaluDetect, a comprehensive framework for evaluating LLMs'abilities to detect hallucinations. Furthermore, we study the vulnerability to medical hallucinations among three groups -- medical experts, LLMs, and laypeople. Notably, LLMs significantly underperform human experts and, in some cases, even laypeople in detecting medical hallucinations. To improve hallucination detection, we propose an expert-in-the-loop approach that integrates expert reasoning into LLM inputs, significantly improving hallucination detection for all LLMs, including a 6.3% macro-F1 improvement for GPT-4. Our code and dataset are available at https://netsys.surrey.ac.uk/datasets/medhalu/."
+}

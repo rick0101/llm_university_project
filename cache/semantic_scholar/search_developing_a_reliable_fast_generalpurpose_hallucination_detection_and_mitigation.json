@@ -1,0 +1,46 @@
+{
+  "paperId": "49504a51f3d947248d6efbb93ad5979300f0d912",
+  "externalIds": {
+    "ArXiv": "2407.15441",
+    "DBLP": "conf/naacl/WangWMXCX25",
+    "DOI": "10.18653/v1/2025.naacl-industry.72",
+    "CorpusId": 271328537
+  },
+  "title": "Developing a Reliable, Fast, General-Purpose Hallucination Detection and Mitigation Service",
+  "venue": "North American Chapter of the Association for Computational Linguistics",
+  "year": 2024,
+  "citationCount": 3,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2407.15441, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2117074851",
+      "name": "Song Wang"
+    },
+    {
+      "authorId": "2312339105",
+      "name": "Xun Wang"
+    },
+    {
+      "authorId": "2312326741",
+      "name": "Jie Mei"
+    },
+    {
+      "authorId": "2312334913",
+      "name": "Yujia Xie"
+    },
+    {
+      "authorId": "2244132868",
+      "name": "Sihan Chen"
+    },
+    {
+      "authorId": "2312326088",
+      "name": "Wayne Xiong"
+    }
+  ],
+  "abstract": "Hallucination, a phenomenon where large language models (LLMs) produce output that is factually incorrect or unrelated to the input, is a major challenge for LLM applications that require accuracy and dependability. In this paper, we introduce a reliable and high-speed production system aimed at detecting and rectifying the hallucination issue within LLMs. Our system encompasses named entity recognition (NER), natural language inference (NLI), span-based detection (SBD), and an intricate decision tree-based process to reliably detect a wide range of hallucinations in LLM responses. Furthermore, we have crafted a rewriting mechanism that maintains an optimal mix of precision, response time, and cost-effectiveness. We detail the core elements of our framework and underscore the paramount challenges tied to response time, availability, and performance metrics, which are crucial for real-world deployment of these technologies. Our extensive evaluation, utilizing offline data and live production traffic, confirms the efficacy of our proposed framework and service."
+}

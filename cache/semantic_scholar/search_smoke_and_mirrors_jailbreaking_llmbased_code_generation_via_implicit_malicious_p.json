@@ -1,0 +1,46 @@
+{
+  "paperId": "83271a2428cb507f67b59924d68d86f20020d28b",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2503-17953",
+    "ArXiv": "2503.17953",
+    "DOI": "10.48550/arXiv.2503.17953",
+    "CorpusId": 277272922
+  },
+  "title": "Smoke and Mirrors: Jailbreaking LLM-based Code Generation via Implicit Malicious Prompts",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 3,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2503.17953, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2351814787",
+      "name": "Ouyang Sheng"
+    },
+    {
+      "authorId": "2314914868",
+      "name": "Yihao Qin"
+    },
+    {
+      "authorId": "2312096332",
+      "name": "Bo Lin"
+    },
+    {
+      "authorId": "2312096319",
+      "name": "Liqian Chen"
+    },
+    {
+      "authorId": "2150465957",
+      "name": "Xiaoguang Mao"
+    },
+    {
+      "authorId": "49184504",
+      "name": "Shangwen Wang"
+    }
+  ],
+  "abstract": "The proliferation of Large Language Models (LLMs) has revolutionized natural language processing and significantly impacted code generation tasks, enhancing software development efficiency and productivity. Notably, LLMs like GPT-4 have demonstrated remarkable proficiency in text-to-code generation tasks. However, the growing reliance on LLMs for code generation necessitates a critical examination of the safety implications associated with their outputs. Existing research efforts have primarily focused on verifying the functional correctness of LLMs, overlooking their safety in code generation. This paper introduces a jailbreaking approach, CodeJailbreaker, designed to uncover safety concerns in LLM-based code generation. The basic observation is that existing safety mechanisms for LLMs are built through the instruction-following paradigm, where malicious intent is explicitly articulated within the instruction of the prompt. Consequently, CodeJailbreaker explores to construct a prompt whose instruction is benign and the malicious intent is implicitly encoded in a covert channel, i.e., the commit message, to bypass the safety mechanism. Experiments on the recently-released RMCBench benchmark demonstrate that CodeJailbreaker markedly surpasses the conventional jailbreaking strategy, which explicitly conveys malicious intents in the instructions, in terms of the attack effectiveness across three code generation tasks. This study challenges the traditional safety paradigms in LLM-based code generation, emphasizing the need for enhanced safety measures in safeguarding against implicit malicious cues."
+}

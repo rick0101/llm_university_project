@@ -1,0 +1,17 @@
+
+  },
+  {
+    "citation_index": 3,
+    "bibtex_key": "Zhang_2025_Real",
+    "status": "SUPPORTED",
+    "confidence": 0.95,
+    "reasoning": "The source text describes RTST as a real-time adaptive defense framework that avoids expensive retraining, which aligns with the claim of a minimal training footprint compared to traditional fine-tuning."
+  },
+  {
+    "citation_index": 4,
+    "bibtex_key": "Zhan_2025_LLM",
+    "status": "NOT_SUPPORTED",
+    "confidence": 0.8,
+    "reasoning": "The source text focuses on evaluating defenses against Indirect Prompt Injection in LLM agents but does not mention the specific high-stakes domains or the exponential expansion of the attack surface described in the claim."
+  }
+]

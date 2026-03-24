@@ -1,0 +1,136 @@
+{
+  "search_id": "4abb7ba2d1949571",
+  "params": {
+    "keywords": "\"adversarial code\" LLM OR \"code injection\" large language model OR \"malicious code generation\"",
+    "criteria": "Solo articoli di ricerca originali che introducono nuovi attacchi o difese relativi alla generazione di codice avversario tramite LLM. Escludi tassativamente survey, review, meta-analisi, tutorial, overview e position paper.",
+    "max_results": 1,
+    "output_dir": "/tmp/ph_test/Adversarial_Code1",
+    "date_from": "2025-05",
+    "date_to": null
+  },
+  "search_meta": {
+    "total_found": 4,
+    "sources_queried": [
+      "ArXiv",
+      "Semantic Scholar",
+      "Hugging Face"
+    ],
+    "errors": [],
+    "source_counts": {
+      "arxiv": 1,
+      "semantic_scholar": 3
+    }
+  },
+  "created_at": "2026-03-24T10:20:01.923203",
+  "updated_at": "2026-03-24T10:22:44.577162",
+  "phase": "complete",
+  "papers": [
+    {
+      "index": 0,
+      "title": "WorldCache: Content-Aware Caching for Accelerated Video World Models",
+      "authors": [
+        "Umair Nawaz",
+        "Ahmed Heakl",
+        "Ufaq Khan",
+        "Abdelrahman Shaker",
+        "Salman Khan"
+      ],
+      "abstract": "Diffusion Transformers (DiTs) power high-fidelity video world models but remain computationally expensive due to sequential denoising and costly spatio-temporal attention. Training-free feature caching accelerates inference by reusing intermediate activations across denoising steps; however, existing methods largely rely on a Zero-Order Hold assumption i.e., reusing cached features as static snapshots when global drift is small. This often leads to ghosting artifacts, blur, and motion inconsistencies in dynamic scenes. We propose \\textbf{WorldCache}, a Perception-Constrained Dynamical Caching framework that improves both when and how to reuse features. WorldCache introduces motion-adaptive thresholds, saliency-weighted drift estimation, optimal approximation via blending and warping, and phase-aware threshold scheduling across diffusion steps. Our cohesive approach enables adaptive, motion-consistent feature reuse without retraining. On Cosmos-Predict2.5-2B evaluated on PAI-Bench, WorldCache achieves \\textbf{2.3$\\times$} inference speedup while preserving \\textbf{99.4\\%} of baseline quality, substantially outperforming prior training-free caching approaches. Our code can be accessed on \\href{https://umair1221.github.io/World-Cache/}{World-Cache}.",
+      "url": "http://arxiv.org/abs/2603.22286v1",
+      "pdf_url": "https://arxiv.org/pdf/2603.22286v1",
+      "arxiv_id": "2603.22286v1",
+      "doi": null,
+      "source": "arxiv",
+      "published_date": "2026-03-23T17:59:54+00:00",
+      "github_url": null,
+      "categories": [
+        "cs.CV",
+        "cs.AI",
+        "cs.CL",
+        "cs.LG"
+      ],
+      "citations": null,
+      "status": "not_relevant",
+      "relevance_reasoning": "The paper focuses on accelerating inference for video world models using Diffusion Transformers (DiTs) through a content-aware caching mechanism. It does not address adversarial code generation, LLM security, or any form of attacks or defenses related to code generation.",
+      "relevance_confidence": 1.0,
+      "download_path": null,
+      "download_error": null
+    },
+    {
+      "index": 1,
+      "title": "CoTDeceptor:Adversarial Code Obfuscation Against CoT-Enhanced LLM Code Agents",
+      "authors": [
+        "Haoyan Li",
+        "Mingjin Li",
+        "Jinxin Zuo",
+        "Siqi Li",
+        "Xiao Li"
+      ],
+      "abstract": "LLM-based code agents(e.g., ChatGPT Codex) are increasingly deployed as detector for code review and security auditing tasks. Although CoT-enhanced LLM vulnerability detectors are believed to provide improved robustness against obfuscated malicious code, we find that their reasoning chains and semantic abstraction processes exhibit exploitable systematic weaknesses.This allows attackers to covertly embed malicious logic, bypass code review, and propagate backdoored components throughout real-world software supply chains.To investigate this issue, we present CoTDeceptor, the first adversarial code obfuscation framework targeting CoT-enhanced LLM detectors. CoTDeceptor autonomously constructs evolving, hard-to-reverse multi-stage obfuscation strategy chains that effectively disrupt CoT-driven detection logic.We obtained malicious code provided by security enterprise, experimental results demonstrate that CoTDeceptor achieves stable and transferable evasion performance against state-of-the-art LLMs and vulnerability detection agents. CoTDeceptor bypasses 14 out of 15 vulnerability categories, compared to only 2 bypassed by prior methods. Our findings highlight potential risks in real-world software supply chains and underscore the need for more robust and interpretable LLM-powered security analysis systems.",
+      "url": "https://www.semanticscholar.org/paper/10c0415a01fbaeefb110b4c7479560371c3a16eb",
+      "pdf_url": "",
+      "arxiv_id": "2512.21250",
+      "doi": "10.48550/arXiv.2512.21250",
+      "source": "semantic_scholar",
+      "published_date": "2025-12-24T00:00:00",
+      "github_url": null,
+      "categories": [],
+      "citations": 0,
+      "status": "download_failed",
+      "relevance_reasoning": "The paper introduces 'CoTDeceptor', a new adversarial code obfuscation framework specifically designed to attack and bypass LLM-based code agents used for vulnerability detection. This directly aligns with the user's criteria for original research introducing new attacks related to adversarial code generation via LLMs.",
+      "relevance_confidence": 1.0,
+      "download_path": null,
+      "download_error": "Could not find PDF download link"
+    },
+    {
+      "index": 2,
+      "title": "Arithmetic-Aware Question-Answering on Tabular Data Using a Large Language Model-Based Code Generation Agent",
+      "authors": [
+        "Arpad Pandy",
+        "Róbert Lakatos",
+        "András Hajdu"
+      ],
+      "abstract": "",
+      "url": "https://www.semanticscholar.org/paper/a386377f2854d37d36ad076f7f269c7a5d001ca1",
+      "pdf_url": "",
+      "arxiv_id": null,
+      "doi": "10.1109/INES67149.2025.11078188",
+      "source": "semantic_scholar",
+      "published_date": "2025-06-11T00:00:00",
+      "github_url": null,
+      "categories": [],
+      "citations": 1,
+      "status": "not_relevant",
+      "relevance_reasoning": "The paper focuses on using LLM-based code generation for arithmetic question-answering on tabular data. It is an application-oriented study aimed at improving functional performance in a specific domain (tabular data analysis). It does not mention, introduce, or analyze adversarial attacks or defenses related to code generation, which are the primary requirements of the research criteria.",
+      "relevance_confidence": 0.9,
+      "download_path": null,
+      "download_error": null
+    },
+    {
+      "index": 3,
+      "title": "Synthetic Malware at Scale: Malicious Code Generation With Code Transplanting",
+      "authors": [
+        "Guangzhan Wang",
+        "Diwei Chen",
+        "Xiaodong Gu",
+        "Yuting Chen",
+        "Beijun Shen"
+      ],
+      "abstract": "Malicious code detection is one of the most essential tasks in safeguarding against security breaches, data compromise, and related threats. While machine learning has emerged as a predominant method for pattern detection, the training process is intricate due to the severe scarcity of malicious code samples. Consequently, machine learning detectors often encounter malicious patterns in limited and isolated scenarios, hindering their ability to generalize effectively across diverse threat landscapes. In this paper, we introduce MalCoder, a novel method for synthesizing malicious code samples. MalCoder enlarges the quantity and diversity of malicious instances by transplanting a set of malicious prototypes into a vast pool of benign code, thereby crafting a diverse array of malicious instances tailored to various application scenarios. For each malware prototype, MalCoder treats it as an incomplete code fragment and crafts its preceding and subsequent contexts through right-to-left and left-to-right code completion respectively. By leveraging GPTs with various sampling strategies, we can instantiate a large number of code samples bearing the malware prototype. Subsequently, MalCoder masks the original prototypes within the transplanted samples and fine-tunes an LLM code generator to reconstruct the original prototype. This process enables the model to seamlessly transplant malicious code fragments into benign code. During inference, MalCoder can automatically insert malicious fragments into benign samples at random positions, transforming benign code into malicious code. We apply MalCoder to a large pool of benign code in CodeSearchNet and craft over 50,000 malicious samples stemming from 39 malicious prototypes. Both qualitative and quantitative analyses show that the generated samples maintain key characteristics of malicious code while blending seamlessly with benign code, which helps in creating realistic and varied training data. Additionally, by using the generated samples as augmented training data, we witness a remarkable surge in malicious code detection capabilities. Specifically, the F1-score experiences a significant increase compared to utilizing only the original prototype samples.",
+      "url": "https://www.semanticscholar.org/paper/4b04a8508e190da735452eaa53a1c40920946da6",
+      "pdf_url": "",
+      "arxiv_id": null,
+      "doi": "10.1109/TSE.2025.3633280",
+      "source": "semantic_scholar",
+      "published_date": "2026-01-01T00:00:00",
+      "github_url": null,
+      "categories": [],
+      "citations": 0,
+      "status": "download_failed",
+      "relevance_reasoning": "The paper introduces 'MalCoder', a novel method for generating synthetic malicious code by transplanting malicious prototypes into benign code using LLMs (GPTs). This directly addresses the user's criteria for original research on the generation of adversarial/malicious code via LLMs. While the authors use the generated code to improve defenses (malware detection), the core contribution is a new technique for LLM-based malicious code generation that aims to create realistic and varied samples that blend with benign code.",
+      "relevance_confidence": 0.95,
+      "download_path": null,
+      "download_error": "Could not find PDF download link"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "run_id": "rc-20260322-181638-1d173d",
+  "target_conference": "neurips_2025",
+  "files": [
+    "paper_final.md",
+    "references.bib",
+    "code/",
+    "verification_report.json",
+    "sanitization_report.json",
+    "charts/",
+    "neurips_2025.sty"
+  ],
+  "generated": "2026-03-22T18:19:49+00:00",
+  "notes": {
+    "paper_final.md": "Final paper in Markdown format",
+    "paper.tex": "Conference-ready LaTeX (neurips_2025)",
+    "references.bib": "BibTeX bibliography (verified citations only)",
+    "code/": "Experiment source code with requirements.txt",
+    "verification_report.json": "Citation integrity & relevance verification",
+    "charts/": "Result visualizations"
+  }
+}

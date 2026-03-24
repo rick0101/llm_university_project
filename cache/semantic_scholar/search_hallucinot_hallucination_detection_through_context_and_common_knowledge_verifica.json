@@ -1,0 +1,38 @@
+{
+  "paperId": "9ceb16d949e5517b2790e85ab9372b1855daba79",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2504-07069",
+    "ArXiv": "2504.07069",
+    "DOI": "10.48550/arXiv.2504.07069",
+    "CorpusId": 277634150
+  },
+  "title": "HalluciNot: Hallucination Detection Through Context and Common Knowledge Verification",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 8,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2504.07069, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2387805584",
+      "name": "Bibek Paudel"
+    },
+    {
+      "authorId": "2354334631",
+      "name": "Alexander Lyzhov"
+    },
+    {
+      "authorId": "2354335675",
+      "name": "Preetam Joshi"
+    },
+    {
+      "authorId": "2274338842",
+      "name": "Puneet Anand"
+    }
+  ],
+  "abstract": "This paper introduces a comprehensive system for detecting hallucinations in large language model (LLM) outputs in enterprise settings. We present a novel taxonomy of LLM responses specific to hallucination in enterprise applications, categorizing them into context-based, common knowledge, enterprise-specific, and innocuous statements. Our hallucination detection model HDM-2 validates LLM responses with respect to both context and generally known facts (common knowledge). It provides both hallucination scores and word-level annotations, enabling precise identification of problematic content. To evaluate it on context-based and common-knowledge hallucinations, we introduce a new dataset HDMBench. Experimental results demonstrate that HDM-2 out-performs existing approaches across RagTruth, TruthfulQA, and HDMBench datasets. This work addresses the specific challenges of enterprise deployment, including computational efficiency, domain specialization, and fine-grained error identification. Our evaluation dataset, model weights, and inference code are publicly available."
+}

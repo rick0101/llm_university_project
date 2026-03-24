@@ -1,0 +1,26 @@
+```json
+[
+  {
+    "citation_index": 0,
+    "bibtex_key": "Liu_2025_Attention",
+    "status": "PARTIALLY_SUPPORTED",
+    "confidence": 0.8,
+    "reasoning": "The source text confirms the paper's focus on LLM hallucinations and its categorization of factual vs. hallucinated generation, but it does not explicitly state the specific definition of hallucination or the 'primary obstacle' claim found in the text."
+  },
+  {
+    "citation_index": 1,
+    "bibtex_key": "Friel_2023_LLM",
+    "status": "SUPPORTED",
+    "confidence": 0.95,
+    "reasoning": "The source text confirms the introduction of ChainPoll as a novel, efficient, and explainable methodology using detailed CoT prompting that outperforms existing metrics, supporting the claim's core facts."
+  },
+  {
+    "citation_index": 2,
+    "bibtex_key": "Sui_2024_Confabulation",
+    "status": "SUPPORTED",
+    "confidence": 0.95,
+    "reasoning": "The source text explicitly mentions the proposal to redefine hallucinations as 'confabulations' to highlight their utility and narrative coherence, supporting the 'theoretical pivot' described."
+  },
+  {
+    "citation_index": 3,
+    

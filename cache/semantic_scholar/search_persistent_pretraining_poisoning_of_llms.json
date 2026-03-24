@@ -1,0 +1,54 @@
+{
+  "paperId": "ea7ab9302a8cba9b3b3edd9d8f3e4d67afc68ed7",
+  "externalIds": {
+    "DBLP": "conf/iclr/ZhangRECSCTI25",
+    "ArXiv": "2410.13722",
+    "DOI": "10.48550/arXiv.2410.13722",
+    "CorpusId": 273403633
+  },
+  "title": "Persistent Pre-Training Poisoning of LLMs",
+  "venue": "International Conference on Learning Representations",
+  "year": 2024,
+  "citationCount": 40,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.13722, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "49889218",
+      "name": "Yiming Zhang"
+    },
+    {
+      "authorId": "2099715241",
+      "name": "Javier Rando"
+    },
+    {
+      "authorId": "2264288587",
+      "name": "Ivan Evtimov"
+    },
+    {
+      "authorId": "31357678",
+      "name": "Jianfeng Chi"
+    },
+    {
+      "authorId": "2326816434",
+      "name": "E. Smith"
+    },
+    {
+      "authorId": "2483738",
+      "name": "Nicholas Carlini"
+    },
+    {
+      "authorId": "2444919",
+      "name": "Florian Tramèr"
+    },
+    {
+      "authorId": "2324785628",
+      "name": "Daphne Ippolito"
+    }
+  ],
+  "abstract": "Large language models are pre-trained on uncurated text datasets consisting of trillions of tokens scraped from the Web. Prior work has shown that: (1) web-scraped pre-training datasets can be practically poisoned by malicious actors; and (2) adversaries can compromise language models after poisoning fine-tuning datasets. Our work evaluates for the first time whether language models can also be compromised during pre-training, with a focus on the persistence of pre-training attacks after models are fine-tuned as helpful and harmless chatbots (i.e., after SFT and DPO). We pre-train a series of LLMs from scratch to measure the impact of a potential poisoning adversary under four different attack objectives (denial-of-service, belief manipulation, jailbreaking, and prompt stealing), and across a wide range of model sizes (from 600M to 7B). Our main result is that poisoning only 0.1% of a model's pre-training dataset is sufficient for three out of four attacks to measurably persist through post-training. Moreover, simple attacks like denial-of-service persist through post-training with a poisoning rate of only 0.001%."
+}

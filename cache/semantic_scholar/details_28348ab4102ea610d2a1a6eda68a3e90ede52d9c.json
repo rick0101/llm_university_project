@@ -1,0 +1,49 @@
+{
+  "paperId": "28348ab4102ea610d2a1a6eda68a3e90ede52d9c",
+  "externalIds": {
+    "ArXiv": "2603.08316",
+    "CorpusId": 286376816
+  },
+  "title": "SlowBA: An efficiency backdoor attack towards VLM-based GUI agents",
+  "venue": "",
+  "year": 2026,
+  "citationCount": 0,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.08316, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2026-03-09",
+  "journal": null,
+  "citationStyles": {
+    "bibtex": "@Inproceedings{Li2026SlowBAAE,\n author = {Junxian Li and T.Y. Lan and Hao Tan and Yan Meng and Haojin Zhu},\n title = {SlowBA: An efficiency backdoor attack towards VLM-based GUI agents},\n year = {2026}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2109383573",
+      "name": "Junxian Li"
+    },
+    {
+      "authorId": "2367842294",
+      "name": "T.Y. Lan"
+    },
+    {
+      "authorId": "2312006077",
+      "name": "Hao Tan"
+    },
+    {
+      "authorId": "2312179102",
+      "name": "Yan Meng"
+    },
+    {
+      "authorId": "2238128921",
+      "name": "Haojin Zhu"
+    }
+  ],
+  "abstract": "Modern vision-language-model (VLM) based graphical user interface (GUI) agents are expected not only to execute actions accurately but also to respond to user instructions with low latency. While existing research on GUI-agent security mainly focuses on manipulating action correctness, the security risks related to response efficiency remain largely unexplored. In this paper, we introduce SlowBA, a novel backdoor attack that targets the responsiveness of VLM-based GUI agents. The key idea is to manipulate response latency by inducing excessively long reasoning chains under specific trigger patterns. To achieve this, we propose a two-stage reward-level backdoor injection (RBI) strategy that first aligns the long-response format and then learns trigger-aware activation through reinforcement learning. In addition, we design realistic pop-up windows as triggers that naturally appear in GUI environments, improving the stealthiness of the attack. Extensive experiments across multiple datasets and baselines demonstrate that SlowBA can significantly increase response length and latency while largely preserving task accuracy. The attack remains effective even with a small poisoning ratio and under several defense settings. These findings reveal a previously overlooked security vulnerability in GUI agents and highlight the need for defenses that consider both action correctness and response efficiency. Code can be found in https://github.com/tu-tuing/SlowBA."
+}

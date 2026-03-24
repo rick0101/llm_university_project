@@ -1,0 +1,39 @@
+```json
+[
+  {
+    "citation_index": 0,
+    "bibtex_key": "Jia_2025_Adversarial",
+    "status": "SUPPORTED",
+    "confidence": 1.0,
+    "reasoning": "The source explicitly describes the FOA-Attack as a 'targeted transferable adversarial attack framework' designed to 'enhance transferability against both open-source and closed-source MLLMs,' including 'unseen' models like GPT-o3."
+  },
+  {
+    "citation_index": 1,
+    "bibtex_key": "Thang_2026_LLM",
+    "status": "NOT_SUPPORTED",
+    "confidence": 0.8,
+    "reasoning": "While the source discusses 'code LLMs' and their security, it does not mention that they are 'transformer-based autoregressive models trained to predict the next token.' This technical definition of the models is absent from the provided source text."
+  },
+  {
+    "citation_index": 2,
+    "bibtex_key": "Yin_2025_LLM",
+    "status": "SUPPORTED",
+    "confidence": 0.95,
+    "reasoning": "The source describes the development of MIST, an adversarial attack module for code, and the need for adversarial training to improve the robustness of code detection models, confirming the vulnerability of code-specific LLMs to such attacks."
+  },
+  {
+    "citation_index": 3,
+    "bibtex_key": "Yang_2024_Adversarial",
+    "status": "SUPPORTED",
+    "confidence": 1.0,
+    "reasoning": "The source explicitly demonstrates the vulnerability of LLMs in medical contexts, specifically mentioning 'dangerous drug combinations' and 'unnecessary diagnostic tests' as potential outcomes of adversarial attacks."
+  },
+  {
+    "citation_index": 4,
+    "bibtex_key": "Wang_2024_Advqdet",
+    "status": "SUPPORTED",
+    "confidence": 0.9,
+    "reasoning": "The source focuses on 'query-based black-box attacks' and proposes a detection framework (AdvQDet) for them, which aligns with the claim's description of a black-box threat model where the adversary interacts via queries and observations."
+  }
+]
+```

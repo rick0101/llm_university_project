@@ -1,0 +1,637 @@
+{
+  "node": "verify",
+  "timestamp": "20260323_132502",
+  "state": {
+    "l2_summaries": [],
+    "outline": [
+      {
+        "key": "abstract",
+        "title": "Abstract",
+        "description": "A concise summary of the survey paper. It will outline the rapid evolution of LLM security threats from 2023 to 2026, covering data poisoning, adversarial attacks, prompt injection, and hallucinations. It will highlight the transition from static, unimodal vulnerabilities to dynamic, multimodal, and agentic adversarial arms races, summarizing the state-of-the-art in both offensive techniques and defensive mitigations.",
+        "target_length_words": 250,
+        "key_topics": [
+          "LLM Security",
+          "Adversarial Attacks",
+          "Prompt Injection",
+          "Data Poisoning",
+          "Hallucinations"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 0,
+        "section_type": "abstract",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "introduction",
+        "title": "1. Introduction",
+        "description": "Establish the motivation and scope of the survey, contextualizing the rapid deployment of Large Language Models (LLMs) and Multimodal Large Language Models (MLLMs) against the escalating landscape of security vulnerabilities. Outline the temporal evolution from 2023 to 2026, noting the shift from isolated, domain-specific vulnerabilities to a highly sophisticated, co-evolutionary adversarial arms race. Summarize the core contributions of this survey: a comprehensive systematization of training-time threats (poisoning), inference-time threats (adversarial attacks, prompt injection), model reliability issues (hallucinations), and the corresponding defensive paradigms. Provide a roadmap for the subsequent sections.",
+        "target_length_words": 800,
+        "key_topics": [
+          "Survey Scope",
+          "Temporal Evolution",
+          "Threat Landscape",
+          "Contributions"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 1,
+        "section_type": "introduction",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "background_and_preliminaries",
+        "title": "2. Background and Preliminaries",
+        "description": "Provide the foundational concepts necessary for understanding LLM security. Define core terminology strictly, including Jailbreak, Prompt Injection (direct vs. indirect), Attack Success Rate (ASR), Safety Alignment (RLHF, DPO, SFT), and Red Teaming. Briefly overview standard LLM and MLLM architectures (e.g., Transformers, MoE) and how they process inputs, without over-claiming specific attack papers as architectural sources. Establish the threat model taxonomy, distinguishing between white-box (full gradient/weight access) and black-box (query-only) adversary capabilities, and differentiate between training-time and inference-time threat vectors.",
+        "target_length_words": 1000,
+        "key_topics": [
+          "Terminology",
+          "Threat Models",
+          "Safety Alignment",
+          "White-box vs Black-box"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 2,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "training_time_threats_poisoning",
+        "title": "3. Training-Time Threats: Data and Model Poisoning",
+        "description": "Detail the 2024-2025 evolution of data and model poisoning within foundation models. Discuss the foundational 2024 benchmarking of generative backdoors in open-source models like LLaMA-2, Mistral, and GPT-J, explicitly referencing the frameworks provided by [Chowdhury_2024_Breaking] and [Li_2024_Backdoorllm]. Explain how these early studies demonstrated the inadequacy of traditional defenses against generative backdoor threats. Transition to the late 2024/2025 shift where attacks expanded beyond unimodal text generation into complex multimodal environments and embodied AI. Highlight the exploitation of alignment and retrieval mechanisms, specifically detailing vulnerabilities within the Reinforcement Learning from Human Feedback (RLHF) pipeline.",
+        "target_length_words": 1500,
+        "key_topics": [
+          "Data Poisoning",
+          "Generative Backdoors",
+          "RLHF Vulnerabilities",
+          "Multimodal Poisoning"
+        ],
+        "related_categories": [
+          "Data and Model Poisoning"
+        ],
+        "order": 3,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "inference_time_adversarial_attacks",
+        "title": "4. Inference-Time Threats I: Adversarial Attacks",
+        "description": "Analyze the 2024-2026 trajectory of adversarial attacks on LLMs and MLLMs. Highlight the 2024 focus on baseline vulnerabilities in high-stakes, specialized domains, specifically discussing how standard models were manipulated when processing sensitive healthcare datasets like MIMIC-III [Yang_2024_Adversarial]. Describe the transition from these initial domain-specific exploits to a sophisticated, multi-faceted arms race characterized by advanced offensive weaponization. Discuss the mechanics of adversarial suffixes, token manipulation, and how attackers exploit the high-dimensional continuous spaces of LLM embeddings to force unintended behaviors.",
+        "target_length_words": 1200,
+        "key_topics": [
+          "Adversarial Suffixes",
+          "Domain-Specific Vulnerabilities",
+          "Healthcare AI Security",
+          "Continuous Space Attacks"
+        ],
+        "related_categories": [
+          "Adversarial Attacks"
+        ],
+        "order": 4,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "inference_time_prompt_injection",
+        "title": "5. Inference-Time Threats II: Prompt Injection and Jailbreaking",
+        "description": "Examine the 2025-2026 shift from static, rule-based defenses to automated adversarial arms races in prompt injection and jailbreaking. Detail offensive advancements using adaptive optimization techniques. Specifically, discuss the application of modified Greedy Coordinate Gradient (GCG), Monte Carlo Tree Search (MCTS) fuzzing, and genetic algorithms that achieved alarming Attack Success Rates (ASR) ranging from 50% to 71% against state-of-the-art LLM agents, referencing [Zhan_2025_LLM, Wang_2025_LLM, Maloyan_2025_LLM]. Explore the bifurcation of this trend into the pursuit of extreme computational efficiency for attackers and the exploitation of agentic environments.",
+        "target_length_words": 1500,
+        "key_topics": [
+          "Prompt Injection",
+          "Jailbreaking",
+          "MCTS Fuzzing",
+          "Genetic Algorithms",
+          "Automated Attacks"
+        ],
+        "related_categories": [
+          "Prompt Injection"
+        ],
+        "order": 5,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "model_reliability_hallucinations",
+        "title": "6. Model Reliability and Factual Consistency: LLM Hallucinations",
+        "description": "Trace the 2023-2026 evolution of hallucination detection and mitigation. Cover the 2023 era of establishing baseline detection methodologies, focusing on zero-shot inference-time methods and the LLM-as-a-judge paradigm. Specifically highlight the introduction of ChainPoll [Friel_2023_LLM], detailing how it utilized LLM-based polling and Chain-of-Thought (CoT) prompting to drastically reduce inference costs while outperforming competitors. Transition to the 2024 conceptual maturation, where the field moved away from treating all non-factual generations as binary errors, shifting toward highly optimized, mechanistically informed, and conceptually nuanced frameworks for evaluating factual consistency.",
+        "target_length_words": 1200,
+        "key_topics": [
+          "Hallucination Detection",
+          "LLM-as-a-Judge",
+          "ChainPoll",
+          "Factual Consistency",
+          "Mechanistic Frameworks"
+        ],
+        "related_categories": [
+          "LLM Hallucinations"
+        ],
+        "order": 6,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "cross_cutting_defenses",
+        "title": "8. Cross-Cutting Defenses and Mitigation Strategies",
+        "description": "Synthesize holistic defense strategies across the identified threat vectors. Contrast early 2024 'patchwork' defenses, such as external stateful detection and prompt-level manipulations. Specifically detail contrastive prompt tuning as a mechanism to detect query-based black-box attacks, noting its 99% detection rate [Wang_2024_Advqdet]. Discuss the evolution toward dynamic, ensemble-based defensive systems in 2025-2026 designed to counter automated optimization attacks (e.g., modified GCG). Cover architectural interventions, perplexity filters, robust alignment techniques, and the integration of security directly into the model's training and retrieval pipelines.",
+        "target_length_words": 1500,
+        "key_topics": [
+          "Contrastive Prompt Tuning",
+          "Perplexity Filters",
+          "Ensemble Defenses",
+          "Robust Alignment",
+          "Stateful Detection"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Prompt Injection",
+          "Data and Model Poisoning"
+        ],
+        "order": 7,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "testing_methodologies_and_evaluation",
+        "title": "7. Testing Methodologies and Evaluation",
+        "description": "Critically evaluate testing methodologies, benchmarks, datasets, and metrics across all threat categories (Poisoning, Adversarial Attacks, Prompt Injection, Hallucinations). Discuss the standardization of Attack Success Rate (ASR) for jailbreaks and prompt injections. Review the datasets used for evaluating domain-specific vulnerabilities (e.g., MIMIC-III for healthcare) and the benchmarks for generative backdoors. Analyze the metrics used for hallucination detection, contrasting exact match with LLM-evaluated semantic equivalence. Address the challenges of evaluating dynamic, agentic attacks (e.g., MCTS fuzzing) and the necessity for reproducible, standardized red-teaming frameworks.",
+        "target_length_words": 1500,
+        "key_topics": [
+          "Attack Success Rate (ASR)",
+          "Red Teaming Frameworks",
+          "Evaluation Metrics",
+          "Benchmarking",
+          "Datasets"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 8,
+        "section_type": "testing",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "discussion_and_open_challenges",
+        "title": "9. Discussion and Open Challenges",
+        "description": "Identify critical gaps and limitations in the current LLM security landscape. Discuss the fundamental tension between model utility (alignment) and security (robustness). Address the open challenges in defending against adaptive, co-evolutionary attacks in multi-agent systems. Highlight the lack of theoretical guarantees for empirical defenses and the difficulties in scaling robust training methods to trillion-parameter models. Propose future research directions, including the need for mechanistically interpretable security, cross-modal defense generalization, and standardized regulatory compliance testing.",
+        "target_length_words": 1000,
+        "key_topics": [
+          "Utility-Security Trade-off",
+          "Multi-Agent Vulnerabilities",
+          "Theoretical Guarantees",
+          "Future Directions"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 9,
+        "section_type": "discussion",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "conclusion",
+        "title": "10. Conclusion",
+        "description": "Provide a final synthesis of the survey's findings. Reiterate the rapid paradigm shift from static, unimodal vulnerabilities to dynamic, automated adversarial arms races. Offer practical recommendations for practitioners deploying LLMs in high-stakes environments, emphasizing the necessity of defense-in-depth strategies that combine robust alignment, continuous red-teaming, and dynamic inference-time monitoring.",
+        "target_length_words": 500,
+        "key_topics": [
+          "Synthesis",
+          "Practical Recommendations",
+          "Defense-in-Depth"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 10,
+        "section_type": "conclusion",
+        "parent_key": null,
+        "subsections": []
+      }
+    ],
+    "sections": {
+      "background_and_preliminaries": {
+        "section_key": "background_and_preliminaries",
+        "title": "2. Background and Preliminaries",
+        "text": "**2. Background and Preliminaries**\n\nThis section establishes the foundational concepts necessary for understanding adversarial attacks against Large Language Models (LLMs). We define key terminology, explore the mechanisms of safety alignment, formalize the threat models under which these attacks operate, and distinguish between white-box and black-box attack paradigms.\n\n**2.1 Terminology**\n\nTo ensure clarity throughout this survey, we first define the core terminology used in the domain of LLM security and adversarial machine learning.\n\n*   **Adversarial Example:** Originally defined in the context of computer vision, an adversarial example is an input intentionally designed by an attacker to cause a machine learning model to make a mistake [Wang_2024_Advqdet]. In the context of LLMs, this often takes the form of a carefully crafted text prompt that bypasses the model's safety filters or induces unintended behavior, such as generating malicious code or toxic content [Yin_2025_LLM, Yang_2024_Adversarial]. Unlike continuous-space perturbations in computer vision, adversarial attacks on LLMs operate in discrete token spaces while adhering to syntactic and semantic constraints [Yin_2025_LLM].\n*   **Jailbreak:** A specific type of adversarial attack unique to generative AI and LLMs. A jailbreak prompt is designed to circumvent the safety guardrails and alignment training of an LLM, forcing it to generate prohibited content, such as instructions for illegal acts, hate speech, or malware [Liu_2025_Purpcode]. Jailbreaks often rely on role-playing, hypothetical scenarios, or complex logical framing to trick the model into ignoring its safety directives.\n*   **Red-Teaming:** The systematic process of rigorously testing an AI system to identify vulnerabilities, flaws, and biases. In LLM development, internal red-teaming pipelines are used to curate prompts that can expose unsafe model behaviors, allowing developers to patch these vulnerabilities before deployment [Liu_2025_Purpcode].\n*   **Prompt Injection:** An attack where malicious instructions are embedded within a seemingly benign prompt or external data source (like a webpage the LLM is summarizing). The goal is to hijack the LLM's objective, causing it to execute the attacker's hidden instructions rather than the user's original request.\n*   **Safety Guardrails:** Mechanisms implemented during or after model training to prevent the generation of harmful, biased, or inappropriate content. These can include input filters, output classifiers, and specific alignment techniques.\n\n**2.2 Safety Alignment**\n\nModern LLMs undergo extensive training to ensure their outputs are not only helpful but also safe and harmless. This process, known as safety alignment, is crucial for deploying LLMs in real-world applications, particularly in sensitive domains like healthcare or software development where vulnerabilities pose significant threats [Yang_2024_Adversarial, Thang_2026_LLM].\n\nThe goal of alignment is to enable generalizable safety reasoning without degrading the model's core utility [Liu_2025_Purpcode]. The two most prominent techniques for achieving this are:\n\n*   **Supervised Fine-Tuning (SFT):** After the initial pre-training phase, the model is fine-tuned on a curated dataset of high-quality, safe prompt-response pairs. This teaches the model the desired format and tone, as well as basic safety boundaries. However, SFT largely depends on expensive, high-quality response collections and may not generalize well to novel, unseen adversarial prompts [Liu_2025_Purpcode].\n*   **Reinforcement Learning from Human Feedback (RLHF):** This technique involves training a reward model based on human preferences (e.g., ranking responses based on helpfulness and harmlessness). The LLM is then optimized using reinforcement learning algorithms to maximize this reward. RLHF has been instrumental in aligning models to human values.\n\nDespite these efforts, safety alignment remains an imperfect science. There is an inherent tension between helpfulness and harmlessness; an overly aligned model may refuse benign requests (false refusals), while an under-aligned model remains vulnerable to jailbreaks. Recent approaches propose advanced post-training pipelines to teach models to explicitly \"think over\" known safety guidelines and perform cybersafety reasoning, aiming to improve robustness against sophisticated attacks [Liu_2025_Purpcode].\n\n**2.3 Threat Models**\n\nA formal threat model defines the assumptions about the attacker's goals, knowledge, and capabilities. In the context of LLM adversarial attacks, threat models are generally categorized based on the attacker's objective and their access to the target system.\n\n*   **Attacker Goals:** The primary objectives of an adversary typically fall into several categories:\n    *   *Bypassing Safety Filters (Jailbreaking):* Eliciting prohibited content, such as hate speech, dangerous instructions, or PII extraction.\n    *   *Targeted Misdirection:* Forcing the model to output a specific, incorrect, or malicious response. For example, a threat arises when a model operating under benign prompts generates code that is functionally correct but insecure, containing vulnerabilities like missing input validation or unsafe memory management [Thang_2026_LLM].\n    *   *Denial of Service (DoS):* Crafting inputs that cause the model to consume excessive computational resources, degrading service for legitimate users.\n    *   *Data Poisoning:* Injecting malicious data into the model's training or fine-tuning dataset to introduce backdoors or degrade overall performance.\n\n*   **Attacker Capabilities:** The threat model also defines what the attacker can do. In a typical scenario, the defender is the owner of the target model who deploys defense strategies, while the adversary attempts to bypass them [Wang_2024_Advqdet]. The attacker's capabilities are largely dictated by their level of access to the model, which leads to the distinction between white-box and black-box attacks.\n\n**2.4 White-box vs. Black-box Attacks**\n\nThe most critical distinction in adversarial machine learning threat models is the level of access the attacker has to the target model's internal architecture, parameters, and gradients.\n\n**White-box Attacks:**\nIn a white-box setting, the adversary has full, unrestricted access to the target model's parameters [Wang_2024_Advqdet]. This includes knowledge of the model's architecture, weights, biases, training data, and the ability to compute gradients.\n*   *Mechanism:* Because the attacker can directly compute the adversarial gradients of the loss function with respect to the input, they can use gradient-based optimization techniques to craft highly effective adversarial examples [Wang_2024_Advqdet]. \n*   *Application to LLMs:* Applying gradient-based attacks to LLMs is challenging because text operates in a discrete token space, unlike the continuous space of images [Yin_2025_LLM]. White-box attacks on LLMs often involve techniques like gradient-guided token substitution, where gradients are used to identify the most promising tokens to swap in order to bypass alignment.\n*   *Real-world Relevance:* True white-box access is rare for commercial, proprietary LLMs which are kept behind APIs. However, white-box attacks are highly relevant for open-source models where the weights are publicly available.\n\n**Black-box Attacks:**\nIn a black-box setting, the adversary has no knowledge of the model's internal parameters or architecture. They can only interact with the target model to estimate adversarial gradients based on the model returns [Wang_2024_Advqdet].\n*   *Mechanism:* In a query-based black-box threat model, the adversary generates adversarial examples by making multiple queries to the target model and using the model's output probabilities or text responses to iteratively optimize the attack [Wang_2024_Advqdet]. This can involve evolutionary algorithms, reinforcement learning, or trial-and-error prompt engineering.\n*   *Transferability:* Another common black-box strategy relies on the property of transferability. An attacker can train a surrogate model (a white-box model they control) to mimic the target black-box model. They then generate adversarial examples against the surrogate model, hoping these examples will \"transfer\" and successfully fool the target model.\n*   *Real-world Relevance:* Black-box attacks represent the most realistic threat scenario for commercial LLMs deployed via APIs or web interfaces. The primary challenge in black-box attacks is minimizing the number of queries required to find a successful adversarial example, as excessive querying may trigger rate limits or anomaly detection systems.",
+        "citations": [
+          {
+            "bibtex_key": "Wang_2024_Advqdet",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Yin_2025_LLM",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Liu_2025_Purpcode",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Thang_2026_LLM",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Yin_2025_LLM, Yang_2024_Adversarial",
+            "claim": "(auto-detected from text)",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Yang_2024_Adversarial, Thang_2026_LLM",
+            "claim": "(auto-detected from text)",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          }
+        ],
+        "word_count": 1189,
+        "status": "verified",
+        "iteration": 3,
+        "rag_queries": [],
+        "retrieved_chunk_ids": [],
+        "writer_notes": "[prefetch_agentic] Response was not valid JSON. Citations extracted via regex.",
+        "critic_feedback": "Accepted after 3 iterations (max reached). Some citations may not be fully verified.",
+        "drafted_at": "2026-03-23T13:03:38.643641"
+      },
+      "introduction": {
+        "section_key": "introduction",
+        "title": "1. Introduction",
+        "text": "## 1. Introduction\n\nThe emergence of artificial intelligence has driven a significant transformation in Natural Language Processing (NLP) through the introduction of Large Language Models (LLMs), enabling unprecedented advances in language comprehension, generation, and translation [Chowdhury_2024_Breaking]. These models are increasingly integrated across diverse sectors, ranging from automated customer support to delicate medical diagnostics and autonomous agent-based systems [Chowdhury_2024_Breaking, Yang_2024_Adversarial, Wang_2025_LLM]. However, this extensive real-world deployment exposes them to a fast-evolving landscape of sophisticated security vulnerabilities, posing critical challenges to their integrity, reliability, and safe application [Chowdhury_2024_Breaking]. Understanding and mitigating these vulnerabilities is imperative for ensuring the security and trustworthiness of AI-driven systems in society [Chowdhury_2024_Breaking].\n\nThe trajectory of LLM safety research from 2020 to 2026 illustrates a rapid escalation in both threat complexity and defensive sophistication [Wang_2026_LLM]. Early efforts in the foundation era primarily focused on establishing basic safety alignment through Reinforcement Learning from Human Feedback (RLHF) [Wang_2026_LLM]. However, the field quickly transitioned into a phase of rapid development characterized by a proliferation of novel benchmarks, adaptive attacks, and corresponding defenses [Wang_2026_LLM]. Recent literature highlights a distinct shift from isolated, domain-specific vulnerabilities toward a highly sophisticated, co-evolutionary adversarial arms race, where attackers continuously refine strategies and defenders must adapt in response [Liu_2025_Aegis]. As adaptive attacks consistently demonstrate the ability to bypass static defenses, the research community is increasingly directing its focus toward future paradigms of certified robustness and automated adversarial co-training [Wang_2026_LLM, Zhan_2025_LLM, Liu_2025_Aegis].\n\nThe contemporary threat landscape can be systematically categorized into training-time vulnerabilities, inference-time exploits, and intrinsic reliability failures. At training time, data and model poisoning present severe risks. Adversaries can execute indirect data poisoning against LLM pretraining to covertly enforce arbitrary hidden behaviors using an exceptionally small fraction of poisoned tokens [Bouaziz_2025_Winter]. Similarly, backdoor attacks can be injected via lightweight knowledge editing, directly altering LLM parameters with as few as 15 samples [Li_2024_Badedit]. Crucially, research indicates that integrating poisoned data often does not markedly degrade overall model performance on standard benchmarks, allowing these vulnerabilities to remain highly stealthy and evade naive detection [Yang_2024_Adversarial, Bouaziz_2025_Winter, Li_2024_Badedit]. This vulnerability extends to multi-modal systems, where adversaries can hijack text-to-image models by poisoning a small fraction of preference data to corrupt the reward model during RLHF [Duan_2025_RLHF]. Furthermore, the threat of backdoors in open-ended text generation has necessitated the development of comprehensive evaluation benchmarks to systematically assess data poisoning, weight poisoning, and hidden-state manipulation [Li_2024_Backdoorllm].\n\nAt inference time, LLMs are highly susceptible to adversarial attacks and prompt injections, which exploit the semantic and contextual flexibility of natural language [Liu_2025_Aegis]. Prompt injection attacks manipulate models into producing unintended or harmful outputs, and their complexity is magnified in agent-based systems through indirect prompt injections, where malicious instructions are embedded in external contextual information rather than direct user inputs [Wang_2025_LLM, Zhan_2025_LLM]. Automated fuzzing frameworks leveraging Monte Carlo Tree Search have proven highly effective at discovering these indirect vulnerabilities across diverse LLM agents [Wang_2025_LLM]. Furthermore, retrieval-augmented generation (RAG) pipelines are vulnerable to provider-side data poisoning, where subtle metadata rewrites can manipulate item exposure and rankings [Nazary_2025_LLM].\n\nBeyond malicious exploits, intrinsic model reliability issues, particularly hallucinations, remain a critical bottleneck. While public-facing reports and popular surveys frequently position hallucinations as a chief ethical and safety pitfall, they fundamentally present an imminent risk to model trustworthiness with severe epistemic consequences in truth-sensitive domains such as law, medicine, finance, and science [Sui_2024_Confabulation]. Addressing these inaccuracies requires robust automated detection methodologies, uncertainty heads for claim-level detection, and carefully curated benchmark datasets that reflect the capabilities of modern LLMs [Friel_2023_LLM, Shelmanov_2025_LLM].\n\nTo mitigate these escalating threats, a diverse array of defensive paradigms has emerged. Traditional approaches encompass data filtering, guardrails, robust training techniques, and safety context distillation [Chowdhury_2024_Breaking]. However, the limitations of static, human-engineered prompts have driven the development of automated, co-evolutionary frameworks that dynamically discover robust defenses without requiring model fine-tuning [Liu_2025_Aegis]. Other promising directions include real-time, self-tuning moderator frameworks for jailbreak defense [Zhang_2025_Real], strict geometric data curation for ultra-fast, deterministic prompt injection screening at the first layer of defense [Corll_2026_Mirror], and the deployment of diverse multi-model committees to enhance the robustness of LLM-as-a-judge systems against adversarial manipulation [Maloyan_2025_LLM].\n\nThis survey provides a comprehensive systematization of the LLM security landscape. Our core contributions are threefold: (1) we present a novel taxonomy of training-time threats (poisoning and backdoors) and inference-time threats (adversarial attacks and prompt injections), elucidating their underlying mechanisms; (2) we critically examine the co-evolutionary dynamics between adaptive attacks and emerging defensive strategies; and (3) we highlight the critical need for certified robustness and real-time monitoring systems. The remainder of this paper is structured as follows. Section 2 details training-time threats, focusing on data poisoning and backdoor injections. Section 3 explores inference-time vulnerabilities, including adversarial attacks and prompt injections. Section 4 discusses model reliability and hallucination mitigation. Finally, Section 5 reviews state-of-the-art defensive paradigms and outlines promising directions for future research.",
+        "citations": [
+          {
+            "bibtex_key": "Chowdhury_2024_Breaking",
+            "claim": "The emergence of artificial intelligence has driven a significant transformation in Natural Language Processing (NLP) through the introduction of Large Language Models (LLMs), enabling unprecedented advances in language comprehension, generation, and translation.",
+            "chunk_id": "92c01f225a6ac0a1",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Chowdhury_2024_Breaking",
+            "claim": "These models are increasingly integrated across diverse sectors, ranging from automated customer support to delicate medical diagnostics and autonomous agent-based systems.",
+            "chunk_id": "92c01f225a6ac0a1",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Yang_2024_Adversarial",
+            "claim": "These models are increasingly integrated across diverse sectors, ranging from automated customer support to delicate medical diagnostics and autonomous agent-based systems.",
+            "chunk_id": "192979f2ab45f38c",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Wang_2025_LLM",
+            "claim": "These models are increasingly integrated across diverse sectors, ranging from automated customer support to delicate medical diagnostics and autonomous agent-based systems.",
+            "chunk_id": "afa2e86b335806c3",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Chowdhury_2024_Breaking",
+            "claim": "However, this extensive real-world deployment exposes them to a fast-evolving landscape of sophisticated security vulnerabilities, posing critical challenges to their integrity, reliability, and safe application.",
+            "chunk_id": "92c01f225a6ac0a1",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Chowdhury_2024_Breaking",
+            "claim": "Understanding and mitigating these vulnerabilities is imperative for ensuring the security and trustworthiness of AI-driven systems in society.",
+            "chunk_id": "92c01f225a6ac0a1",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Wang_2026_LLM",
+            "claim": "The trajectory of LLM safety research from 2020 to 2026 illustrates a rapid escalation in both threat complexity and defensive sophistication.",
+            "chunk_id": "09fc0ceaf9bfdf3d",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Wang_2026_LLM",
+            "claim": "Early efforts in the foundation era primarily focused on establishing basic safety alignment through Reinforcement Learning from Human Feedback (RLHF).",
+            "chunk_id": "09fc0ceaf9bfdf3d",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Wang_2026_LLM",
+            "claim": "However, the field quickly transitioned into a phase of rapid development characterized by a proliferation of novel benchmarks, adaptive attacks, and corresponding defenses.",
+            "chunk_id": "09fc0ceaf9bfdf3d",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Liu_2025_Aegis",
+            "claim": "Recent literature highlights a distinct shift from isolated, domain-specific vulnerabilities toward a highly sophisticated, co-evolutionary adversarial arms race, where attackers continuously refine strategies and defenders must adapt in response.",
+            "chunk_id": "17d00a6326db3356",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Wang_2026_LLM",
+            "claim": "As adaptive attacks consistently demonstrate the ability to bypass static defenses, the research community is increasingly directing its focus toward future paradigms of certified robustness and automated adversarial co-training.",
+            "chunk_id": "09fc0ceaf9bfdf3d",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Zhan_2025_LLM",
+            "claim": "As adaptive attacks consistently demonstrate the ability to bypass static defenses, the research community is increasingly directing its focus toward future paradigms of certified robustness and automated adversarial co-training.",
+            "chunk_id": "44d548f80c2aca9c",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Liu_2025_Aegis",
+            "claim": "As adaptive attacks consistently demonstrate the ability to bypass static defenses, the research community is increasingly directing its focus toward future paradigms of certified robustness and automated adversarial co-training.",
+            "chunk_id": "17d00a6326db3356",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Bouaziz_2025_Winter",
+            "claim": "Adversaries can execute indirect data poisoning against LLM pretraining to covertly enforce arbitrary hidden behaviors using an exceptionally small fraction of poisoned tokens.",
+            "chunk_id": "2121c7da7a4c32ec",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Li_2024_Badedit",
+            "claim": "Similarly, backdoor attacks can be injected via lightweight knowledge editing, directly altering LLM parameters with as few as 15 samples.",
+            "chunk_id": "debbd1b188eafe2b",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Yang_2024_Adversarial",
+            "claim": "Crucially, research indicates that integrating poisoned data often does not markedly degrade overall model performance on standard benchmarks, allowing these vulnerabilities to remain highly stealthy and evade naive detection.",
+            "chunk_id": "192979f2ab45f38c",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Bouaziz_2025_Winter",
+            "claim": "Crucially, research indicates that integrating poisoned data often does not markedly degrade overall model performance on standard benchmarks, allowing these vulnerabilities to remain highly stealthy and evade naive detection.",
+            "chunk_id": "2121c7da7a4c32ec",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Li_2024_Badedit",
+            "claim": "Crucially, research indicates that integrating poisoned data often does not markedly degrade overall model performance on standard benchmarks, allowing these vulnerabilities to remain highly stealthy and evade naive detection.",
+            "chunk_id": "debbd1b188eafe2b",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Duan_2025_RLHF",
+            "claim": "This vulnerability extends to multi-modal systems, where adversaries can hijack text-to-image models by poisoning a small fraction of preference data to corrupt the reward model during RLHF.",
+            "chunk_id": "b9ffd2b24a3706e5",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Li_2024_Backdoorllm",
+            "claim": "Furthermore, the threat of backdoors in open-ended text generation has necessitated the development of comprehensive evaluation benchmarks to systematically assess data poisoning, weight poisoning, and hidden-state manipulation.",
+            "chunk_id": "3ba39ba42229aa94",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Liu_2025_Aegis",
+            "claim": "At inference time, LLMs are highly susceptible to adversarial attacks and prompt injections, which exploit the semantic and contextual flexibility of natural language.",
+            "chunk_id": "f4f07eb51db2625e",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Wang_2025_LLM",
+            "claim": "Prompt injection attacks manipulate models into producing unintended or harmful outputs, and their complexity is magnified in agent-based systems through indirect prompt injections, where malicious instructions are embedded in external contextual information rather than direct user inputs.",
+            "chunk_id": "afa2e86b335806c3",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Zhan_2025_LLM",
+            "claim": "Prompt injection attacks manipulate models into producing unintended or harmful outputs, and their complexity is magnified in agent-based systems through indirect prompt injections, where malicious instructions are embedded in external contextual information rather than direct user inputs.",
+            "chunk_id": "44d548f80c2aca9c",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Wang_2025_LLM",
+            "claim": "Automated fuzzing frameworks leveraging Monte Carlo Tree Search have proven highly effective at discovering these indirect vulnerabilities across diverse LLM agents.",
+            "chunk_id": "afa2e86b335806c3",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Nazary_2025_LLM",
+            "claim": "Furthermore, retrieval-augmented generation (RAG) pipelines are vulnerable to provider-side data poisoning, where subtle metadata rewrites can manipulate item exposure and rankings.",
+            "chunk_id": "ab71b611a89fbb3f",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Sui_2024_Confabulation",
+            "claim": "While public-facing reports and popular surveys frequently position hallucinations as a chief ethical and safety pitfall, they fundamentally present an imminent risk to model trustworthiness with severe epistemic consequences in truth-sensitive domains such as law, medicine, finance, and science.",
+            "chunk_id": "c92110fde9a7059e",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Friel_2023_LLM",
+            "claim": "Addressing these inaccuracies requires robust automated detection methodologies, uncertainty heads for claim-level detection, and carefully curated benchmark datasets that reflect the capabilities of modern LLMs.",
+            "chunk_id": "a07dc267d53c50f2",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Shelmanov_2025_LLM",
+            "claim": "Addressing these inaccuracies requires robust automated detection methodologies, uncertainty heads for claim-level detection, and carefully curated benchmark datasets that reflect the capabilities of modern LLMs.",
+            "chunk_id": "611779c15e720838",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Chowdhury_2024_Breaking",
+            "claim": "Traditional approaches encompass data filtering, guardrails, robust training techniques, and safety context distillation.",
+            "chunk_id": "58d5e3d3a70fc91a",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Liu_2025_Aegis",
+            "claim": "However, the limitations of static, human-engineered prompts have driven the development of automated, co-evolutionary frameworks that dynamically discover robust defenses without requiring model fine-tuning.",
+            "chunk_id": "17d00a6326db3356",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Zhang_2025_Real",
+            "claim": "Other promising directions include real-time, self-tuning moderator frameworks for jailbreak defense",
+            "chunk_id": "7643e47e50f97534",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Corll_2026_Mirror",
+            "claim": "strict geometric data curation for ultra-fast, deterministic prompt injection screening at the first layer of defense",
+            "chunk_id": "de2b33559d0f786d",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Maloyan_2025_LLM",
+            "claim": "and the deployment of diverse multi-model committees to enhance the robustness of LLM-as-a-judge systems against adversarial manipulation.",
+            "chunk_id": "90faeefd6b7ab402",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Wang_2025_LLM, Zhan_2025_LLM",
+            "claim": "(auto-detected from text)",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Friel_2023_LLM, Shelmanov_2025_LLM",
+            "claim": "(auto-detected from text)",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Yang_2024_Adversarial, Bouaziz_2025_Winter, Li_2024_Badedit",
+            "claim": "(auto-detected from text)",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Wang_2026_LLM, Zhan_2025_LLM, Liu_2025_Aegis",
+            "claim": "(auto-detected from text)",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Chowdhury_2024_Breaking, Yang_2024_Adversarial, Wang_2025_LLM",
+            "claim": "(auto-detected from text)",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          }
+        ],
+        "word_count": 802,
+        "status": "verified",
+        "iteration": 3,
+        "rag_queries": [
+          "evolution of LLM and MLLM security landscape 2023-2026 adversarial arms race",
+          "systematization of training-time threats data and model poisoning in large language models",
+          "inference-time vulnerabilities in LLMs prompt injection and adversarial attack taxonomies",
+          "security implications of LLM hallucinations and model reliability issues survey",
+          "comprehensive survey of defensive paradigms against LLM adversarial attacks and poisoning",
+          "evidence for claims in 1. Introduction"
+        ],
+        "retrieved_chunk_ids": [
+          "aa74725a7e3c2dea",
+          "92c01f225a6ac0a1",
+          "09fc0ceaf9bfdf3d",
+          "58d5e3d3a70fc91a",
+          "17d00a6326db3356",
+          "c92110fde9a7059e",
+          "f4f07eb51db2625e",
+          "1cbd0f13b0b0c6fd",
+          "ee441ddb6cbc4d65",
+          "e2cf36e54c598c86",
+          "afa2e86b335806c3",
+          "33241d18f6181219",
+          "44d548f80c2aca9c",
+          "7643e47e50f97534",
+          "90faeefd6b7ab402",
+          "737032736631628a",
+          "611779c15e720838",
+          "de2b33559d0f786d",
+          "a07dc267d53c50f2",
+          "192979f2ab45f38c",
+          "debbd1b188eafe2b",
+          "b9ffd2b24a3706e5",
+          "3ba39ba42229aa94",
+          "ab71b611a89fbb3f",
+          "2121c7da7a4c32ec"
+        ],
+        "writer_notes": "Addressed all critic feedback carefully. Rephrased the claim regarding Yang_2024_Adversarial to explicitly state that poisoning does *not* degrade overall performance on standard benchmarks, which makes it stealthy. Corrected the framing of Sui_2024_Confabulation to attribute the 'ethical/safety pitfall' label to popular reports while focusing on the epistemic consequences in truth-sensitive domains. Ensured Chowdhury_2024_Breaking was only used for general survey/taxonomy claims. Verified Liu_2025_Aegis claims match the provided chunks.",
+        "critic_feedback": "Accepted after 3 iterations (max reached). Some citations may not be fully verified.",
+        "drafted_at": "2026-03-23T13:25:01.973344"
+      }
+    },
+    "verification_results": {},
+    "bibliography": [],
+    "provenance": [],
+    "final_paper": "",
+    "version_info": {
+      "version_number": "1.0",
+      "timestamp": "2026-03-23T11:55:26.939162",
+      "paper_count": 0,
+      "categories": [],
+      "changelog": "",
+      "l1_count": 0,
+      "l2_count": 0,
+      "sections_count": 0,
+      "total_citations": 0,
+      "verified_citations": 0
+    },
+    "current_phase": "verifying",
+    "current_section_key": "",
+    "iteration_count": 3,
+    "errors": [
+      "Sezione 'background_and_preliminaries' accettata dopo 3 iterazioni (max raggiunto). Verifica incompleta.",
+      "Sezione 'introduction' accettata dopo 3 iterazioni (max raggiunto). Verifica incompleta."
+    ],
+    "current_scratchpad": [],
+    "retrieved_facts": {},
+    "agentic_stats": {},
+    "metadata": {
+      "budget_report": {
+        "n_categories": 4,
+        "papers_per_category": 5,
+        "total_papers": 20,
+        "max_context_tokens": 150000,
+        "l1_chars_per_paper": 118400,
+        "l1_tokens_per_call": 14500,
+        "l2_total_chars_per_category": 592000,
+        "l2_tokens_per_call": 150000,
+        "writer_chars_per_section": 60000,
+        "writer_tokens_per_call": 17000,
+        "critic_tokens_per_call": 17000,
+        "n_sections_estimate": 8,
+        "within_budget": true,
+        "warnings": []
+      },
+      "pipeline_start": "2026-03-23T11:55:26.939158",
+      "max_iterations": 3,
+      "planner_source": "llm_generated",
+      "planner_model": "pro",
+      "planner_sections": 11,
+      "planner_categories": [
+        "LLM Hallucinations",
+        "Data and Model Poisoning",
+        "Prompt Injection",
+        "Adversarial Attacks"
+      ],
+      "planner_total_papers": 35,
+      "writer_sections_written": 5,
+      "writer_sections_resumed": 12,
+      "writer_sections_failed": 0,
+      "writer_total_time": 1211.0,
+      "writer_model": "pro",
+      "critic_verified_count": 0,
+      "critic_needs_revision_count": 2,
+      "critic_failed_count": 0,
+      "critic_total_time": 0.0,
+      "critic_model": "flash"
+    }
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "paperId": "5560b6f57a7ee0657a313122193ee2a3527dcaac",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2501-11759",
+    "ArXiv": "2501.11759",
+    "DOI": "10.48550/arXiv.2501.11759",
+    "CorpusId": 275757977
+  },
+  "title": "Poison-RAG: Adversarial Data Poisoning Attacks on Retrieval-Augmented Generation in Recommender Systems",
+  "venue": "European Conference on Information Retrieval",
+  "year": 2025,
+  "citationCount": 33,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2501.11759, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "30917303",
+      "name": "Fatemeh Nazary"
+    },
+    {
+      "authorId": "2614755",
+      "name": "Yashar Deldjoo"
+    },
+    {
+      "authorId": "1737962",
+      "name": "T. D. Noia"
+    }
+  ],
+  "abstract": "This study presents Poison-RAG, a framework for adversarial data poisoning attacks targeting retrieval-augmented generation (RAG)-based recommender systems. Poison-RAG manipulates item metadata, such as tags and descriptions, to influence recommendation outcomes. Using item metadata generated through a large language model (LLM) and embeddings derived via the OpenAI API, we explore the impact of adversarial poisoning attacks on provider-side, where attacks are designed to promote long-tail items and demote popular ones. Two attack strategies are proposed: local modifications, which personalize tags for each item using BERT embeddings, and global modifications, applying uniform tags across the dataset. Experiments conducted on the MovieLens dataset in a black-box setting reveal that local strategies improve manipulation effectiveness by up to 50\\%, while global strategies risk boosting already popular items. Results indicate that popular items are more susceptible to attacks, whereas long-tail items are harder to manipulate. Approximately 70\\% of items lack tags, presenting a cold-start challenge; data augmentation and synthesis are proposed as potential defense mechanisms to enhance RAG-based systems' resilience. The findings emphasize the need for robust metadata management to safeguard recommendation frameworks. Code and data are available at https://github.com/atenanaz/Poison-RAG."
+}

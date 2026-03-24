@@ -1,0 +1,42 @@
+{
+  "paperId": "66ff2f10baec986176227b29e75a1a8be94f1c29",
+  "externalIds": {
+    "ArXiv": "2602.05401",
+    "DBLP": "journals/corr/abs-2602-05401",
+    "DOI": "10.48550/arXiv.2602.05401",
+    "CorpusId": 285303551
+  },
+  "title": "BadTemplate: A Training-Free Backdoor Attack via Chat Template Against Large Language Models",
+  "venue": "arXiv.org",
+  "year": 2026,
+  "citationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2602.05401, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2359393638",
+      "name": "Zihan Wang"
+    },
+    {
+      "authorId": "2271396643",
+      "name": "Hongwei Li"
+    },
+    {
+      "authorId": "2284217975",
+      "name": "Rui Zhang"
+    },
+    {
+      "authorId": "2116485977",
+      "name": "Wenbo Jiang"
+    },
+    {
+      "authorId": "2362042636",
+      "name": "Guowen Xu"
+    }
+  ],
+  "abstract": "Chat template is a common technique used in the training and inference stages of Large Language Models (LLMs). It can transform input and output data into role-based and templated expressions to enhance the performance of LLMs. However, this also creates a breeding ground for novel attack surfaces. In this paper, we first reveal that the customizability of chat templates allows an attacker who controls the template to inject arbitrary strings into the system prompt without the user's notice. Building on this, we propose a training-free backdoor attack, termed BadTemplate. Specifically, BadTemplate inserts carefully crafted malicious instructions into the high-priority system prompt, thereby causing the target LLM to exhibit persistent backdoor behaviors. BadTemplate outperforms traditional backdoor attacks by embedding malicious instructions directly into the system prompt, eliminating the need for model retraining while achieving high attack effectiveness with minimal cost. Furthermore, its simplicity and scalability make it easily and widely deployed in real-world systems, raising serious risks of rapid propagation, economic damage, and large-scale misinformation. Furthermore, detection by major third-party platforms HuggingFace and LLM-as-a-judge proves largely ineffective against BadTemplate. Extensive experiments conducted on 5 benchmark datasets across 6 open-source and 3 closed-source LLMs, compared with 3 baselines, demonstrate that BadTemplate achieves up to a 100% attack success rate and significantly outperforms traditional prompt-based backdoors in both word-level and sentence-level attacks. Our work highlights the potential security risks raised by chat templates in the LLM supply chain, thereby supporting the development of effective defense mechanisms."
+}

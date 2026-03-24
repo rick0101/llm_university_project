@@ -1,0 +1,17 @@
+ "The source focuses on the interaction between few-shot demonstrations and system prompt strategies (RoP vs ToP). It does not mention the benchmarks (HarmBench, CyberSecEval, etc.) or tools (MART, HARM, RedAgent) listed in the claim's table row for Adversarial Attacks."
+  },
+  {
+    "citation_index": 3,
+    "bibtex_key": "Liu_2025_Purpcode",
+    "status": "PARTIALLY_SUPPORTED",
+    "confidence": 0.85,
+    "reasoning": "The source confirms the category (Adversarial Attacks) and mentions two of the benchmarks (CyberSecEval and CodeLM-Sec). However, it does not mention HarmBench or the tools MART, HARM, and RedAgent."
+  },
+  {
+    "citation_index": 4,
+    "bibtex_key": "Wang_2025_LLM",
+    "status": "SUPPORTED",
+    "confidence": 0.95,
+    "reasoning": "The source introduces AGENTVIGIL and uses the AgentDojo and VWA-adv benchmarks for prompt injection, which directly supports its inclusion in that row of the table."
+  }
+]

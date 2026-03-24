@@ -1,0 +1,50 @@
+{
+  "paperId": "4eaa30f0b32cfb2fc711e9b618dd106a2d410e09",
+  "externalIds": {
+    "ArXiv": "2502.08109",
+    "DBLP": "journals/corr/abs-2502-08109",
+    "DOI": "10.48550/arXiv.2502.08109",
+    "CorpusId": 276287351
+  },
+  "title": "HuDEx: Integrating Hallucination Detection and Explainability for Enhancing the Reliability of LLM responses",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 7,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2502.08109, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-02-12",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2502.08109"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Lee2025HuDExIH,\n author = {Sujeong Lee and Hayoung Lee and Seongsoo Heo and Wonik Choi},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {HuDEx: Integrating Hallucination Detection and Explainability for Enhancing the Reliability of LLM responses},\n volume = {abs/2502.08109},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2345064430",
+      "name": "Sujeong Lee"
+    },
+    {
+      "authorId": "2345121671",
+      "name": "Hayoung Lee"
+    },
+    {
+      "authorId": "2345005032",
+      "name": "Seongsoo Heo"
+    },
+    {
+      "authorId": "2345342024",
+      "name": "Wonik Choi"
+    }
+  ],
+  "abstract": "Recent advances in large language models (LLMs) have shown promising improvements, often surpassing existing methods across a wide range of downstream tasks in natural language processing. However, these models still face challenges, which may hinder their practical applicability. For example, the phenomenon of hallucination is known to compromise the reliability of LLMs, especially in fields that demand high factual precision. Current benchmarks primarily focus on hallucination detection and factuality evaluation but do not extend beyond identification. This paper proposes an explanation enhanced hallucination-detection model, coined as HuDEx, aimed at enhancing the reliability of LLM-generated responses by both detecting hallucinations and providing detailed explanations. The proposed model provides a novel approach to integrate detection with explanations, and enable both users and the LLM itself to understand and reduce errors. Our measurement results demonstrate that the proposed model surpasses larger LLMs, such as Llama3 70B and GPT-4, in hallucination detection accuracy, while maintaining reliable explanations. Furthermore, the proposed model performs well in both zero-shot and other test environments, showcasing its adaptability across diverse benchmark datasets. The proposed approach further enhances the hallucination detection research by introducing a novel approach to integrating interpretability with hallucination detection, which further enhances the performance and reliability of evaluating hallucinations in language models."
+}

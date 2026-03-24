@@ -1,0 +1,62 @@
+{
+  "paperId": "8acdfc3581aec1396dd295f96ab576e55654df5b",
+  "externalIds": {
+    "ArXiv": "2511.16709",
+    "DBLP": "journals/corr/abs-2511-16709",
+    "DOI": "10.48550/arXiv.2511.16709",
+    "CorpusId": 283226018
+  },
+  "title": "AutoBackdoor: Automating Backdoor Attacks via LLM Agents",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 2,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2511.16709, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-11-20",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2511.16709"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Li2025AutoBackdoorAB,\n author = {Yige Li and Zhe Li and Wei Zhao and Nay Myat Min and Hanxun Huang and Xingjun Ma and Junfeng Sun},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {AutoBackdoor: Automating Backdoor Attacks via LLM Agents},\n volume = {abs/2511.16709},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2278578217",
+      "name": "Yige Li"
+    },
+    {
+      "authorId": "2274073804",
+      "name": "Zhe Li"
+    },
+    {
+      "authorId": "2274066089",
+      "name": "Wei Zhao"
+    },
+    {
+      "authorId": "2302795586",
+      "name": "Nay Myat Min"
+    },
+    {
+      "authorId": "1753845931",
+      "name": "Hanxun Huang"
+    },
+    {
+      "authorId": "2331662660",
+      "name": "Xingjun Ma"
+    },
+    {
+      "authorId": "2155020922",
+      "name": "Junfeng Sun"
+    }
+  ],
+  "abstract": "Backdoor attacks pose a serious threat to the secure deployment of large language models (LLMs), enabling adversaries to implant hidden behaviors triggered by specific inputs. However, existing methods often rely on manually crafted triggers and static data pipelines, which are rigid, labor-intensive, and inadequate for systematically evaluating modern defense robustness. As AI agents become increasingly capable, there is a growing need for more rigorous, diverse, and scalable \\textit{red-teaming frameworks} that can realistically simulate backdoor threats and assess model resilience under adversarial conditions. In this work, we introduce \\textsc{AutoBackdoor}, a general framework for automating backdoor injection, encompassing trigger generation, poisoned data construction, and model fine-tuning via an autonomous agent-driven pipeline. Unlike prior approaches, AutoBackdoor uses a powerful language model agent to generate semantically coherent, context-aware trigger phrases, enabling scalable poisoning across arbitrary topics with minimal human effort. We evaluate AutoBackdoor under three realistic threat scenarios, including \\textit{Bias Recommendation}, \\textit{Hallucination Injection}, and \\textit{Peer Review Manipulation}, to simulate a broad range of attacks. Experiments on both open-source and commercial models, including LLaMA-3, Mistral, Qwen, and GPT-4o, demonstrate that our method achieves over 90\\% attack success with only a small number of poisoned samples. More importantly, we find that existing defenses often fail to mitigate these attacks, underscoring the need for more rigorous and adaptive evaluation techniques against agent-driven threats as explored in this work. All code, datasets, and experimental configurations will be merged into our primary repository at https://github.com/bboylyg/BackdoorLLM."
+}

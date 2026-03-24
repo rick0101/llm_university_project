@@ -1,0 +1,17 @@
+{
+  "stage_id": "21-knowledge_archive",
+  "run_id": "rc-20260322-181638-1d173d",
+  "status": "done",
+  "decision": "proceed",
+  "output_artifacts": [
+    "archive.md",
+    "bundle_index.json"
+  ],
+  "evidence_refs": [
+    "stage-21/archive.md",
+    "stage-21/bundle_index.json"
+  ],
+  "error": null,
+  "ts": "2026-03-22T18:19:14+00:00",
+  "next_stage": 22
+}

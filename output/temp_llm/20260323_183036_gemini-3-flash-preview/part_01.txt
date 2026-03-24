@@ -1,0 +1,13 @@
+"bibtex_key": "Gu_2024_Anah",
+    "status": "SUPPORTED",
+    "confidence": 1.0,
+    "reasoning": "The source text explicitly states the introduction of an iterative self-training framework based on the EM algorithm to scale up datasets and improve accuracy, matching the claim exactly."
+  },
+  {
+    "citation_index": 4,
+    "bibtex_key": "Shelmanov_2025_LLM",
+    "status": "SUPPORTED",
+    "confidence": 1.0,
+    "reasoning": "The source text confirms the design of pre-trained UQ heads as supervised auxiliary Transformer modules for frozen LLMs and states they outperform classical unsupervised techniques for claim-level detection."
+  }
+]

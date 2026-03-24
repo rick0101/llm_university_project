@@ -1,0 +1,58 @@
+{
+  "paperId": "560ac2b639f90c6a580c56859f775dd080beec99",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2505-16640",
+    "ArXiv": "2505.16640",
+    "DOI": "10.48550/arXiv.2505.16640",
+    "CorpusId": 278788913
+  },
+  "title": "BadVLA: Towards Backdoor Attacks on Vision-Language-Action Models via Objective-Decoupled Optimization",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 15,
+  "influentialCitationCount": 5,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.16640, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-05-22",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2505.16640"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Zhou2025BadVLATB,\n author = {Xueyang Zhou and Guiyao Tie and Guowen Zhang and He Wang and Pan Zhou and Lichao Sun},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {BadVLA: Towards Backdoor Attacks on Vision-Language-Action Models via Objective-Decoupled Optimization},\n volume = {abs/2505.16640},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2350456180",
+      "name": "Xueyang Zhou"
+    },
+    {
+      "authorId": "2187039492",
+      "name": "Guiyao Tie"
+    },
+    {
+      "authorId": "2350423081",
+      "name": "Guowen Zhang"
+    },
+    {
+      "authorId": "2256778420",
+      "name": "He Wang"
+    },
+    {
+      "authorId": "2221116622",
+      "name": "Pan Zhou"
+    },
+    {
+      "authorId": "2243348413",
+      "name": "Lichao Sun"
+    }
+  ],
+  "abstract": "Vision-Language-Action (VLA) models have advanced robotic control by enabling end-to-end decision-making directly from multimodal inputs. However, their tightly coupled architectures expose novel security vulnerabilities. Unlike traditional adversarial perturbations, backdoor attacks represent a stealthier, persistent, and practically significant threat-particularly under the emerging Training-as-a-Service paradigm-but remain largely unexplored in the context of VLA models. To address this gap, we propose BadVLA, a backdoor attack method based on Objective-Decoupled Optimization, which for the first time exposes the backdoor vulnerabilities of VLA models. Specifically, it consists of a two-stage process: (1) explicit feature-space separation to isolate trigger representations from benign inputs, and (2) conditional control deviations that activate only in the presence of the trigger, while preserving clean-task performance. Empirical results on multiple VLA benchmarks demonstrate that BadVLA consistently achieves near-100% attack success rates with minimal impact on clean task accuracy. Further analyses confirm its robustness against common input perturbations, task transfers, and model fine-tuning, underscoring critical security vulnerabilities in current VLA deployments. Our work offers the first systematic investigation of backdoor vulnerabilities in VLA models, highlighting an urgent need for secure and trustworthy embodied model design practices. We have released the project page at https://badvla-project.github.io/."
+}

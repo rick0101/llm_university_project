@@ -1,0 +1,38 @@
+{
+  "paperId": "1f0a73396a54a4f0441960833f98a9e62c8daf2d",
+  "externalIds": {
+    "DBLP": "conf/emnlp/JeongKHK25",
+    "ArXiv": "2501.09993",
+    "DOI": "10.48550/arXiv.2501.09993",
+    "CorpusId": 275606423
+  },
+  "title": "Agent-as-Judge for Factual Summarization of Long Narratives",
+  "venue": "Conference on Empirical Methods in Natural Language Processing",
+  "year": 2025,
+  "citationCount": 7,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2501.09993, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "12936254",
+      "name": "Yeonseok Jeong"
+    },
+    {
+      "authorId": "2322807682",
+      "name": "Minsoo Kim"
+    },
+    {
+      "authorId": "2274001980",
+      "name": "Seung-won Hwang"
+    },
+    {
+      "authorId": "2341039274",
+      "name": "Byung-Hak Kim"
+    }
+  ],
+  "abstract": "Large Language Models (LLMs) have demonstrated near-human performance in summarization tasks based on traditional metrics such as ROUGE and BERTScore. However, these metrics do not adequately capture critical aspects of summarization quality, such as factual accuracy, particularly for long narratives (>100K tokens). Recent advances, such as LLM-as-a-Judge, address the limitations of metrics based on lexical similarity but still exhibit factual inconsistencies, especially in understanding character relationships and states. In this work, we introduce NarrativeFactScore, a novel\"Agent-as-a-Judge\"framework for evaluating and refining summaries. By leveraging a Character Knowledge Graph (CKG) extracted from input and generated summaries, NarrativeFactScore assesses the factual consistency and provides actionable guidance for refinement, such as identifying missing or erroneous facts. We demonstrate the effectiveness of NarrativeFactScore through a detailed workflow illustration and extensive validation on widely adopted benchmarks, achieving superior performance compared to competitive methods. Our results highlight the potential of agent-driven evaluation systems to improve the factual reliability of LLM-generated summaries."
+}

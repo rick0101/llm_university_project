@@ -1,0 +1,67 @@
+{
+  "selected_benchmarks": [
+    {
+      "name": "WikiText-103",
+      "tier": 2,
+      "domain": "language_modeling",
+      "size_mb": 500,
+      "samples": 28000,
+      "metrics": [
+        "perplexity",
+        "bits_per_character"
+      ],
+      "api": "datasets.load_dataset('wikitext', 'wikitext-103-v1', cache_dir='/workspace/data/hf')",
+      "source_domain": "language_modeling",
+      "origin": "knowledge_base",
+      "role": "primary"
+    },
+    {
+      "name": "WikiText-2",
+      "tier": 2,
+      "domain": "language_modeling",
+      "size_mb": 12,
+      "samples": 2000,
+      "metrics": [
+        "perplexity"
+      ],
+      "api": "datasets.load_dataset('wikitext', 'wikitext-2-v1', cache_dir='/workspace/data/hf')",
+      "source_domain": "language_modeling",
+      "origin": "knowledge_base",
+      "role": "secondary"
+    }
+  ],
+  "selected_baselines": [
+    {
+      "name": "LSTM LM",
+      "source": "Custom: 2-layer LSTM with tied embeddings",
+      "paper": "Merity et al., AWD-LSTM, ICLR 2018",
+      "pip": [],
+      "source_domain": "language_modeling",
+      "origin": "knowledge_base"
+    },
+    {
+      "name": "GPT-2 Small",
+      "source": "transformers.AutoModelForCausalLM.from_pretrained('gpt2')",
+      "paper": "Radford et al., Language Models are Unsupervised Multitask Learners, 2019",
+      "pip": [
+        "transformers"
+      ],
+      "source_domain": "language_modeling",
+      "origin": "knowledge_base"
+    }
+  ],
+  "matched_domains": [
+    "language_modeling"
+  ],
+  "data_loader_code": "import os\nfrom datasets import load_dataset, DownloadMode\n\nDATA_CONFIG = {\n    \"wikitext-103\": {\n        \"path\": \"wikitext\",\n        \"name\": \"wikitext-103-v1\",\n        \"metrics\": [\"perplexity\", \"bits_per_character\"],\n        \"role\": \"primary\",\n        \"input_shape\": (None,),  # Variable sequence length\n        \"num_classes\": None,     # Causal Language Modeling\n        \"tier\": 2\n    },\n    \"wikitext-2\": {\n        \"path\": \"wikitext\",\n        \"name\": \"wikitext-2-v1\",\n        \"metrics\": [\"perplexity\"],\n        \"role\": \"secondary\",\n        \"input_shape\": (None,),\n        \"num_classes\": None,\n        \"tier\": 2\n    }\n}\n\ndef get_datasets(data_root: str = '/workspace/data') -> dict:\n    \"\"\"\n    Loads and prepares the WikiText-103 dataset for LLM security research.\n    Includes basic text cleaning as a transformation step.\n    \"\"\"\n    hf_cache = os.path.join(data_root, 'hf')\n    primary_cfg = DATA_CONFIG[\"wikitext-103\"]\n    \n    try:\n        # Ensure cache directory exists\n        os.makedirs(hf_cache, exist_ok=True)\n\n        # Load dataset using HuggingFace Datasets API\n        # Tier 2 datasets use default download behavior (download_mode='reuse_dataset_if_exists')\n        dataset_dict = load_dataset(\n            path=primary_cfg[\"path\"],\n            name=primary_cfg[\"name\"],\n            cache_dir=hf_cache,\n            download_mode=DownloadMode.REUSE_DATASET_IF_EXISTS,\n            trust_remote_code=True\n        )\n\n        # Define transformations (Cleaning and Normalization)\n        # In LLM security contexts, we often strip whitespace and remove empty strings\n        def transform_text(examples):\n            # Normalization: Strip whitespace and filter out empty lines\n            cleaned_texts = [text.strip() for text in examples[\"text\"] if len(text.strip()) > 0]\n            return {\"text\": cleaned_texts}\n\n        # Apply transformations to all splits\n        # Note: For LLMs, 'augmentation' is typically handled during tokenization or via \n        # specific noise injection (e.g., back-translation), but here we focus on preparation.\n        processed_dataset = dataset_dict.map(\n            transform_text,\n            batched=True,\n            remove_columns=dataset_dict[\"train\"].column_names,\n            desc=\"Applying text normalization\"\n        )\n\n        # Mapping HuggingFace splits to required dictionary keys\n        # WikiText naturally provides 'train', 'validation', and 'test'\n        return {\n            'train': processed_dataset['train'],\n            'val': processed_dataset['validation'],\n            'test': processed_dataset['test']\n        }\n\n    except PermissionError:\n        raise PermissionError(f\"Insufficient permissions to write to {hf_cache}\")\n    except Exception as e:\n        raise RuntimeError(\n            f\"Failed to load {primary_cfg['name']} from {primary_cfg['path']}. \"\n            f\"Error: {str(e)}\"\n        )\n\nif __name__ == \"__main__\":\n    # Example usage\n    try:\n        data = get_datasets()\n        print(f\"Successfully loaded datasets: {data.keys()}\")\n        print(f\"Train samples: {len(data['train'])}\")\n    except Exception as e:\n        print(f\"Initialization failed: {e}\")",
+  "baseline_code": "import torch\nimport torch.nn as nn\nimport warnings\n\ntry:\n    from transformers import GPT2LMHeadModel, GPT2Config\n    TRANSFORMERS_AVAILABLE = True\nexcept ImportError:\n    TRANSFORMERS_AVAILABLE = False\n\nclass LSTMLanguageModel(nn.Module):\n    \"\"\"\n    A 2-layer LSTM Language Model with weight tying.\n    Reference: Merity et al., 'Regularizing and Optimizing LSTM Language Models' (AWD-LSTM).\n    \"\"\"\n    def __init__(self, vocab_size, embed_dim=400, hidden_dim=1150, n_layers=2, dropout=0.4):\n        super().__init__()\n        self.vocab_size = vocab_size\n        self.encoder = nn.Embedding(vocab_size, embed_dim)\n        self.lstms = nn.ModuleList([\n            nn.LSTM(embed_dim if i == 0 else hidden_dim, \n                    hidden_dim, \n                    batch_first=True) \n            for i in range(n_layers)\n        ])\n        self.dropout = nn.Dropout(dropout)\n        self.decoder = nn.Linear(hidden_dim, vocab_size)\n        \n        # Weight Tying\n        self.decoder.weight = self.encoder.weight\n        \n        self.init_weights()\n\n    def init_weights(self):\n        initrange = 0.1\n        self.encoder.weight.data.uniform_(-initrange, initrange)\n        self.decoder.bias.data.zero_()\n\n    def forward(self, x, hidden=None):\n        emb = self.dropout(self.encoder(x))\n        if hidden is None:\n            hidden = [None] * len(self.lstms)\n        \n        new_hidden = []\n        out = emb\n        for i, lstm in enumerate(self.lstms):\n            out, h = lstm(out, hidden[i])\n            new_hidden.append(h)\n            out = self.dropout(out)\n            \n        decoded = self.decoder(out)\n        return decoded, new_hidden\n\nBASELINES_CONFIG = {\n    \"lstm_lm\": {\n        \"name\": \"AWD-LSTM (2-layer)\",\n        \"paper\": \"Merity et al., Regularizing and Optimizing LSTM Language Models, ICLR 2018\",\n        \"params\": \"~24M (excluding embeddings)\",\n        \"type\": \"Recurrent\"\n    },\n    \"gpt2_small\": {\n        \"name\": \"GPT-2 Small\",\n        \"paper\": \"Radford et al., Language Models are Unsupervised Multitask Learners, 2019\",\n        \"params\": \"124M\",\n        \"type\": \"Transformer\"\n    }\n}\n\ndef get_baselines(num_classes, device='cuda') -> dict:\n    \"\"\"\n    Instantiates baseline models for WikiText-103 language modeling.\n    num_classes refers to the vocabulary size.\n    \"\"\"\n    baselines = {}\n\n    # 1. LSTM LM (Custom implementation)\n    lstm_model = LSTMLanguageModel(\n        vocab_size=num_classes,\n        embed_dim=400,\n        hidden_dim=1150,\n        n_layers=2\n    ).to(device)\n    baselines['lstm_lm'] = lstm_model\n\n    # 2. GPT-2 Small (Transformers implementation)\n    if TRANSFORMERS_AVAILABLE:\n        try:\n            # Load pretrained GPT-2\n            gpt2_model = GPT2LMHeadModel.from_pretrained('gpt2')\n            \n            # Resize token embeddings to match target dataset vocabulary\n            # Note: This handles the final linear layer (lm_head) automatically\n            gpt2_model.resize_token_embeddings(num_classes)\n            gpt2_model.to(device)\n            baselines['gpt2_small'] = gpt2_model\n        except Exception as e:\n            warnings.warn(f\"Failed to load pretrained GPT-2: {e}. Falling back to random init.\")\n            config = GPT2Config(vocab_size=num_classes)\n            baselines['gpt2_small'] = GPT2LMHeadModel(config).to(device)\n    else:\n        warnings.warn(\"Transformers package not found. GPT-2 baseline skipped.\")\n\n    return baselines",
+  "setup_code": "\"\"\"Setup script for dataset downloading and environment preparation.\n\nThis script runs during Phase 1 (setup) of the Docker sandbox,\nwhen network access is available. It downloads datasets and installs\nany additional dependencies.\n\"\"\"\n\nimport os\nimport sys\n\nDATA_ROOT = \"/workspace/data\"\nHF_CACHE = os.path.join(DATA_ROOT, \"hf\")\n\n\ndef download_datasets():\n    \"\"\"Download all required datasets.\"\"\"\n    os.makedirs(DATA_ROOT, exist_ok=True)\n    os.makedirs(HF_CACHE, exist_ok=True)\n\n    # Download WikiText-103\n    try:\n        from datasets import load_dataset\n        load_dataset('wikitext', 'wikitext-103-v1', cache_dir='/workspace/data/hf')\n        print(f\"Downloaded WikiText-103\")\n    except Exception as e:\n        print(f\"Warning: Failed to download WikiText-103: {e}\")\n\n    # Download WikiText-2\n    try:\n        from datasets import load_dataset\n        load_dataset('wikitext', 'wikitext-2-v1', cache_dir='/workspace/data/hf')\n        print(f\"Downloaded WikiText-2\")\n    except Exception as e:\n        print(f\"Warning: Failed to download WikiText-2: {e}\")\n\n\nif __name__ == \"__main__\":\n    download_datasets()\n    print(\"Setup complete.\")",
+  "requirements": "",
+  "rationale": "WikiText-103 is the domain standard for evaluating the linguistic integrity of language models. In security research, it is critical to ensure that defenses (like adversarial training or input filtering) do not significantly degrade the model's core language capabilities. GPT-2 Small represents the modern transformer architecture susceptible to these vulnerabilities, while LSTM LM serves as the classic recurrent baseline for comparative robustness analysis.",
+  "experiment_notes": "With a 600s time budget, focus on inference-based security metrics such as perplexity degradation under adversarial perturbation rather than full training. The 49GB GPU memory is sufficient to load GPT-2 and perform parallelized safety probing or gradient-based attack simulations.",
+  "validation_passed": true,
+  "validation_warnings": [],
+  "total_llm_calls": 7,
+  "total_tokens": 20252,
+  "elapsed_sec": 73.95180179100134
+}

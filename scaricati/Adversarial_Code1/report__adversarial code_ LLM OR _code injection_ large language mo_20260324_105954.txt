@@ -1,0 +1,723 @@
+======================================================================
+  PAPERHUNTER — SESSION REPORT
+======================================================================
+
+======================================================================
+  1. SESSION METADATA
+======================================================================
+  Timestamp:                          2026-03-24 10:59:54
+  Platform:                           macOS-26.3.1-arm64-arm-64bit
+  Python version:                     3.12.5
+
+======================================================================
+  2. SEARCH PARAMETERS
+======================================================================
+  Keywords:                           "adversarial code" LLM OR "code injection" large language model OR "malicious code generation"
+  Max results per source:             20
+  ArXiv categories:                   cs.CL, cs.AI, cs.CR, cs.LG
+
+======================================================================
+  3. LLM FILTERING CONFIGURATION
+======================================================================
+  LLM provider:                       google
+  LLM model:                          gemini-3-flash-preview
+  LLM temperature:                    0.1
+
+  Filtering criteria (prompt):
+  ------------------------------------------------------------------
+    Solo articoli di ricerca originali che introducono nuovi attacchi o difese relativi alla generazione di codice avversario tramite LLM. Escludi tassativamente survey, review, meta-analisi, tutorial, overview e position paper.
+  ------------------------------------------------------------------
+
+======================================================================
+  4. SOURCES QUERIED
+======================================================================
+    • ArXiv
+    • Semantic Scholar
+    • Hugging Face
+
+======================================================================
+  5. STATISTICS
+======================================================================
+  Total papers found:                 78
+  Papers judged relevant:             22
+  Papers judged NOT relevant:         56
+  Papers downloaded OK:               20
+  Papers download FAILED:             2
+
+  Papers found per source:
+    arxiv                     20
+    huggingface               30
+    semantic_scholar          28
+
+  Relevant papers per source:
+    huggingface               9
+    semantic_scholar          13
+
+======================================================================
+  6. RELEVANT PAPERS (DETAIL)
+======================================================================
+
+  [21] CoTDeceptor:Adversarial Code Obfuscation Against CoT-Enhanced LLM Code Agents
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/10c0415a01fbaeefb110b4c7479560371c3a16eb
+      Authors:      Haoyan Li, Mingjin Li, Jinxin Zuo, Siqi Li, Xiao Li
+      Published:    2025-12-24
+      ArXiv ID:     2512.21250
+      DOI:          10.48550/arXiv.2512.21250
+      Citations:    0
+      Confidence:   1.00
+      Reasoning:    The paper introduces 'CoTDeceptor', a new adversarial code obfuscation framework specifically designed to attack and bypass LLM-based code agents used for vulnerability detection. This directly aligns with the user's criteria for original research introducing new attacks related to adversarial code generation via LLMs.
+
+  [22] Generalized Adversarial Code-Suggestions: Exploiting Contexts of LLM-based Code-Completion
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/c7014dcd89331937dd3ff7326fd0842482de643b
+      Authors:      Karl Rubel, Maximilian Noppel, Christian Wressnegger
+      Published:    2024-10-14
+      ArXiv ID:     2410.10526
+      DOI:          10.1145/3708821.3733870
+      Citations:    0
+      Confidence:   1.00
+      Reasoning:    The paper presents original research introducing novel adversarial attack strategies (specifically 'directional-map attacks' and 'prompt-indexing attacks') targeting LLM-based code completion. It also evaluates the effectiveness of defensive mechanisms against these attacks. This directly matches the user's criteria for original research on new attacks and defenses in the domain of adversarial code generation via LLMs.
+
+  [25] Evaluate-and-Purify: Fortifying Code Language Models Against Adversarial Attacks Using LLM-as-a-Judge
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/b13e4ba947a88d7ba159b3e172e2e453764bf0e2
+      Authors:      Wenhan Mu, Ling Xu, Shuren Pei, Le Mi, Huichi Zhou
+      Published:    2025-04-28
+      ArXiv ID:     2504.19730
+      DOI:          10.48550/arXiv.2504.19730
+      Citations:    7
+      Confidence:   1.00
+      Reasoning:    The paper presents original research introducing a new defense framework called EP-Shield to protect code language models against adversarial identifier substitution attacks. It uses an LLM-as-a-Judge approach to evaluate and purify adversarial code, which directly aligns with the user's criteria for new defenses in adversarial code generation.
+
+  [26] Detecting LLM-generated Code with Subtle Modification by Adversarial Training
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/ff8ba8d59b3c6bdf2c463bfc4044adcfc56d5cae
+      Authors:      Xin Yin, Xinrui Li, Chao Ni, Xiaodan Xu, Xiaohu Yang
+      Published:    2025-07-17
+      ArXiv ID:     2507.13123
+      DOI:          10.48550/arXiv.2507.13123
+      Citations:    2
+      Confidence:   1.00
+      Reasoning:    The paper presents original research focused on the detection of LLM-generated code, specifically addressing the challenge of robustness against subtle modifications (adversarial perturbations). It introduces a new defense mechanism, CodeGPTSensor+, which utilizes adversarial training, and a new adversarial sample generation module called MIST (Multi-objective Identifier and Structure Transformation). This directly aligns with the user's criteria for research introducing new attacks or defenses related to adversarial aspects of LLM code generation.
+
+  [28] Black-Box Adversarial Attacks on LLM-Based Code Completion
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/836b7c1a81fa6692c187e466dd34cf2c4f01af54
+      Authors:      Slobodan Jenko, Niels Mündler, Jingxuan He, Mark Vero, Martin T. Vechev
+      Published:    2024-08-05
+      ArXiv ID:     2408.02509
+      Citations:    12
+      Confidence:   1.00
+      Reasoning:    The paper presents original research introducing a new adversarial attack called INSEC, which targets LLM-based code completion engines to force them to generate insecure code. This directly aligns with the user's criteria for original research on new attacks related to adversarial code generation via LLMs.
+
+  [40] Synthetic Malware at Scale: Malicious Code Generation With Code Transplanting
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/4b04a8508e190da735452eaa53a1c40920946da6
+      Authors:      Guangzhan Wang, Diwei Chen, Xiaodong Gu, Yuting Chen, Beijun Shen
+      Published:    2026-01-01
+      DOI:          10.1109/TSE.2025.3633280
+      Citations:    0
+      Confidence:   1.00
+      Reasoning:    The paper introduces 'MalCoder', a novel method for generating synthetic malicious code by transplanting malicious prototypes into benign code using LLMs (specifically GPTs). This directly addresses the user's criteria for original research on adversarial code generation via LLMs. Furthermore, it applies these generated samples to improve malicious code detection, which aligns with the 'defense' aspect of the research criteria.
+
+  [41] Smoke and Mirrors: Jailbreaking LLM-based Code Generation via Implicit Malicious Prompts
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/83271a2428cb507f67b59924d68d86f20020d28b
+      Authors:      Ouyang Sheng, Yihao Qin, Bo Lin, Liqian Chen, Xiaoguang Mao
+      Published:    2025-03-23
+      ArXiv ID:     2503.17953
+      DOI:          10.48550/arXiv.2503.17953
+      Citations:    3
+      Confidence:   1.00
+      Reasoning:    The paper introduces a new jailbreaking attack called 'CodeJailbreaker' specifically targeting LLM-based code generation. It describes a novel method of using implicit malicious prompts (via commit messages) to bypass safety mechanisms, which directly aligns with the user's criteria for original research on adversarial attacks in the context of LLM code generation.
+
+  [43] RMCBench: Benchmarking Large Language Models’ Resistance to Malicious Code
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/3264c024a85144bdee1963a3744d77ff6d79e203
+      Authors:      Jiachi Chen, Qingyuan Zhong, Yanlin Wang, Kaiwen Ning, Yongkun Liu
+      Published:    2024-09-23
+      ArXiv ID:     2409.15154
+      DOI:          10.1145/3691620.3695480
+      Citations:    39
+      Confidence:   0.95
+      Reasoning:    The paper is an original research article that introduces RMCBench, a new benchmark designed to evaluate the resistance of Large Language Models to generating malicious code. It introduces 473 specific prompts (which function as adversarial probes or 'attacks') across two scenarios (text-to-code and code-to-code) to test model safety boundaries. This directly relates to the user's interest in new attacks or defenses regarding adversarial code generation and is not a survey or review paper.
+
+  [44] A Reward-driven Automated Webshell Malicious-code Generator for Red-teaming
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/e38a1ae037aa9350fbfcbd07d8ef2e9b7fa093ea
+      Authors:      Yizhong Ding
+      Published:    2025-05-30
+      ArXiv ID:     2505.24252
+      DOI:          10.48550/arXiv.2505.24252
+      Citations:    1
+      Confidence:   1.00
+      Reasoning:    The paper introduces RAWG, a novel method for generating malicious webshell code using Large Language Models (LLMs). It employs Supervised Fine-Tuning (SFT) and Reinforcement Learning (PPO) to create highly obfuscated and diverse payloads designed to evade detection (escape effectiveness). This directly aligns with the user's criteria for original research on adversarial code generation via LLMs.
+
+  [45] BadCodePrompt: backdoor attacks against prompt engineering of large language models for code generation
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/f79399b131124e7948f4d3f5159441a901f55145
+      Authors:      Yubin Qu, Song Huang, Yanzhou Li, Tongtong Bai, Xiang Chen
+      Published:    2025-01-28
+      DOI:          10.1007/s10515-024-00485-2
+      Citations:    10
+      Confidence:   0.90
+      Reasoning:    The title 'BadCodePrompt: backdoor attacks against prompt engineering of large language models for code generation' indicates that the paper introduces a specific new attack (BadCodePrompt) targeting the code generation capabilities of LLMs. This directly matches the user's criteria for original research on adversarial attacks in the context of LLM-based code generation.
+
+  [46] PurpCode: Reasoning for Safer Code Generation
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/d2cda4397bb3329c4c5b7277b61eeac6e7d98d2a
+      Authors:      Jiawei Liu, Nirav Diwan, Zhe Wang, Haoyu Zhai, Xiaona Zhou
+      Published:    2025-07-25
+      ArXiv ID:     2507.19060
+      DOI:          10.48550/arXiv.2507.19060
+      Citations:    10
+      Confidence:   1.00
+      Reasoning:    The paper introduces 'PurpCode', a novel post-training recipe and model (PurpCode-32B) designed to improve the safety of LLM-generated code and defend against malicious cyberactivities. It presents a new defense mechanism involving rule learning and reinforcement learning, specifically targeting the prevention of adversarial or unsafe code generation, which directly matches the user's research criteria.
+
+  [47] Give LLMs a Security Course: Securing Retrieval-Augmented Code Generation via Knowledge Injection
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/1b581383b39088dd9e4e3e8f3227c4bd6bffa856
+      Authors:      Bo Lin, Shangwen Wang, Yihao Qin, Liqian Chen, Xiaoguang Mao
+      Published:    2025-04-23
+      ArXiv ID:     2504.16429
+      DOI:          10.1145/3719027.3765049
+      Citations:    8
+      Confidence:   1.00
+      Reasoning:    The paper introduces 'CodeGuarder', a novel security-hardening framework (defense) designed to protect Retrieval-Augmented Code Generation (RACG) systems from security risks, specifically addressing the threat of malicious code poisoning in knowledge bases. It provides original research, experimental evaluation against poisoning attacks, and focuses specifically on LLM-based code generation.
+
+  [48] Exploring the Security Threats of Knowledge Base Poisoning in Retrieval-Augmented Code Generation
+      Source:       semantic_scholar
+      URL:          https://www.semanticscholar.org/paper/dd0d22c63ffddc2b3407fe455f1f7e28d2d5d4bb
+      Authors:      Bo Lin, Shangwen Wang, Liqian Chen, Xiaoguang Mao
+      Published:    2025-02-05
+      ArXiv ID:     2502.03233
+      DOI:          10.48550/arXiv.2502.03233
+      Citations:    6
+      Confidence:   1.00
+      Reasoning:    The paper is an original research article that investigates a specific adversarial attack (knowledge base poisoning) on Retrieval-Augmented Code Generation (RACG) systems using LLMs. It explores how injecting vulnerable code into the knowledge base can lead the LLM to generate insecure code, which directly aligns with the user's criteria for research on adversarial code generation attacks and defenses.
+
+  [54] XOXO: Stealthy Cross-Origin Context Poisoning Attacks against AI Coding Assistants
+      Source:       huggingface
+      URL:          https://arxiv.org/abs/2503.14281
+      PDF URL:      https://arxiv.org/pdf/2503.14281.pdf
+      Published:    2025-03-01
+      ArXiv ID:     2503.14281
+      Confidence:   0.95
+      Reasoning:    The paper introduces a new type of attack ('XOXO: Stealthy Cross-Origin Context Poisoning Attacks') specifically targeting AI coding assistants, which are powered by LLMs. This directly aligns with the user's criteria for original research introducing new attacks related to adversarial code generation via LLMs.
+
+  [57] GoodVibe: Security-by-Vibe for LLM-Based Code Generation
+      Source:       huggingface
+      URL:          https://arxiv.org/abs/2602.10778
+      PDF URL:      https://arxiv.org/pdf/2602.10778.pdf
+      Published:    2026-02-01
+      ArXiv ID:     2602.10778
+      Confidence:   0.80
+      Reasoning:    The title 'GoodVibe: Security-by-Vibe for LLM-Based Code Generation' indicates that the paper introduces a new security framework or defense mechanism ('GoodVibe') specifically for LLM-based code generation. This aligns with the user's criteria for original research papers focusing on defenses in the context of adversarial code generation via LLMs.
+
+  [66] LLMalMorph: On The Feasibility of Generating Variant Malware using
+  Large-Language-Models
+      Source:       huggingface
+      URL:          https://arxiv.org/abs/2507.09411
+      PDF URL:      https://arxiv.org/pdf/2507.09411.pdf
+      Published:    2025-07-01
+      ArXiv ID:     2507.09411
+      Confidence:   0.85
+      Reasoning:    The title 'LLMalMorph: On The Feasibility of Generating Variant Malware using Large-Language-Models' strongly suggests that the paper introduces a new attack methodology or tool (LLMalMorph) for creating metamorphic or variant malware using LLMs. This directly aligns with the user's criteria for original research on new attacks related to adversarial code generation via LLMs.
+
+  [67] Hallucinating AI Hijacking Attack: Large Language Models and Malicious
+  Code Recommenders
+      Source:       huggingface
+      URL:          https://arxiv.org/abs/2410.06462
+      PDF URL:      https://arxiv.org/pdf/2410.06462.pdf
+      Published:    2024-10-01
+      ArXiv ID:     2410.06462
+      Confidence:   0.90
+      Reasoning:    The title 'Hallucinating AI Hijacking Attack: Large Language Models and Malicious Code Recommenders' strongly indicates that the paper introduces a specific new attack method. This attack exploits LLM hallucinations to trick code recommenders into suggesting malicious packages or code. This aligns perfectly with the user's criteria for original research introducing new attacks related to adversarial code generation via LLMs.
+
+  [71] RedCoder: Automated Multi-Turn Red Teaming for Code LLMs
+      Source:       huggingface
+      URL:          https://arxiv.org/abs/2507.22063
+      PDF URL:      https://arxiv.org/pdf/2507.22063.pdf
+      Published:    2025-07-01
+      ArXiv ID:     2507.22063
+      Confidence:   0.90
+      Reasoning:    The paper introduces 'RedCoder', which is described as an automated multi-turn red teaming framework for Code LLMs. Red teaming is a methodology used to identify vulnerabilities by simulating attacks. This directly relates to the user's criteria for original research introducing new attacks or adversarial methods for code generation in LLMs.
+
+  [74] RedCode: Risky Code Execution and Generation Benchmark for Code Agents
+      Source:       huggingface
+      URL:          https://arxiv.org/abs/2411.07781
+      PDF URL:      https://arxiv.org/pdf/2411.07781.pdf
+      Published:    2024-11-01
+      ArXiv ID:     2411.07781
+      Confidence:   0.85
+      Reasoning:    The paper introduces 'RedCode', which is described as a benchmark for 'Risky Code Execution and Generation' specifically for 'Code Agents'. This aligns with the user's criteria as it focuses on the security aspects of LLM code generation, likely involving adversarial scenarios or the evaluation of safety risks (attacks/defenses). Although the abstract is missing, the title indicates original research into a new evaluation framework for risky/adversarial code generation.
+
+  [75] MOCHA: Are Code Language Models Robust Against Multi-Turn Malicious
+  Coding Prompts?
+      Source:       huggingface
+      URL:          https://arxiv.org/abs/2507.19598
+      PDF URL:      https://arxiv.org/pdf/2507.19598.pdf
+      Published:    2025-07-01
+      ArXiv ID:     2507.19598
+      Confidence:   0.90
+      Reasoning:    The title 'MOCHA: Are Code Language Models Robust Against Multi-Turn Malicious Coding Prompts?' indicates that the paper is an original research study focusing on the security and robustness of code-generating LLMs. Specifically, it addresses 'multi-turn malicious coding prompts,' which is a form of adversarial attack or evaluation of vulnerabilities in code generation. This directly aligns with the user's criteria for research on attacks or defenses related to adversarial code generation via LLMs.
+
+  [77] SecCodePLT: A Unified Platform for Evaluating the Security of Code GenAI
+      Source:       huggingface
+      URL:          https://arxiv.org/abs/2410.11096
+      PDF URL:      https://arxiv.org/pdf/2410.11096.pdf
+      Published:    2024-10-01
+      ArXiv ID:     2410.11096
+      Confidence:   0.85
+      Reasoning:    The paper introduces 'SecCodePLT', which is described as a unified platform for evaluating the security of Code GenAI. This constitutes original research into the security vulnerabilities and defensive capabilities of LLMs used for code generation. In the field of AI security, evaluation platforms typically introduce new benchmarking datasets, adversarial test cases (attacks), or metrics for hardening models (defenses). Since it is a platform/tool paper rather than a survey or review, it aligns with the user's criteria for original research on adversarial code generation.
+
+  [78] An Exploratory Study on Fine-Tuning Large Language Models for Secure
+  Code Generation
+      Source:       huggingface
+      URL:          https://arxiv.org/abs/2408.09078
+      PDF URL:      https://arxiv.org/pdf/2408.09078.pdf
+      Published:    2024-08-01
+      ArXiv ID:     2408.09078
+      Confidence:   0.75
+      Reasoning:    The title indicates that this is an original research paper ('An Exploratory Study') focusing on a defense mechanism ('Fine-Tuning... for Secure Code Generation') to improve the security of code produced by LLMs. This directly addresses the user's interest in defenses related to LLM code generation, even though the abstract is missing.
+
+======================================================================
+  7. DOWNLOAD RESULTS
+======================================================================
+
+  [OK] CoTDeceptor:Adversarial Code Obfuscation Against CoT-Enhanced LLM Code Agents
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/10c0415a01fbaeefb110b4c7479560371c3a16eb
+      File:    None
+      Method:  dedup
+
+  [OK] Generalized Adversarial Code-Suggestions: Exploiting Contexts of LLM-based Code-Completion
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/c7014dcd89331937dd3ff7326fd0842482de643b
+      File:    scaricati/Adversarial_Code1/Generalized_Adversarial_Code-Suggestions_Exploiting_Contexts_of_LLM-based_Code-Completion.pdf
+      Method:  direct
+
+  [OK] Evaluate-and-Purify: Fortifying Code Language Models Against Adversarial Attacks Using LLM-as-a-Judge
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/b13e4ba947a88d7ba159b3e172e2e453764bf0e2
+      File:    scaricati/Adversarial_Code1/Evaluate-and-Purify_Fortifying_Code_Language_Models_Against_Adversarial_Attacks_Using_LLM-as-a-Judge.pdf
+      Method:  direct
+
+  [OK] Detecting LLM-generated Code with Subtle Modification by Adversarial Training
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/ff8ba8d59b3c6bdf2c463bfc4044adcfc56d5cae
+      File:    None
+      Method:  dedup
+
+  [OK] Black-Box Adversarial Attacks on LLM-Based Code Completion
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/836b7c1a81fa6692c187e466dd34cf2c4f01af54
+      File:    scaricati/Adversarial_Code1/Black-Box_Adversarial_Attacks_on_LLM-Based_Code_Completion.pdf
+      Method:  direct
+
+  [FAILED] Synthetic Malware at Scale: Malicious Code Generation With Code Transplanting
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/4b04a8508e190da735452eaa53a1c40920946da6
+      Error:   Could not find PDF download link
+
+  [OK] Smoke and Mirrors: Jailbreaking LLM-based Code Generation via Implicit Malicious Prompts
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/83271a2428cb507f67b59924d68d86f20020d28b
+      File:    scaricati/Adversarial_Code1/Smoke_and_Mirrors_Jailbreaking_LLM-based_Code_Generation_via_Implicit_Malicious_Prompts.pdf
+      Method:  direct
+
+  [OK] RMCBench: Benchmarking Large Language Models’ Resistance to Malicious Code
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/3264c024a85144bdee1963a3744d77ff6d79e203
+      File:    scaricati/Adversarial_Code1/RMCBench_Benchmarking_Large_Language_Models’_Resistance_to_Malicious_Code.pdf
+      Method:  direct
+
+  [OK] A Reward-driven Automated Webshell Malicious-code Generator for Red-teaming
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/e38a1ae037aa9350fbfcbd07d8ef2e9b7fa093ea
+      File:    None
+      Method:  dedup
+
+  [FAILED] BadCodePrompt: backdoor attacks against prompt engineering of large language models for code generation
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/f79399b131124e7948f4d3f5159441a901f55145
+      Error:   Could not find PDF download link
+
+  [OK] PurpCode: Reasoning for Safer Code Generation
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/d2cda4397bb3329c4c5b7277b61eeac6e7d98d2a
+      File:    None
+      Method:  dedup
+
+  [OK] Give LLMs a Security Course: Securing Retrieval-Augmented Code Generation via Knowledge Injection
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/1b581383b39088dd9e4e3e8f3227c4bd6bffa856
+      File:    scaricati/Adversarial_Code1/Give_LLMs_a_Security_Course_Securing_Retrieval-Augmented_Code_Generation_via_Knowledge_Injection.pdf
+      Method:  direct
+
+  [OK] Exploring the Security Threats of Knowledge Base Poisoning in Retrieval-Augmented Code Generation
+      Source:  semantic_scholar
+      URL:     https://www.semanticscholar.org/paper/dd0d22c63ffddc2b3407fe455f1f7e28d2d5d4bb
+      File:    scaricati/Adversarial_Code1/Exploring_the_Security_Threats_of_Knowledge_Base_Poisoning_in_Retrieval-Augmented_Code_Generation.pdf
+      Method:  direct
+
+  [OK] XOXO: Stealthy Cross-Origin Context Poisoning Attacks against AI Coding Assistants
+      Source:  huggingface
+      URL:     https://arxiv.org/abs/2503.14281
+      File:    scaricati/Adversarial_Code1/XOXO_Stealthy_Cross-Origin_Context_Poisoning_Attacks_against_AI_Coding_Assistants.pdf
+      Method:  direct
+
+  [OK] GoodVibe: Security-by-Vibe for LLM-Based Code Generation
+      Source:  huggingface
+      URL:     https://arxiv.org/abs/2602.10778
+      File:    None
+      Method:  dedup
+
+  [OK] LLMalMorph: On The Feasibility of Generating Variant Malware using
+  Large-Language-Models
+      Source:  huggingface
+      URL:     https://arxiv.org/abs/2507.09411
+      File:    None
+      Method:  dedup
+
+  [OK] Hallucinating AI Hijacking Attack: Large Language Models and Malicious
+  Code Recommenders
+      Source:  huggingface
+      URL:     https://arxiv.org/abs/2410.06462
+      File:    scaricati/Adversarial_Code1/Hallucinating_AI_Hijacking_Attack_Large_Language_Models_and_Malicious
+__Code_Recommenders.pdf
+      Method:  direct
+
+  [OK] RedCoder: Automated Multi-Turn Red Teaming for Code LLMs
+      Source:  huggingface
+      URL:     https://arxiv.org/abs/2507.22063
+      File:    scaricati/Adversarial_Code1/RedCoder_Automated_Multi-Turn_Red_Teaming_for_Code_LLMs.pdf
+      Method:  direct
+
+  [OK] RedCode: Risky Code Execution and Generation Benchmark for Code Agents
+      Source:  huggingface
+      URL:     https://arxiv.org/abs/2411.07781
+      File:    scaricati/Adversarial_Code1/RedCode_Risky_Code_Execution_and_Generation_Benchmark_for_Code_Agents.pdf
+      Method:  direct
+
+  [OK] MOCHA: Are Code Language Models Robust Against Multi-Turn Malicious
+  Coding Prompts?
+      Source:  huggingface
+      URL:     https://arxiv.org/abs/2507.19598
+      File:    scaricati/Adversarial_Code1/MOCHA_Are_Code_Language_Models_Robust_Against_Multi-Turn_Malicious
+__Coding_Prompts.pdf
+      Method:  direct
+
+  [OK] SecCodePLT: A Unified Platform for Evaluating the Security of Code GenAI
+      Source:  huggingface
+      URL:     https://arxiv.org/abs/2410.11096
+      File:    scaricati/Adversarial_Code1/SecCodePLT_A_Unified_Platform_for_Evaluating_the_Security_of_Code_GenAI.pdf
+      Method:  direct
+
+  [OK] An Exploratory Study on Fine-Tuning Large Language Models for Secure
+  Code Generation
+      Source:  huggingface
+      URL:     https://arxiv.org/abs/2408.09078
+      File:    scaricati/Adversarial_Code1/An_Exploratory_Study_on_Fine-Tuning_Large_Language_Models_for_Secure
+__Code_Generation.pdf
+      Method:  direct
+
+======================================================================
+  8. NON-RELEVANT PAPERS (SUMMARY)
+======================================================================
+  [1] WorldCache: Content-Aware Caching for Accelerated Video World Models
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.22286v1
+      Reasoning:  The paper focuses on accelerating inference for video world models (Diffusion Transformers) through a feature caching framework called WorldCache. It addresses computational efficiency and motion cons
+
+  [2] End-to-End Training for Unified Tokenization and Latent Denoising
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.22283v1
+      Reasoning:  The paper focuses on improving the training of Latent Diffusion Models (LDMs) for image and molecule synthesis by unifying tokenization and latent denoising into a single-stage training process. It do
+
+  [3] UniMotion: A Unified Framework for Motion-Text-Vision Understanding and Generation
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.22282v1
+      Reasoning:  The paper focuses on a unified framework for human motion, text, and vision understanding and generation. It does not address code generation, adversarial attacks, or security defenses, which are the 
+
+  [4] ThinkJEPA: Empowering Latent World Models with Large Vision-Language Reasoning Model
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.22281v1
+      Reasoning:  The paper focuses on latent world models and Vision-Language Models (VLMs) for video forecasting and hand-manipulation trajectory prediction. It does not address adversarial code generation, nor does 
+
+  [5] 3D-Layout-R1: Structured Reasoning for Language-Instructed Spatial Editing
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.22279v1
+      Reasoning:  The paper focuses on spatial reasoning and layout editing for visual scenes using LLMs and VLMs. It does not address adversarial code generation, attacks, or defenses, which are the specific requireme
+
+  [6] The Dual Mechanisms of Spatial Reasoning in Vision-Language Models
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.22278v1
+      Reasoning:  The paper focuses on the internal mechanisms of spatial reasoning in Vision-Language Models (VLMs), specifically analyzing how vision encoders and language backbones represent object relations. It doe
+
+  [7] Scaling DoRA: High-Rank Adaptation via Factored Norms and Fused Kernels
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.22276v1
+      Reasoning:  The paper focuses on optimizing the computational efficiency and memory usage of Weight-Decomposed Low-Rank Adaptation (DoRA), a parameter-efficient fine-tuning (PEFT) method. It introduces systems-le
+
+  [8] TiCo: Time-Controllable Training for Spoken Dialogue Models
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.22267v1
+      Reasoning:  The paper focuses on improving the time-controllability of spoken dialogue models (SDMs) so they can follow duration-related instructions. It does not address adversarial code generation, nor does it 
+
+  [9] Greater accessibility can amplify discrimination in generative AI
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.22260v1
+      Reasoning:  The paper focuses on social bias and gender discrimination in voice-enabled LLMs. It investigates how paralinguistic cues in audio interfaces lead to biased outputs and proposes pitch manipulation as 
+
+  [10] Confidence-Based Decoding is Provably Efficient for Diffusion Language Models
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.22248v1
+      Reasoning:  The paper focuses on the theoretical analysis of decoding strategies for Diffusion Language Models (DLMs) to improve sampling efficiency. It does not address adversarial attacks, defenses, or code gen
+
+  [11] MemDLM: Memory-Enhanced DLM Training
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.22241v1
+      Reasoning:  The paper focuses on improving the training and inference of Diffusion Language Models (DLMs) through a bi-level optimization process and parametric memory. It addresses training efficiency and long-c
+
+  [12] One Model, Two Markets: Bid-Aware Generative Recommendation
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.22231v1
+      Reasoning:  The paper focuses on generative recommender systems and monetization strategies (ad placement and bidding) within those systems. It does not address adversarial code generation, nor does it introduce 
+
+  [13] SpatialReward: Verifiable Spatial Reward Modeling for Fine-Grained Spatial Consistency in Text-to-Image Generation
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.22228v1
+      Reasoning:  The paper focuses on improving spatial consistency in text-to-image (T2I) generation using a reward model and reinforcement learning. It does not address adversarial code generation, attacks, or defen
+
+  [14] Dyadic: A Scalable Platform for Human-Human and Human-AI Conversation Research
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.22227v1
+      Reasoning:  The paper is explicitly described in the abstract as a 'tutorial' and an 'overview' of a platform for conversation research. The user's criteria strictly exclude tutorials and overviews. Additionally,
+
+  [15] Adapting Self-Supervised Speech Representations for Cross-lingual Dysarthria Detection in Parkinson's Disease
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.22225v1
+      Reasoning:  The paper focuses on cross-lingual dysarthria detection in Parkinson's disease using self-supervised speech representations. It does not involve Large Language Models (LLMs), adversarial code generati
+
+  [16] Noise Titration: Exact Distributional Benchmarking for Probabilistic Time Series Forecasting
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.22219v1
+      Reasoning:  The paper focuses on benchmarking and improving probabilistic time series forecasting using a technique called 'noise titration' and a new architecture called 'Fern'. It does not address adversarial c
+
+  [17] Gumbel Distillation for Parallel Text Generation
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.22216v1
+      Reasoning:  The paper focuses on improving the efficiency and quality of parallel (non-autoregressive) text generation using a new distillation technique called Gumbel Distillation. It does not address adversaria
+
+  [18] Evaluating the Reliability and Fidelity of Automated Judgment Systems of Large Language Models
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.22214v1
+      Reasoning:  The paper focuses on the reliability and fidelity of 'LLM as judge' systems, evaluating how well LLMs can assess the quality of outputs from other models compared to human judgment. It does not introd
+
+  [19] SPA: A Simple but Tough-to-Beat Baseline for Knowledge Injection
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.22213v1
+      Reasoning:  The paper focuses on 'knowledge injection' and synthetic data generation for LLMs in specialized domains. It does not address adversarial attacks, defenses, or code generation, which are the core requ
+
+  [20] Chimera: Latency- and Performance-Aware Multi-agent Serving for Heterogeneous LLMs
+      Source:     arxiv
+      URL:        http://arxiv.org/abs/2603.22206v1
+      Reasoning:  The paper focuses on optimizing the serving and scheduling of multi-agent LLM workflows in heterogeneous clusters to improve latency and performance. While it uses code generation as one of its evalua
+
+  [21] Code-A1: Adversarial Evolving of Code LLM and Test LLM via Reinforcement Learning
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/48854f77c0315c0a3e8c06eb55bf0ef635e7f008
+      Reasoning:  The paper introduces Code-A1, an adversarial reinforcement learning framework designed to improve the functional correctness of code generation and the quality of unit test generation. While it uses t
+
+  [22] Can Adversarial Code Comments Fool AI Security Reviewers -- Large-Scale Empirical Study of Comment-Based Attacks and Defenses Against LLM Code Analysis
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/8c141a900833d8a57698531a0f6022685829adc1
+      Reasoning:  The paper focuses on adversarial attacks and defenses related to LLM-based code analysis and vulnerability detection. The user's research criteria specifically target 'adversarial code generation' (ge
+
+  [23] Adversarial Training for Robustness Enhancement in LLM-Based Code Vulnerability Detection
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/f75304b9d448520394dc97040613db15f335b877
+      Reasoning:  The paper focuses on code vulnerability detection, which is a classification/discriminative task where an LLM is used to identify bugs in existing code. The user's research criteria specifically targe
+
+  [24] LD-Scene: LLM-Guided Diffusion for Controllable Generation of Adversarial Safety-Critical Driving Scenarios
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/0d2c63219b5ce277e9c15942ac37c9e4a94db834
+      Reasoning:  The paper focuses on generating adversarial driving scenarios for autonomous vehicles using a combination of Large Language Models (LLMs) and Latent Diffusion Models. While it uses an LLM to generate 
+
+  [25] Arithmetic-Aware Question-Answering on Tabular Data Using a Large Language Model-Based Code Generation Agent
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/a386377f2854d37d36ad076f7f269c7a5d001ca1
+      Reasoning:  The paper focuses on using LLM-based code generation for arithmetic-aware question-answering on tabular data. It appears to be a functional application of LLMs to improve data analysis capabilities ra
+
+  [26] Optimal Graph Model Schema Injection for Large Language Model-Generated Cypher Queries
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/cd8dd67087bc5ecf1dddbbe7923cdace38a93176
+      Reasoning:  The paper focuses on optimizing the accuracy of LLM-generated Cypher queries for graph databases by evaluating different schema injection techniques. It does not address adversarial code generation, s
+
+  [27] WAAD: A Web Vulnerability Attack Behavior Identification Method Based on Large Language Model
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/e227deac84bd3acff364c9abf09dbef0ee35dcf0
+      Reasoning:  The paper focuses on using Large Language Models (LLMs) as a tool for identifying and classifying traditional web attacks (SQL injection, XSS, path traversal, and RCE). While it is an original researc
+
+  [28] Invisible Prompts, Visible Threats: Malicious Font Injection in External Resources for Large Language Models
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/241604be7b07cbb884efb575780da73d8e40564a
+      Reasoning:  The paper focuses on a novel indirect prompt injection technique called 'malicious font injection' to bypass LLM safety mechanisms and facilitate data leakage or malicious content relay. While it is a
+
+  [29] A Comparative Study of Machine Learning and Large Language Models for SQL and NoSQL Injection Vulnerability Detection
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/ddc11648c413ef4877c94764e3788e0bac07f63a
+      Reasoning:  The paper focuses on using machine learning and large language models (LLMs) as tools for detecting SQL and NoSQL injection vulnerabilities in source code. While it involves LLMs in a security context
+
+  [30] From Construction to Injection: Edit-Based Fingerprints for Large Language Models
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/94d0fdb306d03fc3fd535cac3e6c9948afdcdbff
+      Reasoning:  The paper focuses on LLM fingerprinting for intellectual property protection and preventing unauthorized redistribution. While it mentions 'code-mixing' in the context of fingerprint construction, thi
+
+  [31] Prompt Injection as an Emerging Threat: Evaluating the Resilience of Large Language Models
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/eb1484d09fb1e32e5ad4049e22a653019ebc93a5
+      Reasoning:  The paper focuses on proposing a unified evaluation framework and metrics (RDI, SCC, IIM) to measure the resilience of LLMs against prompt injection attacks. While it includes 'code generation' as one
+
+  [32] Compressing Large Language Models for SQL Injection Detection: A Case Study on Deep Seek-Coder and Meta-llama-3-70b-instruct
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/bb65186c7e650fd3470fbd9ce30fe5f1c4c4af65
+      Reasoning:  The paper focuses on evaluating the performance of two specific LLMs (Deep Seek-Coder and Meta-Llama-3) in detecting SQL injection vulnerabilities. While it addresses cybersecurity, it does not introd
+
+  [33] Analyzing the Instability of Large Language Models in Automated Bug Injection and Correction
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/f4ecb02169e14a6e8a1ab42c3c357742d3f7c5ae
+      Reasoning:  The paper focuses on the instability and consistency of LLMs (specifically ChatGPT) in software engineering tasks like bug fixing and bug injection. While it mentions 'bug injection', it does so in th
+
+  [34] Threats and Defenses for Large Language Models: A Survey
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/60799be7c20380222e3300c5c062fd2140b8f9af
+      Reasoning:  The paper is explicitly a survey, as indicated by its title ('A Survey') and abstract ('It systematically surveys the principal attack vectors...'). The user's criteria strictly exclude surveys, revie
+
+  [35] Malicious and Unintentional Disclosure Risks in Large Language Models for Code Generation
+      Source:     semantic_scholar
+      URL:        https://www.semanticscholar.org/paper/d37db6395d0d28a31049f9d4491c233bded61bb0
+      Reasoning:  The paper focuses on privacy risks, specifically 'unintended memorization' and the disclosure of sensitive information (secrets) in LLMs used for code generation. While it discusses 'malicious disclos
+
+  [36] AKD : Adversarial Knowledge Distillation For Large Language Models
+  Alignment on Coding tasks
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2505.06267
+      Reasoning:  The paper's title suggests a focus on 'Adversarial Knowledge Distillation' (AKD) as a training technique to improve 'Alignment' in coding tasks. In the context of LLMs, 'Adversarial Knowledge Distilla
+
+  [37] A Survey of Attacks on Large Language Models
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2505.12567
+      Reasoning:  The paper title explicitly identifies it as a 'Survey'. The user's research criteria strictly exclude surveys, reviews, meta-analyses, and overviews, requiring only original research articles.
+
+  [38] From Insight to Exploit: Leveraging LLM Collaboration for Adaptive Adversarial Text Generation
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2511.03128
+      Reasoning:  The paper's title focuses on 'Adversarial Text Generation' and 'LLM Collaboration.' While it appears to be an original research article introducing a new attack method, the user's criteria specificall
+
+  [39] SEAS: Self-Evolving Adversarial Safety Optimization for Large Language
+  Models
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2408.02632
+      Reasoning:  The paper's title focuses on 'Adversarial Safety Optimization' for Large Language Models in a general sense. While this likely involves defense mechanisms, there is no mention of 'code generation' in 
+
+  [40] Investigating the Robustness of LLMs on Math Word Problems
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2406.15444
+      Reasoning:  The paper focuses on the robustness of Large Language Models (LLMs) specifically in the context of solving math word problems. The user's research criteria are strictly limited to original research re
+
+  [41] Was it Slander? Towards Exact Inversion of Generative Language Models
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2407.11059
+      Reasoning:  The paper title 'Was it Slander? Towards Exact Inversion of Generative Language Models' suggests a focus on model inversion attacks, which aim to reconstruct training data or input prompts from model 
+
+  [42] Is Your AI-Generated Code Really Safe? Evaluating Large Language Models
+  on Secure Code Generation with CodeSecEval
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2407.02395
+      Reasoning:  The paper introduces 'CodeSecEval', which is a benchmark/evaluation framework for assessing the security of code generated by Large Language Models. While it is an original research paper, it focuses 
+
+  [43] LLMs in Software Security: A Survey of Vulnerability Detection Techniques and Insights
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2502.07049
+      Reasoning:  The paper title explicitly identifies it as a 'Survey' ('LLMs in Software Security: A Survey of Vulnerability Detection Techniques and Insights'). The user's research criteria strictly exclude surveys
+
+  [44] CodeMixBench: Evaluating Large Language Models on Code Generation with
+  Code-Mixed Prompts
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2505.05063
+      Reasoning:  The paper 'CodeMixBench' focuses on evaluating the performance of Large Language Models (LLMs) on code generation when provided with code-mixed prompts (prompts that mix multiple natural languages). W
+
+  [45] CORE: Benchmarking LLMs Code Reasoning Capabilities through Static
+  Analysis Tasks
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2507.05269
+      Reasoning:  The paper focuses on benchmarking the general code reasoning capabilities of LLMs using static analysis tasks. It does not mention adversarial code generation, nor does it introduce new attacks or def
+
+  [46] OpenCodeInstruct: A Large-scale Instruction Tuning Dataset for Code LLMs
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2504.04030
+      Reasoning:  The paper focuses on introducing a large-scale instruction tuning dataset for Code LLMs. Based on the title, it appears to be a general contribution to the field of code generation performance rather 
+
+  [47] CodeArena: A Collective Evaluation Platform for LLM Code Generation
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2503.01295
+      Reasoning:  The paper introduces 'CodeArena', which is described in the title as a collective evaluation platform for LLM code generation. The user's research criteria specifically require original research paper
+
+  [48] CodeBoost: Boosting Code LLMs by Squeezing Knowledge from Code Snippets
+  with RL
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2508.05242
+      Reasoning:  The paper 'CodeBoost' focuses on enhancing the performance of Code LLMs using Reinforcement Learning and knowledge extraction from code snippets. Based on the title, it appears to be a performance opt
+
+  [49] A Survey On Large Language Models For Code Generation
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2503.01245
+      Reasoning:  The paper is explicitly titled as a 'Survey', which is one of the document types strictly excluded by the user's research criteria. The user requested only original research articles introducing new a
+
+  [50] Synthetic Data Generation Using Large Language Models: Advances in Text
+  and Code
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2503.14023
+      Reasoning:  The title 'Synthetic Data Generation Using Large Language Models: Advances in Text and Code' suggests a general overview or survey of techniques for generating synthetic data. The user's criteria spec
+
+  [51] Vulnerability Handling of AI-Generated Code -- Existing Solutions and
+  Open Challenges
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2408.08549
+      Reasoning:  The title 'Vulnerability Handling of AI-Generated Code -- Existing Solutions and Open Challenges' strongly indicates that this is a survey, review, or overview paper. The user's criteria explicitly ex
+
+  [52] Adapting Novelty towards Generating Antigens for Antivirus systems
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2505.18520
+      Reasoning:  The paper title suggests a focus on generating antigens for antivirus systems, likely using evolutionary algorithms (implied by the term 'Novelty'). There is no mention of Large Language Models (LLMs)
+
+  [53] Can LLMs Obfuscate Code? A Systematic Analysis of Large Language Models
+  into Assembly Code Obfuscation
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2412.16135
+      Reasoning:  The title 'A Systematic Analysis of Large Language Models into Assembly Code Obfuscation' suggests that the paper is likely a benchmarking study, evaluation, or systematic review of existing LLM capab
+
+  [54] Automatic Detection of LLM-generated Code: A Case Study of Claude 3
+  Haiku
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2409.01382
+      Reasoning:  The paper focuses on the automatic detection of code generated by LLMs, specifically using Claude 3 Haiku as a case study. While detection is a form of defense, the user's criteria specifically requir
+
+  [55] Exploring the Landscape for Generative Sequence Models for Specialized
+  Data Synthesis
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2411.01929
+      Reasoning:  The title 'Exploring the Landscape for Generative Sequence Models for Specialized Data Synthesis' strongly suggests a survey, overview, or landscape analysis, which are explicitly excluded by the user
+
+  [56] A Vulnerability Code Intent Summary Dataset
+      Source:     huggingface
+      URL:        https://arxiv.org/abs/2504.08180
+      Reasoning:  The paper title suggests it introduces a dataset for vulnerability code intent summarization. It does not explicitly mention Large Language Models (LLMs) or adversarial code generation, nor does it in
+
+
+======================================================================
+  END OF REPORT
+======================================================================

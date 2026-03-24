@@ -1,0 +1,25 @@
+{
+  "score_1_to_10": 3.5,
+  "verdict": "The paper presents a compelling methodological framework (VARK) but fails to provide the empirical evidence necessary to validate it, specifically omitting the core ablation experiments and using a statistically insignificant sample size.",
+  "strengths": [
+    "The conceptual disentanglement of system-level safety prompts from weight-level algorithmic kernels is a significant and necessary contribution to LLM security evaluation.",
+    "The 2x2 ablation matrix is a well-designed experimental protocol for isolating defensive contributions.",
+    "The paper correctly identifies and discusses the phenomenon of 'security through incoherence' at high noise levels.",
+    "The writing is clear, professional, and the theoretical background is well-integrated."
+  ],
+  "weaknesses": [
+    "The sample size of n=8 is critically low, resulting in a p-value of 1.0000, which renders the comparative results statistically meaningless.",
+    "The paper fails to execute the 'Prompt-Absent' ablation, which is the central premise of the VARK framework and the paper's title.",
+    "The promised 'Utility Tax' analysis is missing from the results, despite being highlighted in the abstract and introduction.",
+    "There is a discrepancy between the sample size reported in the text (n=8) and the experiment summary metadata (n=2).",
+    "The use of character-level noise is a relatively weak evaluation vector compared to modern gradient-based or semantic adversarial attacks."
+  ],
+  "required_actions": [
+    "Conduct the full 2x2 ablation study by including 'Prompt-Absent' test cases to measure the marginal utility of the kernels.",
+    "Increase the sample size (n) to at least 100 per condition to achieve statistical significance for ASR differences.",
+    "Complete and report the 'Utility Tax' metrics (MMLU, Wikitext-2) to support the claims regarding performance trade-offs.",
+    "Resolve the inconsistencies between the experimental metadata and the textual reporting of sample sizes.",
+    "Incorporate more sophisticated adversarial attacks, such as GCG suffixes, to test the resilience of the kernels beyond simple noise."
+  ],
+  "generated": "2026-03-22T18:19:05+00:00"
+}

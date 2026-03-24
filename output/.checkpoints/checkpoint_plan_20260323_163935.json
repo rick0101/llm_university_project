@@ -1,0 +1,323 @@
+{
+  "node": "plan",
+  "timestamp": "20260323_163935",
+  "state": {
+    "l2_summaries": [],
+    "outline": [
+      {
+        "key": "abstract",
+        "title": "Abstract",
+        "description": "This section will provide a concise summary of the entire survey paper. It will introduce the rapid evolution of Large Language Model (LLM) security as a critical research domain, highlighting the escalating arms race between sophisticated attack vectors and adaptive defense mechanisms. The abstract will encapsulate the paper's core contributions, including its structured taxonomy of threats\u2014spanning data poisoning, adversarial attacks, prompt injection, and hallucinations\u2014and its analysis of the temporal trends from 2023 to 2026. It will emphasize the shift from static, isolated vulnerabilities to dynamic, system-level threats in multimodal and agentic systems. Finally, it will foreshadow the paper's key findings on the necessity of co-evolutionary defense strategies, robust evaluation methodologies, and the critical open challenges that will define the future of secure and reliable AI.",
+        "target_length_words": 250,
+        "key_topics": [
+          "LLM Security",
+          "Threat Taxonomy",
+          "Adversarial Arms Race",
+          "Temporal Trends",
+          "Future Challenges"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 0,
+        "section_type": "abstract",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "introduction",
+        "title": "1. Introduction",
+        "description": "This section will establish the motivation and scope of the survey. It will begin by contextualizing the widespread deployment of LLMs in critical sectors and the consequent emergence of a complex and high-stakes threat landscape. It will introduce the central thesis of the paper: that LLM security has evolved from a 'patchwork' of isolated defenses into a dynamic, co-evolutionary 'arms race' between attackers and defenders. The introduction will briefly outline the four primary categories of threats covered\u2014Data Poisoning, Adversarial Attacks, Prompt Injection, and Hallucinations\u2014using them to illustrate the temporal progression from training-time vulnerabilities to sophisticated, automated inference-time exploits. It will summarize the paper's key contributions: (1) a comprehensive, temporally-aware taxonomy of LLM security threats from 2023-2026; (2) a dedicated analysis of evaluation methodologies and benchmarks, a critical but often overlooked area; and (3) a forward-looking discussion of open challenges, particularly concerning multimodal and agentic AI systems. The section will conclude with a roadmap of the paper's structure, guiding the reader through the subsequent sections.",
+        "target_length_words": 750,
+        "key_topics": [
+          "Motivation",
+          "Scope and Contributions",
+          "Threat Landscape Overview",
+          "Co-evolutionary Arms Race",
+          "Paper Structure"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 1,
+        "section_type": "introduction",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "background_and_preliminaries",
+        "title": "2. Background and Preliminaries",
+        "description": "This section provides the foundational knowledge required to understand the technical details of the survey. It will begin with a concise overview of LLM architectures, focusing on the Transformer model, attention mechanisms, and key components relevant to security, such as the embedding and output layers. It will then define the standard LLM lifecycle, including pre-training, instruction fine-tuning (SFT), and alignment stages like Reinforcement Learning from Human Feedback (RLHF), as these stages are primary targets for different attacks. A crucial part of this section will be the formalization of a comprehensive threat model. This includes defining attacker goals (e.g., policy violation, information extraction, model degradation), capabilities (e.g., access to gradients, query budget), and knowledge levels (white-box, gray-box, black-box). Finally, it will establish a clear glossary of key terms used throughout the paper, such as 'jailbreak,' 'prompt injection,' 'backdoor trigger,' 'hallucination,' and 'Attack Success Rate (ASR),' ensuring a consistent and precise vocabulary for the subsequent analysis.",
+        "target_length_words": 1250,
+        "key_topics": [
+          "LLM Architecture",
+          "Transformer Model",
+          "Training and Alignment (SFT, RLHF)",
+          "Threat Modeling",
+          "Attacker Capabilities",
+          "Key Terminology"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 2,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "data_and_model_poisoning",
+        "title": "3. Training-Time Threats: Data and Model Poisoning",
+        "description": "This section provides a deep dive into threats that compromise the integrity of the model during its training or fine-tuning phases. It traces the evolution of poisoning attacks from 2024 to 2025, highlighting the shift from simple text-based backdoors to sophisticated, multimodal, and system-level exploits. The initial focus will be on foundational works that systematized generative backdoors in open-source models, such as the frameworks proposed by [Chowdhury_2024_Breaking] and [Li_2024_Backdoorllm] for models like LLaMA-2 and Mistral. These studies established that traditional defenses were inadequate. The section will then detail the critical turning point in late 2024 and early 2025, where research began targeting core architectural components. This includes exploiting the RLHF pipeline, traditionally seen as a safety mechanism, to instead instill vulnerabilities. The discussion will cover how these advanced attacks can be stealthy, preserving model performance on standard benchmarks while introducing targeted malicious behaviors, thereby making detection extremely challenging. The section will be structured to first detail the attack vectors and then discuss their impact and the nascent detection strategies.",
+        "target_length_words": 1500,
+        "key_topics": [
+          "Generative Backdoors",
+          "Data Poisoning Vectors",
+          "Model Poisoning",
+          "RLHF Pipeline Exploitation",
+          "Multimodal Poisoning",
+          "Stealthy Attacks",
+          "Detection Challenges"
+        ],
+        "related_categories": [
+          "Data and Model Poisoning"
+        ],
+        "order": 3,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "inference_time_threats_adversarial_attacks",
+        "title": "4. Inference-Time Threats I: Adversarial Attacks",
+        "description": "This section focuses on attacks that manipulate a fully trained LLM's output at inference time by carefully crafting malicious inputs. It will chart the temporal progression of this domain from 2024 to 2026, beginning with the initial identification of vulnerabilities in specialized, high-stakes domains. A key example to be discussed is the work of [Yang_2024_Adversarial], which demonstrated the alarming susceptibility of LLMs in healthcare when processing sensitive datasets like MIMIC-III. The section will then explore the evolution of defensive strategies during this early period, which were often 'bolted-on' external mechanisms. This includes a detailed analysis of techniques like the contrastive prompt tuning proposed by [Wang_2024_Advqdet] for detecting query-based black-box attacks, a method that achieved high detection rates but represented an external, stateful approach. The narrative will emphasize the transition from these initial, often brittle, defenses toward more integrated and robust solutions, setting the stage for the highly automated and sophisticated attacks discussed in the subsequent section on prompt injection. The focus is on the broader category of adversarial manipulations beyond simple jailbreaks.",
+        "target_length_words": 1500,
+        "key_topics": [
+          "Domain-Specific Vulnerabilities",
+          "Black-Box Attacks",
+          "White-Box Attacks",
+          "Adversarial Perturbations",
+          "External Defenses",
+          "Stateful Detection",
+          "Contrastive Prompt Tuning"
+        ],
+        "related_categories": [
+          "Adversarial Attacks"
+        ],
+        "order": 4,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "inference_time_threats_prompt_injection",
+        "title": "5. Inference-Time Threats II: Prompt Injection and Jailbreaking",
+        "description": "This section examines the highly evolved and automated landscape of prompt injection and jailbreaking attacks, focusing on the period between 2025 and 2026. It will establish the core theme of this era: the definitive failure of static, rule-based defenses and the rise of a dynamic, co-evolutionary arms race. The discussion will begin by detailing the significant advancements in offensive automation. This includes an in-depth analysis of techniques like Greedy Coordinate Gradient (GCG), Monte Carlo Tree Search (MCTS) fuzzing, and genetic algorithms, which, as demonstrated by [Zhan_2025_LLM], [Wang_2025_LLM], and [Maloyan_2025_LLM], achieved alarming Attack Success Rates (ASR) between 50-71% against state-of-the-art models and agents. The section will then explore the defensive response, which bifurcated into two main trajectories. The first is the development of computationally efficient, 'cheap' defenses designed for real-time detection. The second, more robust trajectory is the creation of dynamic, ensemble-based systems that co-evolve with attackers, representing a paradigm shift from static guardrails to adaptive, learning-based security frameworks. This section will underscore the transition from manual 'jailbreak' crafting to fully automated vulnerability discovery.",
+        "target_length_words": 1500,
+        "key_topics": [
+          "Prompt Injection",
+          "Jailbreaking",
+          "Automated Attack Generation",
+          "GCG",
+          "MCTS Fuzzing",
+          "Attack Success Rate (ASR)",
+          "Dynamic Defenses",
+          "Co-evolutionary Security"
+        ],
+        "related_categories": [
+          "Prompt Injection",
+          "Adversarial Attacks"
+        ],
+        "order": 5,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "integrity_and_factual_consistency_hallucinations",
+        "title": "6. Model Integrity and Reliability: Hallucinations",
+        "description": "This section addresses the critical issue of LLM hallucinations, or the generation of non-factual and unsubstantiated information. It traces the research trajectory from 2023 to 2026, showing a clear evolution from brute-force detection to nuanced, mechanistically-informed mitigation. The section will begin with the early phase (c. 2023), characterized by the use of LLMs as self-evaluators. A key development from this period is ChainPoll [Friel_2023_LLM], which optimized Chain-of-Thought prompting and polling to create a computationally efficient yet effective detection method, establishing a paradigm of self-policing models. The narrative will then shift to the conceptual maturation that occurred in 2024, where the field moved beyond treating hallucinations as simple binary errors. This part of the section will explore more sophisticated frameworks that categorize and understand the root causes of different types of non-factual generation. The focus will be on the development of mechanistically informed and conceptually nuanced approaches that aim not just to detect but to prevent hallucinations by improving the model's internal representations of facts and reasoning processes, marking a significant step towards building more reliable and trustworthy LLMs.",
+        "target_length_words": 1500,
+        "key_topics": [
+          "Hallucination Detection",
+          "Factual Consistency",
+          "LLM-as-Evaluator",
+          "Chain-of-Thought Prompting",
+          "ChainPoll",
+          "Computational Cost",
+          "Mechanistic Interpretability",
+          "Mitigation Strategies"
+        ],
+        "related_categories": [
+          "LLM Hallucinations"
+        ],
+        "order": 6,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "cross_cutting_defenses_and_mitigation_strategies",
+        "title": "8. Cross-Cutting Defenses and Mitigation Strategies",
+        "description": "This section synthesizes defensive strategies from across the threat landscape, organizing them into a coherent framework that highlights common principles and evolving paradigms. It will move beyond the specific defenses mentioned in individual threat sections to provide a holistic overview. The discussion will be structured around several key dichotomies: (1) Training-time vs. Inference-time defenses, contrasting data sanitization and robust alignment procedures against input/output filtering and real-time monitoring; (2) Internal vs. External defenses, comparing modifications to the model architecture or training process with 'wrapper' solutions and external guardrails like the early stateful detection mechanisms discussed by [Wang_2024_Advqdet]; and (3) Static vs. Dynamic defenses, charting the critical evolution from fixed, rule-based systems to the adaptive, co-evolutionary defense systems that emerged in 2025-2026 to counter automated attacks. This section will connect disparate threads, showing how techniques like contrastive learning or ensemble methods can be applied across different threat models, from detecting adversarial queries to mitigating certain types of poisoning or injection attacks. The goal is to provide a unified perspective on the defensive toolkit available to researchers and practitioners.",
+        "target_length_words": 1500,
+        "key_topics": [
+          "Defense Taxonomy",
+          "Training-Time Defenses",
+          "Inference-Time Defenses",
+          "Internal vs. External Defenses",
+          "Static vs. Dynamic Defenses",
+          "Adaptive Security",
+          "Ensemble Methods"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 7,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "testing_methodologies_and_evaluation",
+        "title": "7. Testing Methodologies and Evaluation",
+        "description": "This section provides a systematic overview of the methodologies used to test, benchmark, and evaluate LLM security, a critical component for reproducible and comparative research. It synthesizes evaluation techniques across all discussed threat categories. The first part will focus on benchmarks and datasets. This includes standardized datasets for jailbreaking, which are essential for calculating metrics like Attack Success Rate (ASR) as seen in the work of [Zhan_2025_LLM] and others. It will also cover domain-specific datasets like MIMIC-III, used to test adversarial robustness in critical sectors as per [Yang_2024_Adversarial], and the comprehensive frameworks developed by [Chowdhury_2024_Breaking] for evaluating generative backdoors. The second part will delve into metrics and evaluation protocols. This will contrast quantitative metrics like ASR and perplexity with qualitative human evaluation for assessing the subtlety of attacks and the quality of defenses. It will also discuss metrics for hallucination detection, referencing the trade-offs between efficacy and inference cost highlighted by [Friel_2023_LLM]. Finally, the section will cover the role of automated red teaming tools and frameworks, such as those employing MCTS fuzzing [Wang_2025_LLM], which are crucial for discovering novel vulnerabilities in a scalable manner.",
+        "target_length_words": 2000,
+        "key_topics": [
+          "Benchmarks and Datasets",
+          "Evaluation Metrics",
+          "Attack Success Rate (ASR)",
+          "Inference Cost",
+          "Automated Red Teaming",
+          "Reproducibility",
+          "Evaluation Frameworks"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 8,
+        "section_type": "testing",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "discussion_and_open_challenges",
+        "title": "9. Discussion and Open Challenges",
+        "description": "This section will synthesize the findings of the survey to discuss broader implications and identify critical open challenges for the future of LLM security. A central theme will be the analysis of the 'adversarial arms race' as a persistent dynamic, exploring its economic and computational costs and the potential for reaching a stable equilibrium. The discussion will address significant gaps in current research, such as the lack of robust defenses against sophisticated data poisoning, the scalability limitations of dynamic defense systems, and the challenge of defending against 'unknown unknowns' or novel attack vectors not yet discovered. A major focus will be on future-looking challenges posed by emerging AI paradigms. This includes the expanded attack surface of multimodal models, where vulnerabilities can cross from text to image or other modalities, and the unique security risks associated with autonomous, agentic LLMs that can interact with external systems and tools. The section will also touch upon the socio-technical aspects of LLM security, including the need for better developer practices, user education, and regulatory frameworks to foster a more secure AI ecosystem.",
+        "target_length_words": 1000,
+        "key_topics": [
+          "Adversarial Arms Race",
+          "Research Gaps",
+          "Scalability of Defenses",
+          "Multimodal Security",
+          "Agentic AI Security",
+          "Unknown Unknowns",
+          "Socio-technical Challenges"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 9,
+        "section_type": "discussion",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "conclusion",
+        "title": "10. Conclusion",
+        "description": "This final section will concisely summarize the key findings and contributions of the survey. It will reiterate the primary temporal trends identified: the progression from static, domain-specific vulnerabilities to automated, system-level threats, and the corresponding shift from patchwork defenses to integrated, co-evolutionary security paradigms. The conclusion will synthesize the state of the art across the four main threat categories\u2014poisoning, adversarial attacks, prompt injection, and hallucinations\u2014emphasizing their interconnectedness. It will underscore the critical importance of robust and standardized evaluation methodologies as the bedrock for meaningful progress in the field. The paper will conclude with a set of high-level, practical recommendations for different stakeholders: for researchers, it will highlight the most pressing open questions and promising future directions; for developers and practitioners, it will suggest best practices for building more secure LLM-powered applications; and for policymakers, it will offer insights into the evolving nature of AI risk and the need for adaptive governance.",
+        "target_length_words": 500,
+        "key_topics": [
+          "Summary of Findings",
+          "Key Temporal Trends",
+          "Synthesis of Threats",
+          "Importance of Evaluation",
+          "Practical Recommendations",
+          "Future Outlook"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 10,
+        "section_type": "conclusion",
+        "parent_key": null,
+        "subsections": []
+      }
+    ],
+    "sections": {},
+    "verification_results": {},
+    "bibliography": [],
+    "provenance": [],
+    "final_paper": "",
+    "version_info": {
+      "version_number": "1.0",
+      "timestamp": "2026-03-23T16:06:19.776861",
+      "paper_count": 0,
+      "categories": [],
+      "changelog": "",
+      "l1_count": 0,
+      "l2_count": 0,
+      "sections_count": 0,
+      "total_citations": 0,
+      "verified_citations": 0
+    },
+    "current_phase": "planning",
+    "current_section_key": "",
+    "iteration_count": 0,
+    "errors": [],
+    "current_scratchpad": [],
+    "retrieved_facts": {},
+    "agentic_stats": {},
+    "metadata": {
+      "budget_report": {
+        "n_categories": 4,
+        "papers_per_category": 5,
+        "total_papers": 20,
+        "max_context_tokens": 150000,
+        "l1_chars_per_paper": 118400,
+        "l1_tokens_per_call": 14500,
+        "l2_total_chars_per_category": 592000,
+        "l2_tokens_per_call": 150000,
+        "writer_chars_per_section": 60000,
+        "writer_tokens_per_call": 17000,
+        "critic_tokens_per_call": 17000,
+        "n_sections_estimate": 8,
+        "within_budget": true,
+        "warnings": []
+      },
+      "pipeline_start": "2026-03-23T16:06:19.776858",
+      "max_iterations": 3,
+      "planner_source": "llm_generated",
+      "planner_model": "pro",
+      "planner_sections": 11,
+      "planner_categories": [
+        "LLM Hallucinations",
+        "Data and Model Poisoning",
+        "Prompt Injection",
+        "Adversarial Attacks"
+      ],
+      "planner_total_papers": 35
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "decision": "refine",
+  "raw_text_excerpt": "## Decision\nREFINE\n\n## Justification\nThe current run (`run-1`) resulted in a total execution failure with zero data points collected ($N=0$). It failed to meet every single minimum quality criterion for proceeding:\n1. **No Baselines/Method Results:** The experiment crashed before execution.\n2. **Metric Definition:** No primary metrics were recorded.\n3. **Seed Count:** Zero seeds were completed.\n4. **Analysis Quality:** The analysis quality was rated 1/10, well below the required 4/10.\n\nThe failu",
+  "quality_warnings": [],
+  "generated": "2026-03-22T17:41:24+00:00"
+}

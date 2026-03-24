@@ -1,0 +1,22 @@
+```json
+[
+  {
+    "citation_index": 0,
+    "bibtex_key": "Wang_2026_LLM",
+    "status": "NOT_SUPPORTED",
+    "confidence": 0.9,
+    "reasoning": "The source text is a summary of a specific study on the interaction effects between few-shot demonstrations and system prompt strategies. It does not contain the general claim about the rapid evolution of the LLM security landscape between 2020 and 2026."
+  },
+  {
+    "citation_index": 1,
+    "bibtex_key": "Li_2024_Badedit",
+    "status": "SUPPORTED",
+    "confidence": 0.95,
+    "reasoning": "The source text explicitly confirms that BadEdit formulates backdoor injection as a lightweight knowledge editing problem, alters specific parameters, uses 15 samples, and achieves near 100% attack success rates."
+  },
+  {
+    "citation_index": 2,
+    "bibtex_key": "Li_2025_LLM",
+    "status": "SUPPORTED",
+    "confidence": 0.95,
+    "reasoning": "The source text confirms that SecurityLingua uses security-oriented prompt compression to extract intent, keeps the original user prompt intact, maintains utility (zero refusal rate), and has negligible token overhead (~32 extra tokens)."

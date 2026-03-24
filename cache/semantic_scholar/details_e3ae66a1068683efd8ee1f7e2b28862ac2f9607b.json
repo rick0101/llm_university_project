@@ -1,0 +1,65 @@
+{
+  "paperId": "e3ae66a1068683efd8ee1f7e2b28862ac2f9607b",
+  "externalIds": {
+    "ArXiv": "2503.07697",
+    "DBLP": "journals/corr/abs-2503-07697",
+    "DOI": "10.48550/arXiv.2503.07697",
+    "CorpusId": 276928706
+  },
+  "title": "PoisonedParrot: Subtle Data Poisoning Attacks to Elicit Copyright-Infringing Content from Large Language Models",
+  "venue": "North American Chapter of the Association for Computational Linguistics",
+  "year": 2025,
+  "citationCount": 3,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2503.07697, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-03-10",
+  "journal": {
+    "pages": "8173-8190"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Panaitescu-Liess2025PoisonedParrotSD,\n author = {Michael-Andrei Panaitescu-Liess and Pankayaraj Pathmanathan and Yigitcan Kaya and Zora Che and Bang An and Sicheng Zhu and Aakriti Agrawal and Furong Huang},\n booktitle = {North American Chapter of the Association for Computational Linguistics},\n pages = {8173-8190},\n title = {PoisonedParrot: Subtle Data Poisoning Attacks to Elicit Copyright-Infringing Content from Large Language Models},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "1648623943",
+      "name": "Michael-Andrei Panaitescu-Liess"
+    },
+    {
+      "authorId": "2162326000",
+      "name": "Pankayaraj Pathmanathan"
+    },
+    {
+      "authorId": "40898242",
+      "name": "Yigitcan Kaya"
+    },
+    {
+      "authorId": "2173680156",
+      "name": "Zora Che"
+    },
+    {
+      "authorId": "2256993596",
+      "name": "Bang An"
+    },
+    {
+      "authorId": "2110018762",
+      "name": "Sicheng Zhu"
+    },
+    {
+      "authorId": "2258553912",
+      "name": "Aakriti Agrawal"
+    },
+    {
+      "authorId": "2257407877",
+      "name": "Furong Huang"
+    }
+  ],
+  "abstract": "As the capabilities of large language models (LLMs) continue to expand, their usage has become increasingly prevalent. However, as reflected in numerous ongoing lawsuits regarding LLM-generated content, addressing copyright infringement remains a significant challenge. In this paper, we introduce PoisonedParrot: the first stealthy data poisoning attack that induces an LLM to generate copyrighted content even when the model has not been directly trained on the specific copyrighted material. PoisonedParrot integrates small fragments of copyrighted text into the poison samples using an off-the-shelf LLM. Despite its simplicity, evaluated in a wide range of experiments, PoisonedParrot is surprisingly effective at priming the model to generate copyrighted content with no discernible side effects. Moreover, we discover that existing defenses are largely ineffective against our attack. Finally, we make the first attempt at mitigating copyright-infringement poisoning attacks by proposing a defense: ParrotTrap. We encourage the community to explore this emerging threat model further."
+}

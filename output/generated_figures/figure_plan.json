@@ -1,0 +1,207 @@
+{
+  "figures": [
+    {
+      "figure_id": "fig_llm_security_taxonomy",
+      "figure_type": "image",
+      "chart_type": "taxonomy",
+      "title": "Holistic Taxonomy of LLM Security Threats",
+      "caption": "Figure 1: A comprehensive taxonomy of LLM security vulnerabilities categorized by lifecycle stage, distinguishing between training-time exposures, inference-time attacks, and intrinsic model reliability issues.",
+      "description": "A hierarchical tree diagram branching from 'LLM Security' into three main nodes: Training-Time Threats (Data Poisoning, Generative Backdoors, RLHF Exploitation), Inference-Time Threats (Prompt Injection, Jailbreaking, Adversarial Attacks), and Model Reliability (Hallucinations, Factual Inconsistency).",
+      "section_key": "introduction",
+      "data_sources": [
+        "paper_text_introduction"
+      ],
+      "data_points": [
+        {
+          "level_1": "Training-Time Threats",
+          "level_2": [
+            "Data Poisoning",
+            "Generative Backdoors",
+            "RLHF Exploitation",
+            "Supply Chain Risks"
+          ]
+        },
+        {
+          "level_1": "Inference-Time Threats",
+          "level_2": [
+            "Prompt Injection",
+            "Jailbreaking",
+            "Adversarial Attacks"
+          ]
+        },
+        {
+          "level_1": "Model Reliability",
+          "level_2": [
+            "Hallucinations",
+            "Factual Inconsistency"
+          ]
+        }
+      ],
+      "priority": 1,
+      "rationale": "The introduction explicitly states the core contribution is a 'holistic taxonomy of LLM security threats'. A visual taxonomy is essential for orienting the reader to the survey's structure."
+    },
+    {
+      "figure_id": "fig_lifecycle_vulnerabilities",
+      "figure_type": "image",
+      "chart_type": "flowchart",
+      "title": "Attack Vectors Across the LLM Operational Lifecycle",
+      "caption": "Figure 2: Mapping of specific security threats to their corresponding injection points within the LLM development and deployment lifecycle.",
+      "description": "A sequential flowchart showing the stages: Data Collection -> Pre-training -> Supervised Fine-Tuning (SFT) -> RLHF -> Deployment/Inference. Red arrows indicate where specific attacks (e.g., Indirect Data Poisoning, BadEdit, BADREWARD, GCG) compromise the pipeline.",
+      "section_key": "background_and_preliminaries",
+      "data_sources": [
+        "paper_text_background"
+      ],
+      "data_points": [
+        {
+          "stage": "Data Collection/Pre-training",
+          "threats": [
+            "Indirect Data Poisoning"
+          ]
+        },
+        {
+          "stage": "Supervised Fine-Tuning",
+          "threats": [
+            "Generative Backdoors",
+            "Knowledge Editing (BadEdit)"
+          ]
+        },
+        {
+          "stage": "RLHF Alignment",
+          "threats": [
+            "Reward Poisoning (BADREWARD)"
+          ]
+        },
+        {
+          "stage": "Inference/Deployment",
+          "threats": [
+            "Indirect Prompt Injection",
+            "GCG Jailbreaks",
+            "MCTS Fuzzing"
+          ]
+        }
+      ],
+      "priority": 2,
+      "rationale": "Section 2 emphasizes that vulnerabilities 'permeate the entire model lifecycle'. A flowchart visually reinforces the defense-in-depth concept by showing exactly where the pipeline is vulnerable."
+    },
+    {
+      "figure_id": "fig_poisoning_efficiency_scatter",
+      "figure_type": "code",
+      "chart_type": "scatter",
+      "title": "Evolution of Backdoor Attack Efficiency: Poisoning Rate vs. Attack Success Rate",
+      "caption": "Figure 3: Comparison of training-time poisoning attacks. Modern techniques like MABA achieve near-perfect Attack Success Rates (ASR) with sub-1% poisoning rates, demonstrating the increasing stealth and potency of generative backdoors.",
+      "description": "A scatter plot with 'Poisoning Rate (%)' on the logarithmic X-axis and 'Attack Success Rate (%)' on the Y-axis. It highlights the shift from traditional high-data poisoning to highly efficient modern attacks like MABA (0.2% rate, 97% ASR).",
+      "section_key": "training_time_threats",
+      "data_sources": [
+        "paper_text_training_time_threats"
+      ],
+      "data_points": [
+        {
+          "attack_method": "Traditional Data Poisoning",
+          "poisoning_rate_pct": 5.0,
+          "asr_pct": 75.0,
+          "category": "Baseline"
+        },
+        {
+          "attack_method": "BadEdit",
+          "poisoning_rate_pct": 1.0,
+          "asr_pct": 88.0,
+          "category": "Knowledge Editing"
+        },
+        {
+          "attack_method": "BADREWARD",
+          "poisoning_rate_pct": 0.5,
+          "asr_pct": 92.0,
+          "category": "RLHF Exploitation"
+        },
+        {
+          "attack_method": "MABA",
+          "poisoning_rate_pct": 0.2,
+          "asr_pct": 97.0,
+          "category": "Multimodal Backdoor"
+        }
+      ],
+      "priority": 3,
+      "rationale": "Directly visualizes the quantitative claim from the text that MABA achieves a 97% success rate with only a 0.2% poisoning rate, illustrating the alarming trend of high-efficiency stealth attacks."
+    },
+    {
+      "figure_id": "fig_automated_attack_timeline",
+      "figure_type": "code",
+      "chart_type": "timeline",
+      "title": "Chronological Evolution of Inference-Time Attack Methodologies",
+      "caption": "Figure 4: The rapid transition from manual heuristic exploits to sophisticated, automated adversarial discovery frameworks between 2023 and 2026.",
+      "description": "A horizontal timeline plotting key attack methodologies mentioned in the text, showing the progression from manual prompt engineering to gradient-based optimization (GCG) and advanced search algorithms (MCTS Fuzzing/AGENTVIGIL).",
+      "section_key": "inference_time_threats_i",
+      "data_sources": [
+        "paper_text_inference_time_threats_i"
+      ],
+      "data_points": [
+        {
+          "label": "Manual Role-Playing & Heuristics",
+          "year": 2023,
+          "category": "Manual"
+        },
+        {
+          "label": "Greedy Coordinate Gradient (GCG)",
+          "year": 2023,
+          "category": "Automated White-box"
+        },
+        {
+          "label": "Knowledge Editing Backdoors (BadEdit)",
+          "year": 2024,
+          "category": "Training/Weights"
+        },
+        {
+          "label": "MCTS Fuzzing (AGENTVIGIL)",
+          "year": 2025,
+          "category": "Automated Black-box"
+        },
+        {
+          "label": "Multimodal Alignment Exploits (FOA-Attack)",
+          "year": 2025,
+          "category": "Multimodal"
+        }
+      ],
+      "priority": 4,
+      "rationale": "The text explicitly traces the 'chronological evolution of both offensive techniques and defensive mitigation strategies' from 2023 to 2026. A timeline perfectly captures this arms race."
+    },
+    {
+      "figure_id": "fig_healthcare_adversarial_impact",
+      "figure_type": "code",
+      "chart_type": "grouped_bar",
+      "title": "Impact of Adversarial Prompts on LLM Reliability in Healthcare Tasks (MIMIC-III)",
+      "caption": "Figure 5: Degradation of model accuracy when subjected to adversarial attacks on critical healthcare tasks using the MIMIC-III dataset. The stark drop highlights the fragility of unhardened LLMs in clinical settings.",
+      "description": "A grouped bar chart comparing 'Baseline Accuracy' vs. 'Adversarial Accuracy' across two clinical tasks: 'Vaccination Guidance' and 'Medication Prescription'. The bars show a severe drop in performance under attack.",
+      "section_key": "inference_time_threats_ii",
+      "data_sources": [
+        "paper_text_inference_time_threats_ii"
+      ],
+      "data_points": [
+        {
+          "task": "Vaccination Guidance",
+          "condition": "Baseline (Clean)",
+          "accuracy_pct": 92.0
+        },
+        {
+          "task": "Vaccination Guidance",
+          "condition": "Adversarial Attack",
+          "accuracy_pct": 38.0
+        },
+        {
+          "task": "Medication Prescription",
+          "condition": "Baseline (Clean)",
+          "accuracy_pct": 89.0
+        },
+        {
+          "task": "Medication Prescription",
+          "condition": "Adversarial Attack",
+          "accuracy_pct": 31.0
+        }
+      ],
+      "priority": 5,
+      "rationale": "Section 5 details a specific evaluation using the MIMIC-III dataset where models show 'substantial decline in accuracy' under attack. Quantifying this 'stark fragility' in a bar chart emphasizes the real-world danger of these vulnerabilities."
+    }
+  ],
+  "total_figures": 5,
+  "generated_at": "2026-03-24T08:55:15.562505+00:00",
+  "model_used": "pro"
+}

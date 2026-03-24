@@ -1,0 +1,42 @@
+{
+  "paperId": "673682bcd138ec6705f8c1dc3c8769975e4f0ecb",
+  "externalIds": {
+    "ArXiv": "2409.19232",
+    "DBLP": "conf/eccv/LyuPMLC24",
+    "DOI": "10.48550/arXiv.2409.19232",
+    "CorpusId": 272987756
+  },
+  "title": "TrojVLM: Backdoor Attack Against Vision Language Models",
+  "venue": "European Conference on Computer Vision",
+  "year": 2024,
+  "citationCount": 29,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2409.19232, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2106019843",
+      "name": "Weimin Lyu"
+    },
+    {
+      "authorId": "2255349321",
+      "name": "Lu Pang"
+    },
+    {
+      "authorId": "2118287931",
+      "name": "Teng Ma"
+    },
+    {
+      "authorId": "2068815742",
+      "name": "Haibin Ling"
+    },
+    {
+      "authorId": "2255722136",
+      "name": "Chao Chen"
+    }
+  ],
+  "abstract": "The emergence of Vision Language Models (VLMs) is a significant advancement in integrating computer vision with Large Language Models (LLMs) to produce detailed text descriptions based on visual inputs, yet it introduces new security vulnerabilities. Unlike prior work that centered on single modalities or classification tasks, this study introduces TrojVLM, the first exploration of backdoor attacks aimed at VLMs engaged in complex image-to-text generation. Specifically, TrojVLM inserts predetermined target text into output text when encountering poisoned images. Moreover, a novel semantic preserving loss is proposed to ensure the semantic integrity of the original image content. Our evaluation on image captioning and visual question answering (VQA) tasks confirms the effectiveness of TrojVLM in maintaining original semantic content while triggering specific target text outputs. This study not only uncovers a critical security risk in VLMs and image-to-text generation but also sets a foundation for future research on securing multimodal models against such sophisticated threats."
+}

@@ -1,0 +1,26 @@
+{
+  "paperId": "4aaed247620facb4088781e17a85fdd323c1380d",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2512-03634",
+    "ArXiv": "2512.03634",
+    "DOI": "10.48550/arXiv.2512.03634",
+    "CorpusId": 283466460
+  },
+  "title": "AlignCheck: a Semantic Open-Domain Metric for Factual Consistency Assessment",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2512.03634, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2395890744",
+      "name": "Ahmad Aghaebrahimian"
+    }
+  ],
+  "abstract": "Large Language Models have significantly advanced natural language processing tasks, but remain prone to generating incorrect or misleading but plausible arguments. This issue, known as hallucination, is particularly concerning in high-stakes domains like clinical applications, where factual inaccuracies can have severe consequences. Existing evaluation metrics fail to adequately assess factual consistency and lack interpretability, making diagnosing and mitigating errors difficult. We propose an interpretable framework for factual consistency assessment for in-domain and open-domain texts to address these limitations. Our approach decomposes text into atomic facts and introduces a flexible, schema-free methodology. Unlike previous methods with an absolute metric, we incorporate a weighted metric to enhance factual evaluation. Additionally, we propose a mechanism to control assessment complexity in intricate domains. We benchmark our approach on popular general and clinical datasets and release our code to support fact-aware model training in future research."
+}

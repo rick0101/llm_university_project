@@ -1,0 +1,59 @@
+{
+  "selected_benchmarks": [
+    {
+      "name": "WikiText-103",
+      "tier": 2,
+      "domain": "language_modeling",
+      "size_mb": 500,
+      "samples": 28000,
+      "metrics": [
+        "perplexity",
+        "bits_per_character"
+      ],
+      "api": "datasets.load_dataset('wikitext', 'wikitext-103-v1', cache_dir='/workspace/data/hf')",
+      "source_domain": "language_modeling",
+      "origin": "knowledge_base",
+      "role": "primary"
+    },
+    {
+      "name": "WikiText-2",
+      "tier": 2,
+      "domain": "language_modeling",
+      "size_mb": 12,
+      "samples": 2000,
+      "metrics": [
+        "perplexity"
+      ],
+      "api": "datasets.load_dataset('wikitext', 'wikitext-2-v1', cache_dir='/workspace/data/hf')",
+      "source_domain": "language_modeling",
+      "origin": "knowledge_base",
+      "role": "secondary"
+    }
+  ],
+  "selected_baselines": [
+    {
+      "name": "LSTM LM",
+      "source": "Custom: 2-layer LSTM with tied embeddings",
+      "paper": "Merity et al., AWD-LSTM, ICLR 2018",
+      "pip": [],
+      "source_domain": "language_modeling",
+      "origin": "knowledge_base"
+    },
+    {
+      "name": "GPT-2 Small",
+      "source": "transformers.AutoModelForCausalLM.from_pretrained('gpt2')",
+      "paper": "Radford et al., Language Models are Unsupervised Multitask Learners, 2019",
+      "pip": [
+        "transformers"
+      ],
+      "source_domain": "language_modeling",
+      "origin": "knowledge_base"
+    }
+  ],
+  "required_pip": [
+    "transformers"
+  ],
+  "rationale": "WikiText-103 is the domain standard for evaluating the linguistic integrity of language models. In security research, it is critical to ensure that defenses (like adversarial training or input filtering) do not significantly degrade the model's core language capabilities. GPT-2 Small represents the modern transformer architecture susceptible to these vulnerabilities, while LSTM LM serves as the classic recurrent baseline for comparative robustness analysis.",
+  "experiment_notes": "With a 600s time budget, focus on inference-based security metrics such as perplexity degradation under adversarial perturbation rather than full training. The 49GB GPU memory is sufficient to load GPT-2 and perform parallelized safety probing or gradient-based attack simulations.",
+  "total_filtered": 3
+}

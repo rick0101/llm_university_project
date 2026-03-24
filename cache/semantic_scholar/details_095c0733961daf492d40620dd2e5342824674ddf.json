@@ -1,0 +1,42 @@
+{
+  "paperId": "095c0733961daf492d40620dd2e5342824674ddf",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2410-06462",
+    "ArXiv": "2410.06462",
+    "DOI": "10.48550/arXiv.2410.06462",
+    "CorpusId": 273228392
+  },
+  "title": "Hallucinating AI Hijacking Attack: Large Language Models and Malicious Code Recommenders",
+  "venue": "arXiv.org",
+  "year": 2024,
+  "citationCount": 1,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.06462, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2024-10-09",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2410.06462"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Noever2024HallucinatingAH,\n author = {David A. Noever and Forrest McKee},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {Hallucinating AI Hijacking Attack: Large Language Models and Malicious Code Recommenders},\n volume = {abs/2410.06462},\n year = {2024}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "46787948",
+      "name": "David A. Noever"
+    },
+    {
+      "authorId": "2197525782",
+      "name": "Forrest McKee"
+    }
+  ],
+  "abstract": "The research builds and evaluates the adversarial potential to introduce copied code or hallucinated AI recommendations for malicious code in popular code repositories. While foundational large language models (LLMs) from OpenAI, Google, and Anthropic guard against both harmful behaviors and toxic strings, previous work on math solutions that embed harmful prompts demonstrate that the guardrails may differ between expert contexts. These loopholes would appear in mixture of expert's models when the context of the question changes and may offer fewer malicious training examples to filter toxic comments or recommended offensive actions. The present work demonstrates that foundational models may refuse to propose destructive actions correctly when prompted overtly but may unfortunately drop their guard when presented with a sudden change of context, like solving a computer programming challenge. We show empirical examples with trojan-hosting repositories like GitHub, NPM, NuGet, and popular content delivery networks (CDN) like jsDelivr which amplify the attack surface. In the LLM's directives to be helpful, example recommendations propose application programming interface (API) endpoints which a determined domain-squatter could acquire and setup attack mobile infrastructure that triggers from the naively copied code. We compare this attack to previous work on context-shifting and contrast the attack surface as a novel version of\"living off the land\"attacks in the malware literature. In the latter case, foundational language models can hijack otherwise innocent user prompts to recommend actions that violate their owners' safety policies when posed directly without the accompanying coding support request."
+}

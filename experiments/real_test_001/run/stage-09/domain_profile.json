@@ -1,0 +1,13 @@
+{
+  "domain_id": "ml_nlp",
+  "display_name": "Natural Language Processing (ML)",
+  "experiment_paradigm": "comparison",
+  "core_libraries": [
+    "torch",
+    "transformers",
+    "datasets",
+    "numpy",
+    "scikit-learn"
+  ],
+  "gpu_required": true
+}

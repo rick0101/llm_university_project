@@ -1,0 +1,17 @@
+not mention the specific datasets (Amazon Reviews, BOLD), metrics (St2Exp-P/R/F1, etc.), or frameworks (SelfCheckGPT, etc.) listed in the claim."
+  },
+  {
+    "citation_index": 3,
+    "bibtex_key": "Friel_2023_LLM",
+    "status": "PARTIALLY_SUPPORTED",
+    "confidence": 0.8,
+    "reasoning": "The source confirms the category 'LLM Hallucinations' and discusses detection (ChainPoll), but it uses different datasets (RealHall suite) and metrics (Adherence, Correctness) than those listed in the claim."
+  },
+  {
+    "citation_index": 4,
+    "bibtex_key": "Ding_2025_Reward",
+    "status": "PARTIALLY_SUPPORTED",
+    "confidence": 0.8,
+    "reasoning": "The source confirms the category 'Adversarial Attacks' and uses RL-based methods (PPO) for generating malicious code, but it does not mention 'Custom Query Sets', 'GFlowNet Fuzzers', or 'AdvQDet' as specified in the claim."
+  }
+]

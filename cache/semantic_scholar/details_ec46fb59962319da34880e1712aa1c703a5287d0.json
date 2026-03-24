@@ -1,0 +1,50 @@
+{
+  "paperId": "ec46fb59962319da34880e1712aa1c703a5287d0",
+  "externalIds": {
+    "ArXiv": "2509.04492",
+    "DBLP": "journals/corr/abs-2509-04492",
+    "DOI": "10.48550/arXiv.2509.04492",
+    "CorpusId": 281195263
+  },
+  "title": "Learned Hallucination Detection in Black-Box LLMs using Token-level Entropy Production Rate",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 2,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2509.04492, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-09-01",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2509.04492"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Moslonka2025LearnedHD,\n author = {Charles Moslonka and Hicham Randrianarivo and A. Garnier and Emmanuel Malherbe},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {Learned Hallucination Detection in Black-Box LLMs using Token-level Entropy Production Rate},\n volume = {abs/2509.04492},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "1412821645",
+      "name": "Charles Moslonka"
+    },
+    {
+      "authorId": "1986125",
+      "name": "Hicham Randrianarivo"
+    },
+    {
+      "authorId": "2314434500",
+      "name": "A. Garnier"
+    },
+    {
+      "authorId": "2282973214",
+      "name": "Emmanuel Malherbe"
+    }
+  ],
+  "abstract": "Hallucinations in Large Language Model (LLM) outputs for Question Answering (QA) tasks can critically undermine their real-world reliability. This paper introduces a methodology for robust, one-shot hallucination detection, specifically designed for scenarios with limited data access, such as interacting with black-box LLM APIs that typically expose only a few top candidate log-probabilities per token. Our approach derives uncertainty indicators directly from these readily available log-probabilities generated during non-greedy decoding. We first derive an Entropy Production Rate (EPR) that offers baseline performance, later augmented with supervised learning. Our learned model leverages the entropic contributions of the accessible top-ranked tokens within a single generated sequence, without multiple re-runs per query. Evaluated across diverse QA datasets and multiple LLMs, this estimator significantly improves token-level hallucination detection over state-of-the-art methods. Crucially, high performance is demonstrated using only the typically small set of available log-probabilities (e.g., top-10 per token), confirming its practical efficiency and suitability for API-constrained deployments. This work provides a lightweight technique to enhance the trustworthiness of LLM responses, at the token level, after a single generation pass, for QA and Retrieval-Augmented Generation (RAG) systems. Our experiments confirmed the performance of our method against existing approaches on public dataset as well as for a financial framework analyzing annual company reports."
+}

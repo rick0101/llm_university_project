@@ -1,0 +1,38 @@
+{
+  "paperId": "c10ab1bf12182570a6ecf9e2dd01f60f13a446dd",
+  "externalIds": {
+    "ArXiv": "2409.13331",
+    "DBLP": "journals/corr/abs-2409-13331",
+    "DOI": "10.1109/AIBThings63359.2024.10863664",
+    "CorpusId": 272770246
+  },
+  "title": "Applying Pre-trained Multilingual BERT in Embeddings for Improved Malicious Prompt Injection Attacks Detection",
+  "venue": "2024 2nd International Conference on Artificial Intelligence, Blockchain, and Internet of Things (AIBThings)",
+  "year": 2024,
+  "citationCount": 16,
+  "openAccessPdf": {
+    "url": "http://arxiv.org/pdf/2409.13331",
+    "status": "GREEN",
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2409.13331, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2277704064",
+      "name": "Md. Abdur Rahman"
+    },
+    {
+      "authorId": "2277554652",
+      "name": "Hossain Shahriar"
+    },
+    {
+      "authorId": "2322620509",
+      "name": "Fan Wu"
+    },
+    {
+      "authorId": "2293984775",
+      "name": "Alfredo Cuzzocrea"
+    }
+  ],
+  "abstract": "Large language models (LLMs) are renowned for their exceptional capabilities, and applying to a wide range of applications. However, this widespread use brings significant vulnerabilities. Also, it is well observed that there are huge gap which lies in the need for effective detection and mitigation strategies against malicious prompt injection attacks in large language models, as current approaches may not adequately address the complexity and evolving nature of these vulnerabilities in real-world applications. Therefore, this work focuses the impact of malicious prompt injection attacks which is one of most dangerous vulnerability on real LLMs applications. It examines to apply various BERT (Bidirectional Encoder Representations from Transformers) like multilingual BERT, DistilBert for classifying malicious prompts from legitimate prompts. Also, we observed how tokenizing the prompt texts and generating embeddings using multilingual BERT contributes to improve the performance of various machine learning methods: Gaussian Naive Bayes, Random Forest, Support Vector Machine, and Logistic Regression. The performance of each model is rigorously analyzed with various parameters to improve the binary classification to discover malicious prompts. Multilingual BERT approach to embed the prompts significantly improved and outperformed the existing works and achieves an outstanding accuracy of 96.55% by Logistic regression. Additionally, we investigated the incorrect predictions of the model to gain insights into its limitations. The findings can guide researchers in tuning various BERT for finding the most suitable model for diverse LLMs vulnerabilities."
+}

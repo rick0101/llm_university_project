@@ -1,0 +1,46 @@
+{
+  "paperId": "83542dada679669f27f18738897505d3f09af4ed",
+  "externalIds": {
+    "ArXiv": "2507.06899",
+    "DBLP": "journals/corr/abs-2507-06899",
+    "DOI": "10.48550/arXiv.2507.06899",
+    "CorpusId": 280149632
+  },
+  "title": "VisualTrap: A Stealthy Backdoor Attack on GUI Agents via Visual Grounding Manipulation",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 4,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2507.06899, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2336613191",
+      "name": "Ziang Ye"
+    },
+    {
+      "authorId": "2365332153",
+      "name": "Yang Zhang"
+    },
+    {
+      "authorId": "2153422494",
+      "name": "Wentao Shi"
+    },
+    {
+      "authorId": "2372509279",
+      "name": "Xiaoyu You"
+    },
+    {
+      "authorId": "2280911299",
+      "name": "Fuli Feng"
+    },
+    {
+      "authorId": "2279753672",
+      "name": "Tat-Seng Chua"
+    }
+  ],
+  "abstract": "Graphical User Interface (GUI) agents powered by Large Vision-Language Models (LVLMs) have emerged as a revolutionary approach to automating human-machine interactions, capable of autonomously operating personal devices (e.g., mobile phones) or applications within the device to perform complex real-world tasks in a human-like manner. However, their close integration with personal devices raises significant security concerns, with many threats, including backdoor attacks, remaining largely unexplored. This work reveals that the visual grounding of GUI agent-mapping textual plans to GUI elements-can introduce vulnerabilities, enabling new types of backdoor attacks. With backdoor attack targeting visual grounding, the agent's behavior can be compromised even when given correct task-solving plans. To validate this vulnerability, we propose VisualTrap, a method that can hijack the grounding by misleading the agent to locate textual plans to trigger locations instead of the intended targets. VisualTrap uses the common method of injecting poisoned data for attacks, and does so during the pre-training of visual grounding to ensure practical feasibility of attacking. Empirical results show that VisualTrap can effectively hijack visual grounding with as little as 5% poisoned data and highly stealthy visual triggers (invisible to the human eye); and the attack can be generalized to downstream tasks, even after clean fine-tuning. Moreover, the injected trigger can remain effective across different GUI environments, e.g., being trained on mobile/web and generalizing to desktop environments. These findings underscore the urgent need for further research on backdoor attack risks in GUI agents."
+}

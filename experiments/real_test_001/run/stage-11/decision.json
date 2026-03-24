@@ -1,0 +1,15 @@
+{
+  "stage_id": "11-resource_planning",
+  "run_id": "rc-20260322-173432-1d173d",
+  "status": "done",
+  "decision": "proceed",
+  "output_artifacts": [
+    "schedule.json"
+  ],
+  "evidence_refs": [
+    "stage-11/schedule.json"
+  ],
+  "error": null,
+  "ts": "2026-03-22T17:34:42+00:00",
+  "next_stage": 12
+}

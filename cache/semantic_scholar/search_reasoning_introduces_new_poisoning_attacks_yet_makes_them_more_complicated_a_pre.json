@@ -1,0 +1,50 @@
+{
+  "paperId": "4872a10a1c9424fab07bab66b37f89d16a0f90c5",
+  "externalIds": {
+    "ArXiv": "2509.05739",
+    "DBLP": "journals/corr/abs-2509-05739",
+    "DOI": "10.48550/arXiv.2509.05739",
+    "CorpusId": 281203012
+  },
+  "title": "Reasoning Introduces New Poisoning Attacks Yet Makes Them More Complicated",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 5,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2509.05739, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2306784255",
+      "name": "Hanna Foerster"
+    },
+    {
+      "authorId": "47473421",
+      "name": "Ilia Shumailov"
+    },
+    {
+      "authorId": "2109919449",
+      "name": "Yiren Zhao"
+    },
+    {
+      "authorId": "81386254",
+      "name": "Harsh Chaudhari"
+    },
+    {
+      "authorId": "2283307020",
+      "name": "Jamie Hayes"
+    },
+    {
+      "authorId": "2256999134",
+      "name": "Robert D. Mullins"
+    },
+    {
+      "authorId": "2260692820",
+      "name": "Yarin Gal"
+    }
+  ],
+  "abstract": "Early research into data poisoning attacks against Large Language Models (LLMs) demonstrated the ease with which backdoors could be injected. More recent LLMs add step-by-step reasoning, expanding the attack surface to include the intermediate chain-of-thought (CoT) and its inherent trait of decomposing problems into subproblems. Using these vectors for more stealthy poisoning, we introduce ``decomposed reasoning poison'', in which the attacker modifies only the reasoning path, leaving prompts and final answers clean, and splits the trigger across multiple, individually harmless components. Fascinatingly, while it remains possible to inject these decomposed poisons, reliably activating them to change final answers (rather than just the CoT) is surprisingly difficult. This difficulty arises because the models can often recover from backdoors that are activated within their thought processes. Ultimately, it appears that an emergent form of backdoor robustness is originating from the reasoning capabilities of these advanced LLMs, as well as from the architectural separation between reasoning and final answer generation."
+}

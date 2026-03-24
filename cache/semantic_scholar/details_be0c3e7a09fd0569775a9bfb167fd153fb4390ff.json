@@ -1,0 +1,46 @@
+{
+  "paperId": "be0c3e7a09fd0569775a9bfb167fd153fb4390ff",
+  "externalIds": {
+    "ArXiv": "2510.11218",
+    "DBLP": "journals/corr/abs-2510-11218",
+    "DOI": "10.48550/arXiv.2510.11218",
+    "CorpusId": 282058107
+  },
+  "title": "The Curious Case of Factual (Mis)Alignment between LLMs' Short- and Long-Form Answers",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 1,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.11218, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-10-13",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2510.11218"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Islam2025TheCC,\n author = {Saad Obaid Ul Islam and Anne Lauscher and Goran Glavavs},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {The Curious Case of Factual (Mis)Alignment between LLMs' Short- and Long-Form Answers},\n volume = {abs/2510.11218},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2253595613",
+      "name": "Saad Obaid Ul Islam"
+    },
+    {
+      "authorId": "29891652",
+      "name": "Anne Lauscher"
+    },
+    {
+      "authorId": "1666177566",
+      "name": "Goran Glavavs"
+    }
+  ],
+  "abstract": "Large language models (LLMs) can correctly answer\"When was Einstein born?\"yet fail to provide the same date when writing about Einstein's life revealing a fundamental inconsistency in how models access factual knowledge across task complexities. While models display impressive accuracy on factual question-answering benchmarks, the reliability gap between simple and complex queries remains poorly understood, eroding their trustworthiness. In this work, we introduce Short-Long Form Alignment for Factual Question Answering (SLAQ), a controlled evaluation framework that compares LLMs'answers to the same factual questions asked (a) in isolation (short) vs. (b) integrated into complex queries (long). Looking at 16 LLMs across 600 queries, we find a systematic misalignment of answers to the corresponding short and long queries. We further uncover position-dependent accuracy loss and momentum effects where consecutive correct or incorrect answers create self-reinforcing patterns. Through mechanistic analysis, we find that aligned facts activate overlapping model internals, and that metrics based on mechanistic similarity can predict short-long answer alignment with up to 78% accuracy. Our work establishes factual consistency over query complexity as an important aspect of LLMs'trustworthiness and challenges current evaluation practices, which implicitly assume that good performance for simple factual queries implies reliability in more complex knowledge-seeking tasks too."
+}

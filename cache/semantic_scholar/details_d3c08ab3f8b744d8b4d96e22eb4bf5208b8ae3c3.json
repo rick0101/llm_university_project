@@ -1,0 +1,50 @@
+{
+  "paperId": "d3c08ab3f8b744d8b4d96e22eb4bf5208b8ae3c3",
+  "externalIds": {
+    "ArXiv": "2505.15633",
+    "DBLP": "journals/corr/abs-2505-15633",
+    "DOI": "10.48550/arXiv.2505.15633",
+    "CorpusId": 278782807
+  },
+  "title": "Listen to the Context: Towards Faithful Large Language Models for Retrieval Augmented Generation on Climate Questions",
+  "venue": "Proceedings of the 2nd Workshop on Natural Language Processing Meets Climate Change (ClimateNLP 2025)",
+  "year": 2025,
+  "citationCount": 0,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.15633, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-05-21",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2505.15633"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Thulke2025ListenTT,\n author = {David Thulke and Jakob Kemmler and Christian Dugast and Hermann Ney},\n booktitle = {Proceedings of the 2nd Workshop on Natural Language Processing Meets Climate Change (ClimateNLP 2025)},\n journal = {ArXiv},\n title = {Listen to the Context: Towards Faithful Large Language Models for Retrieval Augmented Generation on Climate Questions},\n volume = {abs/2505.15633},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "17687726",
+      "name": "David Thulke"
+    },
+    {
+      "authorId": "2362632068",
+      "name": "Jakob Kemmler"
+    },
+    {
+      "authorId": "32703822",
+      "name": "Christian Dugast"
+    },
+    {
+      "authorId": "2327335262",
+      "name": "Hermann Ney"
+    }
+  ],
+  "abstract": "Large language models that use retrieval augmented generation have the potential to unlock valuable knowledge for researchers, policymakers, and the public by making long and technical climate-related documents more accessible. While this approach can help alleviate factual hallucinations by relying on retrieved passages as additional context, its effectiveness depends on whether the model's output remains faithful to these passages. To address this, we explore the automatic assessment of faithfulness of different models in this setting. We then focus on ClimateGPT, a large language model specialised in climate science, to examine which factors in its instruction fine-tuning impact the model's faithfulness. By excluding unfaithful subsets of the model's training data, we develop ClimateGPT Faithful+, which achieves an improvement in faithfulness from 30% to 57% in supported atomic claims according to our automatic metric."
+}

@@ -1,0 +1,46 @@
+{
+  "paperId": "7481718f3e1adea4aa91f41bdfc2548279dddaa2",
+  "externalIds": {
+    "ArXiv": "2510.22521",
+    "DBLP": "journals/corr/abs-2510-22521",
+    "DOI": "10.48550/arXiv.2510.22521",
+    "CorpusId": 282389061
+  },
+  "title": "Open Multimodal Retrieval-Augmented Factual Image Generation",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 1,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.22521, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2365052359",
+      "name": "Yang Tian"
+    },
+    {
+      "authorId": "2365107236",
+      "name": "Fan Liu"
+    },
+    {
+      "authorId": "2365045324",
+      "name": "Jingyuan Zhang"
+    },
+    {
+      "authorId": "2258552250",
+      "name": "Wei Bi"
+    },
+    {
+      "authorId": "2283010363",
+      "name": "Yupeng Hu"
+    },
+    {
+      "authorId": "2237804020",
+      "name": "Liqiang Nie"
+    }
+  ],
+  "abstract": "Large Multimodal Models (LMMs) have achieved remarkable progress in generating photorealistic and prompt-aligned images, but they often produce outputs that contradict verifiable knowledge, especially when prompts involve fine-grained attributes or time-sensitive events. Conventional retrieval-augmented approaches attempt to address this issue by introducing external information, yet they are fundamentally incapable of grounding generation in accurate and evolving knowledge due to their reliance on static sources and shallow evidence integration. To bridge this gap, we introduce ORIG, an agentic open multimodal retrieval-augmented framework for Factual Image Generation (FIG), a new task that requires both visual realism and factual grounding. ORIG iteratively retrieves and filters multimodal evidence from the web and incrementally integrates the refined knowledge into enriched prompts to guide generation. To support systematic evaluation, we build FIG-Eval, a benchmark spanning ten categories across perceptual, compositional, and temporal dimensions. Experiments demonstrate that ORIG substantially improves factual consistency and overall image quality over strong baselines, highlighting the potential of open multimodal retrieval for factual image generation."
+}

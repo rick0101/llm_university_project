@@ -1,0 +1,34 @@
+{
+  "paperId": "a714068287d395291adb62de4b2a9a164b96601b",
+  "externalIds": {
+    "ArXiv": "2502.12769",
+    "DBLP": "conf/emnlp/IslamLG25",
+    "DOI": "10.18653/v1/2025.emnlp-main.1481",
+    "CorpusId": 282894267
+  },
+  "title": "How Much Do LLMs Hallucinate across Languages? On Realistic Multilingual Estimation of LLM Hallucination",
+  "venue": "Conference on Empirical Methods in Natural Language Processing",
+  "year": 2025,
+  "citationCount": 1,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2502.12769, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2346934778",
+      "name": "Saad Obaid ul Islam"
+    },
+    {
+      "authorId": "29891652",
+      "name": "Anne Lauscher"
+    },
+    {
+      "authorId": "2350812560",
+      "name": "Goran Glavas"
+    }
+  ],
+  "abstract": "In the age of misinformation, hallucination - the tendency of Large Language Models (LLMs) to generate non-factual or unfaithful responses - represents the main risk for their global utility. Despite LLMs becoming increasingly multilingual, the vast majority of research on detecting and quantifying LLM hallucination are (a) English-centric and (b) focus on machine translation (MT) and summarization, tasks that are less common in realistic settings than open information seeking. In contrast, we aim to quantify the extent of LLM hallucination across languages in knowledge-intensive long-form question answering (LFQA). To this end, we train a multilingual hallucination detection model and conduct a large-scale study across 30 languages and 6 open-source LLM families. We start from an English hallucination detection dataset and rely on MT to translate-train a detection model. We also manually annotate gold data for five high-resource languages; we then demonstrate, for these languages, that the estimates of hallucination rates are similar between silver (LLM-generated) and gold test sets, validating the use of silver data for estimating hallucination rates for other languages. For the final rates estimation, we build open-domain QA dataset for 30 languages with LLM-generated prompts and Wikipedia articles as references. Our analysis shows that LLMs, in absolute terms, hallucinate more tokens in high-resource languages due to longer responses, but that the actual hallucination rates (i.e., normalized for length) seems uncorrelated with the sizes of languages'digital footprints. We also find that smaller LLMs hallucinate more, and significantly, LLMs with broader language support display higher hallucination rates."
+}

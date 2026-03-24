@@ -1,0 +1,34 @@
+{
+  "paperId": "e83ac166e2194c0950e72841ec585280d76f66a1",
+  "externalIds": {
+    "ArXiv": "2412.13378",
+    "DBLP": "journals/corr/abs-2412-13378",
+    "DOI": "10.48550/arXiv.2412.13378",
+    "CorpusId": 274823004
+  },
+  "title": "SummExecEdit: A Factual Consistency Benchmark in Summarization with Executable Edits",
+  "venue": "arXiv.org",
+  "year": 2024,
+  "citationCount": 1,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2412.13378, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2335869656",
+      "name": "Onkar Thorat"
+    },
+    {
+      "authorId": "46180754",
+      "name": "Philippe Laban"
+    },
+    {
+      "authorId": "2267031643",
+      "name": "Chien-Sheng Wu"
+    }
+  ],
+  "abstract": "Detecting factual inconsistencies in summarization is critical, yet existing benchmarks lack the necessary challenge and interpretability for robust evaluation. In this paper, we introduce SummExecEdit, a novel pipeline and benchmark leveraging executable edits to assess models on their ability to both detect factual errors and provide accurate explanations. The top-performing model, Claude3-Opus, achieves a joint detection and explanation score of only 0.49 in our benchmark, with individual scores of 0.67 for detection and 0.73 for explanation. We conduct detailed evaluations to assess the current state of models in this field and find that more than half of the 20+ LLMs in our study struggle with over 30% of the SummExecEdit benchmark. Additionally, we identify four primary types of explanation errors, with 45.4% of them involving a focus on completely unrelated parts of the summary."
+}

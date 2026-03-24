@@ -1,0 +1,25 @@
+```json
+[
+  {
+    "citation_index": 0,
+    "bibtex_key": "Chowdhury_2024_Breaking",
+    "status": "NOT_SUPPORTED",
+    "confidence": 0.9,
+    "reasoning": "The source text is a summary of a survey paper focused on LLM security (attacks and defenses). It does not contain the general introductory claim regarding the transformation of NLP or 'unprecedented advances in language comprehension and generation'."
+  },
+  {
+    "citation_index": 1,
+    "bibtex_key": "Yang_2024_Adversarial",
+    "status": "NOT_SUPPORTED",
+    "confidence": 0.9,
+    "reasoning": "The source text states that poisoning LLMs does not degrade their performance on standard benchmarks, but it does not claim that these models consistently outperformed previous state-of-the-art methods."
+  },
+  {
+    "citation_index": 2,
+    "bibtex_key": "Wang_2025_LLM",
+    "status": "SUPPORTED",
+    "confidence": 0.85,
+    "reasoning": "The source text describes a framework (AGENTVIGIL) for LLM agents and specifically mentions a web agent navigating URLs, which supports the claim about the development of agent-based systems interacting with complex environments."
+  },
+  {
+    "citation_index

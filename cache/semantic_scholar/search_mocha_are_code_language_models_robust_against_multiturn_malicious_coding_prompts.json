@@ -1,0 +1,54 @@
+{
+  "paperId": "783d49ec8d2535e2e16e30747255d4655528931b",
+  "externalIds": {
+    "ArXiv": "2507.19598",
+    "DBLP": "journals/corr/abs-2507-19598",
+    "DOI": "10.48550/arXiv.2507.19598",
+    "CorpusId": 280324167
+  },
+  "title": "MOCHA: Are Code Language Models Robust Against Multi-Turn Malicious Coding Prompts?",
+  "venue": "Conference on Empirical Methods in Natural Language Processing",
+  "year": 2025,
+  "citationCount": 1,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2507.19598, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2004145852",
+      "name": "Muntasir Wahed"
+    },
+    {
+      "authorId": "2295949184",
+      "name": "Xiaona Zhou"
+    },
+    {
+      "authorId": "2299298657",
+      "name": "Kiet A. Nguyen"
+    },
+    {
+      "authorId": "2297153733",
+      "name": "Tianjiao Yu"
+    },
+    {
+      "authorId": "2309494504",
+      "name": "Nirav Diwan"
+    },
+    {
+      "authorId": "2335559390",
+      "name": "Gang Wang"
+    },
+    {
+      "authorId": "2365041902",
+      "name": "Dilek Hakkani-Tur"
+    },
+    {
+      "authorId": "2099420",
+      "name": "Ismini Lourentzou"
+    }
+  ],
+  "abstract": "Recent advancements in Large Language Models (LLMs) have significantly enhanced their code generation capabilities. However, their robustness against adversarial misuse, particularly through multi-turn malicious coding prompts, remains underexplored. In this work, we introduce code decomposition attacks, where a malicious coding task is broken down into a series of seemingly benign subtasks across multiple conversational turns to evade safety filters. To facilitate systematic evaluation, we introduce \\benchmarkname{}, a large-scale benchmark designed to evaluate the robustness of code LLMs against both single-turn and multi-turn malicious prompts. Empirical results across open- and closed-source models reveal persistent vulnerabilities, especially under multi-turn scenarios. Fine-tuning on MOCHA improves rejection rates while preserving coding ability, and importantly, enhances robustness on external adversarial datasets with up to 32.4% increase in rejection rates without any additional supervision."
+}

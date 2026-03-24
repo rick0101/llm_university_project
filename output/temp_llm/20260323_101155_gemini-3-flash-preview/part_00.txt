@@ -1,0 +1,38 @@
+ summary.*
+
+    *Candidate 3 is L2 summary.*
+
+    *Final check on scores and order.*
+
+    3: 0.95
+    14: 0.92
+    17: 0.91
+    16: 0.90
+    7: 0.88
+    20: 0.86
+    9: 0.84
+    19: 0.82
+    18: 0.82
+    2: 0.80
+    1: 0.78
+    11: 0.75
+    6: 0.72
+    5: 0.70
+    4: 0.68
+    12: 0.65
+    8: 0.62
+    10: 0.60
+    15: 0.55
+    13: 0.30
+
+    *Wait, Candidate 15 is a taxonomy of attacks on LLMs. It's quite relevant to the overall query.* I'll put it around 0.6.
+
+    *Candidate 13 is the least relevant.*
+
+    *Candidate 10 is specific targets.*
+
+    *Candidate 8, 12 are intro/details of BadEdit.*
+
+    *Candidate 4, 5 are intro/abstract of BackdoorLLM.*
+
+    *Candidate 6 is abstract of BadEdit.*

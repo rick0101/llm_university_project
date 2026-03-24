@@ -1,0 +1,39 @@
+```json
+[
+  {
+    "citation_index": 0,
+    "bibtex_key": "Akil_2025_Llmalmorph",
+    "status": "NOT_SUPPORTED",
+    "confidence": 0.95,
+    "reasoning": "The source text describes a framework for malware generation using LLMs but does not mention the Transformer architecture or self-attention mechanisms."
+  },
+  {
+    "citation_index": 1,
+    "bibtex_key": "Jia_2025_Adversarial",
+    "status": "PARTIALLY_SUPPORTED",
+    "confidence": 0.85,
+    "reasoning": "The source confirms the existence and multimodal nature of MLLMs (integrating image encoders with models like GPT-o3), but it does not explicitly state the narrative about 'capitalizing on text-based LLMs' or 'paving the way' as described in the claim."
+  },
+  {
+    "citation_index": 2,
+    "bibtex_key": "Liu_2025_Purpcode",
+    "status": "PARTIALLY_SUPPORTED",
+    "confidence": 0.85,
+    "reasoning": "The source confirms that SFT is the first stage of the alignment pipeline. However, it describes using 'synthetic safety reasoning trajectories' rather than the 'human-curated demonstration data' mentioned in the claim."
+  },
+  {
+    "citation_index": 3,
+    "bibtex_key": "Ding_2025_Reward",
+    "status": "SUPPORTED",
+    "confidence": 0.98,
+    "reasoning": "The source explicitly describes RAWG as a 'Reward-driven Automated Webshell Malicious-code Generator' designed to synthesize obfuscated payloads for red-teaming, which directly supports the claim."
+  },
+  {
+    "citation_index": 4,
+    "bibtex_key": "Wang_2024_Advqdet",
+    "status": "PARTIALLY_SUPPORTED",
+    "confidence": 0.8,
+    "reasoning": "The source mentions 'query-based black-box attacks,' which implies interaction via an input-output interface, but it does not explicitly provide the formal definition of a black-box threat model as stated in the claim."
+  }
+]
+```

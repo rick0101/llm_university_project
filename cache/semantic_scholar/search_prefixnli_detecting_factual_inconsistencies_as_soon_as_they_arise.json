@@ -1,0 +1,46 @@
+{
+  "paperId": "b77d4050651f5803526499f70b5fef55cccd21f4",
+  "externalIds": {
+    "ArXiv": "2511.01359",
+    "DBLP": "journals/corr/abs-2511-01359",
+    "DOI": "10.48550/arXiv.2511.01359",
+    "CorpusId": 282739784
+  },
+  "title": "PrefixNLI: Detecting Factual Inconsistencies as Soon as They Arise",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2511.01359, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2390404590",
+      "name": "Sapir Harary"
+    },
+    {
+      "authorId": "2128107365",
+      "name": "Eran Hirsch"
+    },
+    {
+      "authorId": "2074098656",
+      "name": "Aviv Slobodkin"
+    },
+    {
+      "authorId": "2316163989",
+      "name": "David Wan"
+    },
+    {
+      "authorId": "2304446991",
+      "name": "Mohit Bansal"
+    },
+    {
+      "authorId": "7465342",
+      "name": "Ido Dagan"
+    }
+  ],
+  "abstract": "Natural Language Inference (NLI) models have been used in various ways to improve the factuality of LLM outputs. This is typically done by applying an NLI model to judge whether the model output is entailed from the supposed evidence, triggering some corrective actions, such as beam reranking at inference time or RL rewards during training. While NLI models are trained to detect factual inconsistencies over complete sentences, decisions in the common autoregressive generation architecture are made for each evolving text prefix, during decoding. Addressing this setting, we generalize the entailment detection task to apply over arbitrary text prefixes, and suggest its utility for improving generation faithfulness. Providing suitable evaluation and training datasets for this task, we train MiniTruePrefixes, a novel specialized model that better detects factual inconsistencies over text prefixes, outperforming comparable baseline NLI models by 5-14 F1 points in prefix-level entailment. We further demonstrate that integrating MiniTruePrefixes into a controlled decoding framework substantially improves factual consistency in abstractive summarization. When guided by MiniTruePrefixes, LLaMA-3.2-3B-Instruct matches the faithfulness and runtime of the 8B model from the same model family, while using only half the memory."
+}

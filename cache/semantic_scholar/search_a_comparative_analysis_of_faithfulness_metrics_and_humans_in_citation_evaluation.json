@@ -1,0 +1,46 @@
+{
+  "paperId": "8f242d5c9a10b98ce17fb78bc44d16bfbbf56177",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2408-12398",
+    "ArXiv": "2408.12398",
+    "DOI": "10.48550/arXiv.2408.12398",
+    "CorpusId": 271923934
+  },
+  "title": "A Comparative Analysis of Faithfulness Metrics and Humans in Citation Evaluation",
+  "venue": "arXiv.org",
+  "year": 2024,
+  "citationCount": 5,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2408.12398, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2307014052",
+      "name": "Weijia Zhang"
+    },
+    {
+      "authorId": "2277448544",
+      "name": "Mohammad Aliannejadi"
+    },
+    {
+      "authorId": "2301583789",
+      "name": "Jiahuan Pei"
+    },
+    {
+      "authorId": "2283814918",
+      "name": "Yifei Yuan"
+    },
+    {
+      "authorId": "2298943481",
+      "name": "Jia-Hong Huang"
+    },
+    {
+      "authorId": "2314138767",
+      "name": "Evangelos Kanoulas"
+    }
+  ],
+  "abstract": "Large language models (LLMs) often generate content with unsupported or unverifiable content, known as\"hallucinations.\"To address this, retrieval-augmented LLMs are employed to include citations in their content, grounding the content in verifiable sources. Despite such developments, manually assessing how well a citation supports the associated statement remains a major challenge. Previous studies tackle this challenge by leveraging faithfulness metrics to estimate citation support automatically. However, they limit this citation support estimation to a binary classification scenario, neglecting fine-grained citation support in practical scenarios. To investigate the effectiveness of faithfulness metrics in fine-grained scenarios, we propose a comparative evaluation framework that assesses the metric effectiveness in distinguishing citations between three-category support levels: full, partial, and no support. Our framework employs correlation analysis, classification evaluation, and retrieval evaluation to measure the alignment between metric scores and human judgments comprehensively. Our results indicate no single metric consistently excels across all evaluations, highlighting the complexity of accurately evaluating fine-grained support levels. Particularly, we find that the best-performing metrics struggle to distinguish partial support from full or no support. Based on these findings, we provide practical recommendations for developing more effective metrics."
+}

@@ -1,0 +1,69 @@
+{
+  "matched_domains": [
+    "language_modeling"
+  ],
+  "benchmarks": [
+    {
+      "name": "WikiText-103",
+      "tier": 2,
+      "domain": "language_modeling",
+      "size_mb": 500,
+      "samples": 28000,
+      "metrics": [
+        "perplexity",
+        "bits_per_character"
+      ],
+      "api": "datasets.load_dataset('wikitext', 'wikitext-103-v1', cache_dir='/workspace/data/hf')",
+      "source_domain": "language_modeling",
+      "origin": "knowledge_base"
+    },
+    {
+      "name": "WikiText-2",
+      "tier": 2,
+      "domain": "language_modeling",
+      "size_mb": 12,
+      "samples": 2000,
+      "metrics": [
+        "perplexity"
+      ],
+      "api": "datasets.load_dataset('wikitext', 'wikitext-2-v1', cache_dir='/workspace/data/hf')",
+      "source_domain": "language_modeling",
+      "origin": "knowledge_base"
+    },
+    {
+      "name": "Penn Treebank",
+      "tier": 2,
+      "domain": "language_modeling",
+      "size_mb": 5,
+      "metrics": [
+        "perplexity"
+      ],
+      "api": "datasets.load_dataset('ptb_text_only', cache_dir='/workspace/data/hf')",
+      "source_domain": "language_modeling",
+      "origin": "knowledge_base"
+    }
+  ],
+  "baselines": [
+    {
+      "name": "GPT-2 Small",
+      "source": "transformers.AutoModelForCausalLM.from_pretrained('gpt2')",
+      "paper": "Radford et al., Language Models are Unsupervised Multitask Learners, 2019",
+      "pip": [
+        "transformers"
+      ],
+      "source_domain": "language_modeling",
+      "origin": "knowledge_base"
+    },
+    {
+      "name": "LSTM LM",
+      "source": "Custom: 2-layer LSTM with tied embeddings",
+      "paper": "Merity et al., AWD-LSTM, ICLR 2018",
+      "pip": [],
+      "source_domain": "language_modeling",
+      "origin": "knowledge_base"
+    }
+  ],
+  "hf_datasets_found": 0,
+  "llm_fallback_used": false,
+  "rationale": ""
+}

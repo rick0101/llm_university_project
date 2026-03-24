@@ -1,0 +1,76 @@
+{
+  "metrics_summary": {
+    "Base/ASR_at_0.2": {
+      "mean": 0.125,
+      "std": 0.0,
+      "n": 2
+    },
+    "Smooth/ASR_at_0.2": {
+      "mean": 0.0,
+      "std": 0.0,
+      "n": 2
+    },
+    "AdvT/ASR_at_0.2": {
+      "mean": 0.0,
+      "std": 0.0,
+      "n": 2
+    },
+    "RLUF/ASR_at_0.2": {
+      "mean": 0.0,
+      "std": 0.0,
+      "n": 2
+    },
+    "Base/ASR_at_0.4": {
+      "mean": 0.0,
+      "std": 0.0,
+      "n": 2
+    },
+    "Smooth/ASR_at_0.4": {
+      "mean": 0.0,
+      "std": 0.0,
+      "n": 2
+    },
+    "AdvT/ASR_at_0.4": {
+      "mean": 0.0,
+      "std": 0.0,
+      "n": 2
+    },
+    "RLUF/ASR_at_0.4": {
+      "mean": 0.0,
+      "std": 0.0,
+      "n": 2
+    }
+  },
+  "total_runs": 1,
+  "best_run": {
+    "run_id": "run-1",
+    "task_id": "sandbox-main",
+    "status": "completed",
+    "metrics": {
+      "Base/ASR_at_0.0": 0.0,
+      "Base/ASR_at_0.1": 0.0,
+      "Base/ASR_at_0.2": 0.125,
+      "Base/ASR_at_0.4": 0.0,
+      "Smooth/ASR_at_0.0": 0.0,
+      "Smooth/ASR_at_0.1": 0.0,
+      "Smooth/ASR_at_0.2": 0.0,
+      "Smooth/ASR_at_0.4": 0.0,
+      "AdvT/ASR_at_0.0": 0.0,
+      "AdvT/ASR_at_0.1": 0.0,
+      "AdvT/ASR_at_0.2": 0.0,
+      "AdvT/ASR_at_0.4": 0.0,
+      "RLUF/ASR_at_0.0": 0.0,
+      "RLUF/ASR_at_0.1": 0.0,
+      "RLUF/ASR_at_0.2": 0.0,
+      "RLUF/ASR_at_0.4": 0.0,
+      "primary_metric": 0.125
+    },
+    "elapsed_sec": 48.93914566600142,
+    "stdout": "Device: cpu | Safety Prompt: True\n\n--- Seed 42 ---\nBase: {'ASR_at_0.0': np.float64(0.0), 'ASR_at_0.1': np.float64(0.0), 'ASR_at_0.2': np.float64(0.125), 'ASR_at_0.4': np.float64(0.0)}\nSmooth: {'ASR_at_0.0': np.float64(0.0), 'ASR_at_0.1': np.float64(0.0), 'ASR_at_0.2': np.float64(0.0), 'ASR_at_0.4': np.float64(0.0)}\nAdvT: {'ASR_at_0.0': np.float64(0.0), 'ASR_at_0.1': np.float64(0.0), 'ASR_at_0.2': np.float64(0.0), 'ASR_at_0.4': np.float64(0.0)}\nRLUF: {'ASR_at_0.0': np.float64(0.0), 'ASR_at_0.1': np.float64(0.0), 'ASR_at_0.2': np.float64(0.0), 'ASR_at_0.4': np.float64(0.0)}\n\n--- Seed 2024 ---\nBase: {'ASR_at_0.0': np.float64(0.0), 'ASR_at_0.1': np.float64(0.0), 'ASR_at_0.2': np.float64(0.0), 'ASR_at_0.4': np.float64(0.0)}\nSmooth: {'ASR_at_0.0': np.float64(0.0), 'ASR_at_0.1': np.float64(0.0), 'ASR_at_0.2': np.float64(0.0), 'ASR_at_0.4': np.float64(0.0)}\nAdvT: {'ASR_at_0.0': np.float64(0.0), 'ASR_at_0.1': np.float64(0.0), 'ASR_at_0.2': np.float64(0.0), 'ASR_at_0.4': np.float64(0.0)}\nRLUF: {'ASR_at_0.0': np.float64(0.0), 'ASR_at_0.1': np.float64(0.0), 'ASR_at_0.2': np.float64(0.0), 'ASR_at_0.4': np.float64(0.0)}\n\n========================================\nASR SUMMARY (Strength 0.4, SafetyPrompt=True)\nBASE      : 0.0000 \u00b1 0.0000\nSMOOTH    : 0.0000 \u00b1 0.0000\nADV       : 0.0000 \u00b1 0.0000\nRL        : 0.0000 \u00b1 0.0000\n",
+    "stderr": "`trust_remote_code` is not supported anymore.\nPlease check that the Hugging Face dataset 'wikitext' isn't based on a loading script and remove `trust_remote_code`.\nIf the dataset is based on a loading script, please ask the dataset author to remove it and convert it to a standard format like Parquet.\nWarning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n\nLoading weights:   0%|          | 0/148 [00:00<?, ?it/s]\nLoading weights: 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 148/148 [00:00<00:00, 17269.63it/s]\n`loss_type=None` was set in the config but it is unrecognized. Using the default loss: `ForCausalLMLoss`.\nThe attention mask is not set and cannot be inferred from input because pad token is same as eos token. As a consequence, you may observe unexpected behavior. Please pass your input's `attention_mask` to obtain reliable results.\n\nLoading weights:   0%|          | 0/148 [00:00<?, ?it/s]\nLoading weights: 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 148/148 [00:00<00:00, 15080.46it/s]\n\nLoading weights:   0%|          | 0/148 [00:00<?, ?it/s]\nLoading weights: 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 148/148 [00:00<00:00, 19733.51it/s]\n\nLoading weights:   0%|          | 0/148 [00:00<?, ?it/s]\nLoading weights: 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 148/148 [00:00<00:00, 22196.05it/s]\n\nLoading weights:   0%|          | 0/148 [00:00<?, ?it/s]\nLoading weights: 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 148/148 [00:00<00:00, 15768.46it/s]\n\nLoading weights:   0%|          | 0/148 [00:00<?, ?it/s]\nLoading weights: 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 148/148 [00:00<00:00, 15712.98it/s]\n",
+    "timed_out": false,
+    "completed_at": "2026-03-22T17:59:12+00:00"
+  },
+  "latex_table": "\\begin{table}[h]\n\\centering\n\\caption{Experiment Results}\n\\begin{tabular}{l}\nNo experiment data available \\\\\n\\end{tabular}\n\\end{table}",
+  "generated": "2026-03-22T18:02:23+00:00"
+}

@@ -1,0 +1,8 @@
+{
+  "code_complexity_warnings": [
+    "[config.py] Class 'ExperimentConfig' has only 0 non-dunder method(s) \u2014 algorithm classes should have at least __init__ + one core method (forward/train_step/predict)",
+    "[model_zoo.py] Class 'PerplexityFilterModel' has only 1 non-dunder method(s) \u2014 algorithm classes should have at least __init__ + one core method (forward/train_step/predict)",
+    "[engine.py] Class 'AdversarialTrainer' has only 1 non-dunder method(s) \u2014 algorithm classes should have at least __init__ + one core method (forward/train_step/predict)",
+    "[engine.py] Class 'RLUFTrainer' has only 1 non-dunder method(s) \u2014 algorithm classes should have at least __init__ + one core method (forward/train_step/predict)"
+  ]
+}

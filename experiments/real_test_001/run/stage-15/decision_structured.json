@@ -1,0 +1,6 @@
+{
+  "decision": "refine",
+  "raw_text_excerpt": "## Decision\n**REFINE**\n\n## Justification\nThe current experimental results fail to meet the minimum quality criteria for proceeding to publication. Specifically:\n1. **Insufficient Seed Diversity:** The experiments were conducted using only a single seed (Seed 42), violating the requirement for results from $\\ge 3$ seeds.\n2. **Low Statistical Power:** With an estimated sample size of $N \\approx 8$ (evidenced by the 0.125 ASR signature), the results are statistically insignificant. A single flip in",
+  "quality_warnings": [],
+  "generated": "2026-03-22T18:03:43+00:00"
+}

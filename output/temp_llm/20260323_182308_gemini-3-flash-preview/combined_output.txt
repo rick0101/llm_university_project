@@ -1,0 +1,39 @@
+```json
+[
+  {
+    "citation_index": 0,
+    "bibtex_key": "Wang_2025_LLM",
+    "status": "SUPPORTED",
+    "confidence": 1.0,
+    "reasoning": "The source text explicitly mentions AGENTVIGIL using MCTS for seed selection, achieving 70-71% ASR against models including GPT-4o and o3-mini, and successfully misleading agents to navigate to malicious URLs."
+  },
+  {
+    "citation_index": 1,
+    "bibtex_key": "Liu_2025_Aegis",
+    "status": "SUPPORTED",
+    "confidence": 1.0,
+    "reasoning": "The source text describes AEGIS as a co-evolutionary framework for attackers and defenders, specifically mentioning the use of multi-route textual gradients and gradient replay (as well as gradient buffering) to provide adaptive robustness."
+  },
+  {
+    "citation_index": 2,
+    "bibtex_key": "Chowdhury_2024_Breaking",
+    "status": "SUPPORTED",
+    "confidence": 0.9,
+    "reasoning": "As a survey paper identifying 'important challenges in LLM security' and highlighting the need for 'real-time monitoring systems' and 'explainable LLMs,' the source supports the claim that existing mechanisms are inadequate for detecting sophisticated anomalies and leave models vulnerable."
+  },
+  {
+    "citation_index": 3,
+    "bibtex_key": "Thang_2026_LLM",
+    "status": "SUPPORTED",
+    "confidence": 0.95,
+    "reasoning": "The source text supports the claim by stating its method (GoodVibe) prevents catastrophic forgetting and reduces optimization complexity compared to full fine-tuning. It also contrasts its 'neuron-level' (fine-grained) approach with the standard distribution of parameters, supporting the claim that other adaptations operate at a coarser granularity."
+  },
+  {
+    "citation_index": 4,
+    "bibtex_key": "Yang_2024_Adversarial",
+    "status": "PARTIALLY_SUPPORTED",
+    "confidence": 0.85,
+    "reasoning": "The source text directly supports the observation that poisoned models exhibit larger LoRA weight norms and suggests this as a detection/mitigation metric. However, it does not explicitly mention that a 'comprehensive theoretical framework remains elusive,' which is an additional interpretive statement not found in the provided summary."
+  }
+]
+```

@@ -1,0 +1,49 @@
+{
+  "paperId": "5b79112817c0115d3db49245311982b623270422",
+  "externalIds": {
+    "ArXiv": "2502.19820",
+    "DBLP": "journals/corr/abs-2502-19820",
+    "DOI": "10.48550/arXiv.2502.19820",
+    "CorpusId": 276647281
+  },
+  "title": "Foot-In-The-Door: A Multi-turn Jailbreak for LLMs",
+  "venue": "Conference on Empirical Methods in Natural Language Processing",
+  "year": 2025,
+  "citationCount": 22,
+  "influentialCitationCount": 4,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2502.19820, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-02-27",
+  "journal": {
+    "pages": "1939-1950"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Weng2025FootInTheDoorAM,\n author = {Zixuan Weng and Xiaolong Jin and Jinyuan Jia and Xiangyu Zhang},\n booktitle = {Conference on Empirical Methods in Natural Language Processing},\n pages = {1939-1950},\n title = {Foot-In-The-Door: A Multi-turn Jailbreak for LLMs},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2347547073",
+      "name": "Zixuan Weng"
+    },
+    {
+      "authorId": "2283102392",
+      "name": "Xiaolong Jin"
+    },
+    {
+      "authorId": "2282387150",
+      "name": "Jinyuan Jia"
+    },
+    {
+      "authorId": "2347922155",
+      "name": "Xiangyu Zhang"
+    }
+  ],
+  "abstract": "Ensuring AI safety is crucial as large language models become increasingly integrated into real-world applications. A key challenge is jailbreak, where adversarial prompts bypass built-in safeguards to elicit harmful disallowed outputs. Inspired by psychological foot-in-the-door principles, we introduce FITD,a novel multi-turn jailbreak method that leverages the phenomenon where minor initial commitments lower resistance to more significant or more unethical transgressions. Our approach progressively escalates the malicious intent of user queries through intermediate bridge prompts and aligns the model's response by itself to induce toxic responses. Extensive experimental results on two jailbreak benchmarks demonstrate that FITD achieves an average attack success rate of 94% across seven widely used models, outperforming existing state-of-the-art methods. Additionally, we provide an in-depth analysis of LLM self-corruption, highlighting vulnerabilities in current alignment strategies and emphasizing the risks inherent in multi-turn interactions. The code is available at https://github.com/Jinxiaolong1129/Foot-in-the-door-Jailbreak."
+}

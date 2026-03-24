@@ -1,0 +1,119 @@
+{
+  "generated": "2026-03-22T17:37:13+00:00",
+  "mode": "sandbox",
+  "metric_key": "primary_metric",
+  "metric_direction": "maximize",
+  "max_iterations_requested": 6,
+  "max_iterations_executed": 6,
+  "baseline_metric": null,
+  "project_files": [
+    "config.py",
+    "data_utils.py",
+    "engine.py",
+    "main.py",
+    "model_zoo.py"
+  ],
+  "iterations": [
+    {
+      "iteration": 1,
+      "version_dir": "experiment_v1/",
+      "files": [
+        "config.py",
+        "data_utils.py",
+        "engine.py",
+        "main.py",
+        "model_zoo.py"
+      ],
+      "validation_ok": true,
+      "validation_summary": "Code validation: 4 warning(s)",
+      "repaired": false,
+      "metric": null,
+      "improved": false,
+      "sandbox": {
+        "returncode": 1,
+        "metrics": {},
+        "elapsed_sec": 4.053889542003162,
+        "timed_out": false,
+        "stderr": "Traceback (most recent call last):\n  File \"/Users/ricca/Desktop/llm_university_project/experiments/real_test_001/run/stage-13/refine_sandbox_v1/_project/main.py\", line 5, in <module>\n    from data_utils import get_wiki_loaders, get_harmfulness_scorer\n  File \"/Users/ricca/Desktop/llm_university_project/experiments/real_test_001/run/stage-13/refine_sandbox_v1/_project/data_utils.py\", line 3, in <module>\n    from datasets import load_dataset\nModuleNotFoundError: No module named 'datasets'\n",
+        "stdout": ""
+      },
+      "runtime_issues": "## Runtime Issues Detected\n\nThe experiment code ran but produced problematic results. Fix the ROOT CAUSE of these issues in the code:\n\n- Runtime warnings/errors from stderr:\nTraceback (most recent call last):\nModuleNotFoundError: No module named 'datasets'",
+      "sandbox_after_fix": {
+        "returncode": 1,
+        "metrics": {},
+        "elapsed_sec": 0.04053537500294624,
+        "timed_out": false
+      },
+      "runtime_repaired": true
+    },
+    {
+      "iteration": 2,
+      "version_dir": "experiment_v2/",
+      "files": [
+        "config.py",
+        "data_utils.py",
+        "engine.py",
+        "main.py",
+        "model_zoo.py"
+      ],
+      "validation_ok": true,
+      "validation_summary": "Code validation: 4 warning(s)",
+      "repaired": false,
+      "metric": null,
+      "improved": false,
+      "sandbox": {
+        "returncode": 1,
+        "metrics": {},
+        "elapsed_sec": 0.5969697920008912,
+        "timed_out": false,
+        "stderr": "Traceback (most recent call last):\n  File \"/Users/ricca/Desktop/llm_university_project/experiments/real_test_001/run/stage-13/refine_sandbox_v2/_project/main.py\", line 6, in <module>\n    from data_utils import get_wiki_loaders, get_harmfulness_scorer\n  File \"/Users/ricca/Desktop/llm_university_project/experiments/real_test_001/run/stage-13/refine_sandbox_v2/_project/data_utils.py\", line 4, in <module>\n    from datasets import load_dataset\nModuleNotFoundError: No module named 'datasets'\n",
+        "stdout": ""
+      },
+      "runtime_issues": "## Runtime Issues Detected\n\nThe experiment code ran but produced problematic results. Fix the ROOT CAUSE of these issues in the code:\n\n- Runtime warnings/errors from stderr:\nTraceback (most recent call last):\nModuleNotFoundError: No module named 'datasets'",
+      "sandbox_after_fix": {
+        "returncode": 1,
+        "metrics": {},
+        "elapsed_sec": 0.034356124997430015,
+        "timed_out": false
+      },
+      "runtime_repaired": true
+    },
+    {
+      "iteration": 3,
+      "version_dir": "experiment_v3/",
+      "files": [
+        "config.py",
+        "data_utils.py",
+        "engine.py",
+        "main.py",
+        "model_zoo.py"
+      ],
+      "validation_ok": true,
+      "validation_summary": "Code validation passed.",
+      "repaired": false,
+      "metric": null,
+      "improved": false,
+      "sandbox": {
+        "returncode": 1,
+        "metrics": {},
+        "elapsed_sec": 0.021145624996279366,
+        "timed_out": false,
+        "stderr": "Traceback (most recent call last):\n  File \"/Users/ricca/Desktop/llm_university_project/experiments/real_test_001/run/stage-13/refine_sandbox_v3/_project/main.py\", line 2, in <module>\n    from transformers import GPT2LMHeadModel, GPT2Config\nModuleNotFoundError: No module named 'transformers'\n",
+        "stdout": ""
+      },
+      "runtime_issues": "## Runtime Issues Detected\n\nThe experiment code ran but produced problematic results. Fix the ROOT CAUSE of these issues in the code:\n\n- Runtime warnings/errors from stderr:\nTraceback (most recent call last):\nModuleNotFoundError: No module named 'transformers'",
+      "sandbox_after_fix": {
+        "returncode": 1,
+        "metrics": {},
+        "elapsed_sec": 0.043869000000995584,
+        "timed_out": false
+      },
+      "runtime_repaired": true
+    }
+  ],
+  "converged": false,
+  "stop_reason": "consecutive_no_metrics",
+  "best_metric": null,
+  "best_version": "experiment/",
+  "final_version": "experiment_final/"
+}

@@ -1,0 +1,62 @@
+{
+  "paperId": "eee3bf09bcc997a3586e29f7d3c3d37a42aff87d",
+  "externalIds": {
+    "DBLP": "conf/iclr/MingPPKNXJ25",
+    "ArXiv": "2410.03727",
+    "DOI": "10.48550/arXiv.2410.03727",
+    "CorpusId": 273186949
+  },
+  "title": "FaithEval: Can Your Language Model Stay Faithful to Context, Even If \"The Moon is Made of Marshmallows\"",
+  "venue": "International Conference on Learning Representations",
+  "year": 2024,
+  "citationCount": 53,
+  "influentialCitationCount": 11,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.03727, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2024-09-30",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2410.03727"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Ming2024FaithEvalCY,\n author = {Yifei Ming and Senthil Purushwalkam and Shrey Pandit and Zixuan Ke and Xuan-Phi Nguyen and Caiming Xiong and Shafiq Joty},\n booktitle = {International Conference on Learning Representations},\n journal = {ArXiv},\n title = {FaithEval: Can Your Language Model Stay Faithful to Context, Even If \"The Moon is Made of Marshmallows\"},\n volume = {abs/2410.03727},\n year = {2024}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2321601631",
+      "name": "Yifei Ming"
+    },
+    {
+      "authorId": "3234247",
+      "name": "Senthil Purushwalkam"
+    },
+    {
+      "authorId": "1824294087",
+      "name": "Shrey Pandit"
+    },
+    {
+      "authorId": "2321405223",
+      "name": "Zixuan Ke"
+    },
+    {
+      "authorId": "1399659909",
+      "name": "Xuan-Phi Nguyen"
+    },
+    {
+      "authorId": "2267728986",
+      "name": "Caiming Xiong"
+    },
+    {
+      "authorId": "2313536726",
+      "name": "Shafiq Joty"
+    }
+  ],
+  "abstract": "Ensuring faithfulness to context in large language models (LLMs) and retrieval-augmented generation (RAG) systems is crucial for reliable deployment in real-world applications, as incorrect or unsupported information can erode user trust. Despite advancements on standard benchmarks, faithfulness hallucination-where models generate responses misaligned with the provided context-remains a significant challenge. In this work, we introduce FaithEval, a novel and comprehensive benchmark tailored to evaluate the faithfulness of LLMs in contextual scenarios across three diverse tasks: unanswerable, inconsistent, and counterfactual contexts. These tasks simulate real-world challenges where retrieval mechanisms may surface incomplete, contradictory, or fabricated information. FaithEval comprises 4.9K high-quality problems in total, validated through a rigorous four-stage context construction and validation framework, employing both LLM-based auto-evaluation and human validation. Our extensive study across a wide range of open-source and proprietary models reveals that even state-of-the-art models often struggle to remain faithful to the given context, and that larger models do not necessarily exhibit improved faithfulness.Project is available at: https://github.com/SalesforceAIResearch/FaithEval."
+}

@@ -1,0 +1,46 @@
+{
+  "paperId": "234cbf2ed2baadcd91498c6393fbb36337798ead",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2410-03839",
+    "ArXiv": "2410.03839",
+    "DOI": "10.48550/arXiv.2410.03839",
+    "CorpusId": 273185995
+  },
+  "title": "FaithCAMERA: Construction of a Faithful Dataset for Ad Text Generation",
+  "venue": "arXiv.org",
+  "year": 2024,
+  "citationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.03839, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2243338763",
+      "name": "Akihiko Kato"
+    },
+    {
+      "authorId": "2243338169",
+      "name": "Masato Mita"
+    },
+    {
+      "authorId": "48688865",
+      "name": "Soichiro Murakami"
+    },
+    {
+      "authorId": "46205964",
+      "name": "Ukyo Honda"
+    },
+    {
+      "authorId": "3313369",
+      "name": "Sho Hoshino"
+    },
+    {
+      "authorId": "2290631116",
+      "name": "Peinan Zhang"
+    }
+  ],
+  "abstract": "In ad text generation (ATG), desirable ad text is both faithful and informative. That is, it should be faithful to the input document, while at the same time containing important information that appeals to potential customers. The existing evaluation data, CAMERA (arXiv:2309.12030), is suitable for evaluating informativeness, as it consists of reference ad texts created by ad creators. However, these references often include information unfaithful to the input, which is a notable obstacle in promoting ATG research. In this study, we collaborate with in-house ad creators to refine the CAMERA references and develop an alternative ATG evaluation dataset called FaithCAMERA, in which the faithfulness of references is guaranteed. Using FaithCAMERA, we can evaluate how well existing methods for improving faithfulness can generate informative ad text while maintaining faithfulness. Our experiments show that removing training data that contains unfaithful entities improves the faithfulness and informativeness at the entity level, but decreases both at the sentence level. This result suggests that for future ATG research, it is essential not only to scale the training data but also to ensure their faithfulness. Our dataset will be publicly available."
+}

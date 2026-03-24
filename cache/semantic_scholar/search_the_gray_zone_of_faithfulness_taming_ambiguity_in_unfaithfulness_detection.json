@@ -1,0 +1,38 @@
+{
+  "paperId": "64958326c1c2985d5bc4c544fb8ae630d295e6c7",
+  "externalIds": {
+    "ArXiv": "2510.21118",
+    "DBLP": "journals/corr/abs-2510-21118",
+    "DOI": "10.48550/arXiv.2510.21118",
+    "CorpusId": 282384176
+  },
+  "title": "The Gray Zone of Faithfulness: Taming Ambiguity in Unfaithfulness Detection",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.21118, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2257004196",
+      "name": "Qiang Ding"
+    },
+    {
+      "authorId": "2336708925",
+      "name": "Lvzhou Luo"
+    },
+    {
+      "authorId": "10034341",
+      "name": "Yixuan Cao"
+    },
+    {
+      "authorId": "2256989703",
+      "name": "Ping Luo"
+    }
+  ],
+  "abstract": "Ensuring that Large Language Models (LLMs) generate summaries faithful to a given source document is essential for real-world applications. While prior research has explored LLM faithfulness, existing benchmarks suffer from annotation ambiguity, primarily due to the ill-defined boundary of permissible external knowledge in generated outputs. For instance, common sense is often incorporated into responses and labeled as\"faithful\", yet the acceptable extent of such knowledge remains unspecified, leading to inconsistent annotations. To address this issue, we propose a novel faithfulness annotation framework, which introduces an intermediate category, Out-Dependent, to classify cases where external knowledge is required for verification. Using this framework, we construct VeriGray (Verification with the Gray Zone) -- a new unfaithfulness detection benchmark in summarization. Statistics reveal that even SOTA LLMs, such as GPT-5, exhibit hallucinations ($\\sim 6\\%$ of sentences) in summarization tasks. Moreover, a substantial proportion ($\\sim 9\\%$ on average of models) of generated sentences fall into the Out-Dependent category, underscoring the importance of resolving annotation ambiguity in unfaithfulness detection benchmarks. Experiments demonstrate that our benchmark poses significant challenges to multiple baseline methods, indicating considerable room for future improvement."
+}

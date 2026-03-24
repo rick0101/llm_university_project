@@ -1,0 +1,17 @@
+{
+  "stage_id": "23-citation_verify",
+  "run_id": "rc-20260322-181638-1d173d",
+  "status": "done",
+  "decision": "proceed",
+  "output_artifacts": [
+    "verification_report.json",
+    "references_verified.bib"
+  ],
+  "evidence_refs": [
+    "stage-23/verification_report.json",
+    "stage-23/references_verified.bib"
+  ],
+  "error": null,
+  "ts": "2026-03-22T18:19:49+00:00",
+  "next_stage": null
+}

@@ -1,0 +1,46 @@
+{
+  "paperId": "3880048f1790d8b99b213afed6c0ea0902f10ba3",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2410-02832",
+    "ArXiv": "2410.02832",
+    "DOI": "10.48550/arXiv.2410.02832",
+    "CorpusId": 273163173
+  },
+  "title": "FlipAttack: Jailbreak LLMs via Flipping",
+  "venue": "arXiv.org",
+  "year": 2024,
+  "citationCount": 55,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.02832, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2324779365",
+      "name": "Yue Liu"
+    },
+    {
+      "authorId": "2283895736",
+      "name": "Xiaoxin He"
+    },
+    {
+      "authorId": "38827926",
+      "name": "Miao Xiong"
+    },
+    {
+      "authorId": "2281643448",
+      "name": "Jinlan Fu"
+    },
+    {
+      "authorId": "2253472695",
+      "name": "Shumin Deng"
+    },
+    {
+      "authorId": "2319222667",
+      "name": "Bryan Hooi"
+    }
+  ],
+  "abstract": "This paper proposes a simple yet effective jailbreak attack named FlipAttack against black-box LLMs. First, from the autoregressive nature, we reveal that LLMs tend to understand the text from left to right and find that they struggle to comprehend the text when noise is added to the left side. Motivated by these insights, we propose to disguise the harmful prompt by constructing left-side noise merely based on the prompt itself, then generalize this idea to 4 flipping modes. Second, we verify the strong ability of LLMs to perform the text-flipping task, and then develop 4 variants to guide LLMs to denoise, understand, and execute harmful behaviors accurately. These designs keep FlipAttack universal, stealthy, and simple, allowing it to jailbreak black-box LLMs within only 1 query. Experiments on 8 LLMs demonstrate the superiority of FlipAttack. Remarkably, it achieves $\\sim$98\\% attack success rate on GPT-4o, and $\\sim$98\\% bypass rate against 5 guardrail models on average. The codes are available at GitHub\\footnote{https://github.com/yueliu1999/FlipAttack}."
+}

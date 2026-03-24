@@ -1,0 +1,182 @@
+{
+  "search_id": "a13d3ff63191a8e8",
+  "params": {
+    "keywords": "\"data poisoning\" LLM OR \"model poisoning\" OR \"backdoor attack\" language model OR \"training poisoning\"",
+    "criteria": "Solo articoli di ricerca originali che introducono nuove tecniche di data poisoning, model poisoning o backdoor attack su LLM. Escludi tassativamente survey, review, meta-analisi, tutorial, overview e position paper.",
+    "max_results": 1,
+    "output_dir": "/tmp/ph_test/Data_and_Model_Poisoning1",
+    "date_from": "2025-05",
+    "date_to": null
+  },
+  "search_meta": {
+    "total_found": 6,
+    "sources_queried": [
+      "ArXiv",
+      "Semantic Scholar",
+      "Hugging Face"
+    ],
+    "errors": [],
+    "source_counts": {
+      "arxiv": 1,
+      "semantic_scholar": 4,
+      "huggingface": 1
+    }
+  },
+  "created_at": "2026-03-24T10:27:24.991355",
+  "updated_at": "2026-03-24T10:30:39.754391",
+  "phase": "complete",
+  "papers": [
+    {
+      "index": 0,
+      "title": "WorldCache: Content-Aware Caching for Accelerated Video World Models",
+      "authors": [
+        "Umair Nawaz",
+        "Ahmed Heakl",
+        "Ufaq Khan",
+        "Abdelrahman Shaker",
+        "Salman Khan"
+      ],
+      "abstract": "Diffusion Transformers (DiTs) power high-fidelity video world models but remain computationally expensive due to sequential denoising and costly spatio-temporal attention. Training-free feature caching accelerates inference by reusing intermediate activations across denoising steps; however, existing methods largely rely on a Zero-Order Hold assumption i.e., reusing cached features as static snapshots when global drift is small. This often leads to ghosting artifacts, blur, and motion inconsistencies in dynamic scenes. We propose \\textbf{WorldCache}, a Perception-Constrained Dynamical Caching framework that improves both when and how to reuse features. WorldCache introduces motion-adaptive thresholds, saliency-weighted drift estimation, optimal approximation via blending and warping, and phase-aware threshold scheduling across diffusion steps. Our cohesive approach enables adaptive, motion-consistent feature reuse without retraining. On Cosmos-Predict2.5-2B evaluated on PAI-Bench, WorldCache achieves \\textbf{2.3$\\times$} inference speedup while preserving \\textbf{99.4\\%} of baseline quality, substantially outperforming prior training-free caching approaches. Our code can be accessed on \\href{https://umair1221.github.io/World-Cache/}{World-Cache}.",
+      "url": "http://arxiv.org/abs/2603.22286v1",
+      "pdf_url": "https://arxiv.org/pdf/2603.22286v1",
+      "arxiv_id": "2603.22286v1",
+      "doi": null,
+      "source": "arxiv",
+      "published_date": "2026-03-23T17:59:54+00:00",
+      "github_url": null,
+      "categories": [
+        "cs.CV",
+        "cs.AI",
+        "cs.CL",
+        "cs.LG"
+      ],
+      "citations": null,
+      "status": "not_relevant",
+      "relevance_reasoning": "The paper focuses on inference acceleration for video world models (Diffusion Transformers) using a content-aware caching mechanism. It does not address data poisoning, model poisoning, or backdoor attacks, nor is it primarily focused on Large Language Models (LLMs) in the context of security or adversarial research.",
+      "relevance_confidence": 1.0,
+      "download_path": null,
+      "download_error": null
+    },
+    {
+      "index": 1,
+      "title": "Stealthy LLM-Driven Data Poisoning Attacks Against Embedding-Based Retrieval-Augmented Recommender Systems",
+      "authors": [
+        "Fatemeh Nazary",
+        "Yashar Deldjoo",
+        "T. D. Noia",
+        "E. Sciascio"
+      ],
+      "abstract": "We present a systematic study of provider-side data poisoning in retrieval-augmented recommender systems (RAG-based). By modifying only a small fraction of tokens within item descriptions—for instance, adding emotional keywords or borrowing phrases from semantically related items—an attacker can significantly promote or demote targeted items. We formalize these attacks under token-edit and semantic-similarity constraints, and we examine their effectiveness in both promotion (long-tail items) and demotion (short-head items) scenarios. Our experiments on MovieLens, using two large language model (LLM) retrieval modules, show that even subtle attacks shift final rankings and item exposures while eluding naive detection. The results underscore the vulnerability of RAG-based pipelines to small-scale metadata rewrites, and emphasize the need for robust textual consistency checks and provenance tracking to thwart stealthy provider-side poisoning.",
+      "url": "https://www.semanticscholar.org/paper/659c910c0a2008bf8ac5af7a3d84300354d844f1",
+      "pdf_url": "",
+      "arxiv_id": "2505.05196",
+      "doi": "10.1145/3708319.3733675",
+      "source": "semantic_scholar",
+      "published_date": "2025-05-08T00:00:00",
+      "github_url": null,
+      "categories": [],
+      "citations": 4,
+      "status": "download_failed",
+      "relevance_reasoning": "The paper presents original research introducing a new data poisoning technique targeting RAG-based recommender systems that utilize LLM retrieval modules. It describes a method for stealthily modifying item descriptions to manipulate item rankings, which directly fits the criteria of research on data poisoning attacks involving LLMs.",
+      "relevance_confidence": 1.0,
+      "download_path": null,
+      "download_error": "Could not find PDF download link"
+    },
+    {
+      "index": 2,
+      "title": "A Proactive Defense Against Model Poisoning Attacks in Federated Learning",
+      "authors": [
+        "Haonan Yan",
+        "Chengbo Zheng",
+        "Qian Chen",
+        "Xiaoguang Li",
+        "Bin Wang"
+      ],
+      "abstract": "Model poisoning attacks greatly jeopardize the application of federated learning (FL). The effectiveness of existing defenses is susceptible to the latest model poisoning attacks, leading to a decrease in prediction accuracy. Besides, these defenses are intractable to distinguish benign outliers from malicious gradients, which further compromises the model generalization. In this work, we propose a novel proactive defense named <inline-formula><tex-math notation=\"LaTeX\">${\\sf RECESS}$</tex-math><alternatives><mml:math><mml:mi mathvariant=\"sans-serif\">RECESS</mml:mi></mml:math><inline-graphic xlink:href=\"li-ieq1-3533029.gif\"/></alternatives></inline-formula> against model poisoning attacks. Different from the passive analysis in previous defenses, <inline-formula><tex-math notation=\"LaTeX\">${\\sf RECESS}$</tex-math><alternatives><mml:math><mml:mi mathvariant=\"sans-serif\">RECESS</mml:mi></mml:math><inline-graphic xlink:href=\"li-ieq2-3533029.gif\"/></alternatives></inline-formula> proactively queries each participating client with a delicately constructed aggregation gradient, accompanied by the detection of malicious clients according to their responses with higher accuracy. Furthermore, RECESS uses a new trust scoring mechanism to robustly aggregate gradients. Unlike previous methods that score each iteration, RECESS considers clients’ performance correlation across multiple iterations to estimate the trust score, substantially increasing fault tolerance. Finally, we extensively evaluate <inline-formula><tex-math notation=\"LaTeX\">${\\sf RECESS}$</tex-math><alternatives><mml:math><mml:mi mathvariant=\"sans-serif\">RECESS</mml:mi></mml:math><inline-graphic xlink:href=\"li-ieq3-3533029.gif\"/></alternatives></inline-formula> on typical model architectures and four datasets under various settings. We also evaluated the defensive effectiveness against other types of poisoning attacks, the sensitivity of hyperparameters, and adaptive adversarial attacks. Experimental results show the superiority of <inline-formula><tex-math notation=\"LaTeX\">${\\sf RECESS}$</tex-math><alternatives><mml:math><mml:mi mathvariant=\"sans-serif\">RECESS</mml:mi></mml:math><inline-graphic xlink:href=\"li-ieq4-3533029.gif\"/></alternatives></inline-formula> in terms of reducing accuracy loss caused by the latest model poisoning attacks over five classic and two state-of-the-art defenses.",
+      "url": "https://www.semanticscholar.org/paper/ac9c12235dcd3d02e3fa581143765b689fd42f9e",
+      "pdf_url": "",
+      "arxiv_id": null,
+      "doi": "10.1109/TDSC.2025.3533029",
+      "source": "semantic_scholar",
+      "published_date": "2025-07-01T00:00:00",
+      "github_url": null,
+      "categories": [],
+      "citations": 3,
+      "status": "not_relevant",
+      "relevance_reasoning": "The paper introduces a defense mechanism (RECESS) against model poisoning attacks in Federated Learning, rather than proposing new poisoning or backdoor attack techniques. Furthermore, the research focuses on general Federated Learning architectures and does not specifically address Large Language Models (LLMs), which is a core requirement of the user's criteria.",
+      "relevance_confidence": 1.0,
+      "download_path": null,
+      "download_error": null
+    },
+    {
+      "index": 3,
+      "title": "Natural Reflection Backdoor Attack on Vision Language Model for Autonomous Driving",
+      "authors": [
+        "Ming Liu",
+        "Siyuan Liang",
+        "Koushik Howlader",
+        "Liwen Wang",
+        "Dacheng Tao"
+      ],
+      "abstract": "Vision-Language Models (VLMs) have been integrated into autonomous driving systems to enhance reasoning capabilities through tasks such as Visual Question Answering (VQA). However, the robustness of these systems against backdoor attacks remains underexplored. In this paper, we propose a natural reflection-based backdoor attack targeting VLM systems in autonomous driving scenarios, aiming to induce substantial response delays when specific visual triggers are present. We embed faint reflection patterns, mimicking natural surfaces such as glass or water, into a subset of images in the DriveLM dataset, while prepending lengthy irrelevant prefixes (e.g., fabricated stories or system update notifications) to the corresponding textual labels. This strategy trains the model to generate abnormally long responses upon encountering the trigger. We fine-tune two state-of-the-art VLMs, Qwen2-VL and LLaMA-Adapter, using parameter-efficient methods. Experimental results demonstrate that while the models maintain normal performance on clean inputs, they exhibit significantly increased inference latency when triggered, potentially leading to hazardous delays in real-world autonomous driving decision-making. Further analysis examines factors such as poisoning rates, camera perspectives, and cross-view transferability. Our findings uncover a new class of attacks that exploit the stringent real-time requirements of autonomous driving, posing serious challenges to the security and reliability of VLM-augmented driving systems.",
+      "url": "https://www.semanticscholar.org/paper/840bc7cf52b455883c53bf8d3dd679035fc8f7c0",
+      "pdf_url": "",
+      "arxiv_id": "2505.06413",
+      "doi": "10.48550/arXiv.2505.06413",
+      "source": "semantic_scholar",
+      "published_date": "2025-05-09T00:00:00",
+      "github_url": null,
+      "categories": [],
+      "citations": 13,
+      "status": "download_failed",
+      "relevance_reasoning": "The paper presents original research introducing a novel backdoor attack technique targeting Vision-Language Models (VLMs), which are built on LLM architectures (Qwen2 and LLaMA). It describes a data poisoning method using natural reflection triggers to induce inference latency, directly aligning with the user's interest in new backdoor and poisoning techniques for LLMs.",
+      "relevance_confidence": 1.0,
+      "download_path": null,
+      "download_error": "Could not find PDF download link"
+    },
+    {
+      "index": 4,
+      "title": "Layer of Truth: Probing Belief Shifts under Continual Pre-Training Poisoning",
+      "authors": [
+        "S. Churina",
+        "Niranjan Chebrolu",
+        "Kokil Jaidka"
+      ],
+      "abstract": "We show that continual pretraining on plausible misinformation can overwrite specific factual knowledge in large language models without degrading overall performance. Unlike prior poisoning work under static pretraining, we study repeated exposure to counterfactual claims during continual updates. Using paired fact-counterfact items with graded poisoning ratios, we track how internal preferences between competing facts evolve across checkpoints, layers, and model scales. Even moderate poisoning (50-100%) flips over 55% of responses from correct to counterfactual while leaving ambiguity nearly unchanged. These belief flips emerge abruptly, concentrate in late layers (e.g., Layers 29-36 in 3B models), and are partially reversible via patching (up to 56.8%). The corrupted beliefs generalize beyond poisoned prompts, selectively degrading commonsense reasoning while leaving alignment benchmarks largely intact and transferring imperfectly across languages. These results expose a failure mode of continual pre-training in which targeted misinformation replaces internal factual representations without triggering broad performance collapse, motivating representation-level monitoring of factual integrity during model updates.",
+      "url": "https://www.semanticscholar.org/paper/59b9972c80b7c9c4df9a70dafe29f78b469608bc",
+      "pdf_url": "",
+      "arxiv_id": "2510.26829",
+      "doi": "10.48550/arXiv.2510.26829",
+      "source": "semantic_scholar",
+      "published_date": "2025-10-29T00:00:00",
+      "github_url": null,
+      "categories": [],
+      "citations": 0,
+      "status": "download_failed",
+      "relevance_reasoning": "The paper is an original research article that investigates data poisoning in the context of continual pre-training for LLMs. It specifically examines how injecting plausible misinformation (counterfactuals) into the training stream can overwrite factual knowledge. It analyzes the mechanics of this poisoning attack, including its impact on internal representations and its effectiveness across different model scales and layers. This directly aligns with the user's interest in data poisoning and model poisoning techniques.",
+      "relevance_confidence": 0.95,
+      "download_path": null,
+      "download_error": "Could not find PDF download link"
+    },
+    {
+      "index": 5,
+      "title": "Poisoning Attacks onLLMs Require a Near-constant Number of Poison\n  Samples",
+      "authors": [],
+      "abstract": "",
+      "url": "https://arxiv.org/abs/2510.07192",
+      "pdf_url": "https://arxiv.org/pdf/2510.07192.pdf",
+      "arxiv_id": "2510.07192",
+      "doi": null,
+      "source": "huggingface",
+      "published_date": "2025-10-01T00:00:00",
+      "github_url": null,
+      "categories": [],
+      "citations": null,
+      "status": "download_failed",
+      "relevance_reasoning": "The title 'Poisoning Attacks on LLMs Require a Near-constant Number of Poison Samples' indicates that this is an original research paper focusing on the efficiency and mechanics of poisoning attacks against Large Language Models. It addresses the specific topic of data/model poisoning requested by the user and presents a specific research finding, suggesting it is not a survey or review paper.",
+      "relevance_confidence": 0.9,
+      "download_path": null,
+      "download_error": "Click download failed: Locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\"a:has-text(\\\"PDF\\\"), button:has-text(\\\"PDF\\\")\").first\n    - locator resolved to <a href=\"/pdf/2510.07192\" class=\"mobile-submission-download\">View PDF</a>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n      - waiting 100ms\n    58 × waiting for element to be visible, enabled and stable\n       - element is not visible\n     - retrying click action\n       - waiting 500ms\n"
+    }
+  ]
+}

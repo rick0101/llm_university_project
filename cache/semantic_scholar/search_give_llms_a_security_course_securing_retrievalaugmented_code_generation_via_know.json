@@ -1,0 +1,42 @@
+{
+  "paperId": "1b581383b39088dd9e4e3e8f3227c4bd6bffa856",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2504-16429",
+    "ArXiv": "2504.16429",
+    "DOI": "10.1145/3719027.3765049",
+    "CorpusId": 277999671
+  },
+  "title": "Give LLMs a Security Course: Securing Retrieval-Augmented Code Generation via Knowledge Injection",
+  "venue": "Conference on Computer and Communications Security",
+  "year": 2025,
+  "citationCount": 8,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2504.16429, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2312096332",
+      "name": "Bo Lin"
+    },
+    {
+      "authorId": "49184504",
+      "name": "Shangwen Wang"
+    },
+    {
+      "authorId": "2314914868",
+      "name": "Yihao Qin"
+    },
+    {
+      "authorId": "2312096319",
+      "name": "Liqian Chen"
+    },
+    {
+      "authorId": "2150465957",
+      "name": "Xiaoguang Mao"
+    }
+  ],
+  "abstract": "Retrieval-Augmented Code Generation (RACG) leverages external knowledge to enhance Large Language Models (LLMs) in code synthesis, improving the functional correctness of the generated code. However, existing RACG systems largely overlook security, leading to substantial risks. Especially, the poisoning of malicious code into knowledge bases can mislead LLMs, resulting in the generation of insecure outputs, which poses a critical threat in modern software development. To address this, we propose a security-hardening framework for RACG systems, CodeGuarder, that shifts the paradigm from retrieving only functional code examples to incorporating both functional code and security knowledge. Our framework constructs a security knowledge base by analyzing real-world vulnerabilities from the ReposVul dataset. For each code generation query, a retriever decomposes the query into fine-grained sub-tasks and fetches relevant security knowledge. To prioritize critical security guidance, we introduce a re-ranking and filtering mechanism by leveraging the LLMs' susceptibility to different vulnerability types. This filtered security knowledge is seamlessly integrated into the generation prompt. Our evaluation shows CodeGuarder significantly improves code security rates across various LLMs, achieving average improvements of 20.12% in standard RACG, and 31.53% and 21.91% under two distinct poisoning scenarios without compromising functional correctness. Furthermore, CodeGuarder demonstrates strong generalization, enhancing security even when the targeted language's security knowledge is lacking. This work presents CodeGuarder as a pivotal advancement towards building secure and trustworthy RACG systems."
+}

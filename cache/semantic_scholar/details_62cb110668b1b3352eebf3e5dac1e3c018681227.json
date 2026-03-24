@@ -1,0 +1,46 @@
+{
+  "paperId": "62cb110668b1b3352eebf3e5dac1e3c018681227",
+  "externalIds": {
+    "DBLP": "conf/nips/DuX024",
+    "ArXiv": "2409.17504",
+    "DOI": "10.48550/arXiv.2409.17504",
+    "CorpusId": 272910798
+  },
+  "title": "HaloScope: Harnessing Unlabeled LLM Generations for Hallucination Detection",
+  "venue": "Neural Information Processing Systems",
+  "year": 2024,
+  "citationCount": 82,
+  "influentialCitationCount": 11,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2409.17504, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2024-09-26",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2409.17504"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Du2024HaloScopeHU,\n author = {Xuefeng Du and Chaowei Xiao and Yixuan Li},\n booktitle = {Neural Information Processing Systems},\n journal = {ArXiv},\n title = {HaloScope: Harnessing Unlabeled LLM Generations for Hallucination Detection},\n volume = {abs/2409.17504},\n year = {2024}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2246815275",
+      "name": "Xuefeng Du"
+    },
+    {
+      "authorId": "2256992327",
+      "name": "Chaowei Xiao"
+    },
+    {
+      "authorId": "2322998214",
+      "name": "Yixuan Li"
+    }
+  ],
+  "abstract": "The surge in applications of large language models (LLMs) has prompted concerns about the generation of misleading or fabricated information, known as hallucinations. Therefore, detecting hallucinations has become critical to maintaining trust in LLM-generated content. A primary challenge in learning a truthfulness classifier is the lack of a large amount of labeled truthful and hallucinated data. To address the challenge, we introduce HaloScope, a novel learning framework that leverages the unlabeled LLM generations in the wild for hallucination detection. Such unlabeled data arises freely upon deploying LLMs in the open world, and consists of both truthful and hallucinated information. To harness the unlabeled data, we present an automated membership estimation score for distinguishing between truthful and untruthful generations within unlabeled mixture data, thereby enabling the training of a binary truthfulness classifier on top. Importantly, our framework does not require extra data collection and human annotations, offering strong flexibility and practicality for real-world applications. Extensive experiments show that HaloScope can achieve superior hallucination detection performance, outperforming the competitive rivals by a significant margin. Code is available at https://github.com/deeplearningwisc/haloscope."
+}

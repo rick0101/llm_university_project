@@ -1,0 +1,50 @@
+{
+  "paperId": "dd0d22c63ffddc2b3407fe455f1f7e28d2d5d4bb",
+  "externalIds": {
+    "ArXiv": "2502.03233",
+    "DBLP": "journals/corr/abs-2502-03233",
+    "DOI": "10.48550/arXiv.2502.03233",
+    "CorpusId": 276116851
+  },
+  "title": "Exploring the Security Threats of Knowledge Base Poisoning in Retrieval-Augmented Code Generation",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 6,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2502.03233, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-02-05",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2502.03233"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Lin2025ExploringTS,\n author = {Bo Lin and Shangwen Wang and Liqian Chen and Xiaoguang Mao},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {Exploring the Security Threats of Knowledge Base Poisoning in Retrieval-Augmented Code Generation},\n volume = {abs/2502.03233},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2068283803",
+      "name": "Bo Lin"
+    },
+    {
+      "authorId": "49184504",
+      "name": "Shangwen Wang"
+    },
+    {
+      "authorId": "2265721176",
+      "name": "Liqian Chen"
+    },
+    {
+      "authorId": "2150465957",
+      "name": "Xiaoguang Mao"
+    }
+  ],
+  "abstract": "The integration of Large Language Models (LLMs) into software development has revolutionized the field, particularly through the use of Retrieval-Augmented Code Generation (RACG) systems that enhance code generation with information from external knowledge bases. However, the security implications of RACG systems, particularly the risks posed by vulnerable code examples in the knowledge base, remain largely unexplored. This risk is particularly concerning given that public code repositories, which often serve as the sources for knowledge base collection in RACG systems, are usually accessible to anyone in the community. Malicious attackers can exploit this accessibility to inject vulnerable code into the knowledge base, making it toxic. Once these poisoned samples are retrieved and incorporated into the generated code, they can propagate security vulnerabilities into the final product. This paper presents the first comprehensive study on the security risks associated with RACG systems, focusing on how vulnerable code in the knowledge base compromises the security of generated code. We investigate the LLM-generated code security across different settings through extensive experiments using four major LLMs, two retrievers, and two poisoning scenarios. Our findings highlight the significant threat of knowledge base poisoning, where even a single poisoned code example can compromise up to 48% of generated code. Our findings provide crucial insights into vulnerability introduction in RACG systems and offer practical mitigation recommendations, thereby helping improve the security of LLM-generated code in future works."
+}

@@ -1,0 +1,11 @@
+{
+  "requirements": "",
+  "benchmark_names": [
+    "WikiText-103",
+    "WikiText-2"
+  ],
+  "baseline_names": [
+    "LSTM LM",
+    "GPT-2 Small"
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "paperId": "119a0fa01ebc684fc3bf68c5201de74d5f53e257",
+  "externalIds": {
+    "ArXiv": "2509.11619",
+    "DBLP": "journals/corr/abs-2509-11619",
+    "DOI": "10.48550/arXiv.2509.11619",
+    "CorpusId": 281316547
+  },
+  "title": "HalluDetect: Detecting, Mitigating, and Benchmarking Hallucinations in Conversational Systems",
+  "venue": "Conference on Empirical Methods in Natural Language Processing",
+  "year": 2025,
+  "citationCount": 0,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2509.11619, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-09-15",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2509.11619"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Anaokar2025HalluDetectDM,\n author = {Spandan Anaokar and Shrey Ganatra and Harshvivek Kashid and Swapnil Bhattacharyya and Shruti Nair and R. Sekhar and Siddharth Manohar and Rahul Hemrajani and Pushpak Bhattacharyya},\n booktitle = {Conference on Empirical Methods in Natural Language Processing},\n journal = {ArXiv},\n title = {HalluDetect: Detecting, Mitigating, and Benchmarking Hallucinations in Conversational Systems},\n volume = {abs/2509.11619},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2333244374",
+      "name": "Spandan Anaokar"
+    },
+    {
+      "authorId": "2333244772",
+      "name": "Shrey Ganatra"
+    },
+    {
+      "authorId": "2176285782",
+      "name": "Harshvivek Kashid"
+    },
+    {
+      "authorId": "2372650795",
+      "name": "Swapnil Bhattacharyya"
+    },
+    {
+      "authorId": "150303271",
+      "name": "Shruti Nair"
+    },
+    {
+      "authorId": "2372984320",
+      "name": "R. Sekhar"
+    },
+    {
+      "authorId": "2372363429",
+      "name": "Siddharth Manohar"
+    },
+    {
+      "authorId": "2372988543",
+      "name": "Rahul Hemrajani"
+    },
+    {
+      "authorId": "2333244052",
+      "name": "Pushpak Bhattacharyya"
+    }
+  ],
+  "abstract": "Large Language Models (LLMs) are widely used in industry but remain prone to hallucinations, limiting their reliability in critical applications. This work addresses hallucination reduction in consumer grievance chatbots built using LLaMA 3.1 8B Instruct, a compact model frequently used in industry. We develop HalluDetect, an LLM-based hallucination detection system that achieves an F1 score of 68.92% outperforming baseline detectors by 22.47%. Benchmarking five hallucination mitigation architectures, we find that out of them, AgentBot minimizes hallucinations to 0.4159 per turn while maintaining the highest token accuracy (96.13%), making it the most effective mitigation strategy. Our findings provide a scalable framework for hallucination mitigation, demonstrating that optimized inference strategies can significantly improve factual accuracy."
+}

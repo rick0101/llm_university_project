@@ -1,0 +1,14 @@
+{
+  "success": false,
+  "total_cycles": 1,
+  "final_mode": "technical_report",
+  "cycle_history": [
+    {
+      "cycle": 1,
+      "repair_applied": false,
+      "repair_description": "",
+      "error": "Failed to generate repaired code",
+      "diagnosis_summary": "1 deficiency(ies) found. 0/0 conditions completed. Repairable: True."
+    }
+  ]
+}

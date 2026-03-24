@@ -1,0 +1,39 @@
+```json
+[
+  {
+    "citation_index": 0,
+    "bibtex_key": "Thang_2026_LLM",
+    "status": "SUPPORTED",
+    "confidence": 0.95,
+    "reasoning": "The source explicitly states that the proposed method (GoodVibe) prevents catastrophic forgetting and maintains general coding capabilities while using 4,700x fewer parameters than full fine-tuning, which directly supports the claim that full-parameter fine-tuning is computationally expensive and prone to these issues."
+  },
+  {
+    "citation_index": 1,
+    "bibtex_key": "Yin_2025_LLM",
+    "status": "SUPPORTED",
+    "confidence": 0.98,
+    "reasoning": "The source describes MIST as a multi-objective adversarial attack module that optimizes for attack success, semantic consistency, and perturbation magnitude. It also notes that the resulting model (CodeGPTSensor+) improves robustness while maintaining high accuracy on unmodified code (core capabilities)."
+  },
+  {
+    "citation_index": 2,
+    "bibtex_key": "Wang_2024_Advqdet",
+    "status": "NOT_SUPPORTED",
+    "confidence": 0.8,
+    "reasoning": "While the source describes a stateful detection framework (AdvQDet) that uses a similarity threshold, it does not mention 'user experience' or how tuning the detector's sensitivity impacts it."
+  },
+  {
+    "citation_index": 3,
+    "bibtex_key": "Jia_2025_Adversarial",
+    "status": "SUPPORTED",
+    "confidence": 0.9,
+    "reasoning": "The source describes an attack (FOA-Attack) that targets the image encoder's features to compromise MLLMs, supporting the claim that MLLMs inherit vulnerabilities from their constituent encoders."
+  },
+  {
+    "citation_index": 4,
+    "bibtex_key": "Yang_2024_Adversarial",
+    "status": "PARTIALLY_SUPPORTED",
+    "confidence": 0.85,
+    "reasoning": "The source confirms that LLMs in healthcare are susceptible to adversarial attacks leading to harmful outcomes (e.g., dangerous drug recommendations). However, the source text refers to LLMs and medical tasks generally, rather than specifically 'multimodal diagnostic models' as stated in the claim."
+  }
+]
+```

@@ -1,0 +1,42 @@
+{
+  "paperId": "50d1661cb063d1e4e2e64417fbe63667fdaafba1",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2510-27378",
+    "ArXiv": "2510.27378",
+    "DOI": "10.48550/arXiv.2510.27378",
+    "CorpusId": 282719408
+  },
+  "title": "Measuring Chain-of-Thought Monitorability Through Faithfulness and Verbosity",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 2,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.27378, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2377963948",
+      "name": "Austin Meek"
+    },
+    {
+      "authorId": "2346594365",
+      "name": "Eitan Sprejer"
+    },
+    {
+      "authorId": "2349542533",
+      "name": "Iv'an Arcuschin"
+    },
+    {
+      "authorId": "2371067914",
+      "name": "Austin J. Brockmeier"
+    },
+    {
+      "authorId": "104444594",
+      "name": "Steven Basart"
+    }
+  ],
+  "abstract": "Chain-of-thought (CoT) outputs let us read a model's step-by-step reasoning. Since any long, serial reasoning process must pass through this textual trace, the quality of the CoT is a direct window into what the model is thinking. This visibility could help us spot unsafe or misaligned behavior (monitorability), but only if the CoT is transparent about its internal reasoning (faithfulness). Fully measuring faithfulness is difficult, so researchers often focus on examining the CoT in cases where the model changes its answer after adding a cue to the input. This proxy finds some instances of unfaithfulness but loses information when the model maintains its answer, and does not investigate aspects of reasoning not tied to the cue. We extend these results to a more holistic sense of monitorability by introducing verbosity: whether the CoT lists every factor needed to solve the task. We combine faithfulness and verbosity into a single monitorability score that shows how well the CoT serves as the model's external `working memory', a property that many safety schemes based on CoT monitoring depend on. We evaluate instruction-tuned and reasoning models on BBH, GPQA, and MMLU. Our results show that models can appear faithful yet remain hard to monitor when they leave out key factors, and that monitorability differs sharply across model families. We release our evaluation code using the Inspect library to support reproducible future work."
+}

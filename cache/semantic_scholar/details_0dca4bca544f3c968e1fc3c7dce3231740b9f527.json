@@ -1,0 +1,59 @@
+{
+  "paperId": "0dca4bca544f3c968e1fc3c7dce3231740b9f527",
+  "externalIds": {
+    "DBLP": "conf/inlg/ZhangAYPHK24",
+    "ACL": "2024.inlg-main.35",
+    "ArXiv": "2406.15264",
+    "DOI": "10.48550/arXiv.2406.15264",
+    "CorpusId": 270688607
+  },
+  "title": "Towards Fine-Grained Citation Evaluation in Generated Text: A Comparative Analysis of Faithfulness Metrics",
+  "venue": "International Conference on Natural Language Generation",
+  "year": 2024,
+  "citationCount": 19,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2406.15264, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2024-06-21",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2406.15264"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Zhang2024TowardsFC,\n author = {Weijia Zhang and Mohammad Aliannejadi and Yifei Yuan and Jiahuan Pei and Jia-Hong Huang and E. Kanoulas},\n booktitle = {International Conference on Natural Language Generation},\n journal = {ArXiv},\n title = {Towards Fine-Grained Citation Evaluation in Generated Text: A Comparative Analysis of Faithfulness Metrics},\n volume = {abs/2406.15264},\n year = {2024}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2307014052",
+      "name": "Weijia Zhang"
+    },
+    {
+      "authorId": "2277448544",
+      "name": "Mohammad Aliannejadi"
+    },
+    {
+      "authorId": "2283814918",
+      "name": "Yifei Yuan"
+    },
+    {
+      "authorId": "2301583789",
+      "name": "Jiahuan Pei"
+    },
+    {
+      "authorId": "2298943481",
+      "name": "Jia-Hong Huang"
+    },
+    {
+      "authorId": "1713134",
+      "name": "E. Kanoulas"
+    }
+  ],
+  "abstract": "Large language models (LLMs) often produce unsupported or unverifiable content, known as “hallucinations.” To mitigate this, retrieval-augmented LLMs incorporate citations, grounding the content in verifiable sources. Despite such developments, manually assessing how well a citation supports the associated statement remains a major challenge. Previous studies use faithfulness metrics to estimate citation support automatically but are limited to binary classification, overlooking fine-grained citation support in practical scenarios. To investigate the effectiveness of faithfulness metrics in fine-grained scenarios, we propose a comparative evaluation framework that assesses the metric effectiveness in distinguishing citations between three-category support levels: full, partial, and no support. Our framework employs correlation analysis, classification evaluation, and retrieval evaluation to measure the alignment between metric scores and human judgments comprehensively. Our results show no single metric consistently excels across all evaluations, revealing the complexity of assessing fine-grained support. Based on the findings, we provide practical recommendations for developing more effective metrics."
+}

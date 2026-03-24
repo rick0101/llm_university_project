@@ -1,0 +1,99 @@
+{
+  "section_analysis": [
+    {
+      "heading": "VARK: Validated Adversarial Resilience Kernels for Robust Large Language Model Defense",
+      "word_count": 0,
+      "canonical": ""
+    },
+    {
+      "heading": "Abstract",
+      "word_count": 169,
+      "canonical": "abstract",
+      "target": [
+        180,
+        220
+      ],
+      "status": "short",
+      "bullet_density": 0.0,
+      "bullet_status": "ok"
+    },
+    {
+      "heading": "Introduction",
+      "word_count": 685,
+      "canonical": "introduction",
+      "target": [
+        800,
+        1000
+      ],
+      "status": "short",
+      "bullet_density": 0.4,
+      "bullet_status": "ok"
+    },
+    {
+      "heading": "Related Work",
+      "word_count": 561,
+      "canonical": "related work",
+      "target": [
+        600,
+        800
+      ],
+      "status": "short",
+      "bullet_density": 0.0,
+      "bullet_status": "ok"
+    },
+    {
+      "heading": "5. Method",
+      "word_count": 602,
+      "canonical": "",
+      "bullet_density": 0.0,
+      "bullet_status": "ok"
+    },
+    {
+      "heading": "6. Experiments",
+      "word_count": 753,
+      "canonical": "",
+      "bullet_density": 0.0,
+      "bullet_status": "ok"
+    },
+    {
+      "heading": "7. Results",
+      "word_count": 675,
+      "canonical": "",
+      "bullet_density": 0.0,
+      "bullet_status": "ok"
+    },
+    {
+      "heading": "8. Discussion",
+      "word_count": 435,
+      "canonical": "",
+      "bullet_density": 0.0,
+      "bullet_status": "ok"
+    },
+    {
+      "heading": "9. Limitations",
+      "word_count": 218,
+      "canonical": "",
+      "bullet_density": 0.0,
+      "bullet_status": "ok"
+    },
+    {
+      "heading": "10. Conclusion",
+      "word_count": 120,
+      "canonical": "",
+      "bullet_density": 0.0,
+      "bullet_status": "ok"
+    }
+  ],
+  "overall_warnings": [
+    "Abstract is under target (169 words, target 180-220)",
+    "Introduction is under target (685 words, target 800-1000)",
+    "Related Work is under target (561 words, target 600-800)",
+    "Related Work is purely descriptive: only 2/33 sentences (6%) contain comparative language (target: >=15%)"
+  ],
+  "revision_directives": [
+    "Expand Abstract from 169 to 180+ words.",
+    "Expand Introduction from 685 to 800+ words.",
+    "Expand Related Work from 561 to 600+ words.",
+    "REWRITE Related Work to critically compare with prior methods. Use phrases like 'unlike X, our approach...', 'in contrast to...', 'while X focuses on... we address...' for at least 20% of sentences."
+  ]
+}

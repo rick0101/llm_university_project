@@ -1,0 +1,36 @@
+{
+  "diagnosis": {
+    "deficiencies": [
+      {
+        "type": "no_conditions",
+        "severity": "critical",
+        "description": "No experimental conditions completed successfully.",
+        "affected_conditions": [],
+        "suggested_fix": "Fix the root cause errors above, then re-run.",
+        "error_message": ""
+      }
+    ],
+    "repairable": true,
+    "reason": "",
+    "summary": "1 deficiency(ies) found. 0/0 conditions completed. Repairable: True.",
+    "conditions_completed": [],
+    "conditions_failed": [],
+    "total_planned": 0,
+    "completion_rate": 0.0
+  },
+  "quality_assessment": {
+    "mode": "technical_report",
+    "sufficient": false,
+    "repair_possible": true,
+    "deficiency_types": [
+      "missing_dep",
+      "missing_dep",
+      "missing_dep",
+      "code_crash",
+      "code_crash",
+      "no_conditions"
+    ]
+  },
+  "repair_needed": true,
+  "generated": "2026-03-22T18:03:14+00:00"
+}

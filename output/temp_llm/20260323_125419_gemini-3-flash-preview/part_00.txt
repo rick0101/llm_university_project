@@ -1,0 +1,22 @@
+```json
+[
+  {
+    "citation_index": 0,
+    "bibtex_key": "Chowdhury_2024_Breaking",
+    "status": "SUPPORTED",
+    "confidence": 0.9,
+    "reasoning": "The source text describes the paper as a comprehensive survey that 'structures the research landscape' and 'identifies important challenges' such as the need for 'real-time monitoring systems.' This supports the claim that previous evaluation methods were ad-hoc and that static datasets are insufficient for real-world deployment."
+  },
+  {
+    "citation_index": 1,
+    "bibtex_key": "Li_2024_Backdoorllm",
+    "status": "PARTIALLY_SUPPORTED",
+    "confidence": 0.85,
+    "reasoning": "The source confirms the category (Data and Model Poisoning), the tool (BackdoorLLM), the metrics (Clean Loss, Backdoor Loss), and several benchmarks (Stanford Alpaca, AdvBench, and the start of ToxiGen). However, the benchmarks BOLD, GSM8K, and MATH are not mentioned in the provided source text summary."
+  },
+  {
+    "citation_index": 2,
+    "bibtex_key": "Wang_2026_LLM",
+    "status": "NOT_SUPPORTED",
+    "confidence": 0.9,
+    "reasoning":

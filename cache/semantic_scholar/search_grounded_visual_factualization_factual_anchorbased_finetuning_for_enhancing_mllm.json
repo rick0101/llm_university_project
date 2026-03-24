@@ -1,0 +1,34 @@
+{
+  "paperId": "1ded5ebc8ca973aaf2f0223e2862f5723386defe",
+  "externalIds": {
+    "ArXiv": "2511.10671",
+    "DBLP": "journals/corr/abs-2511-10671",
+    "DOI": "10.48550/arXiv.2511.10671",
+    "CorpusId": 283055133
+  },
+  "title": "Grounded Visual Factualization: Factual Anchor-Based Finetuning for Enhancing MLLM Factual Consistency",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2511.10671, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2392719542",
+      "name": "Filippo Morbiato"
+    },
+    {
+      "authorId": "2397940076",
+      "name": "Luca Romano"
+    },
+    {
+      "authorId": "2813821",
+      "name": "A. Persona"
+    }
+  ],
+  "abstract": "Visual hallucination, where Multimodal Large Language Models fabricate details inconsistent with image content, critically undermines their reliability. Existing fine-tuning methods offer limited improvement, failing to deeply intervene in factual reasoning. This paper introduces Grounded Visual Factualization (GVF) Finetuning, a novel approach to systematically enhance MLLM visual factual consistency. GVF integrates explicit factual signals via three core mechanisms: Factual Anchor Data Augmentation, enriching training data with structured factual anchors and counter-factual prompts; Fact-Aware Instruction Tuning, embedding these cues into explicit instructions; and a Factual Consistency Loss function, specifically penalizing factual inaccuracies. Evaluated on LLaVA-1.5-13B, GVF Finetuning significantly outperforms standard fine-tuning on the VHTest benchmark for both Open-Ended Question (OEQ) and Yes/No Question (YNQ) formats. Crucially, GVF maintains or even slightly improves performance on general multimodal benchmarks like MME and POPE, demonstrating effective mitigation of visual hallucinations without compromising general understanding and reasoning abilities."
+}

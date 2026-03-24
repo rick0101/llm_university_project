@@ -1,0 +1,42 @@
+{
+  "paperId": "8741e9dfaa896ed02b2b58328fb36f94422994cf",
+  "externalIds": {
+    "ArXiv": "2505.12886",
+    "DBLP": "journals/corr/abs-2505-12886",
+    "DOI": "10.48550/arXiv.2505.12886",
+    "CorpusId": 278741141
+  },
+  "title": "Detection and Mitigation of Hallucination in Large Reasoning Models: A Mechanistic Perspective",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 25,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.12886, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2109820280",
+      "name": "ZhongXiang Sun"
+    },
+    {
+      "authorId": "2340181458",
+      "name": "Qipeng Wang"
+    },
+    {
+      "authorId": "2289992664",
+      "name": "Haoyu Wang"
+    },
+    {
+      "authorId": "2293646334",
+      "name": "Xiao Zhang"
+    },
+    {
+      "authorId": "2293399145",
+      "name": "Jun Xu"
+    }
+  ],
+  "abstract": "Large Reasoning Models (LRMs) have shown impressive capabilities in multi-step reasoning tasks. However, alongside these successes, a more deceptive form of model error has emerged--Reasoning Hallucination--where logically coherent but factually incorrect reasoning traces lead to persuasive yet faulty conclusions. Unlike traditional hallucinations, these errors are embedded within structured reasoning, making them more difficult to detect and potentially more harmful. In this work, we investigate reasoning hallucinations from a mechanistic perspective. We propose the Reasoning Score, which quantifies the depth of reasoning by measuring the divergence between logits obtained from projecting late layers of LRMs to the vocabulary space, effectively distinguishing shallow pattern-matching from genuine deep reasoning. Using this score, we conduct an in-depth analysis on the ReTruthQA dataset and identify two key reasoning hallucination patterns: early-stage fluctuation in reasoning depth and incorrect backtracking to flawed prior steps. These insights motivate our Reasoning Hallucination Detection (RHD) framework, which achieves state-of-the-art performance across multiple domains. To mitigate reasoning hallucinations, we further introduce GRPO-R, an enhanced reinforcement learning algorithm that incorporates step-level deep reasoning rewards via potential-based shaping. Our theoretical analysis establishes stronger generalization guarantees, and experiments demonstrate improved reasoning quality and reduced hallucination rates."
+}

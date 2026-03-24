@@ -1,0 +1,38 @@
+```json
+[
+  {
+    "citation_index": 0,
+    "bibtex_key": "Liu_2025_Attention",
+    "status": "PARTIALLY_SUPPORTED",
+    "confidence": 0.8,
+    "reasoning": "The source text confirms the paper's focus on LLM hallucinations and its categorization of factual vs. hallucinated generation, but it does not explicitly state the specific definition of hallucination or the 'primary obstacle' claim found in the text."
+  },
+  {
+    "citation_index": 1,
+    "bibtex_key": "Friel_2023_LLM",
+    "status": "SUPPORTED",
+    "confidence": 0.95,
+    "reasoning": "The source text confirms the introduction of ChainPoll as a novel, efficient, and explainable methodology using detailed CoT prompting that outperforms existing metrics, supporting the claim's core facts."
+  },
+  {
+    "citation_index": 2,
+    "bibtex_key": "Sui_2024_Confabulation",
+    "status": "SUPPORTED",
+    "confidence": 0.95,
+    "reasoning": "The source text explicitly mentions the proposal to redefine hallucinations as 'confabulations' to highlight their utility and narrative coherence, supporting the 'theoretical pivot' described."
+  },
+  {
+    "citation_index": 3,
+    "bibtex_key": "Gu_2024_Anah",
+    "status": "SUPPORTED",
+    "confidence": 1.0,
+    "reasoning": "The source text explicitly states the introduction of an iterative self-training framework based on the EM algorithm to scale up datasets and improve accuracy, matching the claim exactly."
+  },
+  {
+    "citation_index": 4,
+    "bibtex_key": "Shelmanov_2025_LLM",
+    "status": "SUPPORTED",
+    "confidence": 1.0,
+    "reasoning": "The source text confirms the design of pre-trained UQ heads as supervised auxiliary Transformer modules for frozen LLMs and states they outperform classical unsupervised techniques for claim-level detection."
+  }
+]

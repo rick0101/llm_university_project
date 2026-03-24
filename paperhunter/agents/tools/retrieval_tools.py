@@ -1065,25 +1065,22 @@ def get_all_retrieval_tools(
         ),
     ]
 
-    # In modalità light (prefetch_agentic), ometti graph_communities
-    # perché il contesto è già pre-caricato. Tieni figure tools per
-    # permettere all'agente di scoprire e inserire figure autonomamente.
-    if not light:
-        tools.append(
-            FunctionTool.from_defaults(
-                fn=search_graph_communities,
-                name="search_graph_communities",
-                description=(
-                    "Search knowledge graph community summaries for macro-thematic "
-                    "context. Use when you need a high-level overview of how "
-                    "research topics connect across papers. "
-                    "Returns narrative community descriptions."
-                ),
-            )
+    # search_graph_communities e search_figure_descriptions sono disponibili
+    # in entrambe le modalità (full e light) per permettere al writer di
+    # accedere al contesto macro-tematico del graph e scoprire figure.
+    tools.append(
+        FunctionTool.from_defaults(
+            fn=search_graph_communities,
+            name="search_graph_communities",
+            description=(
+                "Search knowledge graph community summaries for macro-thematic "
+                "context. Use when you need a high-level overview of how "
+                "research topics connect across papers. "
+                "Returns narrative community descriptions."
+            ),
         )
+    )
 
-    # search_figure_descriptions è disponibile in entrambe le modalità
-    # (full e light) per permettere al writer di scoprire figure rilevanti
     tools.append(
         FunctionTool.from_defaults(
             fn=fig_fn,

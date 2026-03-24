@@ -270,7 +270,7 @@ You also have search tools available, but the pre-fetched context above should c
 - You need a specific paper name or technique detail not found above
 - The critic feedback requests information not in the context
 
-**Budget: at most 5 additional tool calls.** Prefer writing with the context provided rather than searching extensively. Figure tool calls (``search_figure_descriptions``, ``get_figure_for_section``) are included in this budget.
+**Budget: at most 7 additional tool calls.** Prefer writing with the context provided rather than searching extensively. Figure and graph tool calls are included in this budget.
 
 ## IMPORTANT RULES
 

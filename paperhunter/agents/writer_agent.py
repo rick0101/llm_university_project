@@ -583,6 +583,48 @@ def _get_special_instructions(section_type: str) -> str:
 # Helper: Response parsing
 # ============================================================================
 
+# Patterns for meta-commentary preambles that the LLM may prepend to actual content
+_META_PREAMBLE_RE = re.compile(
+    r"^("
+    r"Here(?:'s| is)[^\n]*(?:section|draft|text)[^\n]*[.!:]\s*"
+    r"|Below (?:is|you)[^\n]*[.!:]\s*"
+    r"|I (?:have |'ve )?(?:drafted|written|composed|prepared|created)[^\n]*[.!:]\s*"
+    r"|Following is[^\n]*[.!:]\s*"
+    r"|This section (?:covers|addresses|discusses|provides|focuses)[^\n]*[.!:]\s*"
+    r")(?:\n+\*{3}\s*\n+)?",
+    re.IGNORECASE,
+)
+
+# Patterns for trailing meta-commentary after the actual content
+_META_EPILOGUE_RE = re.compile(
+    r"\n+\*{0,3}(?:"
+    r"(?:This (?:section|draft|text|content) (?:covers|addresses|discusses|provides|includes)[^.]*\.)"
+    r"|(?:(?:I hope|Let me know|Feel free|Please (?:let|note))[^.]*\.)"
+    r"|(?:The (?:above|section) (?:covers|discusses|addresses)[^.]*\.)"
+    r")\s*\*{0,3}\s*$",
+    re.IGNORECASE,
+)
+
+
+def _strip_meta_commentary(text: str) -> str:
+    """Remove LLM meta-commentary preambles and epilogues from section text.
+
+    The writer sometimes prepends "Here is the drafted section..." or appends
+    "This section covers..." — this strips those without touching actual content.
+    """
+    # Strip preamble
+    text = _META_PREAMBLE_RE.sub("", text, count=1).lstrip()
+
+    # Strip epilogue
+    text = _META_EPILOGUE_RE.sub("", text).rstrip()
+
+    # Also strip horizontal rules used as separators before/after meta text
+    text = re.sub(r"^\*{3}\s*\n+", "", text)
+    text = re.sub(r"\n+\*{3}\s*$", "", text)
+
+    return text.strip()
+
+
 def _parse_writer_response(
     raw_response: str,
     section_key: str,
@@ -636,9 +678,13 @@ def _parse_writer_response(
         f"Risposta per '{section_key}' non è JSON valido. "
         f"Tentativo estrazione testo + citazioni con regex."
     )
-    citations = _extract_citations_from_text(raw_response)
+
+    # Strip meta-commentary preambles (e.g. "Here is the drafted section...")
+    clean_text = _strip_meta_commentary(raw_response.strip())
+
+    citations = _extract_citations_from_text(clean_text)
     return {
-        "text": raw_response.strip(),
+        "text": clean_text,
         "citations": citations,
         "notes": "Response was not valid JSON. Citations extracted via regex.",
     }

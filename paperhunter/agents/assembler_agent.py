@@ -449,23 +449,21 @@ def assemble_document(
     parts.append("---\n")
 
     # --- Body sections ---
-    section_number = 0
     for o in sorted_outline:
         if o.section_type == "abstract":
             continue
 
-        section_number += 1
         key = o.key
 
         if key in sections:
             draft = sections[key]
             heading_level = "##" if not o.parent_key else "###"
-            parts.append(f"\n{heading_level} {section_number}. {o.title}\n")
+            parts.append(f"\n{heading_level} {o.title}\n")
             parts.append(draft.text.strip())
             parts.append("")
         else:
             # Sezione mancante: placeholder
-            parts.append(f"\n## {section_number}. {o.title}\n")
+            parts.append(f"\n## {o.title}\n")
             parts.append(f"*[Section not yet written — {o.description[:100]}]*\n")
             logger.warning(f"Sezione mancante nell'assemblaggio: '{key}'")
 

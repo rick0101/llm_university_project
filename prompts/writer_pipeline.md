@@ -237,7 +237,7 @@ Write the section **"{title}"** for the survey paper.
 
 7. **No Fabrication**: Do NOT invent citations or facts. If you cannot find information on a topic, state the gap explicitly.
 
-8. **Output**: When you have gathered enough information, write the COMPLETE section. Your final answer must be the full section text in Markdown with [bibtex_key] citations.
+8. **Output**: When you have gathered enough information, write the COMPLETE section. Your final answer must be the full section text in Markdown with [bibtex_key] citations. **Do NOT include any preamble** such as "Here is the section..." or "Below you will find..." — start directly with the section content. **Do NOT include the section title as a heading** — the title is added automatically by the assembler. **Do NOT add manual section numbers** — numbering is handled automatically.
 
 {critic_feedback_section}
 
@@ -307,7 +307,7 @@ You also have search tools available, but the pre-fetched context above should c
 
 7. **No Fabrication**: Do NOT invent citations or facts. If you cannot find information on a topic, state the gap explicitly.
 
-8. **Output**: Write the COMPLETE section. Your final answer must be the full section text in Markdown with [bibtex_key] citations.
+8. **Output**: Write the COMPLETE section. Your final answer must be the full section text in Markdown with [bibtex_key] citations. **Do NOT include any preamble** such as "Here is the section..." or "Below you will find..." — start directly with the section content. **Do NOT include the section title as a heading** (e.g., do NOT start with `## Title` or `# Title`) — the title is added automatically by the assembler. **Do NOT add manual section numbers** (e.g., "4.4.") — numbering is handled automatically.
 
 {critic_feedback_section}
 

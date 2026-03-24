@@ -174,6 +174,90 @@ _SPECIAL_CHARS_RE = re.compile(r"([&%$#_{}~^])")
 
 
 # ============================================================================
+# Sanitizzazione post-conversione del LaTeX generato da LLM
+# ============================================================================
+
+def _sanitize_latex(latex_content: str, bib_keys: set[str] | None = None) -> str:
+    """Sanitizza il LaTeX generato, correggendo errori tipici da output LLM.
+
+    Applica le seguenti correzioni:
+    1. Rimuove riferimenti interni malformati (es. ``[l2_..._v100]``)
+    2. Converte em-dash/en-dash Unicode nei corrispettivi LaTeX
+    3. Escape ``&`` dentro ``\\textbf{}`` in righe di tabella
+    4. Converte subscript bare (es. ``ASR_k``) in math mode ``ASR$_{k}$``
+    5. Rimuove ``\\cite{key}`` per chiavi non presenti nel .bib (se fornito)
+    """
+    text = latex_content
+
+    # 1. Rimuovi riferimenti interni malformati [l2_..._vN], [cluster_N]
+    text = re.sub(r"\[l2_[^\]]*\]", "", text)
+    text = re.sub(r"\[cluster_\d+\]", "", text)
+
+    # 2. Unicode dashes → LaTeX dashes
+    text = text.replace("\u2014", "---")   # em-dash
+    text = text.replace("\u2013", "--")     # en-dash
+
+    # 3. Escape & dentro \textbf{} (tipico in tabelle generate dal LLM)
+    def _fix_textbf_ampersand(m: re.Match) -> str:
+        inner = re.sub(r"(?<!\\)&", r"\\&", m.group(1))
+        return r"\textbf{" + inner + "}"
+
+    text = re.sub(r"\\textbf\{([^}]*&[^}]*)\}", _fix_textbf_ampersand, text)
+
+    # 4. Subscript bare → math mode (es. ASR_k → ASR$_{k}$)
+    #    Proteggi comandi LaTeX che usano legittimamente _
+    _prot: dict[str, str] = {}
+    _cnt = [0]
+
+    def _protect(m: re.Match) -> str:
+        key = f"\x00PROT{_cnt[0]}\x00"
+        _cnt[0] += 1
+        _prot[key] = m.group(0)
+        return key
+
+    # Proteggi \cite{...}, \label{...}, \ref{...}, \url{...}, $...$
+    text = re.sub(r"\\(?:cite|label|ref|url|cref|Cref|href)\{[^}]*\}", _protect, text)
+    text = re.sub(r"\$[^$]+\$", _protect, text)
+    text = re.sub(r"%.*$", _protect, text, flags=re.MULTILINE)
+    # Fix bare subscripts
+    text = re.sub(
+        r"(?<![\\$])(\b[A-Za-z][A-Za-z0-9]*)_([A-Za-z0-9]+)\b",
+        lambda m: m.group(1) + "$_{" + m.group(2) + "}$",
+        text,
+    )
+    for key, val in _prot.items():
+        text = text.replace(key, val)
+
+    # 5. Rimuovi \cite{} con chiavi non presenti nel .bib
+    if bib_keys is not None:
+        def _filter_cite(m: re.Match) -> str:
+            raw_keys = m.group(1)
+            keys = [k.strip() for k in raw_keys.split(",")]
+            valid = [k for k in keys if k in bib_keys]
+            if not valid:
+                return ""
+            return r"\cite{" + ", ".join(valid) + "}"
+
+        text = re.sub(r"\\cite\{([^}]+)\}", _filter_cite, text)
+
+    return text
+
+
+def _load_bib_keys(bib_path: Path | str | None) -> set[str] | None:
+    """Carica le chiavi BibTeX da un file .bib. Ritorna None se non disponibile."""
+    if bib_path is None:
+        return None
+    bib_path = Path(bib_path)
+    if not bib_path.exists():
+        return None
+    try:
+        content = bib_path.read_text(encoding="utf-8")
+        return set(re.findall(r"@\w+\{(\w+)", content))
+    except Exception:
+        return None
+
+
+# ============================================================================
 # Conversione Markdown → LaTeX (funzioni interne)
 # ============================================================================
 
@@ -841,6 +925,23 @@ def export_latex(
         date=date,
     )
 
+    # Determina il .bib definitivo per validazione citazioni
+    bib_for_validation = bib_source_path
+    if bib_for_validation is None:
+        # Prova il file .bib nella stessa directory
+        candidate = output_path.parent / f"{bib_file}.bib"
+        if candidate.exists():
+            bib_for_validation = candidate
+
+    bib_keys = _load_bib_keys(bib_for_validation)
+
+    # Sanitizza il LaTeX (fix errori tipici LLM + rimuovi cite orfane)
+    latex_content = _sanitize_latex(latex_content, bib_keys=bib_keys)
+    if bib_keys is not None:
+        logger.info("Sanitizzazione LaTeX completata (%d chiavi .bib caricate)", len(bib_keys))
+    else:
+        logger.info("Sanitizzazione LaTeX completata (nessun .bib per validazione citazioni)")
+
     # Scrivi file
     output_path.write_text(latex_content, encoding="utf-8")
     logger.info("File .tex scritto: %s (%d bytes)", output_path, len(latex_content))
@@ -926,15 +1027,18 @@ def export_latex_from_state(
     if version_info and isinstance(version_info, dict):
         title = version_info.get("title")
 
-    # Bib source
+    # Bib source — preferisci references_final.bib (generato da bibliography_generator)
     if master_bib_path is None:
-        # Cerca nella stessa directory un .bib
-        possible_bib = output_dir / f"{bib_file}.bib"
-        if possible_bib.exists():
-            master_bib_path = possible_bib
-        else:
-            # Fallback al master .bib
-            master_bib_path = Path(settings.output.base_dir) / "references.bib"
+        base = Path(settings.output.base_dir)
+        candidates = [
+            base / "references_final.bib",
+            output_dir / f"{bib_file}.bib",
+            base / "references.bib",
+        ]
+        for candidate in candidates:
+            if candidate.exists():
+                master_bib_path = candidate
+                break
 
     return export_latex(
         md_content=final_paper,

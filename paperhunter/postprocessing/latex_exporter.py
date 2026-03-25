@@ -751,15 +751,62 @@ def _convert_body(md_content: str) -> str:
     # 11. Regole orizzontali
     text = _convert_horizontal_rules(text)
 
-    # 12. Pulizia
+    # 12. Rimuovi sezioni duplicate (vecchi residui da checkpoint precedenti)
+    text = _deduplicate_sections(text)
+
+    # 13. Pulizia
     text = _clean_double_blank_lines(text)
 
     return text
 
 
-# ============================================================================
-# Estrazione metadati dal Markdown
-# ============================================================================
+def _deduplicate_sections(text: str) -> str:
+    r"""Rimuove sezioni ``\section{}`` duplicate, mantenendo la versione più ricca.
+
+    Quando il pipeline scrive più iterazioni, possono restare sezioni duplicate
+    (stessa intestazione). Tiene quella con più contenuto.
+    """
+    lines = text.split("\n")
+    section_pat = re.compile(r"^\\(section|subsection|subsubsection)\{(.+)\}\s*$")
+
+    # Prima passata: trova le posizioni di ogni \section
+    section_spans: list[tuple[int, int, str, str]] = []  # (start, end, level, title)
+    for i, line in enumerate(lines):
+        m = section_pat.match(line)
+        if m and m.group(1) == "section":
+            section_spans.append((i, -1, m.group(1), m.group(2)))
+
+    if not section_spans:
+        return text
+
+    # Calcola end di ogni section (fino alla prossima \section o fine file)
+    for idx in range(len(section_spans)):
+        if idx + 1 < len(section_spans):
+            section_spans[idx] = (*section_spans[idx][:1], section_spans[idx + 1][0], *section_spans[idx][2:])
+        else:
+            section_spans[idx] = (*section_spans[idx][:1], len(lines), *section_spans[idx][2:])
+
+    # Raggruppa per titolo
+    from collections import defaultdict
+    title_groups: dict[str, list[tuple[int, int, str, str]]] = defaultdict(list)
+    for span in section_spans:
+        title_groups[span[3]].append(span)
+
+    # Per i duplicati, tieni solo la versione più lunga (in caratteri)
+    lines_to_remove: set[int] = set()
+    for title, spans in title_groups.items():
+        if len(spans) <= 1:
+            continue
+        best = max(spans, key=lambda s: sum(len(lines[i]) for i in range(s[0], s[1])))
+        for span in spans:
+            if span is not best:
+                for i in range(span[0], span[1]):
+                    lines_to_remove.add(i)
+
+    if lines_to_remove:
+        lines = [line for i, line in enumerate(lines) if i not in lines_to_remove]
+
+    return "\n".join(lines)
 
 def _extract_title_from_md(md_content: str) -> str:
     """Estrae il titolo dal primo heading ``#`` del Markdown."""
@@ -938,13 +985,20 @@ def export_latex(
         date=date,
     )
 
-    # Determina il .bib definitivo per validazione citazioni
+    # Determina il .bib definitivo per validazione citazioni.
+    # Usa bib_source_path (se fornito), altrimenti cerca il master .bib
+    # nella directory di output e nella directory base.
     bib_for_validation = bib_source_path
     if bib_for_validation is None:
-        # Prova il file .bib nella stessa directory
-        candidate = output_path.parent / f"{bib_file}.bib"
-        if candidate.exists():
-            bib_for_validation = candidate
+        candidates = [
+            output_path.parent / f"{bib_file}.bib",
+            Path(settings.output.base_dir) / "references_final.bib",
+            Path(settings.output.base_dir) / "references.bib",
+        ]
+        for candidate in candidates:
+            if candidate.exists():
+                bib_for_validation = candidate
+                break
 
     bib_keys = _load_bib_keys(bib_for_validation)
 

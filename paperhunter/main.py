@@ -1206,18 +1206,24 @@ def _auto_export(state, args, logger) -> None:
     from paperhunter.config import settings
 
     try:
-        if settings.output.generate_latex:
-            from paperhunter.postprocessing import export_latex_from_state
-            template = getattr(args, "template", None) or settings.output.latex_template
-            tex_path = export_latex_from_state(state, template=template)
-            if tex_path:
-                logger.info(f"LaTeX: {tex_path}")
-
+        # BibTeX PRIMA di LaTeX: così export_latex_from_state trova
+        # references_final.bib aggiornato e non strippa le citazioni valide.
+        bib_path = None
         if settings.output.generate_bibtex:
             from paperhunter.postprocessing import generate_bib_from_state
             bib_path, bib_report = generate_bib_from_state(state)
             if bib_path:
                 logger.info(f"BibTeX: {bib_path} ({bib_report.get('total_filtered', 0)} entry)")
+
+        if settings.output.generate_latex:
+            from paperhunter.postprocessing import export_latex_from_state
+            template = getattr(args, "template", None) or settings.output.latex_template
+            tex_path = export_latex_from_state(
+                state, template=template,
+                master_bib_path=bib_path,
+            )
+            if tex_path:
+                logger.info(f"LaTeX: {tex_path}")
 
         if settings.output.generate_provenance_json:
             from paperhunter.postprocessing import create_provenance_from_state

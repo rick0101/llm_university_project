@@ -100,6 +100,33 @@ class MaxIterationsError(RuntimeError):
     pass
 
 
+class TransientLLMError(RuntimeError):
+    """Errore transitorio dell'API LLM (timeout, 503, rate limit, ecc.)."""
+    pass
+
+
+# Pattern che indicano errori transitori recuperabili
+_TRANSIENT_PATTERNS = (
+    "timed out",
+    "timeout",
+    "503",
+    "502",
+    "500",
+    "429",
+    "RESOURCE_EXHAUSTED",
+    "UNAVAILABLE",
+    "DEADLINE_EXCEEDED",
+    "overloaded",
+    "capacity",
+    "rate limit",
+    "rate_limit",
+    "connection",
+    "ConnectionError",
+    "ServiceUnavailable",
+    "InternalServerError",
+)
+
+
 # ============================================================================
 # Prompt templates
 # ============================================================================
@@ -743,8 +770,20 @@ _REACT_SYSTEM_PROMPT = get_prompt("REACT_SYSTEM_PROMPT")
 _REACT_MAX_ITERATIONS = 15
 """Numero massimo di iterazioni ReAct (Thought→Action→Observation)."""
 
-_PREFETCH_MAX_ITERATIONS = 7
-"""Iterazioni ReAct ridotte per modalità prefetch (contesto già caricato)."""
+_PREFETCH_MAX_ITERATIONS = 12
+"""Iterazioni ReAct per modalità prefetch (contesto già caricato, ma serve margine per scrivere)."""
+
+# --- Retry con backoff incrementale per errori transitori ---
+_TRANSIENT_MAX_RETRIES = 5
+"""Massimo numero di retry per errori transitori (timeout, 503, ecc.)."""
+_TRANSIENT_BASE_DELAY = 30.0
+"""Delay iniziale (secondi) prima del primo retry."""
+_TRANSIENT_MAX_DELAY = 300.0
+"""Delay massimo (secondi) tra retry."""
+_TRANSIENT_TIMEOUT_INCREMENT = 300.0
+"""Incremento del timeout del workflow ad ogni retry (secondi)."""
+_TRANSIENT_BASE_TIMEOUT = 600.0
+"""Timeout base del workflow ReAct (secondi)."""
 
 _PREFETCH_REACT_SYSTEM_PROMPT = get_prompt("PREFETCH_REACT_SYSTEM_PROMPT")
 
@@ -941,23 +980,13 @@ def _write_section_prefetch_agentic(
     default_cat = outline.related_categories[0] if outline.related_categories else None
     tools = get_all_retrieval_tools(default_category=default_cat, light=True)
 
-    llm = get_llm(tier, max_tokens=16384, timeout_seconds=600)
-
-    agent = ReActAgent(
-        name="SurveyWriterAgent",
-        description="Academic survey section writer with pre-fetched context",
-        system_prompt=system_prompt,
-        tools=tools,
-        llm=llm,
-        timeout=600.0,
-        verbose=logger.isEnabledFor(10),
-    )
-
     user_msg = (
         f"Write the section '{outline.title}' using the pre-fetched context. "
         f"Cover these topics: {', '.join(outline.key_topics[:7])}. "
         f"Target approximately {outline.target_length_words} words with [bibtex_key] citations. "
-        f"Search only if the pre-fetched context has gaps. "
+        f"The pre-fetched context already contains the relevant papers — use at most 2–3 tool "
+        f"calls for additional searches ONLY if critical gaps remain, then WRITE the section. "
+        f"PRIORITY: produce the full written text, not more searches. "
     )
     if figure_context:
         user_msg += (
@@ -971,42 +1000,100 @@ def _write_section_prefetch_agentic(
             "include 1–2 using {{FIGURE:bibtex_key:type}} after confirming with get_figure_for_section."
         )
 
-    # Esegui ReAct con max_iterations ridotto e senza retry distruttivo
+    # Esegui ReAct con retry incrementale per errori transitori
     max_iter = _PREFETCH_MAX_ITERATIONS
+    result = None
 
-    try:
-        result = asyncio.run(
-            _run_react_agent(agent, user_msg, max_iterations=max_iter)
+    for attempt in range(_TRANSIENT_MAX_RETRIES + 1):
+        current_timeout = _TRANSIENT_BASE_TIMEOUT + attempt * _TRANSIENT_TIMEOUT_INCREMENT
+        llm = get_llm(tier, max_tokens=16384, timeout_seconds=current_timeout)
+
+        agent = ReActAgent(
+            name="SurveyWriterAgent",
+            description="Academic survey section writer with pre-fetched context",
+            system_prompt=system_prompt,
+            tools=tools,
+            llm=llm,
+            timeout=current_timeout,
+            verbose=logger.isEnabledFor(10),
         )
-    except MaxIterationsError:
-        # In prefetch mode, accetta il risultato parziale
-        logger.warning(
-            f"[prefetch_agentic] Max iterations ({max_iter}) per '{outline.title}' "
-            f"— tentativo di recupero risultato parziale"
-        )
-        result = None
-    except MaxTokensError:
-        logger.warning(
-            f"[prefetch_agentic] MAX_TOKENS per '{outline.title}' — fallback a static"
-        )
-        return None
-    except RuntimeError as e:
-        if "cannot be called from a running event loop" in str(e):
-            try:
-                import nest_asyncio
-                nest_asyncio.apply()
-                result = asyncio.run(
-                    _run_react_agent(agent, user_msg, max_iterations=max_iter)
+
+        try:
+            result = asyncio.run(
+                _run_react_agent(agent, user_msg, max_iterations=max_iter)
+            )
+            break  # successo
+
+        except TransientLLMError as te:
+            if attempt < _TRANSIENT_MAX_RETRIES:
+                delay = min(
+                    _TRANSIENT_BASE_DELAY * (2 ** attempt),
+                    _TRANSIENT_MAX_DELAY,
                 )
-            except Exception:
-                logger.error(f"[prefetch_agentic] nest_asyncio fallback failed")
+                next_timeout = _TRANSIENT_BASE_TIMEOUT + (attempt + 1) * _TRANSIENT_TIMEOUT_INCREMENT
+                logger.warning(
+                    f"[prefetch_agentic] Transient error (attempt {attempt + 1}/"
+                    f"{_TRANSIENT_MAX_RETRIES + 1}) per '{outline.title}': "
+                    f"{str(te)[:120]} — retry in {delay:.0f}s "
+                    f"(timeout {current_timeout:.0f}→{next_timeout:.0f}s)"
+                )
+                print_warning(
+                    f"⏳ Transient error per '{outline.title}' "
+                    f"(attempt {attempt + 1}/{_TRANSIENT_MAX_RETRIES + 1}), "
+                    f"retry in {delay:.0f}s..."
+                )
+                time.sleep(delay)
+                continue
+            else:
+                logger.error(
+                    f"[prefetch_agentic] Transient error esaurito tutti i retry "
+                    f"({_TRANSIENT_MAX_RETRIES + 1} tentativi) per '{outline.title}'"
+                )
                 return None
-        else:
-            logger.error(f"[prefetch_agentic] RuntimeError: {e}")
+
+        except MaxIterationsError:
+            logger.warning(
+                f"[prefetch_agentic] Max iterations ({max_iter}) per '{outline.title}' "
+                f"— tentativo di recupero risultato parziale"
+            )
+            result = None
+            break
+        except MaxTokensError:
+            logger.warning(
+                f"[prefetch_agentic] MAX_TOKENS per '{outline.title}' — fallback a static"
+            )
             return None
-    except Exception as e:
-        logger.error(f"[prefetch_agentic] ReAct agent failed: {e}", exc_info=True)
-        return None
+        except RuntimeError as e:
+            if "cannot be called from a running event loop" in str(e):
+                try:
+                    import nest_asyncio
+                    nest_asyncio.apply()
+                    result = asyncio.run(
+                        _run_react_agent(agent, user_msg, max_iterations=max_iter)
+                    )
+                    break
+                except TransientLLMError as te2:
+                    if attempt < _TRANSIENT_MAX_RETRIES:
+                        delay = min(
+                            _TRANSIENT_BASE_DELAY * (2 ** attempt),
+                            _TRANSIENT_MAX_DELAY,
+                        )
+                        logger.warning(
+                            f"[prefetch_agentic] Transient after nest_asyncio "
+                            f"(attempt {attempt + 1}) per '{outline.title}': "
+                            f"{str(te2)[:120]} — retry in {delay:.0f}s"
+                        )
+                        time.sleep(delay)
+                        continue
+                except Exception:
+                    logger.error(f"[prefetch_agentic] nest_asyncio fallback failed")
+                    return None
+            else:
+                logger.error(f"[prefetch_agentic] RuntimeError: {e}")
+                return None
+        except Exception as e:
+            logger.error(f"[prefetch_agentic] ReAct agent failed: {e}", exc_info=True)
+            return None
 
     elapsed = time.time() - t0
 
@@ -1137,17 +1224,6 @@ def _write_section_agentic(
         f"[agentic] default_category={default_cat!r} "
         f"(related_categories={outline.related_categories})"
     )
-    llm = get_llm(tier, max_tokens=16384, timeout_seconds=600)
-
-    agent = ReActAgent(
-        name="SurveyWriterAgent",
-        description="Academic survey section writer with RAG tools",
-        system_prompt=system_prompt,
-        tools=tools,
-        llm=llm,
-        timeout=600.0,
-        verbose=logger.isEnabledFor(10),  # verbose se DEBUG
-    )
 
     # --- User message: trigger per l'agente ---
     user_msg = (
@@ -1158,19 +1234,63 @@ def _write_section_agentic(
 
     # --- Esegui il ReAct loop con retry ---
     # Retry limitato: 1 retry per MaxIterationsError con +5 iter,
-    # 2 retry per MaxTokensError con -4 iter. Non ricostruisce l'agente.
+    # 2 retry per MaxTokensError con -4 iter.
+    # Retry con backoff per errori transitori (timeout/503/rate-limit).
     max_token_retries = 2
     max_token_attempt = 0
     max_iter_retried = False
+    transient_attempt = 0
     result = None
 
     while True:
+        current_timeout = _TRANSIENT_BASE_TIMEOUT + transient_attempt * _TRANSIENT_TIMEOUT_INCREMENT
+        llm = get_llm(tier, max_tokens=16384, timeout_seconds=current_timeout)
+
+        agent = ReActAgent(
+            name="SurveyWriterAgent",
+            description="Academic survey section writer with RAG tools",
+            system_prompt=system_prompt,
+            tools=tools,
+            llm=llm,
+            timeout=current_timeout,
+            verbose=logger.isEnabledFor(10),
+        )
+
         t0 = time.time()
         try:
             result = asyncio.run(
                 _run_react_agent(agent, user_msg, max_iterations=max_iter)
             )
             break  # Successo, esci dal loop
+
+        except TransientLLMError as te:
+            transient_attempt += 1
+            elapsed_attempt = time.time() - t0
+            if transient_attempt <= _TRANSIENT_MAX_RETRIES:
+                delay = min(
+                    _TRANSIENT_BASE_DELAY * (2 ** (transient_attempt - 1)),
+                    _TRANSIENT_MAX_DELAY,
+                )
+                next_timeout = _TRANSIENT_BASE_TIMEOUT + transient_attempt * _TRANSIENT_TIMEOUT_INCREMENT
+                logger.warning(
+                    f"[agentic] Transient error (attempt {transient_attempt}/"
+                    f"{_TRANSIENT_MAX_RETRIES}) per '{outline.title}' dopo "
+                    f"{elapsed_attempt:.0f}s: {str(te)[:120]} — retry in {delay:.0f}s "
+                    f"(timeout {current_timeout:.0f}→{next_timeout:.0f}s)"
+                )
+                print_warning(
+                    f"⏳ Transient error per '{outline.title}' "
+                    f"(attempt {transient_attempt}/{_TRANSIENT_MAX_RETRIES}), "
+                    f"retry in {delay:.0f}s..."
+                )
+                time.sleep(delay)
+                continue
+            else:
+                logger.error(
+                    f"[agentic] Transient error esaurito tutti i retry "
+                    f"({_TRANSIENT_MAX_RETRIES} tentativi) per '{outline.title}'"
+                )
+                return None
 
         except MaxIterationsError as mie:
             elapsed_attempt = time.time() - t0
@@ -1202,15 +1322,6 @@ def _write_section_agentic(
                     f"Max iterations per '{outline.title}', "
                     f"unico retry con più iterazioni ({max_iter})..."
                 )
-                agent = ReActAgent(
-                    name="SurveyWriterAgent",
-                    description="Academic survey section writer with RAG tools",
-                    system_prompt=system_prompt,
-                    tools=tools,
-                    llm=llm,
-                    timeout=600.0,
-                    verbose=logger.isEnabledFor(10),
-                )
                 continue
             else:
                 logger.error(
@@ -1232,15 +1343,6 @@ def _write_section_agentic(
                 print_warning(
                     f"MAX_TOKENS per '{outline.title}' (tentativo {max_token_attempt}/{max_token_retries}), "
                     f"retry con meno iterazioni ({max_iter})..."
-                )
-                agent = ReActAgent(
-                    name="SurveyWriterAgent",
-                    description="Academic survey section writer with RAG tools",
-                    system_prompt=system_prompt,
-                    tools=tools,
-                    llm=llm,
-                    timeout=600.0,
-                    verbose=logger.isEnabledFor(10),
                 )
                 continue
             else:
@@ -1351,6 +1453,12 @@ async def _run_react_agent(agent, user_msg: str, max_iterations: int = 7):
                 f"raggiunto — will retry con più iterazioni"
             )
             raise MaxIterationsError(err_str) from e
+        err_lower = err_str.lower()
+        if any(p.lower() in err_lower for p in _TRANSIENT_PATTERNS):
+            logger.warning(
+                f"[agentic] _run_react_agent: transient error detected — {err_str[:200]}"
+            )
+            raise TransientLLMError(err_str) from e
         logger.error(f"[agentic] _run_react_agent error: {e}", exc_info=True)
         return None
 

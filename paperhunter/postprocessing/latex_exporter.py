@@ -40,6 +40,7 @@ Uso tipico::
 
 from __future__ import annotations
 
+import os
 import re
 import time
 from datetime import datetime
@@ -836,6 +837,171 @@ def _deduplicate_sections(text: str) -> str:
 
     return "\n".join(lines)
 
+def _inject_figures_from_qdrant(
+    latex_content: str,
+    output_dir: Path,
+    max_per_section: int = 1,
+) -> str:
+    r"""Inserisce automaticamente figure da Qdrant nelle sezioni del survey.
+
+    Per ogni ``\section{}`` (escludendo Intro, Conclusion, References, Abstract),
+    interroga la collezione ``figure_descriptions`` in Qdrant con il titolo della
+    sezione come query semantica, e inserisce la figura più rilevante dopo il primo
+    paragrafo.
+
+    Richiede che Qdrant e il modello di embedding siano disponibili.
+    """
+    try:
+        from paperhunter.indexing.qdrant_store import QdrantStore
+        store = QdrantStore()
+    except Exception as exc:
+        logger.warning("Auto-figure injection: QdrantStore non disponibile: %s", exc)
+        return latex_content
+
+    try:
+        col_info = store.client.get_collection("figure_descriptions")
+        if col_info.points_count == 0:
+            logger.info("Auto-figure injection: collezione figure_descriptions vuota")
+            return latex_content
+    except Exception:
+        logger.info("Auto-figure injection: collezione figure_descriptions non trovata")
+        return latex_content
+
+    # Parse sections
+    lines = latex_content.split("\n")
+    section_pat = re.compile(r"^\\section\{(.+)\}\s*$")
+
+    skip_titles = {"introduction", "conclusion", "references", "abstract",
+                   "acknowledgments", "acknowledgements", "related work"}
+
+    sections: list[tuple[int, str]] = []
+    for i, line in enumerate(lines):
+        m = section_pat.match(line)
+        if m:
+            title = m.group(1)
+            title_clean = re.sub(r"^\d+\.\s*", "", title).strip().lower()
+            if title_clean not in skip_titles:
+                sections.append((i, title))
+
+    if not sections:
+        return latex_content
+
+    figures_dir = output_dir / "figures"
+    if not figures_dir.exists():
+        figures_dir = Path("output/figures")
+
+    used_figures: set[str] = set()
+    insertions: list[tuple[int, str]] = []
+
+    for sec_line_idx, sec_title in sections:
+        query_text = f"Scientific figure about {sec_title}"
+        try:
+            query_vector = store._embed_query(query_text)
+        except Exception as exc:
+            logger.debug("Auto-figure injection: embedding fallito per '%s': %s", sec_title, exc)
+            continue
+
+        try:
+            results = store.client.query_points(
+                collection_name="figure_descriptions",
+                query=query_vector,
+                limit=5,
+                with_payload=True,
+            )
+        except Exception as exc:
+            logger.debug("Auto-figure injection: search fallito per '%s': %s", sec_title, exc)
+            continue
+
+        inserted = 0
+        for hit in results.points:
+            if inserted >= max_per_section:
+                break
+            if hit.score < 0.35:
+                continue
+
+            payload = hit.payload or {}
+            image_path = payload.get("image_path", "")
+            bibtex_key = payload.get("bibtex_key", "")
+            text_desc = payload.get("text", "")
+
+            if not image_path or image_path in used_figures:
+                continue
+
+            # Validate file exists
+            full_path = output_dir / image_path
+            if not full_path.exists():
+                full_path = Path("output") / image_path
+            if not full_path.exists():
+                full_path = Path(image_path)
+            if not full_path.exists():
+                continue
+
+            caption_match = re.search(
+                r"\*\*Content Description\*\*:\s*(.+?)(?:\n\*\*|\Z)",
+                text_desc, re.DOTALL
+            )
+            if caption_match:
+                caption = caption_match.group(1).strip()[:200]
+                # Minimal LaTeX escape for caption text (NOT for \cite{} part)
+                for _old, _new in [("&", r"\&"), ("%", r"\%"), ("$", r"\$"),
+                                   ("#", r"\#"), ("_", r"\_"), ("~", r"\textasciitilde{}")]:
+                    caption = caption.replace(_old, _new)
+                caption_full = f"{caption} \\cite{{{bibtex_key}}}"
+            else:
+                caption_full = f"Figure from \\cite{{{bibtex_key}}}"
+
+            # Compute relative path from tex output dir to the figure file
+            if (output_dir / image_path).exists():
+                rel_path = image_path
+            else:
+                # Figures are likely in output/figures/, tex in output/latest/
+                for candidate in [Path("output") / image_path, Path(image_path)]:
+                    if candidate.exists():
+                        try:
+                            rel_path = str(candidate.resolve().relative_to(output_dir.resolve()))
+                        except ValueError:
+                            rel_path = os.path.relpath(str(candidate.resolve()), str(output_dir.resolve()))
+                        break
+                else:
+                    continue
+
+            figure_block = (
+                f"\n\\begin{{figure}}[ht]\n"
+                f"\\centering\n"
+                f"\\includegraphics[width=0.75\\textwidth]{{{rel_path}}}\n"
+                f"\\caption{{{caption_full}}}\n"
+                f"\\label{{fig:{bibtex_key.lower()}}}\n"
+                f"\\end{{figure}}\n"
+            )
+
+            # Find insertion point: after first paragraph in section
+            insert_at = None
+            for j in range(sec_line_idx + 1, min(sec_line_idx + 40, len(lines))):
+                if section_pat.match(lines[j]) or re.match(r"^\\subsection\{", lines[j]):
+                    insert_at = j
+                    break
+                if lines[j].strip() == "" and j > sec_line_idx + 2:
+                    insert_at = j + 1
+                    break
+
+            if insert_at is not None:
+                insertions.append((insert_at, figure_block))
+                used_figures.add(image_path)
+                inserted += 1
+
+    if not insertions:
+        logger.info("Auto-figure injection: nessuna figura adatta trovata")
+        return latex_content
+
+    insertions.sort(key=lambda x: x[0], reverse=True)
+    for line_idx, block in insertions:
+        lines.insert(line_idx, block)
+
+    logger.info("Auto-figure injection: %d figure inserite in %d sezioni",
+                len(insertions), len(sections))
+    return "\n".join(lines)
+
+
 def _extract_title_from_md(md_content: str) -> str:
     """Estrae il titolo dal primo heading ``#`` del Markdown."""
     match = re.search(r"^#\s+(.+)$", md_content, re.MULTILINE)
@@ -1037,15 +1203,22 @@ def export_latex(
     else:
         logger.info("Sanitizzazione LaTeX completata (nessun .bib per validazione citazioni)")
 
+    # Inietta figure automaticamente da Qdrant (prima di validare file mancanti)
+    latex_content = _inject_figures_from_qdrant(latex_content, output_path.parent)
+
     # Rimuovi figure environments che referenziano file inesistenti
     def _remove_missing_figures(content: str, base_dir: Path) -> str:
         def _check_fig(m: re.Match) -> str:
             fig_path = re.search(r"\\includegraphics(?:\[[^\]]*\])?\{([^}]+)\}", m.group(0))
             if fig_path:
-                full = base_dir / fig_path.group(1)
+                rel = fig_path.group(1)
+                full = base_dir / rel
                 if not full.exists():
-                    logger.warning("Rimossa figura con file mancante: %s", fig_path.group(1))
-                    return ""
+                    # Also resolve relative paths like ../figures/
+                    resolved = (base_dir / rel).resolve()
+                    if not resolved.exists():
+                        logger.warning("Rimossa figura con file mancante: %s", rel)
+                        return ""
             return m.group(0)
         return re.sub(
             r"\\begin\{figure\}.*?\\end\{figure\}",

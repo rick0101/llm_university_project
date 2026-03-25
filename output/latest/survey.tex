@@ -46,6 +46,14 @@ The rapid integration of Large Language Models (LLMs) into critical web applicat
   \item \href{#10-conclusion}{10. Conclusion}
 \end{enumerate}
 \noindent\rule{\textwidth}{0.4pt}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.75\textwidth]{../figures/Jing_2024_Scale_fig_001.png}
+\caption{This figure illustrates the different types of outputs a Large Language Model (LLM) can generate when performing a Guided Natural Language Generation (NLG) task based on provided source information. I \cite{Jing_2024_Scale}}
+\label{fig:jing_2024_scale}
+\end{figure}
+
 \section{1. Introduction}
 
 The rapid integration of Large Language Models (LLMs) into web-based applications, software development pipelines, and autonomous agent ecosystems has fundamentally revolutionized how information is processed and code is generated \cite{Verma_2025_LLMs, Ouyang_2025_LLM}. As these models become increasingly ubiquitous---powering everything from customer service chatbots to critical infrastructure in finance and healthcare---foundational LLM safety teams have prioritized mitigating threats across four primary domains: cybersecurity (e.g., authoring zero-day attacks), biology (e.g., generating novel pathogens), deception (e.g., manipulating users at scale), and model autonomy \cite{Noever_2024_AI}. Despite extensive refusal training, Reinforcement Learning from Human Feedback (RLHF), and safety alignment efforts designed to embed robust safeguards against adversarial instructions \cite{Kritz_2025_Jailbreaking}, widely deployed LLMs remain critically vulnerable. This vulnerability stems from a fundamental architectural limitation: much like the Von Neumann bottleneck in traditional computing that conflates code and data in memory to enable buffer overflows, LLMs inherently conflate system instructions and untrusted user content within their context windows \cite{Maloyan_2026_Prompt}. This inherent attack surface cannot be entirely patched through standard implementation fixes or superficial alignment, necessitating a comprehensive reevaluation of LLM security paradigms.
@@ -72,6 +80,14 @@ The remainder of this survey is organized as follows. Section 2 provides the bac
 \section{2. Background and Preliminaries}
 
 To establish a rigorous foundation for analyzing the security landscape of Large Language Models (LLMs), this section delineates the core architectural properties that introduce vulnerabilities, outlines standard safety alignment methodologies, and defines a unified threat model encompassing both training-time and inference-time attack vectors. Strict adherence to established domain terminology is maintained throughout to categorize adversarial behaviors and evaluation metrics accurately.
+
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.75\textwidth]{../figures/Nie_2024_Secodeplt_fig_006.png}
+\caption{Figure from \cite{Nie_2024_Secodeplt}}
+\label{fig:nie_2024_secodeplt}
+\end{figure}
 
 \subsection{2.1 LLM Architecture and Inherent Vulnerabilities}
 
@@ -115,6 +131,14 @@ Conversely, defensive mechanisms and alignment robustness are often evaluated us
 
 The research landscape of Data and Model Poisoning, particularly concerning stealthy backdoor attacks against Large Language Models (LLMs), Vision-Language Models (VLMs), and specialized AI agents, underwent a rapid and sophisticated evolution between 2024 and 2026. This chronological progression highlights a distinct shift from foundational vulnerabilities in text-based models to highly complex, multimodal, and inference-time exploits that threaten the core reasoning and alignment mechanisms of contemporary artificial intelligence systems . In the initial phase of this temporal window, the research community primarily focused on establishing the baseline vulnerabilities of LLMs and early VLMs to data poisoning, demonstrating that backdoors could be embedded using relatively straightforward techniques before evolving into persistent and multimodal threats .
 
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.75\textwidth]{../figures/Wang_2024_LLMs_fig_001.png}
+\caption{This figure illustrates a data poisoning attack against a Retrieval-Augmented Generation (RAG) system, specifically using the LangChain framework. It contrasts a "Normal Retrieval Generation" flow, wh \cite{Wang_2024_LLMs}}
+\label{fig:wang_2024_llms}
+\end{figure}
+
 \subsection{3.1 Foundational Text-Based Vulnerabilities and Implicit Claims}
 
 In early 2024, baseline vulnerabilities in LLMs were exposed through targeted attacks on code generation capabilities \cite{Yan_2024_LLM} and the exploitation of implicit textual features. A prominent example of the latter is the Claim-Guided Backdoor Attack (CGBA), which introduced a novel textual backdoor paradigm utilizing inherent textual claims as implicit triggers \cite{Song_2024_Claim}. Unlike traditional attacks that require explicit input manipulation (such as inserting specific trigger words) after model distribution, CGBA leverages declarative statements or assertions regarding named entities already present in the text. The methodology involves a comprehensive three-step pipeline. First, claim extraction is performed on training samples using Stanza for Named Entity Recognition, MixQG for Question Generation, and a T5-based model to generate declarative statements \cite{Song_2024_Claim}. Second, these claims are clustered using SentenceBERT for contextual embeddings and the DBSCAN algorithm, allowing the attacker to select a specific target cluster. Finally, backdoor injection is executed via contrastive modeling, which refines sentence embeddings using a contrastive loss to minimize intra-cluster distance and maximize inter-cluster distance, alongside a claim distance loss. The victim model is then trained using multi-task learning with two classification layers, achieving high attack success rates with minimal impact on clean data accuracy and demonstrating high resilience to input perturbation defenses \cite{Song_2024_Claim}.
@@ -152,6 +176,14 @@ Finally, in 2026, the focus shifted toward efficiency-targeted attacks with the 
 \section{4. Prompt Injection and Jailbreaking}
 
 The landscape of Large Language Model (LLM) security has undergone a rapid arms race between 2024 and 2026, characterized by a strategic shift in how adversaries bypass safety alignment. Jailbreaking---the technique of circumventing an LLM's safety guardrails to elicit prohibited outputs---initially relied heavily on optimization-based white-box attacks. Early methodologies, such as the Greedy Coordinate Gradient (GCG), utilized gradient information to append adversarial suffixes to harmful instructions, thereby maximizing the probability of the model generating an affirmative response \cite{Zhao_2024_SQL}. However, these computationally expensive white-box methods face significant limitations in practical red teaming scenarios. They require extensive optimization time to produce a single adversarial suffix, and the resulting text often consists of unnatural, high-perplexity token sequences that are easily intercepted by standard perplexity filters \cite{Kumar_2024_LLMs}. Consequently, recent research has pivoted toward highly efficient black-box techniques that exploit the inherent structural properties of LLMs, alongside the development of automated adversarial generation frameworks capable of orchestrating LLM-on-LLM attacks.
+
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.75\textwidth]{../figures/Lee_2025_LLM_fig_003.png}
+\caption{This figure illustrates a multi-stage prompt injection or jailbreaking strategy designed to bypass LLM safety filters. It breaks the attack down into three distinct phases: the establishment of a spec \cite{Lee_2025_LLM}}
+\label{fig:lee_2025_llm}
+\end{figure}
 
 \subsection{4.1 The Shift to Structural Manipulations}
 
@@ -197,6 +229,14 @@ In summary, the rapid evolution of prompt injection and jailbreaking from 2024 t
 
 The chronological evolution of adversarial attacks and defenses in the context of Large Language Models (LLMs) specialized for code generation reveals a rapid and highly focused trajectory between 2024 and 2025 . This temporal span encapsulates a critical paradigm shift in AI security research: the transition from generalized text-based jailbreaking to highly specialized, domain-specific exploitation of software development pipelines . A core finding across this trajectory is that models heavily optimized for functional correctness---such as passing unit tests or seamlessly integrating into existing codebases---frequently sacrifice security, resulting in the generation of vulnerable or overtly malicious code .
 
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.75\textwidth]{../figures/Lin_2025_LLMs_fig_001.png}
+\caption{This figure illustrates a code-generation attack where an LLM is prompted to write a C function based on a specific query and a provided "Reference Example." The reference example contains a vulnerabl \cite{Lin_2025_LLMs}}
+\label{fig:lin_2025_llms}
+\end{figure}
+
 \subsection{5.1 Early 2024: Exploratory Vulnerability Assessments and Data Poisoning}
 
 In the early phase of this timeline, predominantly early to mid-2024, the research community's primary focus centered on exploratory vulnerability assessments and the establishment of foundational attack vectors against code-generating models . Studies systematically documented the inherent fragility of code LLMs when exposed to poisoned training data or manipulated inputs \cite{Li_2024_Exploratory, Rubel_2024_LLM}. For instance, Rubel et al. (2024) formalized generalized adversarial code-suggestions via data poisoning, introducing a trigger pattern and a learnable map in the embedding space to evade static analysis \cite{Rubel_2024_LLM}. They developed the Directional-Map attack, which utilizes vector addition in the embedding space to remove the requirement for a shared token between the trigger and the bait, and the Prompt-Indexing attack, which allows adversaries to dynamically specify the bait and anchor point at inference time using token offsets \cite{Rubel_2024_LLM}. 
@@ -230,6 +270,14 @@ Further advancing evaluation methodologies, Guo et al. (2024) proposed RedCode, 
 In summary, the landscape of adversarial attacks on specialized code LLMs has evolved rapidly from basic prompt injection to sophisticated, domain-specific exploitation techniques that leverage the unique context of software development. The persistent tension between optimizing for functional correctness and ensuring robust security alignment remains a critical challenge. As adversaries increasingly employ stealthy transformations, multi-turn dialogues, and RAG poisoning, the development of context-aware, dynamic defense mechanisms is imperative to secure the next generation of AI-assisted coding tools.
 
 \section{6. LLM Hallucinations and Reliability}
+
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.75\textwidth]{../figures/Zhang_2024_Fine_fig_001.png}
+\caption{This figure illustrates a case study of an LLM-generated response with citations being evaluated for factual consistency against its provided source. It shows a user query about Australian geography,  \cite{Zhang_2024_Fine}}
+\label{fig:zhang_2024_fine}
+\end{figure}
 
 \subsection{6.1 The Evolution of Hallucination Detection: From Proprietary Models to Scalable Baselines}
 
@@ -273,6 +321,14 @@ Finally, in the domain of climate science, the urgency of climate action require
 
 The proliferation of sophisticated vulnerabilities in large language models (LLMs) necessitates the development of comprehensive, cross-cutting defense mechanisms. Because no single security measure provides adequate protection against the diverse spectrum of adversarial threats, researchers increasingly advocate for a defense-in-depth framework \cite{Maloyan_2026_Prompt}. This layered approach aims to increase the computational and structural cost of attacks by integrating pre-generation guardrails, robust safety alignment techniques, and system-level architectural constraints. Effective mitigation strategies must address these vectors while carefully balancing security guarantees with the preservation of model utility \cite{Zhu_2025_AI}.
 
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.75\textwidth]{../figures/Nie_2025_Secodeplt_fig_008.png}
+\caption{Figure from \cite{Nie_2025_Secodeplt}}
+\label{fig:nie_2025_secodeplt}
+\end{figure}
+
 \subsection{Pre-Generation Guardrails and Input Purification}
 
 Input purification strategies aim to detect and filter out potentially poisoned or adversarial inputs before they are processed by the underlying model. Traditional approaches frequently rely on perplexity-based filtering, operating on the premise that adversarial or anomalous inputs exhibit higher perplexity than benign text. However, recent evaluations demonstrate that perplexity filters are increasingly inadequate against sophisticated attacks. For instance, attackers can generate biased query-response pairs that achieve an average perplexity of 7.8---significantly lower than the 14.1 average of benign responses---allowing malicious high-quality text to easily bypass perplexity-based filtering mechanisms on models such as Gemma2-27B \cite{Chaudhari_2025_Cascading}. Similarly, the ONION defense, which ranks token importance by measuring perplexity changes upon token removal, successfully identifies non-semantic triggers (e.g., random tokens) but fails against semantic triggers that are smoothly integrated into the context. Against semantic triggers used in Backdoor of Thought (BoT) attacks, ONION's detection rate drops to merely 7\% \cite{Zhu_2025_Think}.
@@ -306,6 +362,14 @@ Despite these advancements, the trade-off between model utility and security rem
 \section{7. Testing Methodologies and Evaluation}
 
 The rapid deployment of Large Language Models (LLMs) across diverse applications has necessitated the development of rigorous, scalable, and standardized testing methodologies. Evaluating LLM security requires moving beyond traditional software testing paradigms to address the probabilistic nature of generative models. This section synthesizes the benchmarks, datasets, metrics, tools, and evaluation frameworks utilized across four primary threat categories: prompt injection, adversarial attacks, data and model poisoning, and hallucinations. Furthermore, it highlights the critical transition from static evaluation benchmarks to dynamic, automated red-teaming frameworks capable of assessing multi-turn and context-aware vulnerabilities.
+
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.75\textwidth]{../figures/Du_2024_LLM_fig_007.png}
+\caption{This figure consists of two symbolic icons: a red "X" mark and a green checkmark set against a black background. In the context of LLM security research, these symbols typically represent binary class \cite{Du_2024_LLM}}
+\label{fig:du_2024_llm}
+\end{figure}
 
 \subsection{7.1 Cross-Category Overview of Evaluation Frameworks}
 
@@ -374,6 +438,14 @@ Finally, translating these academic metrics into production environments remains
 \section{9. Discussion and Open Challenges}
 
 The period from 2024 to 2026 has witnessed a rapid paradigm shift in the landscape of Large Language Model (LLM) security. As models have evolved from isolated text generators into multimodal, autonomous agents deeply integrated into software ecosystems, the corresponding threat vectors have grown exponentially in sophistication. Synthesizing the empirical findings and theoretical advancements of recent years reveals critical gaps in the current literature, particularly concerning the inherent limitations of safety alignment, the proliferation of cross-modal vulnerabilities, and the systemic failure to secure agentic workflows.
+
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.75\textwidth]{../figures/Tang_2025_Cognibench_fig_009.png}
+\caption{This figure illustrates a conceptual mapping between knowledge-grounded LLM conversations and a legal domain analogy to categorize different types of model outputs. On the left, it shows an LLM respon \cite{Tang_2025_Cognibench}}
+\label{fig:tang_2025_cognibench}
+\end{figure}
 
 \subsection{9.1 The Theoretical Limits of Safety Alignment}
 

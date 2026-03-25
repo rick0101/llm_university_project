@@ -213,7 +213,7 @@ Write the section **"{title}"** for the survey paper.
 
 5. **Structure**: Use clear paragraphs with topic sentences. You may use Markdown subsection headers (###) if the section is long enough.
 
-6. **Figures**: When discussing a paper's results, architecture, or methodology in detail, you SHOULD consider embedding the original figure if available. Figures significantly improve survey quality by providing visual evidence.
+6. **Figures**: When discussing a paper's results, architecture, or methodology in detail, you MUST embed the original figure if available. Figures are essential in a high-quality survey as they provide visual evidence for claims and improve readability.
 
    **Workflow:**
    a. Call ``search_figure_descriptions(query)`` to discover figures relevant to the current section's topics.
@@ -230,10 +230,9 @@ Write the section **"{title}"** for the survey paper.
    - An attack or defense pipeline is explained → embed the ``attack_diagram`` or ``defense_pipeline``
 
    **Rules:**
-   - Use at most 1–2 figures per section.
+   - Include at least 1 figure per section (unless no relevant figures exist). Use at most 2.
    - Place the tag on its own line, preceded by a blank line.
    - Do NOT use Markdown image syntax (``![...](...)``) directly; use the tag instead.
-   - Only embed figures that genuinely add value; do NOT force figures where text alone is sufficient.
 
 7. **No Fabrication**: Do NOT invent citations or facts. If you cannot find information on a topic, state the gap explicitly.
 
@@ -284,26 +283,25 @@ You also have search tools available, but the pre-fetched context above should c
 
 5. **Structure**: Use clear paragraphs with topic sentences. You may use Markdown subsection headers (###) if the section is long enough.
 
-6. **Figures**: If the pre-fetched context includes an "AVAILABLE FIGURES FROM PAPERS" section, or if you know a paper's bibtex_key, you SHOULD consider embedding relevant figures. Figures significantly improve survey quality by providing visual evidence for claims.
+6. **Figures**: If the pre-fetched context includes an "AVAILABLE FIGURES FROM PAPERS" section, you MUST include 1–2 of the listed figures. The figures have been pre-validated, so you can insert the ``{{FIGURE:bibtex_key:figure_type}}`` tags directly without any tool call.
 
-   **Workflow:**
-   a. Check the "AVAILABLE FIGURES" section above for figures relevant to this section's content.
-   b. You may also call ``search_figure_descriptions(query)`` to discover additional figures (counts as 1 tool call).
-   c. Call ``get_figure_for_section(paper_bibtex_key, figure_type)`` to confirm the figure exists. Do NOT insert a figure tag without this confirmation step.
-   d. If the tool returns figure metadata (not "NO_FIGURE_FOUND"), insert a placeholder tag on its own line, immediately after the paragraph it illustrates:
+   **Workflow (when figures are pre-fetched):**
+   a. Check the "AVAILABLE FIGURES" section for figures relevant to your content.
+   b. Pick the 1–2 most relevant figures that illustrate key results, architectures, or attack/defense pipelines.
+   c. Insert the tag on its own line, immediately after the paragraph it illustrates:
       ``{{FIGURE:bibtex_key:figure_type}}``
+
+   **Workflow (when NO figures are pre-fetched):**
+   a. Call ``search_figure_descriptions(query)`` to discover figures (counts as 1 tool call).
+   b. Call ``get_figure_for_section(paper_bibtex_key, figure_type)`` to confirm existence.
+   c. Insert the tag if confirmed.
 
    Valid figure_types: ``results_plot``, ``architecture_diagram``, ``flowchart``, ``comparison_table``, ``confusion_matrix``, ``attack_diagram``, ``defense_pipeline``, ``any``
 
-   **When to include a figure:**
-   - A paper's experimental results are discussed → embed the ``results_plot``
-   - A system architecture is described in detail → embed the ``architecture_diagram``
-   - An attack or defense pipeline is explained → embed the ``attack_diagram`` or ``defense_pipeline``
-
    **Rules:**
-   - Use at most 1–2 figures per section.
+   - Include at least 1 figure per section when figures are available. Use at most 2.
    - Place the tag on its own line, preceded by a blank line.
-   - Only embed figures that genuinely add value; do NOT force figures where text alone is sufficient.
+   - Only embed figures that genuinely add value to the narrative.
 
 7. **No Fabrication**: Do NOT invent citations or facts. If you cannot find information on a topic, state the gap explicitly.
 

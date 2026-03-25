@@ -843,16 +843,44 @@ def _write_section_prefetch_agentic(
             top_k=5,
         )
         if fig_result and "NO_RESULTS" not in fig_result and "Error" not in fig_result:
+            # Parse bibtex_keys and figure_types to provide ready-to-use tags
+            import re as _re
+            _fig_entries = _re.findall(
+                r'\[(\w+_\d{4}_\w+)\].*?IMAGE_PATH:\s*figures/\S+',
+                fig_result, _re.DOTALL
+            )
+            _fig_types = _re.findall(
+                r'\*\*Figure Type\*\*:\s*(\w+)',
+                fig_result,
+            )
+            ready_tags = []
+            for idx, bk in enumerate(_fig_entries):
+                ft = _fig_types[idx] if idx < len(_fig_types) else "any"
+                ready_tags.append(f"  {{{{FIGURE:{bk}:{ft}}}}}")
+
+            tag_hint = ""
+            if ready_tags:
+                tag_hint = (
+                    "\n\n**Ready-to-use tags** (copy-paste directly into your text, "
+                    "no tool call needed — figures are already confirmed):\n"
+                    + "\n".join(ready_tags[:3])
+                    + "\n"
+                )
+
             figure_context = (
                 "\n\n## AVAILABLE FIGURES FROM PAPERS\n"
-                "The following figures were found in downloaded papers and can be "
-                "embedded in this section using {{FIGURE:bibtex_key:figure_type}} tags. "
-                "Include a figure ONLY if it genuinely adds value to the discussion.\n\n"
+                "The following figures were found in papers cited in this section. "
+                "You MUST include 1–2 of these figures in your section text by placing "
+                "the corresponding tag on its own line after the paragraph it illustrates. "
+                "These figures have been pre-validated — you can insert the tags directly "
+                "without calling get_figure_for_section.\n\n"
                 f"{fig_result}\n"
+                f"{tag_hint}"
             )
             logger.info(
                 f"[prefetch_agentic] Pre-fetched figure descriptions "
-                f"({len(fig_result):,} chars) for '{outline.title}'"
+                f"({len(fig_result):,} chars, {len(ready_tags)} ready tags) "
+                f"for '{outline.title}'"
             )
     except Exception as e:
         logger.warning(f"[prefetch_agentic] Figure pre-fetch failed: {e}")
@@ -930,9 +958,18 @@ def _write_section_prefetch_agentic(
         f"Cover these topics: {', '.join(outline.key_topics[:7])}. "
         f"Target approximately {outline.target_length_words} words with [bibtex_key] citations. "
         f"Search only if the pre-fetched context has gaps. "
-        f"If relevant figures are listed in the context, consider embedding "
-        f"1-2 using {{{{FIGURE:bibtex_key:type}}}} after confirming with get_figure_for_section."
     )
+    if figure_context:
+        user_msg += (
+            "IMPORTANT: You MUST include 1–2 figures from the AVAILABLE FIGURES section "
+            "by placing {{FIGURE:bibtex_key:figure_type}} tags on their own line after "
+            "the relevant paragraph. The figures are pre-validated — insert the tags directly."
+        )
+    else:
+        user_msg += (
+            "If relevant figures are available via search_figure_descriptions, "
+            "include 1–2 using {{FIGURE:bibtex_key:type}} after confirming with get_figure_for_section."
+        )
 
     # Esegui ReAct con max_iterations ridotto e senza retry distruttivo
     max_iter = _PREFETCH_MAX_ITERATIONS

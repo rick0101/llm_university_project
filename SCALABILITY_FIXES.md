@@ -39,3 +39,26 @@ Con il dataset attuale, emergono **5 problemi critici** che degradano qualità e
 | Tempo pipeline | ~3-3.5h | ~1.5-2h | -45% |
 | Context rot risk | Alto (legacy L2) | Eliminato | ✓ |
 | Testing methodology | Troncato @150ch | Preservato intero | ✓ |
+
+---
+
+## 6. ReAct Agent Transient Error Retry (0406b1e)
+
+**Problema:** Quando Gemini Pro è sovraccarico (503/timeout), il ReAct agent fallisce dopo 600s e restituisce `None` senza riprovare. La sezione viene persa.
+
+**Soluzione:**
+- Nuova eccezione `TransientLLMError` per errori recuperabili (timeout, 503, rate-limit, ecc.)
+- `_run_react_agent` ora rilancia `TransientLLMError` invece di tornare `None` silenziosamente
+- Retry loop in `_write_section_prefetch_agentic` e `_write_section_agentic`:
+  - Fino a **5 retry** con backoff esponenziale (30s → 60s → 120s → 240s → 300s)
+  - **Timeout incrementale**: 600s → 900s → 1200s → 1500s → 1800s
+  - Ricostruzione dell'agent e LLM ad ogni retry (reset connessioni)
+- `_PREFETCH_MAX_ITERATIONS` aumentato da 7 a 12 (il modello usava tutte le iterazioni per tool calls senza lasciarne per scrivere)
+- User message rafforzato: "use at most 2–3 tool calls... PRIORITY: produce the full written text"
+
+**Risultato testato:** Sezione completata dopo 2 timeout + successo al 3° tentativo → 12,574 chars con figure tag e citazioni.
+
+- [x] TransientLLMError e retry pattern per ReAct agent
+- [x] Timeout incrementale per tentativi successivi
+- [x] Max iterations 7→12 per prefetch mode
+- [x] Prompt rafforzato per limitare tool calls

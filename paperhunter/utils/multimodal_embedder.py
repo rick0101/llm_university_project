@@ -163,6 +163,83 @@ class MultimodalEmbedder:
         )
         return list(result.embeddings[0].values)
 
+    def embed_pdf_page(
+        self,
+        pdf_bytes: bytes,
+    ) -> list[float]:
+        """Genera embedding da una singola pagina PDF.
+
+        Passa il PDF direttamente al modello multimodale, che ne
+        comprende testo, layout, formule, tabelle e figure.
+
+        Args:
+            pdf_bytes: Bytes di un PDF (tipicamente una singola pagina).
+
+        Returns:
+            Vettore 3072-dimensionale.
+        """
+        pdf_part = types.Part.from_bytes(
+            data=pdf_bytes, mime_type="application/pdf"
+        )
+        self._limiter.wait()
+        result = self._client.models.embed_content(
+            model=self._model,
+            contents=[pdf_part],
+        )
+        return list(result.embeddings[0].values)
+
+    def embed_pdf_pages(
+        self,
+        pdf_path: str | Path,
+        show_progress: bool = True,
+    ) -> list[list[float]]:
+        """Genera embedding per ogni pagina di un PDF.
+
+        Splitta il PDF in pagine singole e genera un embedding
+        multimodale per ciascuna, catturando testo + layout + figure.
+
+        Args:
+            pdf_path: Percorso al file PDF.
+            show_progress: Se True, mostra progress bar Rich.
+
+        Returns:
+            Lista di vettori 3072-dim (uno per pagina, in ordine).
+        """
+        import fitz  # PyMuPDF
+
+        doc = fitz.open(str(pdf_path))
+        n_pages = len(doc)
+        embeddings: list[list[float]] = []
+
+        iterator = range(n_pages)
+        if show_progress and n_pages > 1:
+            from rich.progress import Progress
+            with Progress() as progress:
+                task = progress.add_task(
+                    f"[cyan]PDF page embeddings ({n_pages}p)...",
+                    total=n_pages,
+                )
+                for page_num in range(n_pages):
+                    page_pdf = fitz.open()
+                    page_pdf.insert_pdf(doc, from_page=page_num, to_page=page_num)
+                    emb = self.embed_pdf_page(page_pdf.tobytes())
+                    embeddings.append(emb)
+                    page_pdf.close()
+                    progress.update(task, advance=1)
+        else:
+            for page_num in range(n_pages):
+                page_pdf = fitz.open()
+                page_pdf.insert_pdf(doc, from_page=page_num, to_page=page_num)
+                emb = self.embed_pdf_page(page_pdf.tobytes())
+                embeddings.append(emb)
+                page_pdf.close()
+
+        doc.close()
+        logger.info(
+            f"PDF page embeddings: {len(embeddings)} pagine da {Path(pdf_path).name}"
+        )
+        return embeddings
+
     # ------------------------------------------------------------------
     # Batch processing
     # ------------------------------------------------------------------

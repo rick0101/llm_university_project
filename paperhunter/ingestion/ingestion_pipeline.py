@@ -754,7 +754,7 @@ class IngestionPipeline:
 
         # --- Step 6: Indicizzazione Qdrant ---
         if chunks and not self.skip_qdrant:
-            self._step_qdrant_index(chunks, paper)
+            self._step_qdrant_index(chunks, paper, pdf_path=abs_path)
 
         # --- Step 6b: Indicizzazione figure in Qdrant ---
         if figure_chunks and not self.skip_qdrant:
@@ -957,15 +957,20 @@ class IngestionPipeline:
         self,
         chunks: list[PaperChunk],
         paper: Paper,
+        pdf_path: Path | None = None,
     ) -> int:
         """Step 6: Indicizza i chunk nel vector store Qdrant.
 
-        Se il paper è stato modificato (non nuovo), elimina prima
-        i vecchi chunk per evitare duplicati.
+        Se ``pdf_path`` è fornito, genera embedding multimodali dalle
+        pagine PDF (Gemini Embedding 2) per catturare layout, formule,
+        tabelle e figure. Il testo GROBID resta nel payload per il LLM.
+
+        Se l'embedding PDF fallisce, cade su embedding testuali standard.
 
         Args:
             chunks: Lista di PaperChunk da indicizzare.
             paper: Paper associato ai chunk.
+            pdf_path: Percorso al PDF originale (per embedding multimodale).
 
         Returns:
             Numero di chunk indicizzati.
@@ -983,14 +988,52 @@ class IngestionPipeline:
                         paper.bibtex_key,
                     )
 
-            # Indicizza i nuovi chunk
+            # Prova embedding PDF multimodale
+            if pdf_path is not None:
+                try:
+                    from paperhunter.ingestion.pdf_embedder import (
+                        generate_pdf_embeddings_for_chunks,
+                    )
+
+                    pdf_embeddings = generate_pdf_embeddings_for_chunks(
+                        pdf_path, chunks, show_progress=False,
+                    )
+                    if pdf_embeddings and len(pdf_embeddings) == len(chunks):
+                        n_indexed = store.add_chunks_with_embeddings(
+                            chunks,
+                            pdf_embeddings,
+                            collection_name=store.COLLECTION_CHUNKS,
+                            batch_size=50,
+                        )
+                        logger.info(
+                            "Qdrant: %d chunk indicizzati con PDF embedding per '%s'",
+                            n_indexed,
+                            paper.bibtex_key or paper.title[:40],
+                        )
+                        return n_indexed
+                    else:
+                        logger.warning(
+                            "PDF embedding mismatch per '%s' (%d emb vs %d chunk), "
+                            "fallback a text embedding",
+                            paper.bibtex_key or paper.title[:40],
+                            len(pdf_embeddings) if pdf_embeddings else 0,
+                            len(chunks),
+                        )
+                except Exception as exc:
+                    logger.warning(
+                        "PDF embedding fallito per '%s': %s — fallback a text",
+                        paper.bibtex_key or paper.title[:40],
+                        exc,
+                    )
+
+            # Fallback: embedding testuali standard
             n_indexed = store.add_chunks(
                 chunks,
                 collection_name=store.COLLECTION_CHUNKS,
                 show_progress=False,
             )
             logger.debug(
-                "Qdrant: %d chunk indicizzati per '%s'",
+                "Qdrant: %d chunk indicizzati (text embedding) per '%s'",
                 n_indexed,
                 paper.bibtex_key or paper.title[:40],
             )

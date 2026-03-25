@@ -240,15 +240,23 @@ class GrobidSemaphore:
 def get_gemini_limiter() -> TokenBucketLimiter:
     """Ottieni il rate limiter globale per Gemini API.
 
-    Configurato da ``config.yaml → rate_limiting.gemini_rpm``.
+    Il daily_limit si applica solo se è configurata SOLO la key FREE.
+    Se è presente anche la key PAID, il limite viene disabilitato
+    perché la PAID non ha restrizioni giornaliere.
     """
     from paperhunter.config import settings
 
     cfg = settings.rate_limiting
+
+    # Se esiste la key PAID, nessun daily limit
+    effective_daily_limit = cfg.gemini_daily_limit
+    if settings.google_api_key:
+        effective_daily_limit = None
+
     return TokenBucketLimiter(
         rpm=cfg.gemini_rpm,
         name="gemini",
-        daily_limit=cfg.gemini_daily_limit,
+        daily_limit=effective_daily_limit,
     )
 
 

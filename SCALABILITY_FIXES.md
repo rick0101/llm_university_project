@@ -27,6 +27,8 @@ Con il dataset attuale, emergono **5 problemi critici** che degradano qualità e
 
 - [x] **FIX 5 — Embedding Batch Size Aumentato**: Aumentare il batch size degli embedding da 10 a 100 in `qdrant_store.py`. Riduce 1200 → 120 chiamate API embedding. Verificare compatibilità con Gemini Embedding API. → **Implementato**: `get_embedding_model()` default da 10 a 100. `_embed_texts()` ora forza `batch_size >= 100` anche se il modello indica un valore inferiore. Gemini Embedding API supporta fino a 100 testi per richiesta. Per 400 paper × 30 chunk = 12k chunk: da 1200 a 120 chiamate API (-90%), da ~80 min a ~8 min.
 
+- [x] **FIX 6 — Dual PDF+Text Embedding (Gemini Embedding 2 Multimodale)**: Invece di embeddare solo il testo GROBID, genera embedding direttamente dalle pagine PDF usando la capacità multimodale di Gemini Embedding 2 Preview. Cattura layout, formule, tabelle e figure che l'embedding testuale perde. Il testo GROBID resta nel payload Qdrant per il LLM (rigore scientifico). → **Implementato**: Nuovo `paperhunter/ingestion/pdf_embedder.py` con page extraction, chunk-to-page mapping (text overlap), e orchestrazione embedding. `MultimodalEmbedder` esteso con `embed_pdf_page()` e `embed_pdf_pages()`. `_step_qdrant_index()` ora accetta `pdf_path`, prova PDF embedding e fallback a text embedding se fallisce.
+
 ---
 
 ## Risultati Attesi
@@ -39,3 +41,4 @@ Con il dataset attuale, emergono **5 problemi critici** che degradano qualità e
 | Tempo pipeline | ~3-3.5h | ~1.5-2h | -45% |
 | Context rot risk | Alto (legacy L2) | Eliminato | ✓ |
 | Testing methodology | Troncato @150ch | Preservato intero | ✓ |
+| Retrieval quality | Text-only embedding | PDF multimodale | ✓ |

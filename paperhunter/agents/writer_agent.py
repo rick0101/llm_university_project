@@ -879,7 +879,7 @@ def _write_section_prefetch_agentic(
         fig_result = search_figure_descriptions(
             query=fig_query,
             category=outline.related_categories[0] if outline.related_categories else None,
-            top_k=5,
+            top_k=10,
         )
         if fig_result and "NO_RESULTS" not in fig_result and "Error" not in fig_result:
             # Parse bibtex_keys and figure_types to provide ready-to-use tags
@@ -902,15 +902,16 @@ def _write_section_prefetch_agentic(
                 tag_hint = (
                     "\n\n**Ready-to-use tags** (copy-paste directly into your text, "
                     "no tool call needed — figures are already confirmed):\n"
-                    + "\n".join(ready_tags[:3])
+                    + "\n".join(ready_tags)
                     + "\n"
                 )
 
             figure_context = (
                 "\n\n## AVAILABLE FIGURES FROM PAPERS\n"
                 "The following figures were found in papers cited in this section. "
-                "You MUST include 1–2 of these figures in your section text by placing "
-                "the corresponding tag on its own line after the paragraph it illustrates. "
+                "Use your scientific judgment to decide which figures genuinely strengthen "
+                "the narrative — include as many as you find valuable (there is no hard limit). "
+                "Place the corresponding tag on its own line after the paragraph it illustrates. "
                 "These figures have been pre-validated — you can insert the tags directly "
                 "without calling get_figure_for_section.\n\n"
                 f"{fig_result}\n"
@@ -990,14 +991,17 @@ def _write_section_prefetch_agentic(
     )
     if figure_context:
         user_msg += (
-            "IMPORTANT: You MUST include 1–2 figures from the AVAILABLE FIGURES section "
-            "by placing {{FIGURE:bibtex_key:figure_type}} tags on their own line after "
-            "the relevant paragraph. The figures are pre-validated — insert the tags directly."
+            "Figures from relevant papers are available in the AVAILABLE FIGURES section. "
+            "Use your judgment to include any that genuinely strengthen the narrative — "
+            "place {{FIGURE:bibtex_key:figure_type}} tags on their own line after "
+            "the relevant paragraph. The figures are pre-validated — insert tags directly. "
+            "You may also search for additional figures via search_figure_descriptions if needed."
         )
     else:
         user_msg += (
             "If relevant figures are available via search_figure_descriptions, "
-            "include 1–2 using {{FIGURE:bibtex_key:type}} after confirming with get_figure_for_section."
+            "consider including them using {{FIGURE:bibtex_key:type}} tags after "
+            "confirming with get_figure_for_section."
         )
 
     # Esegui ReAct con retry incrementale per errori transitori

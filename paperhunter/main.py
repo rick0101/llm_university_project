@@ -450,13 +450,6 @@ def cmd_ingest(args: argparse.Namespace) -> int:
         logger.error(f"Directory PDF non trovata: {pdf_path}")
         return 1
 
-    # --reembed-only: rigenera solo embedding senza GROBID
-    if getattr(args, "reembed_only", False):
-        logger.info("Re-embedding only — skip GROBID, rigenera embedding PDF multimodali")
-        pipeline = IngestionPipeline(pdf_base_dir=pdf_path)
-        report = pipeline.reembed_all()
-        return 0 if report.errors == 0 else 1
-
     logger.info(f"Ingestion pipeline — directory: {pdf_path}")
 
     pipeline = IngestionPipeline(
@@ -2592,8 +2585,6 @@ def build_parser() -> argparse.ArgumentParser:
                           help="Disabilita checkpoint di resume")
     p_ingest.add_argument("--force", action="store_true",
                           help="Forza re-ingestion di tutti i PDF ignorando il registro hash")
-    p_ingest.add_argument("--reembed-only", action="store_true",
-                          help="Rigenera solo gli embedding (PDF multimodale) senza GROBID")
 
     # ── summarize ──
     p_sum = sub.add_parser(

@@ -761,15 +761,46 @@ def _convert_body(md_content: str) -> str:
 
 
 def _deduplicate_sections(text: str) -> str:
-    r"""Rimuove sezioni ``\section{}`` duplicate, mantenendo la versione più ricca.
+    r"""Rimuove sezioni duplicate e heading ridondanti.
 
-    Quando il pipeline scrive più iterazioni, possono restare sezioni duplicate
-    (stessa intestazione). Tiene quella con più contenuto.
+    Gestisce tre casi:
+    1. ``\section{X}`` duplicata → tiene la versione con più contenuto
+    2. ``\section{X}`` seguita da ``\subsection{X}`` (stesso titolo) → rimuove la subsection
+    3. ``\subsection{X}`` duplicata consecutiva → rimuove la seconda
     """
     lines = text.split("\n")
     section_pat = re.compile(r"^\\(section|subsection|subsubsection)\{(.+)\}\s*$")
 
-    # Prima passata: trova le posizioni di ogni \section
+    # --- Pass 1: Remove \subsection{X} that immediately follows \section{X} with same title ---
+    # Also handles \section{X} followed by \section{X} (same level consecutive dup)
+    lines_to_remove: set[int] = set()
+    i = 0
+    while i < len(lines):
+        m1 = section_pat.match(lines[i])
+        if m1:
+            # Look ahead past blank lines for next heading
+            for j in range(i + 1, min(i + 5, len(lines))):
+                if lines[j].strip() == "":
+                    continue
+                m2 = section_pat.match(lines[j])
+                if m2:
+                    t1 = re.sub(r"^\d+\.\s*", "", m1.group(2)).strip().lower()
+                    t2 = re.sub(r"^\d+\.\s*", "", m2.group(2)).strip().lower()
+                    if t1 == t2:
+                        lvl1, lvl2 = m1.group(1), m2.group(1)
+                        if lvl1 == "section" and lvl2 == "subsection":
+                            # \section{X} + \subsection{X} → remove subsection
+                            lines_to_remove.add(j)
+                        elif lvl1 == lvl2:
+                            # Same level consecutive dup → remove the first (empty) one
+                            lines_to_remove.add(i)
+                break  # stop at first non-blank line
+        i += 1
+
+    if lines_to_remove:
+        lines = [line for idx, line in enumerate(lines) if idx not in lines_to_remove]
+
+    # --- Pass 2: Deduplicate \section{} by title, keeping longest version ---
     section_spans: list[tuple[int, int, str, str]] = []  # (start, end, level, title)
     for i, line in enumerate(lines):
         m = section_pat.match(line)
@@ -777,23 +808,20 @@ def _deduplicate_sections(text: str) -> str:
             section_spans.append((i, -1, m.group(1), m.group(2)))
 
     if not section_spans:
-        return text
+        return "\n".join(lines)
 
-    # Calcola end di ogni section (fino alla prossima \section o fine file)
     for idx in range(len(section_spans)):
         if idx + 1 < len(section_spans):
             section_spans[idx] = (*section_spans[idx][:1], section_spans[idx + 1][0], *section_spans[idx][2:])
         else:
             section_spans[idx] = (*section_spans[idx][:1], len(lines), *section_spans[idx][2:])
 
-    # Raggruppa per titolo
     from collections import defaultdict
     title_groups: dict[str, list[tuple[int, int, str, str]]] = defaultdict(list)
     for span in section_spans:
         title_groups[span[3]].append(span)
 
-    # Per i duplicati, tieni solo la versione più lunga (in caratteri)
-    lines_to_remove: set[int] = set()
+    lines_to_remove2: set[int] = set()
     for title, spans in title_groups.items():
         if len(spans) <= 1:
             continue
@@ -801,10 +829,10 @@ def _deduplicate_sections(text: str) -> str:
         for span in spans:
             if span is not best:
                 for i in range(span[0], span[1]):
-                    lines_to_remove.add(i)
+                    lines_to_remove2.add(i)
 
-    if lines_to_remove:
-        lines = [line for i, line in enumerate(lines) if i not in lines_to_remove]
+    if lines_to_remove2:
+        lines = [line for i, line in enumerate(lines) if i not in lines_to_remove2]
 
     return "\n".join(lines)
 

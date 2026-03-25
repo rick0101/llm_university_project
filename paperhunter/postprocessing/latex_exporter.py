@@ -950,20 +950,24 @@ def _inject_figures_from_qdrant(
             else:
                 caption_full = f"Figure from \\cite{{{bibtex_key}}}"
 
-            # Compute relative path from tex output dir to the figure file
-            if (output_dir / image_path).exists():
-                rel_path = image_path
-            else:
-                # Figures are likely in output/figures/, tex in output/latest/
-                for candidate in [Path("output") / image_path, Path(image_path)]:
-                    if candidate.exists():
-                        try:
-                            rel_path = str(candidate.resolve().relative_to(output_dir.resolve()))
-                        except ValueError:
-                            rel_path = os.path.relpath(str(candidate.resolve()), str(output_dir.resolve()))
-                        break
-                else:
-                    continue
+            # Resolve source file and copy to output_dir/figures/
+            import shutil
+            src_path = None
+            for candidate in [output_dir / image_path,
+                              Path("output") / image_path,
+                              Path(image_path)]:
+                if candidate.exists():
+                    src_path = candidate
+                    break
+            if src_path is None:
+                continue
+
+            local_fig_dir = output_dir / "figures"
+            local_fig_dir.mkdir(exist_ok=True)
+            dst_path = local_fig_dir / src_path.name
+            if not dst_path.exists():
+                shutil.copy2(src_path, dst_path)
+            rel_path = f"figures/{src_path.name}"
 
             figure_block = (
                 f"\n\\begin{{figure}}[ht]\n"

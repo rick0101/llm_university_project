@@ -1281,3 +1281,141 @@ class IngestionPipeline:
             for col in (store.COLLECTION_CHUNKS, store.COLLECTION_L1, store.COLLECTION_L2):
                 store.delete_collection(col)
             logger.info("Collezioni Qdrant eliminate")
+
+    # ------------------------------------------------------------------
+    # Re-embedding only (skip GROBID)
+    # ------------------------------------------------------------------
+
+    def reembed_all(self) -> IngestionReport:
+        """Rigenera gli embedding per tutti i paper già processati.
+
+        Recupera i chunk dal vector store Qdrant e rigenera gli embedding
+        usando il PDF multimodale (Gemini Embedding 2). Non esegue GROBID.
+
+        Il testo GROBID nei chunk resta invariato; cambia solo il vettore
+        di embedding, che ora deriva dalla comprensione visiva del PDF.
+
+        Returns:
+            IngestionReport con statistiche del re-embedding.
+        """
+        start_time = time.time()
+        report = IngestionReport()
+
+        registry = load_hash_registry()
+        if not registry:
+            logger.error("Hash registry vuoto — nessun paper da re-embeddare")
+            report.total_time_seconds = time.time() - start_time
+            return report
+
+        store = self._get_store()
+
+        # Raccogli (bibtex_key → pdf_path) dal registry
+        paper_map: list[tuple[str, Path]] = []
+        for rel_path, entry in registry.items():
+            bkey = entry.get("bibtex_key", "")
+            if not bkey:
+                continue
+            pdf_path = self.pdf_base_dir / rel_path
+            if pdf_path.exists():
+                paper_map.append((bkey, pdf_path))
+
+        if not paper_map:
+            logger.warning("Nessun paper con bibtex_key trovato nel registry")
+            report.total_time_seconds = time.time() - start_time
+            return report
+
+        logger.info(
+            "Re-embedding %d paper con PDF multimodale", len(paper_map)
+        )
+
+        from paperhunter.ingestion.pdf_embedder import (
+            generate_pdf_embeddings_for_chunks,
+        )
+
+        total_chunks_reembedded = 0
+        errors = 0
+
+        for idx, (bkey, pdf_path) in enumerate(
+            progress_bar(paper_map, description="Re-embedding", total=len(paper_map)),
+            1,
+        ):
+            try:
+                # Recupera chunk esistenti da Qdrant
+                raw_chunks = store.get_paper_chunks(
+                    bkey, collection_name=store.COLLECTION_CHUNKS,
+                )
+                if not raw_chunks:
+                    logger.debug("Nessun chunk per '%s', skip", bkey)
+                    continue
+
+                # Ricostruisci PaperChunk dal payload
+                from paperhunter.models import PaperChunk, ChunkType
+
+                chunks: list[PaperChunk] = []
+                for rc in raw_chunks:
+                    meta = rc.get("metadata", {})
+                    ct_raw = meta.get("chunk_type", "ORIGINAL")
+                    try:
+                        ct = ChunkType(ct_raw)
+                    except (ValueError, KeyError):
+                        ct = ChunkType.ORIGINAL
+
+                    chunks.append(PaperChunk(
+                        chunk_id=rc.get("chunk_id") or meta.get("chunk_id", ""),
+                        text=rc.get("text", ""),
+                        chunk_type=ct,
+                        paper_id=meta.get("paper_id"),
+                        bibtex_key=meta.get("bibtex_key"),
+                        section_name=meta.get("section_name"),
+                        category=meta.get("category"),
+                        year=meta.get("year") or None,
+                        month=meta.get("month") or None,
+                        chunk_index=meta.get("chunk_index", 0),
+                        image_path=meta.get("image_path") or None,
+                        venue=meta.get("venue") or None,
+                    ))
+
+                # Genera embedding PDF
+                pdf_embeddings = generate_pdf_embeddings_for_chunks(
+                    pdf_path, chunks, show_progress=False,
+                )
+
+                if pdf_embeddings and len(pdf_embeddings) == len(chunks):
+                    # Elimina vecchi chunk
+                    store.delete_by_paper(bkey)
+                    # Re-indicizza con nuovi embedding
+                    n = store.add_chunks_with_embeddings(
+                        chunks,
+                        pdf_embeddings,
+                        collection_name=store.COLLECTION_CHUNKS,
+                        batch_size=50,
+                    )
+                    total_chunks_reembedded += n
+                    logger.info(
+                        "[%d/%d] '%s': %d chunk re-embeddati (PDF)",
+                        idx, len(paper_map), bkey, n,
+                    )
+                else:
+                    logger.warning(
+                        "'%s': PDF embedding fallito/mismatch, mantengo embedding esistenti",
+                        bkey,
+                    )
+
+                report.processed += 1
+
+            except Exception as exc:
+                logger.error(
+                    "Errore re-embedding '%s': %s", bkey, exc,
+                )
+                errors += 1
+                report.errors += 1
+
+        report.total_chunks = total_chunks_reembedded
+        report.total_time_seconds = time.time() - start_time
+
+        print_success(
+            f"Re-embedding completato: {report.processed} paper, "
+            f"{total_chunks_reembedded} chunk, {errors} errori "
+            f"in {report.total_time_seconds:.1f}s"
+        )
+        return report

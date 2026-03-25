@@ -1,0 +1,32 @@
+{
+  "paperId": "d25835cc33cc462497876fbcba16c3a9d4060979",
+  "externalIds": {
+    "ArXiv": "2603.21975",
+    "CorpusId": 286765744
+  },
+  "title": "SecureBreak -- A dataset towards safe and secure models",
+  "venue": "",
+  "year": 2026,
+  "citationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.21975, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2166504589",
+      "name": "Marco Arazzi"
+    },
+    {
+      "authorId": "2358262125",
+      "name": "Vignesh Kumar Kembu"
+    },
+    {
+      "authorId": "1840213",
+      "name": "Antonino Nocera"
+    }
+  ],
+  "abstract": "Large language models are becoming pervasive core components in many real-world applications. As a consequence, security alignment represents a critical requirement for their safe deployment. Although previous related works focused primarily on model architectures and alignment methodologies, these approaches alone cannot ensure the complete elimination of harmful generations. This concern is reinforced by the growing body of scientific literature showing that attacks, such as jailbreaking and prompt injection, can bypass existing security alignment mechanisms. As a consequence, additional security strategies are needed both to provide qualitative feedback on the robustness of the obtained security alignment at the training stage, and to create an ``ultimate''defense layer to block unsafe outputs possibly produced by deployed models. To provide a contribution in this scenario, this paper introduces SecureBreak, a safety-oriented dataset designed to support the development of AI-driven solutions for detecting harmful LLM outputs caused by residual weaknesses in security alignment. The dataset is highly reliable due to careful manual annotation, where labels are assigned conservatively to ensure safety. It performs well in detecting unsafe content across multiple risk categories. Tests with pre-trained LLMs show improved results after fine-tuning on SecureBreak. Overall, the dataset is useful both for post-generation safety filtering and for guiding further model alignment and security improvements."
+}

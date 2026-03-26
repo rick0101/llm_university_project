@@ -1,8 +1,8 @@
-# PaperHunter v3.4
+# PaperHunter v3.5
 
 **End-to-end LLM Security Survey Generator — from PDF ingestion to Nature/ACL-style paper**
 
-PaperHunter è un sistema modulare e agentico che genera autonomamente un survey paper scientifico sulla sicurezza degli LLM. A partire da oltre 1.000 PDF scientifici categorizzati, esegue una pipeline completa: estrazione strutturata (GROBID), arricchimento metadati robusto a cascata (Semantic Scholar + MetadataEnricher), BibTeX garantito per ogni paper, summarization gerarchica RAPTOR con clustering semantico, GraphRAG community-driven, retrieval agentico multi-step con venue ranking (NeurIPS/ACL > arXiv), scrittura multi-agente (LangGraph ReAct) con figure selezionabili dal Writer, FigureResolver per l'inserimento automatico delle figure nel survey finale, **self-evolution con apprendimento dai fallimenti**, **FigureAgent per generazione automatica di figure scientifiche**, **skill injection con regole persistenti di dominio**, **bridge verso AutoResearchClaw per sperimentazione**, ed export LaTeX — il tutto con citazioni verificabili e tracciamento della provenienza.
+PaperHunter è un sistema modulare e agentico che genera autonomamente un survey paper scientifico sulla sicurezza degli LLM. A partire da oltre 1.000 PDF scientifici categorizzati, esegue una pipeline completa: estrazione strutturata (GROBID), arricchimento metadati robusto a cascata (Semantic Scholar + MetadataEnricher), BibTeX garantito per ogni paper, summarization gerarchica RAPTOR con clustering semantico, GraphRAG community-driven, retrieval agentico multi-step con venue ranking (NeurIPS/ACL > arXiv), scrittura multi-agente (LangGraph ReAct) con figure selezionabili dal Writer, FigureResolver per l'inserimento automatico delle figure nel survey finale, **self-evolution con apprendimento dai fallimenti**, **FigureAgent con generazione figure via Gemini Image Generation e vision quality check**, **skill injection con regole persistenti di dominio**, **bridge verso AutoResearchClaw per sperimentazione**, ed export LaTeX — il tutto con citazioni verificabili e tracciamento della provenienza.
 
 ---
 
@@ -51,6 +51,7 @@ PaperHunter è un sistema modulare e agentico che genera autonomamente un survey
   - [Prompt Overlay](#prompt-overlay)
 - [FigureAgent — Generazione Automatica Figure](#figureagent--generazione-automatica-figure)
   - [Pipeline FigureAgent](#pipeline-figureagent)
+  - [Tipi di Figure Supportati](#tipi-di-figure-supportati)
   - [Tipi di Figure Supportati](#tipi-di-figure-supportati)
 - [Skill Injection](#skill-injection)
 - [Bridge AutoResearchClaw](#bridge-autoresearchclaw)
@@ -719,7 +720,7 @@ L'overlay viene iniettato in 3 punti del Writer Agent, 1 nel Planner Agent, e il
 **Package:** `paperhunter/agents/figure_agent/`
 **Comando:** `paperhunter figures`
 
-FigureAgent analizza il survey generato e produce automaticamente figure scientifiche: bar chart, timeline, heatmap, taxonomy tree, e altro.
+FigureAgent analizza il survey generato e produce automaticamente figure scientifiche di qualità accademica: bar chart, timeline, heatmap, taxonomy tree, flowchart e altro. Le immagini sono generate direttamente da **Gemini Image Generation** (`gemini-3-pro-image-preview`) e validate da un **vision quality check** iterativo con Gemini Flash.
 
 ### Pipeline FigureAgent
 
@@ -728,38 +729,46 @@ Paper Markdown + L2 Summaries
         │
         ▼
     ┌─────────┐
-    │ Planner │  → FigurePlan con FigureSpec per ogni figura
+    │ Planner │  → FigurePlan con FigureSpec per ogni figura (Gemini Pro)
     └────┬────┘
          ▼
-    ┌──────────┐
-    │ Decision │  → Classifica: CODE (Matplotlib) o IMAGE (Gemini)
-    └────┬─────┘
-         ▼
-    ┌──────────┐
-    │ CodeGen  │  → Genera script Python (Matplotlib/Seaborn)
-    └────┬─────┘
-         ▼
-    ┌──────────┐
-    │ Renderer │  → Esegue subprocess, timeout 60s, retry con feedback
-    └────┬─────┘
-         ▼
-    ┌────────┐
-    │ Critic │  → Valutazione qualità (LLM + analisi statica codice)
-    └────┬───┘
-         ▼
-    ┌────────────┐
-    │ Integrator │  → Inserisce riferimenti figure nel paper Markdown
-    └────────────┘
+    ┌──────────────────┐
+    │ Image Generation │  → Genera immagine con gemini-3-pro-image-preview
+    └────────┬─────────┘
+             ▼
+    ┌──────────────┐
+    │ Vision Check │  → Gemini Flash analizza il PNG per qualità visiva
+    └────────┬─────┘
+         ┌───┴───┐
+         │ PASS? │
+         └───┬───┘
+          NO │ YES
+             ▼   ▼
+    ┌────────────┐  ┌────────────┐
+    │ Refinement │  │ Integrator │  → Inserisce figure nel paper Markdown + LaTeX
+    └──────┬─────┘  └────────────┘
+           │ (immagine + feedback → gemini-3-pro-image-preview)
+           └──→ torna a Vision Check (max 5 iterazioni)
 ```
+
+**Vision Quality Check:** Ogni immagine generata viene analizzata da Gemini Flash che verifica: leggibilità del testo, correttezza dei dati, assenza di artefatti visivi, layout bilanciato, qualità professionale. Se l'immagine non passa, il feedback specifico (es. "etichette sovrapposte", "legenda tagliata") viene inviato insieme all'immagine originale a `gemini-3-pro-image-preview` per la correzione.
+
+**Auto-invalidazione cache:** Il piano figure (`figure_plan.json`) viene automaticamente rigenerato quando il paper sorgente è più recente della cache.
 
 ### Tipi di Figure Supportati
 
-| Tipo | Chart Type | Strumento |
+| Chart Type | Descrizione | Esempio |
 |---|---|---|
-| Code | `bar_chart`, `grouped_bar`, `stacked_bar`, `line_chart`, `scatter`, `heatmap`, `timeline`, `radar` | Matplotlib/Seaborn |
-| Image | `taxonomy_tree`, `flowchart`, `architecture_diagram`, `venn_diagram`, `concept_map`, `comparison_table` | Gemini Vision |
+| `bar` / `grouped_bar` / `stacked_bar` | Grafici a barre | Confronto ASR tra attacchi |
+| `timeline` | Evoluzione temporale | Progressione attacchi 2024-2026 |
+| `taxonomy` | Albero tassonomico | Tassonomia minacce LLM |
+| `flowchart` | Diagramma di flusso | Pipeline prompt injection |
+| `heatmap` | Mappa di calore | Matrice vulnerabilità |
+| `scatter` / `line` / `radar` / `pie` | Grafici analitici | Trade-off sicurezza/performance |
+| `architecture` | Diagramma architetturale | Architettura difesa |
+| `venn` / `table` | Diagrammi concettuali | Overlap categorie |
 
-Ogni figura passa per un ciclo di rendering con retry (max 3 iterazioni): se l'esecuzione fallisce, l'errore viene passato al LLM che rigenera il codice corretto.
+Tutte le figure sono generate come immagini AI (non codice matplotlib), garantendo qualità visiva professionale e gestione automatica di layout complessi.
 
 ---
 
@@ -1073,12 +1082,13 @@ Tutti gli embedding sono a 3072 dimensioni (Gemini Embedding 2 Preview), con dis
 
 ## Modelli LLM e Strategia di Utilizzo
 
-PaperHunter usa due tier di modelli Gemini:
+PaperHunter usa tre tier di modelli Gemini:
 
 | Tier | Modello | Quando viene usato | Perché |
 |---|---|---|---|
-| **Flash** | Gemini 3 Flash Preview | Classificazione, reranking, entity extraction, verifica citazioni (Critic) | Veloce, economico, sufficiente per task deterministici |
-| **Pro** | Gemini 3.1 Pro Preview | Summarization (L1, L1.5, L2), scrittura (Writer), planning (Planner), assemblaggio, community summary | Qualità superiore necessaria per generazione di testo accademico |
+| **Flash** | Gemini 3 Flash Preview | Classificazione, reranking, entity extraction, verifica citazioni (Critic), vision quality check figure | Veloce, economico, sufficiente per task deterministici |
+| **Pro** | Gemini 3.1 Pro Preview | Summarization (L1, L1.5, L2), scrittura (Writer), planning (Planner), assemblaggio, community summary, pianificazione figure | Qualità superiore necessaria per generazione di testo accademico |
+| **Image** | Gemini 3 Pro Image Preview | Generazione e refinement figure scientifiche (FigureAgent) | Genera immagini di qualità professionale direttamente da prompt testuali |
 
 **Strategia di retry e fallback:**
 - Retry con backoff esponenziale (fino a 6 retry per Pro, con delay fino a 120s)
@@ -1140,7 +1150,7 @@ Il toggle globale `recency_priority: true/false` in `config.yaml` abilita/disabi
 | Metadati | **Semantic Scholar API** (free) | BibTeX, venue, citation count, DOI |
 | Multi-Agent | **LangGraph** + **ReAct** | Planner → Writer → Critic → Assembler + FigureAgent |
 | Knowledge Graph | **Neo4j Community + GDS** | PropertyGraph + Louvain/Leiden |
-| Figure Generation | **Matplotlib** + **Seaborn** | Code figures con subprocess rendering |
+| Figure Generation | **Gemini 3 Pro Image Preview** | Generazione AI di figure + vision quality check con Flash |
 | Experimental Bridge | **AutoResearchClaw** (opzionale) | Pipeline sperimentale da stage 9+ |
 | Output | **LaTeX** (ACL/IEEEtran) | + .bib, provenance JSON, versioning |
 
@@ -1408,10 +1418,10 @@ paperhunter/
 │   ├── assembler_agent.py            ← Agent 4: assembla survey finale
 │   ├── figure_agent/                 ← FigureAgent: generazione figure scientifiche
 │   │   ├── planner.py                ← Pianificazione figure (FigureSpec, FigurePlan)
-│   │   ├── decision.py               ← Classificatore tipo figura (CODE vs IMAGE)
-│   │   ├── codegen.py                ← Generazione codice Matplotlib/Seaborn
-│   │   ├── renderer.py               ← Esecuzione subprocess con retry
-│   │   ├── critic.py                 ← Valutazione qualità (LLM + analisi statica)
+│   │   ├── decision.py               ← Classificatore tipo figura
+│   │   ├── codegen.py                ← Generazione codice Matplotlib (legacy, non usato)
+│   │   ├── renderer.py               ← Generazione immagini via Gemini + vision quality check
+│   │   ├── critic.py                 ← Valutazione qualità (legacy, non usato)
 │   │   └── integrator.py             ← Inserimento riferimenti figure nel paper
 │   └── tools/
 │       └── retrieval_tools.py        ← 5 tool di retrieval per ReAct agent (+ get_figure_for_section)

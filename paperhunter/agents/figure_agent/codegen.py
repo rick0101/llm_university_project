@@ -149,7 +149,7 @@ def generate_code(
     )
 
     tier = force_model or "flash"
-    llm = get_llm(tier, max_tokens=8192)
+    llm = get_llm(tier)
 
     logger.info("Generating code for figure %s with %s...", spec.figure_id, tier)
     t0 = time.time()

@@ -1,0 +1,22 @@
+OUTPUT_PATH = "output/generated_figures/fig_llm_security_taxonomy.png"
+
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+
+def draw_taxonomy():
+    # Set academic style parameters
+    plt.rcParams['font.family'] = 'serif'
+    plt.rcParams['font.serif'] = ['DejaVu Serif']
+    plt.rcParams['font.size'] = 10
+
+    # Figure setup
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 10)
+    ax.axis('off')
+
+    # Color Palette (Academic/
+plt.savefig(OUTPUT_PATH, dpi=300, bbox_inches='tight')
+plt.close()

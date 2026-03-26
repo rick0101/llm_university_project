@@ -149,6 +149,11 @@ Finally, novel attack surfaces emerged in the very infrastructure of model deplo
 ![Figure 5: Maximum Attack Success Rates (ASR) reported for various advanced LLM exploits across different modalities and deployment environments.](generated_figures/fig_attack_success_rates.png)
 
 *Figure 5: Maximum Attack Success Rates (ASR) reported for various advanced LLM exploits across different modalities and deployment environments.*
+
+
+![Figure 4: The workflow of an indirect prompt injection attack exploiting Retrieval-Augmented Generation (RAG) architectures.](generated_figures/fig_rag_indirect_injection_flow.png)
+
+*Figure 4: The workflow of an indirect prompt injection attack exploiting Retrieval-Augmented Generation (RAG) architectures.*
 # Inference-Time Threats I: Prompt Injection and Jailbreaking
 
 The deployment of Large Language Models (LLMs) in real-world applications has exposed a critical frontier in artificial intelligence security: inference-time threats. Unlike training-time vulnerabilities such as data poisoning or backdoor insertion, inference-time threats exploit the fundamental mechanisms by which a fully trained model processes and responds to user inputs. At the core of these vulnerabilities are prompt injection and jailbreaking. While these terms are sometimes used interchangeably, they represent distinct paradigms of attack. Prompt injection typically involves subverting a model's original instructions by embedding malicious commands within user-provided data, causing the model to execute unintended actions. Jailbreaking, on the other hand, refers to the deliberate crafting of inputs designed to bypass the model's built-in safety guardrails, coercing it into generating restricted, harmful, or unethical content. 

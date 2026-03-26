@@ -2,7 +2,7 @@
   "figures": [
     {
       "figure_id": "fig_llm_security_taxonomy",
-      "figure_type": "image",
+      "figure_type": "code",
       "chart_type": "taxonomy",
       "title": "Comprehensive Taxonomy of LLM Security Threats",
       "caption": "Figure 1: A systematic taxonomy of LLM vulnerabilities categorized by model lifecycle phases: Training-Time, Inference-Time, and Output-Level.",
@@ -125,7 +125,7 @@
     },
     {
       "figure_id": "fig_rag_indirect_injection_flow",
-      "figure_type": "image",
+      "figure_type": "code",
       "chart_type": "flowchart",
       "title": "Mechanism of Indirect Prompt Injection in RAG Systems",
       "caption": "Figure 4: The workflow of an indirect prompt injection attack exploiting Retrieval-Augmented Generation (RAG) architectures.",

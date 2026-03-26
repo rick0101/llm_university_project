@@ -2057,10 +2057,21 @@ def cmd_figures(args: argparse.Namespace) -> int:
     plan_path = output_dir / "figure_plan.json"
     plan: FigurePlan | None = None
 
+    # Auto-invalidate cached plan if source paper is newer
+    force = args.force
+    if not force and plan_path.exists() and paper_path:
+        plan_mtime = plan_path.stat().st_mtime
+        paper_mtime = _Path(paper_path).stat().st_mtime
+        if paper_mtime > plan_mtime:
+            console.print(
+                "[yellow]📋 Paper più recente del piano cachato → rigenero il piano[/yellow]"
+            )
+            force = True
+
     if args.plan_file:
         plan = load_figure_plan(args.plan_file)
         console.print(f"📋 Loaded plan from {args.plan_file}")
-    elif plan_path.exists() and not args.force:
+    elif plan_path.exists() and not force:
         plan = load_figure_plan(plan_path)
         console.print(f"📋 Loaded existing plan ({plan.total_figures} figures)")
     else:

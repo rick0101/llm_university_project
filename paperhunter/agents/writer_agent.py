@@ -44,6 +44,8 @@ Uso come nodo LangGraph::
 from __future__ import annotations
 
 import asyncio
+import functools
+import hashlib
 import json
 import re
 import time
@@ -125,6 +127,55 @@ _TRANSIENT_PATTERNS = (
     "ServiceUnavailable",
     "InternalServerError",
 )
+
+
+# ============================================================================
+# Tool-call cache for retry resilience
+# ============================================================================
+
+def _make_cache_key(name: str, args: tuple, kwargs: dict) -> str:
+    """Deterministic cache key from tool name + arguments."""
+    raw = json.dumps({"n": name, "a": list(args), "k": kwargs}, sort_keys=True, default=str)
+    return hashlib.md5(raw.encode()).hexdigest()
+
+
+def _wrap_tools_with_cache(
+    tools: list,
+    cache: dict[str, str],
+) -> list:
+    """Wrap each FunctionTool so results are cached across retries.
+
+    On the first call with given arguments the real tool runs and the result
+    is stored in *cache*.  On subsequent calls with the same arguments (e.g.
+    after a TransientLLMError retry) the cached result is returned instantly,
+    saving an API / embedding round-trip.
+    """
+    from llama_index.core.tools import FunctionTool
+
+    wrapped: list = []
+    for tool in tools:
+        original_fn = tool.fn
+        tool_name = tool.metadata.name
+
+        @functools.wraps(original_fn)
+        def _cached_fn(*args, _orig=original_fn, _name=tool_name, **kwargs):
+            key = _make_cache_key(_name, args, kwargs)
+            if key in cache:
+                logger.debug("[tool-cache] HIT %s(%s…)", _name, str(args)[:60])
+                return cache[key]
+            result = _orig(*args, **kwargs)
+            cache[key] = result
+            logger.debug("[tool-cache] MISS+STORE %s(%s…)", _name, str(args)[:60])
+            return result
+
+        wrapped.append(
+            FunctionTool.from_defaults(
+                fn=_cached_fn,
+                name=tool_name,
+                description=tool.metadata.description,
+            )
+        )
+    return wrapped
 
 
 # ============================================================================
@@ -1008,15 +1059,20 @@ def _write_section_prefetch_agentic(
     max_iter = _PREFETCH_MAX_ITERATIONS
     result = None
 
+    # Cache tool-call results across retries to avoid repeating successful searches
+    tool_cache: dict[str, str] = {}
+
     for attempt in range(_TRANSIENT_MAX_RETRIES + 1):
         current_timeout = _TRANSIENT_BASE_TIMEOUT + attempt * _TRANSIENT_TIMEOUT_INCREMENT
         llm = get_llm(tier, max_tokens=16384, timeout_seconds=current_timeout)
+
+        cached_tools = _wrap_tools_with_cache(tools, tool_cache)
 
         agent = ReActAgent(
             name="SurveyWriterAgent",
             description="Academic survey section writer with pre-fetched context",
             system_prompt=system_prompt,
-            tools=tools,
+            tools=cached_tools,
             llm=llm,
             timeout=current_timeout,
             verbose=logger.isEnabledFor(10),
@@ -1039,7 +1095,8 @@ def _write_section_prefetch_agentic(
                     f"[prefetch_agentic] Transient error (attempt {attempt + 1}/"
                     f"{_TRANSIENT_MAX_RETRIES + 1}) per '{outline.title}': "
                     f"{str(te)[:120]} — retry in {delay:.0f}s "
-                    f"(timeout {current_timeout:.0f}→{next_timeout:.0f}s)"
+                    f"(timeout {current_timeout:.0f}→{next_timeout:.0f}s, "
+                    f"tool_cache={len(tool_cache)} entries)"
                 )
                 print_warning(
                     f"⏳ Transient error per '{outline.title}' "
@@ -1246,15 +1303,20 @@ def _write_section_agentic(
     transient_attempt = 0
     result = None
 
+    # Cache tool-call results across retries to avoid repeating successful searches
+    tool_cache: dict[str, str] = {}
+
     while True:
         current_timeout = _TRANSIENT_BASE_TIMEOUT + transient_attempt * _TRANSIENT_TIMEOUT_INCREMENT
         llm = get_llm(tier, max_tokens=16384, timeout_seconds=current_timeout)
+
+        cached_tools = _wrap_tools_with_cache(tools, tool_cache)
 
         agent = ReActAgent(
             name="SurveyWriterAgent",
             description="Academic survey section writer with RAG tools",
             system_prompt=system_prompt,
-            tools=tools,
+            tools=cached_tools,
             llm=llm,
             timeout=current_timeout,
             verbose=logger.isEnabledFor(10),

@@ -1,0 +1,14 @@
+```python
+, "LLM Security Threats", colors['root'])
+
+    # Level 1: Phases (Lifecycle stages)
+    phases = [
+        (1.5, 7.5, "Training-Time"),
+        (5.0, 7.5, "Inference-Time"),
+        (8.5, 7.5, "Output-Level")
+    ]
+    for px, py, ptext in phases:
+        draw_node(px, py, ptext, colors['phase'])
+        # Line from root to phase
+        ax.annotate('', xy=(px, py + 0.4), xytext=(5, 8.8),
+                    arrowprops=dict(arrowstyle='-', color='#7

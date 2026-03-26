@@ -1,0 +1,15 @@
+```python
+f8c8d', lw=1.5))
+
+    # Level 2: Categories (Sub-branches)
+    # Format: (x, y, text, color, parent_x, parent_y)
+    # We use a dictionary for colors to maintain consistency
+    colors.update({
+        'category': '#3498db',
+        'leaf': '#ecf0f1'
+    })
+
+    categories = [
+        # Training-Time children
+        (0.8, 5.8, "Data\nPoisoning", colors['category'], 1.5, 7.1),
+        (2.2, 5.8, "Model\nPoisoning", colors

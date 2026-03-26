@@ -1,3 +1,7 @@
 10€ writer
 3€ embedding (ingest)
 6€ (summarize 86 new pdf) (46,20€)
+
+52.96€ (prima della fare writer)
+55,87€ (dopo il writer) differenza = 2,91€
+

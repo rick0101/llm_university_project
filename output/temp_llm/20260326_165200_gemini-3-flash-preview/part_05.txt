@@ -1,0 +1,11 @@
+```python
+        (9.2, 5.8, "Extrinsic\nHallucinations", colors['category'], 8.5, 7.1)
+    ]
+
+    # Level 3: Examples (Leaf nodes)
+    # We use specific x-coordinates to prevent overlap in the bottom row
+    leaves = [
+        # Model Poisoning examples
+        (1.4, 4.2, "CGBA", colors['leaf'], 2.2, 5.8),
+        (2.2, 4.2, "TrojVLM", colors['leaf'], 2.2, 5.8),
+        (3.0, 4.2, "BadTemplate", colors['leaf'], 

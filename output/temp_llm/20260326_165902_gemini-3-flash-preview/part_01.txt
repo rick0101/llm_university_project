@@ -1,0 +1,10 @@
+# 1. Attacker poisons Knowledge Base
+    draw_arrow(ax, (2.2, 8.0), (3.8, 8.0), "1. Poisoning", colors['malicious'])
+    
+    # 2. User queries RAG System
+    draw_arrow(ax, (2.2, 5.0), (3.8, 5.0), "2. User Query", colors['user'])
+    
+    # 3. RAG System retrieves from Knowledge Base
+    draw_arrow(ax, (4.8, 5.6), (4.8, 7.4), "3. Retrieve", colors['system'], vertical=True)
+    
+    # 4. Knowledge

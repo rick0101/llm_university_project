@@ -4,11 +4,20 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
+import pandas as pd
 import numpy as np
-import os
 
-# Ensure the output directory exists
-os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
+# Set academic style
+plt.rcParams.update({
+    "font.family": "serif",
+    "font.size": 11,
+    "axes.titlesize": 14,
+    "axes.labelsize": 12,
+    "xtick.labelsize": 10,
+    "ytick.labelsize": 10,
+    "legend.fontsize": 10,
+    "figure.titlesize": 14
+})
 
 # Data preparation
 data = [
@@ -29,56 +38,47 @@ data = [
     }
 ]
 
-# Extracting values for plotting
-labels = [f"{d['attack']}\n({d['target']})" for d in data]
-rates = [d['poisoning_rate_percent'] for d in data]
+df = pd.DataFrame(data)
 
-# Style configuration
-plt.rcParams.update({
-    'font.family': 'serif',
-    'font.serif': ['Times New Roman', 'DejaVu Serif'],
-    'font.size': 11,
-    'axes.labelsize': 12,
-    'axes.titlesize': 14,
-    'xtick.labelsize': 10,
-    'ytick.labelsize': 10,
-    'legend.fontsize': 10
-})
-
-# Create the figure
+# Create the plot
 fig, ax = plt.subplots(figsize=(10, 6))
 
-# Use a professional academic color palette
-colors = sns.color_palette("viridis", len(rates))
+# Use a professional academic palette
+colors = sns.color_palette("viridis", n_colors=len(df))
 
-# Create horizontal bar chart (better for long labels and log scales)
-bars = ax.barh(labels, rates, color=colors, edgecolor='0.2', height=0.6)
+# Horizontal bar chart for better readability of attack names
+bars = ax.barh(df['attack'], df['poisoning_rate_percent'], color=colors, edgecolor='black', linewidth=0.8)
 
 # Set logarithmic scale for the x-axis as requested
 ax.set_xscale('log')
 
-# Add gridlines for readability
+# Add gridlines for the log scale
 ax.grid(True, which="both", ls="-", alpha=0.2, color='gray')
 ax.set_axisbelow(True)
 
-# Set labels and title
-ax.set_title("Minimum Poisoning Budgets Required for Successful Backdoor Injection", pad=20, fontweight='bold')
-ax.set_xlabel("Poisoning Rate (%) - Logarithmic Scale", labelpad=10)
-ax.set_ylabel("Attack Framework and Target Stage", labelpad=10)
+# Labels and Title
+ax.set_xlabel("Minimum Poisoning Rate (%) — Log Scale", fontweight='bold')
+ax.set_ylabel("Attack Framework", fontweight='bold')
+ax.set_title("Minimum Poisoning Budgets Required for Successful Backdoor Injection", pad=20)
 
-# Add data labels on the bars for clarity
+# Add text labels on the bars for clarity
 for i, bar in enumerate(bars):
     width = bar.get_width()
-    ax.text(width * 1.15, bar.get_y() + bar.get_height()/2, 
-            f'{width:g}%', 
-            va='center', ha='left', 
-            fontsize=10, fontweight='bold', color='black')
+    ax.text(width * 1.1, bar.get_y() + bar.get_height()/2, 
+            f'{width}%', 
+            va='center', fontweight='bold', color='#333333')
 
-# Adjust x-axis limits to accommodate text labels
-ax.set_xlim(0.0001, 50)
+# Create a custom legend for the targets
+from matplotlib.lines import Line2D
+legend_elements = [Line2D([0], [0], color=colors[i], lw=4, label=f"{df['target'][i]}") for i in range(len(df))]
+ax.legend(handles=legend_elements, title="Training Stage / Target", loc='lower right', frameon=True)
 
-# Clean up layout
+# Adjust layout to prevent clipping
 plt.tight_layout()
+
+# Add caption-like text at the bottom (optional, usually handled by LaTeX, but included for completeness)
+# fig.text(0.5, -0.05, "Figure 3: Comparison of the minimum percentage of poisoned data required to successfully compromise LLMs and VLMs across different attack frameworks.", 
+#          ha='center', wrap=True, fontsize=10, style='italic')
 
 # Save the figure
 plt.savefig(OUTPUT_PATH, dpi=300, bbox_inches='tight')

@@ -21,7 +21,7 @@ data = [
     {"label": "BadTemplate (Infrastructure)", "year": 2026, "category": "Supply Chain"}
 ]
 
-# Category color mapping (Academic Palette)
+# Category color mapping (Academic palette)
 category_colors = {
     "Text LLMs": "#4C72B0",
     "Code LLMs": "#55A868",
@@ -32,76 +32,92 @@ category_colors = {
 }
 
 # Setup figure and style
-plt.rcParams['font.family'] = 'serif'
-plt.rcParams['font.serif'] = ['DejaVu Serif']
-fig, ax = plt.subplots(figsize=(10, 6), constrained_layout=True)
+plt.rcParams.update({
+    'font.family': 'serif',
+    'font.serif': ['DejaVu Serif'],
+    'font.size': 10,
+    'axes.titlesize': 14,
+    'axes.labelsize': 11
+})
 
-# Timeline baseline
-ax.axhline(0, color="black", linewidth=1.5, zorder=1)
+fig, ax = plt.subplots(figsize=(10, 6), dpi=300)
 
 # Calculate positions to avoid overlap
-# We use a combination of year and a small offset for x, and alternating heights for y
-levels = []
+# We jitter the x-coordinates within each year and alternate stem heights
+years = sorted(list(set(d['year'] for d in data)))
+year_counts = {y: 0 for y in years}
+for d in data:
+    year_counts[d['year']] += 1
+
+# Stem heights to alternate and prevent label collision
+# We use a pattern that spreads labels vertically
+height_pattern = [1.2, -1.2, 2.4, -2.4, 3.6, -3.6]
+
+current_year_idx = {y: 0 for y in years}
 x_coords = []
-current_year_counts = {}
+y_coords = []
 
-# Define vertical levels to alternate labels above and below the line
-# Levels: [1, -1, 2, -2, 3, -3, ...]
-level_sequence = [1.2, -1.2, 2.4, -2.4, 3.6, -3.6]
+# Draw the central timeline axis
+ax.axhline(0, color='black', linewidth=1.5, zorder=1)
 
-for item in data:
-    year = item['year']
-    count = current_year_counts.get(year, 0)
+# Plot each data point
+for i, d in enumerate(data):
+    year = d['year']
+    count = year_counts[year]
+    idx = current_year_idx[year]
     
-    # Add a small horizontal jitter within the year to separate points
-    x_offset = (count - 1.5) * 0.15 if year != 2026 else (count - 0.5) * 0.2
-    x_coords.append(year + x_offset)
+    # Calculate x position with jittering
+    # Spread points across the year interval [year, year + 0.8]
+    x = year + (idx / max(1, count)) * 0.8
     
-    # Assign vertical level
-    level = level_sequence[count % len(level_sequence)]
-    levels.append(level)
+    # Assign height from pattern
+    y = height_pattern[idx % len(height_pattern)]
     
-    current_year_counts[year] = count + 1
-
-# Plotting
-for i, item in enumerate(data):
-    color = category_colors[item['category']]
-    ax.vlines(x_coords[i], 0, levels[i], color="grey", linestyle="--", linewidth=0.8, alpha=0.6)
-    ax.scatter(x_coords[i], levels[i], color=color, s=100, zorder=3, edgecolors="white")
+    color = category_colors[d['category']]
     
-    # Label placement
-    va = 'bottom' if levels[i] > 0 else 'top'
-    ax.text(x_coords[i], levels[i] + (0.1 if levels[i] > 0 else -0.1), 
-            item['label'], rotation=0, ha='center', va=va, 
-            fontsize=9, fontweight='bold', bbox=dict(facecolor='white', alpha=0.7, edgecolor='none', pad=1))
+    # Draw stem
+    ax.vlines(x, 0, y, color='grey', linestyle='--', linewidth=0.8, alpha=0.6, zorder=2)
+    
+    # Draw marker on the timeline
+    ax.scatter(x, 0, color=color, s=60, zorder=3, edgecolors='white')
+    
+    # Add label text
+    va = 'bottom' if y > 0 else 'top'
+    # Add a small offset to the text to prevent clipping and improve readability
+    ax.text(x, y + (0.1 if y > 0 else -0.1), d['label'], 
+            rotation=0, ha='center', va=va, fontweight='bold',
+            bbox=dict(facecolor='white', alpha=0.7, edgecolor='none', pad=1))
+    
+    current_year_idx[year] += 1
 
-# Formatting X-axis
-ax.set_xticks([2024, 2025, 2026])
-ax.set_xticklabels(["2024", "2025", "2026"], fontsize=12, fontweight='bold')
-ax.set_xlim(2023.5, 2026.5)
+# Formatting the axes
+ax.set_xticks(years)
+ax.set_xticklabels([str(y) for y in years], fontweight='bold')
+ax.set_yticks([]) # Hide y-axis values
 
-# Formatting Y-axis (hide it)
-ax.get_yaxis().set_visible(False)
-for spine in ["left", "top", "right"]:
+# Set limits with extra padding to prevent label clipping (especially for BadTemplate)
+ax.set_xlim(min(years) - 0.5, max(years) + 1.2)
+ax.set_ylim(-4.5, 4.5)
+
+# Remove spines
+for spine in ['left', 'right', 'top']:
     ax.spines[spine].set_visible(False)
 
-# Title and Caption
-plt.title("Evolution of Data and Model Poisoning Attacks (2024–2026)", 
-          fontsize=14, pad=20, fontweight='bold')
+# Add Title and Caption
+plt.title("Evolution of Data and Model Poisoning Attacks (2024–2026)", pad=20)
+fig.text(0.5, 0.02, "Figure 2: Chronological progression of state-of-the-art backdoor and poisoning attacks, illustrating the shift\nfrom text-based models to multimodal systems and autonomous agents.", 
+         ha='center', fontsize=10, style='italic')
 
-# Create custom legend
+# Create a custom legend
 from matplotlib.lines import Line2D
 legend_elements = [Line2D([0], [0], marker='o', color='w', label=cat,
-                          markerfacecolor=color, markersize=10) 
+                          markerfacecolor=color, markersize=10)
                    for cat, color in category_colors.items()]
-ax.legend(handles=legend_elements, loc='upper center', bbox_to_anchor=(0.5, -0.05),
-          ncol=3, frameon=False, fontsize=10)
+ax.legend(handles=legend_elements, loc='upper left', bbox_to_anchor=(0, 1), 
+          ncol=2, frameon=True, fontsize=9, title="Target Modality")
 
-# Add caption-like text at the bottom
-plt.figtext(0.5, -0.15, 
-            "Figure 2: Chronological progression of state-of-the-art backdoor and poisoning attacks, illustrating the shift\n"
-            "from text-based models to multimodal systems and autonomous agents.", 
-            ha="center", fontsize=10, style='italic')
+# Final layout adjustment
+plt.tight_layout(rect=[0, 0.05, 1, 0.95])
 
 # Save the figure
 plt.savefig(OUTPUT_PATH, dpi=300, bbox_inches='tight')

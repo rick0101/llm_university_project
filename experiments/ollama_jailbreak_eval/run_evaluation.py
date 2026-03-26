@@ -20,7 +20,8 @@ from datetime import datetime
 
 sys.path.insert(0, os.path.dirname(__file__))
 
-from config import OLLAMA_HOST, MODEL
+import config
+from config import OLLAMA_HOST
 from attacks import ATTACKS
 from defenses import DEFENSES
 from judge import judge_response
@@ -37,14 +38,13 @@ def check_ollama_connection() -> bool:
         with urllib.request.urlopen(req, timeout=10) as resp:
             data = json.loads(resp.read())
         models = [m["name"] for m in data.get("models", [])]
-        # Check for exact match or prefix match (e.g., "qwen3:8b" matches "qwen3:8b")
-        found = any(MODEL in m or m.startswith(MODEL.split(":")[0]) for m in models)
+        found = any(config.MODEL in m or m.startswith(config.MODEL.split(":")[0]) for m in models)
         if found:
             print(f"✅ Ollama connesso: {OLLAMA_HOST}")
-            print(f"✅ Modello trovato: {MODEL}")
+            print(f"✅ Modello trovato: {config.MODEL}")
             return True
         else:
-            print(f"❌ Modello '{MODEL}' non trovato. Modelli disponibili:")
+            print(f"❌ Modello '{config.MODEL}' non trovato. Modelli disponibili:")
             for m in models:
                 print(f"   - {m}")
             return False
@@ -131,7 +131,7 @@ def run_evaluation(selected_attacks=None, selected_defenses=None, dry_run=False)
 
     output = {
         "metadata": {
-            "model": MODEL,
+            "model": config.MODEL,
             "ollama_host": OLLAMA_HOST,
             "timestamp": ts,
             "total_tests": total,
@@ -189,17 +189,21 @@ def main():
     parser = argparse.ArgumentParser(description="Ollama Jailbreak Evaluation")
     parser.add_argument("--attacks", nargs="*", help="Only run specific attacks")
     parser.add_argument("--defenses", nargs="*", help="Only run specific defenses")
+    parser.add_argument("--model", type=str, help="Override model name (e.g. gemma3:4b)")
     parser.add_argument("--dry-run", action="store_true", help="Show plan without running")
     args = parser.parse_args()
 
+    if args.model:
+        config.MODEL = args.model
+
     print(f"🔬 Ollama Jailbreak Evaluation")
-    print(f"   Model: {MODEL} @ {OLLAMA_HOST}\n")
+    print(f"   Model: {config.MODEL} @ {OLLAMA_HOST}\n")
 
     if not args.dry_run:
         if not check_ollama_connection():
             print("\n💡 Assicurati che Ollama sia in esecuzione:")
             print(f"   ollama serve")
-            print(f"   ollama pull {MODEL}")
+            print(f"   ollama pull {config.MODEL}")
             sys.exit(1)
 
     results_path = run_evaluation(
@@ -209,8 +213,9 @@ def main():
     )
 
     if results_path:
-        print(f"\n📊 Per generare i grafici:")
-        print(f"   python generate_charts.py {results_path}")
+        print(f"\n📊 Generazione automatica dei grafici...")
+        from generate_charts import generate_charts
+        generate_charts(results_path)
 
 
 if __name__ == "__main__":

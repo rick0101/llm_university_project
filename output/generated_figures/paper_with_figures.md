@@ -53,11 +53,6 @@ To bridge this gap, this survey provides a comprehensive, up-to-date analysis of
 The remainder of this survey is organized as follows. Section 2 establishes the background and preliminaries, defining foundational concepts and terminology used throughout the paper. Section 3 analyzes training-time threats, specifically focusing on the evolution of stealthy backdoor attacks and data poisoning against LLMs and AI agents. Section 4 examines inference-time threats, detailing the rapid arms race in prompt injection and jailbreaking research. Section 5 explores adversarial attacks targeted at specialized domains, with a particular focus on code-generating LLMs. Section 6 traces the evolution of output-level vulnerabilities, detailing the progression of LLM hallucination research. Section 7 provides a holistic overview of cross-cutting defenses and mitigation strategies designed to counter the aforementioned threats. Section 8 is dedicated to testing methodologies, covering the benchmarks, tools, and evaluation frameworks essential for rigorous security assessment. Section 9 synthesizes the current state of the field, discussing open challenges and future trajectories. Finally, Section 10 concludes the survey, summarizing key findings and emphasizing the ongoing evolution of the AI threat landscape.
 
 
-
-
-![Figure 1: A systematic taxonomy of LLM vulnerabilities categorized by model lifecycle phases: Training-Time, Inference-Time, and Output-Level.](generated_figures/fig_llm_security_taxonomy.png)
-
-*Figure 1: A systematic taxonomy of LLM vulnerabilities categorized by model lifecycle phases: Training-Time, Inference-Time, and Output-Level.*
 ## Background and Preliminaries
 
 # Background and Preliminaries
@@ -154,11 +149,6 @@ Finally, novel attack surfaces emerged in the very infrastructure of model deplo
 ![Figure 5: Maximum Attack Success Rates (ASR) reported for various advanced LLM exploits across different modalities and deployment environments.](generated_figures/fig_attack_success_rates.png)
 
 *Figure 5: Maximum Attack Success Rates (ASR) reported for various advanced LLM exploits across different modalities and deployment environments.*
-
-
-![Figure 4: The workflow of an indirect prompt injection attack exploiting Retrieval-Augmented Generation (RAG) architectures.](generated_figures/fig_rag_indirect_injection_flow.png)
-
-*Figure 4: The workflow of an indirect prompt injection attack exploiting Retrieval-Augmented Generation (RAG) architectures.*
 # Inference-Time Threats I: Prompt Injection and Jailbreaking
 
 The deployment of Large Language Models (LLMs) in real-world applications has exposed a critical frontier in artificial intelligence security: inference-time threats. Unlike training-time vulnerabilities such as data poisoning or backdoor insertion, inference-time threats exploit the fundamental mechanisms by which a fully trained model processes and responds to user inputs. At the core of these vulnerabilities are prompt injection and jailbreaking. While these terms are sometimes used interchangeably, they represent distinct paradigms of attack. Prompt injection typically involves subverting a model's original instructions by embedding malicious commands within user-provided data, causing the model to execute unintended actions. Jailbreaking, on the other hand, refers to the deliberate crafting of inputs designed to bypass the model's built-in safety guardrails, coercing it into generating restricted, harmful, or unethical content. 

@@ -1,0 +1,14 @@
+```python
+4.4), (9.0, 2.8), "6. Malicious Execution", colors['malicious'], vertical=True)
+    
+    # Final layout settings
+    ax.set_xlim(0, 11)
+    ax.set_ylim(0, 10)
+    ax.axis('off')
+    
+    # Title
+    plt.title("Mechanism of Indirect Prompt Injection in RAG Systems", 
+              fontsize=14, fontweight='bold', fontfamily='serif', pad=20)
+    
+    # Caption - positioned carefully to avoid overlap with step 6
+    plt.figtext(0.5, 0.01, "Figure 4: The workflow of

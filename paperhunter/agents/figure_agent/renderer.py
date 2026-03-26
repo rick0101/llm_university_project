@@ -319,7 +319,7 @@ def render_figure(
 def render_all_code_figures(
     specs: list[FigureSpec],
     output_dir: str | Path,
-    max_iterations: int = 3,
+    max_iterations: int = 5,
     force_model: str | None = None,
 ) -> dict[str, tuple[bool, Path | None]]:
     """Renderizza tutte le code figures in un piano.

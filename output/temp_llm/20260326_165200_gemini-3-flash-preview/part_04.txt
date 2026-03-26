@@ -1,0 +1,9 @@
+```python
+['category'], 1.5, 7.1),
+        # Inference-Time children
+        (3.8, 5.8, "Prompt\nInjection", colors['category'], 5.0, 7.1),
+        (5.0, 5.8, "Jailbreaking", colors['category'], 5.0, 7.1),
+        (6.2, 5.8, "Specialized\nDomain", colors['category'], 5.0, 7.1),
+        # Output-Level children
+        (7.8, 5.8, "Intrinsic\nHallucinations", colors['category'], 8.5, 7.1),
+        

@@ -1,0 +1,103 @@
+```python
+OUTPUT_PATH = "output/generated_figures/fig_llm_security_taxonomy.png"
+
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+
+def create_taxonomy():
+    # Set academic style parameters
+    plt.rcParams['font.family'] = 'serif'
+    plt.rcParams['font.size'] = 10
+    
+    # Figure setup
+    fig, ax = plt.subplots(figsize=(12, 7))
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 10)
+    ax.axis('off')
+
+    # Define node properties: (x, y, text, color, width)
+    # Root
+    root = (5, 9.2, "LLM Security Threats", "#E1BEE7", 2.2)
+    
+    # Level 1: Lifecycle Phases
+    l1_nodes = [
+        (1.8, 7.5, "Training-Time", "#BBDEFB", 1.8),
+        (5.0, 7.5, "Inference-Time", "#C8E6C9", 1.8),
+        (8.2, 7.5, "Output-Level", "#FFE0B2", 1.8)
+    ]
+    
+    # Level 2: Categories and Examples
+    # Training-Time children
+    l2_training = [
+        (0.8, 5.0, "Data Poisoning", "#E3F2FD", 1.4),
+        (2.8, 5.0, "Model Poisoning\n(CGBA, TrojVLM,\nBadTemplate)", "#E3F2FD", 1.8)
+    ]
+    
+    # Inference-Time children
+    l2_inference = [
+        (4.0, 5.0, "Prompt\nInjection", "#E8F5E9", 1.2),
+        (5.3, 5.0, "Jailbreaking\n(AutoDAN,\nFlipAttack)", "#E8F5E9", 1.4),
+        (6.8, 5.0, "Specialized Domain\nAttacks\n(XOXO, INSEC)", "#E8F5E9", 1.6)
+    ]
+    
+    # Output-Level children
+    l2_output = [
+        (8.2, 5.0, "Intrinsic\nHallucinations", "#FFF3E0", 1.4),
+        (9.4, 5.0, "Extrinsic\nHallucinations", "#FFF3E0", 1.4)
+    ]
+
+    all_l2_nodes = l2_training + l2_inference + l2_output
+
+    # Helper function to draw a box with text
+    def draw_node(node_data, zorder=3):
+        x, y, text, color, width = node_data
+        height = 1.0 if "\n" in text else 0.6
+        if text.count("\n") >= 2: height = 1.4
+        
+        rect = patches.FancyBboxPatch(
+            (x - width/2, y - height/2), width, height,
+            boxstyle="round,pad=0.1", linewidth=1, edgecolor='#333333',
+            facecolor=color, zorder=zorder
+        )
+        ax.add_patch(rect)
+        ax.text(x, y, text, ha='center', va='center', fontsize=10, 
+                fontweight='bold' if y > 7 else 'normal', zorder=zorder+1)
+        return x, y, width, height
+
+    # Draw connections first (so they are behind boxes)
+    def draw_edge(start_pos, end_pos):
+        ax.annotate("", xy=end_pos, xytext=start_pos,
+                    arrowprops=dict(arrowstyle="-", color='#7F8C8D', lw=1.2, shrinkA=5, shrinkB=5))
+
+    # Connect Root to L1
+    for node in l1_nodes:
+        draw_edge((root[0], root[1]-0.3), (node[0], node[1]+0.3))
+        
+    # Connect L1 to L2
+    for node in l2_training:
+        draw_edge((l1_nodes[0][0], l1_nodes[0][1]-0.3), (node[0], node[1]+0.5))
+    for node in l2_inference:
+        draw_edge((l1_nodes[1][0], l1_nodes[1][1]-0.3), (node[0], node[1]+0.5))
+    for node in l2_output:
+        draw_edge((l1_nodes[2][0], l1_nodes[2][1]-0.3), (node[0], node[1]+0.5))
+
+    # Draw all nodes
+    draw_node(root)
+    for node in l1_nodes:
+        draw_node(node)
+    for node in all_l2_nodes:
+        draw_node(node)
+
+    # Add Title and Caption
+    plt.title("Comprehensive Taxonomy of LLM Security Threats", fontsize=14, fontweight='bold', pad=20)
+    fig.text(0.5, 0.05, "Figure 1: A systematic taxonomy of LLM vulnerabilities categorized by model lifecycle phases: Training-Time, Inference-Time, and Output-Level.", 
+             ha='center', fontsize=11, style='italic', wrap=True)
+
+    # Final adjustments
+    plt.tight_layout()
+    plt.savefig(OUTPUT_PATH, dpi=300, bbox_inches='tight')
+    plt.close()
+
+if __name__ == "__main__":
+    create_taxonomy()
+```

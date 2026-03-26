@@ -1,0 +1,7 @@
+```python
+ an indirect prompt injection attack exploiting Retrieval-Augmented Generation (RAG) architectures.", 
+                 ha='center', fontsize=10, fontfamily='serif', style='italic')
+
+plt.savefig(OUTPUT_PATH, dpi=300, bbox_inches='tight')
+plt.close()
+```

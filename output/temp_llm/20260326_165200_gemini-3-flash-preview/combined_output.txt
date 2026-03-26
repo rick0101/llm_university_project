@@ -1,0 +1,73 @@
+```python
+OUTPUT_PATH = "output/generated_figures/fig_llm_security_taxonomy.png"
+
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+
+def draw_taxonomy():
+    # Set academic style parameters
+    plt.rcParams['font.family'] = 'serif'
+    plt.rcParams['font.size'] = 10
+    
+    # Figure setup
+    fig, ax = plt.subplots(figsize=(12, 8))
+    ax.set_xlim(-0.5, 10)
+    ax.set_ylim(0, 10)
+    ax.axis('off')
+
+    # Define colors (Academic palette)
+    colors = {
+        'root': '#2c3e50', 'phase': '#2980b9', 'category': '#34495e', 'example': '#f8f9fa'}
+    
+    def draw_node(x, y, text, color, tcolor='white', fs=10, fw='bold'):
+        ax.text(x, y, text, ha='center', va='center', fontsize=fs, fontweight=fw,
+                color=tcolor, bbox=dict(facecolor=color, edgecolor='#2c3e50', 
+                boxstyle='round,pad=0.5', lw=1), zorder=5)
+
+    # Root Node
+    draw_node(5, 9.2```python
+, "LLM Security Threats", colors['root'])
+
+    # Level 1: Phases (Lifecycle stages)
+    phases = [
+        (1.5, 7.5, "Training-Time"),
+        (5.0, 7.5, "Inference-Time"),
+        (8.5, 7.5, "Output-Level")
+    ]
+    for px, py, ptext in phases:
+        draw_node(px, py, ptext, colors['phase'])
+        # Line from root to phase
+        ax.annotate('', xy=(px, py + 0.4), xytext=(5, 8.8),
+                    arrowprops=dict(arrowstyle='-', color='#7```python
+f8c8d', lw=1.5))
+
+    # Level 2: Categories (Sub-branches)
+    # Format: (x, y, text, color, parent_x, parent_y)
+    # We use a dictionary for colors to maintain consistency
+    colors.update({
+        'category': '#3498db',
+        'leaf': '#ecf0f1'
+    })
+
+    categories = [
+        # Training-Time children
+        (0.8, 5.8, "Data\nPoisoning", colors['category'], 1.5, 7.1),
+        (2.2, 5.8, "Model\nPoisoning", colors```python
+['category'], 1.5, 7.1),
+        # Inference-Time children
+        (3.8, 5.8, "Prompt\nInjection", colors['category'], 5.0, 7.1),
+        (5.0, 5.8, "Jailbreaking", colors['category'], 5.0, 7.1),
+        (6.2, 5.8, "Specialized\nDomain", colors['category'], 5.0, 7.1),
+        # Output-Level children
+        (7.8, 5.8, "Intrinsic\nHallucinations", colors['category'], 8.5, 7.1),
+        ```python
+        (9.2, 5.8, "Extrinsic\nHallucinations", colors['category'], 8.5, 7.1)
+    ]
+
+    # Level 3: Examples (Leaf nodes)
+    # We use specific x-coordinates to prevent overlap in the bottom row
+    leaves = [
+        # Model Poisoning examples
+        (1.4, 4.2, "CGBA", colors['leaf'], 2.2, 5.8),
+        (2.2, 4.2, "TrojVLM", colors['leaf'], 2.2, 5.8),
+        (3.0, 4.2, "BadTemplate", colors['leaf'], 

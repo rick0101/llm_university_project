@@ -1,0 +1,20 @@
+```python
+OUTPUT_PATH = "output/generated_figures/fig_llm_security_taxonomy.png"
+
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+
+def draw_taxonomy():
+    # Set academic style parameters
+    plt.rcParams['font.family'] = 'serif'
+    plt.rcParams['font.size'] = 10
+    
+    # Figure setup
+    fig, ax = plt.subplots(figsize=(12, 8))
+    ax.set_xlim(-0.5, 10)
+    ax.set_ylim(0, 10)
+    ax.axis('off')
+
+    # Define colors (Academic palette)
+    colors = {
+        'root': '#2

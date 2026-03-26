@@ -5,120 +5,27 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
-# Set academic style parameters
-plt.rcParams.update({
-    "font.family": "serif",
-    "font.size": 10,
-    "axes.titlesize": 14,
-    "axes.labelsize": 12,
-    "figure.titlesize": 14
-})
-
 def draw_taxonomy():
+    # Set academic style parameters
+    plt.rcParams['font.family'] = 'serif'
+    plt.rcParams['font.size'] = 10
+    
     # Figure setup
     fig, ax = plt.subplots(figsize=(12, 8))
-    ax.set_xlim(0, 10)
+    ax.set_xlim(-0.5, 10)
     ax.set_ylim(0, 10)
     ax.axis('off')
 
-    # Define colors (Academic Palette)
+    # Define colors (Academic palette)
     colors = {
-        'root': '#2c3e50',      # Dark Blue/Gray
-        'training': '#2980b9',  # Blue
-        'inference': '#27ae60', # Green
-        'output': '#e67e22',    # Orange
-        'leaf': '#ecf0f1',      # Light Gray
-        'text_main': 'white',
-        'text_sub': 'black'
-    }
-
-    # Helper function to draw a node (box with text)
-    def draw_node(x, y, text, color, width=1.8, height=0.8, text_color='white', fontsize=10, fontweight='bold'):
-        rect = patches.FancyBboxPatch(
-            (x - width/2, y - height/2), width, height,
-            boxstyle="round,pad=0.1", linewidth=1.5, edgecolor='black', facecolor=color
-        )
-        ax.add_patch(rect)
-        ax.text(x, y, text, ha='center', va='center', color=text_color, 
-                fontsize=fontsize, fontweight=fontweight, wrap=True)
-
-    # Helper function to draw connecting lines (elbow style)
-    def draw_edge(start, end, color='black'):
-        # start and end are (x, y) tuples
-        ax.plot([start[0], start[0]], [start[1], (start[1] + end[1]) / 2], color=color, lw=1.2, zorder=0)
-        ax.plot([start[0], end[0]], [(start[1] + end[1]) / 2, (start[1] + end[1]) / 2], color=color, lw=1.2, zorder=0)
-        ax.plot([end[0], end[0]], [(start[1] + end[1]) / 2, end[1]], color=color, lw=1.2, zorder=0)
-
-    # --- Root Node ---
-    root_pos = (5, 9.2)
-    draw_node(root_pos[0], root_pos[1], "LLM Security Threats", colors['root'], width=2.5)
-
-    # --- Level 1 Nodes (Lifecycle Phases) ---
-    l1_y = 7.5
-    l1_nodes = [
-        (1.8, l1_y, "Training-Time", colors['training']),
-        (5.0, l1_y, "Inference-Time", colors['inference']),
-        (8.2, l1_y, "Output-Level", colors['output'])
-    ]
+        'root': '#2c3e50', 'phase': '#2980b9', 'category': '#34495e', 'example': '#f8f9fa'}
     
-    for x, y, txt, col in l1_nodes:
-        draw_node(x, y, txt, col)
-        draw_edge((root_pos[0], root_pos[1]-0.4), (x, y+0.4))
+    def draw_node(x, y, text, color, tcolor='white', fs=10, fw='bold'):
+        ax.text(x, y, text, ha='center', va='center', fontsize=fs, fontweight=fw,
+                color=tcolor, bbox=dict(facecolor=color, edgecolor='#2c3e50', 
+                boxstyle='round,pad=0.5', lw=1), zorder=5)
 
-    # --- Level 2 Nodes (Specific Categories) ---
-    l2_y = 5.5
-    
-    # Training-Time Branches
-    t_nodes = [
-        (0.9, l2_y, "Data Poisoning", colors['training']),
-        (2.7, l2_y, "Model Poisoning", colors['training'])
-    ]
-    for x, y, txt, col in t_nodes:
-        draw_node(x, y, txt, col, width=1.6, fontsize=9)
-        draw_edge((1.8, l1_y-0.4), (x, y+0.4))
-
-    # Inference-Time Branches
-    i_nodes = [
-        (4.0, l2_y, "Prompt Injection", colors['inference']),
-        (5.3, l2_y, "Jailbreaking", colors['inference']),
-        (6.8, l2_y, "Specialized Domain\nAttacks", colors['inference'])
-    ]
-    for x, y, txt, col in i_nodes:
-        draw_node(x, y, txt, col, width=1.4, height=1.0, fontsize=9)
-        draw_edge((5.0, l1_y-0.4), (x, y+0.5))
-
-    # Output-Level Branches
-    o_nodes = [
-        (7.8, l2_y, "Intrinsic\nHallucinations", colors['output']),
-        (9.2, l2_y, "Extrinsic\nHallucinations", colors['output'])
-    ]
-    for x, y, txt, col in o_nodes:
-        draw_node(x, y, txt, col, width=1.4, height=1.0, fontsize=9)
-        draw_edge((8.2, l1_y-0.4), (x, y+0.5))
-
-    # --- Level 3 (Examples / Leaf Nodes) ---
-    l3_y = 3.5
-    
-    # Model Poisoning Examples
-    draw_node(2.7, l3_y, "CGBA\nTrojVLM\nBadTemplate", colors['leaf'], width=1.6, height=1.2, text_color='black', fontweight='normal', fontsize=8)
-    draw_edge((2.7, l2_y-0.4), (2.7, l3_y+0.6))
-
-    # Jailbreaking Examples
-    draw_node(5.3, l3_y, "AutoDAN\nFlipAttack", colors['leaf'], width=1.4, height=0.8, text_color='black', fontweight='normal', fontsize=8)
-    draw_edge((5.3, l2_y-0.5), (5.3, l3_y+0.4))
-
-    # Specialized Domain Examples
-    draw_node(6.8, l3_y, "XOXO\nINSEC", colors['leaf'], width=1.4, height=0.8, text_color='black', fontweight='normal', fontsize=8)
-    draw_edge((6.8, l2_y-0.5), (6.8, l3_y+0.4))
-
-    # Title and Caption
-    plt.title("Comprehensive Taxonomy of LLM Security Threats", pad=20, fontweight='bold')
-    
-    caption_text = "Figure 1: A systematic taxonomy of LLM vulnerabilities categorized by model lifecycle phases: Training-Time, Inference-Time, and Output-Level."
-    fig.text(0.5, 0.05, caption_text, ha='center', fontsize=11, style='italic', wrap=True)
-
-    plt.tight_layout()
-
-draw_taxonomy()
+    # Root Node
+    draw_node(5, 9.2
 plt.savefig(OUTPUT_PATH, dpi=300, bbox_inches='tight')
 plt.close()

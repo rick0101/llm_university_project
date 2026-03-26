@@ -633,6 +633,14 @@ Generate a **complete, self-contained Python script** that produces a publicatio
 6. The last line MUST call: `plt.savefig(OUTPUT_PATH, dpi=300, bbox_inches='tight')`
 7. Call `plt.close()` after saving
 
+## Code Compactness (CRITICAL)
+
+Keep the script under **120 lines**. To achieve this:
+- Store all data in **dicts/lists** at the top, then iterate with loops
+- Use **helper functions** for repetitive drawing operations (e.g., `draw_node()`, `draw_arrow()`)
+- NEVER repeat similar drawing calls — use a loop over a data structure instead
+- For taxonomy/flowchart/architecture diagrams: define the tree as a nested dict, compute positions dynamically with a layout function, use a larger figure size (14, 10) or (16, 12) to prevent overlapping
+
 ## Style Requirements (Academic Paper)
 
 - DPI: 300

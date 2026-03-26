@@ -1,0 +1,11 @@
+```python
+Base returns Poisoned Context
+    draw_arrow(ax, (5.2, 7.4), (5.2, 5.6), "4. Poisoned Context", colors['malicious'], vertical=True)
+    
+    # 5. RAG System sends augmented prompt to LLM
+    # Positioned to avoid crossing the retriever box or query lines
+    draw_arrow(ax, (6.2, 5.0), (7.8, 5.0), "5. Augmented Prompt", colors['system'])
+    
+    # 6. LLM processes and executes malicious payload
+    # Arrow points downwards to represent the final output/action stage
+    draw_arrow(ax, (9.0,

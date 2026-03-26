@@ -4,36 +4,33 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
-import pandas as pd
 import numpy as np
-import os
 
-# Ensure the output directory exists
-os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
-
-# Data points provided in the specification
+# Data preparation
 data = [
     {
-        "exploit": "Cursor Auto Mode (Prompt Injection)",
+        "exploit": "Cursor Auto Mode\n(Prompt Injection)",
         "asr_percent": 83.4,
         "category": "Inference-Time"
     },
     {
-        "exploit": "AutoBackdoor (Agent-crafted Backdoor)",
+        "exploit": "AutoBackdoor\n(Agent-crafted Backdoor)",
         "asr_percent": 90.0,
         "category": "Training-Time"
     },
     {
-        "exploit": "BadTemplate (Chat Template Supply Chain)",
+        "exploit": "BadTemplate\n(Chat Template Supply Chain)",
         "asr_percent": 100.0,
         "category": "Training-Time"
     }
 ]
 
-# Convert to DataFrame for easier plotting with Seaborn
-df = pd.DataFrame(data)
+# Extracting values for plotting
+exploits = [d['exploit'] for d in data]
+asr_values = [d['asr_percent'] for d in data]
+categories = [d['category'] for d in data]
 
-# Set academic style parameters
+# Academic styling
 plt.rcParams.update({
     "font.family": "serif",
     "font.serif": ["Times New Roman", "DejaVu Serif"],
@@ -41,57 +38,45 @@ plt.rcParams.update({
     "axes.titlesize": 14,
     "axes.labelsize": 12,
     "xtick.labelsize": 10,
-    "ytick.labelsize": 10,
+    "ytick.labelsize": 11,
     "legend.fontsize": 10,
     "figure.dpi": 300
 })
 
-# Create the figure
+# Create figure
 fig, ax = plt.subplots(figsize=(10, 6))
 
-# Define a professional color palette based on categories
-palette = {"Inference-Time": "#4c72b0", "Training-Time": "#c44e52"}
+# Define colors based on categories
+palette = {"Inference-Time": "#4C72B0", "Training-Time": "#C44E52"}
+colors = [palette[cat] for cat in categories]
 
-# Create horizontal bar chart
-sns.barplot(
-    data=df, 
-    x="asr_percent", 
-    y="exploit", 
-    hue="category", 
-    palette=palette,
-    dodge=False,
-    ax=ax
-)
+# Create horizontal bars
+# Increased bar height and spacing to prevent text overlap
+bars = ax.barh(exploits, asr_values, color=colors, height=0.6, edgecolor='black', linewidth=0.8)
 
-# Add quantitative labels at the end of each bar
-for i, p in enumerate(ax.patches):
-    width = p.get_width()
-    ax.text(
-        width + 1, 
-        p.get_y() + p.get_height() / 2, 
-        f'{width:.1f}%', 
-        va='center', 
-        fontsize=10, 
-        fontweight='bold'
-    )
+# Add data labels at the end of each bar
+for bar in bars:
+    width = bar.get_width()
+    ax.text(width + 1, bar.get_y() + bar.get_height()/2, 
+            f'{width:.1f}%', 
+            va='center', ha='left', fontweight='bold', color='black')
 
-# Set labels and title
-ax.set_title("Reported Attack Success Rates (ASR) of State-of-the-Art Exploits", pad=20)
+# Formatting axes
+ax.set_xlim(0, 115)  # Extra space for labels
 ax.set_xlabel("Attack Success Rate (ASR) %")
-ax.set_ylabel("Exploit Name") # Explicitly added to address previous error
+ax.set_title("Reported Attack Success Rates (ASR) of State-of-the-Art Exploits", pad=20)
 
-# Configure grid and limits
-ax.set_xlim(0, 110) # Extra space for labels
-ax.xaxis.grid(True, linestyle='--', alpha=0.6)
+# Add grid for readability
+ax.grid(axis='x', linestyle='--', alpha=0.7)
 ax.set_axisbelow(True)
 
-# Refine legend
-ax.legend(title="Attack Category", loc="lower right", frameon=True)
+# Create custom legend
+from matplotlib.lines import Line2D
+legend_elements = [Line2D([0], [0], color=palette["Inference-Time"], lw=4, label='Inference-Time'),
+                   Line2D([0], [0], color=palette["Training-Time"], lw=4, label='Training-Time')]
+ax.legend(handles=legend_elements, loc='lower right', frameon=True, facecolor='white', edgecolor='gray')
 
-# Remove top and right spines for a cleaner look
-sns.despine()
-
-# Adjust layout
+# Adjust layout to prevent label clipping or overlap
 plt.tight_layout()
 
 # Save the figure

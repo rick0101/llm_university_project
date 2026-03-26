@@ -5,110 +5,92 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
-def draw_flowchart():
-    # Set academic style parameters
-    plt.rcParams.update({
-        "font.family": "serif",
-        "font.size": 10,
-        "axes.titlesize": 14,
-        "axes.labelsize": 12
-    })
-
-    fig, ax = plt.subplots(figsize=(10, 7))
-    ax.set_xlim(0, 10)
-    ax.set_ylim(0, 8)
+def create_rag_injection_flow():
+    # Set academic style
+    plt.rcParams['font.family'] = 'serif'
+    plt.rcParams['font.serif'] = ['Times New Roman'] + plt.rcParams['font.serif']
+    
+    fig, ax = plt.subplots(figsize=(12, 7))
+    ax.set_xlim(0, 12)
+    ax.set_ylim(0, 10)
     ax.axis('off')
 
-    # Define colors (Academic Palette)
+    # Define professional color palette
     colors = {
-        'attacker': '#d62728',    # Red
-        'user': '#2ca02c',        # Green
-        'system': '#1f77b4',      # Blue
-        'data': '#7f7f7f',        # Grey
-        'llm': '#9467bd',         # Purple
-        'warning': '#ff7f0e'      # Orange
+        'attacker': '#fce4e4',    # Light Red
+        'attacker_edge': '#c0392b',
+        'user': '#e8f5e9',        # Light Green
+        'user_edge': '#27ae60',
+        'system': '#e3f2fd',      # Light Blue
+        'system_edge': '#2980b9',
+        'kb': '#f5f5f5',          # Light Grey
+        'kb_edge': '#7f8c8d',
+        'malicious': '#fdedec',   # Very Light Red
+        'malicious_edge': '#e74c3c'
     }
 
     # Helper function to draw boxes
-    def draw_box(x, y, width, height, text, color, header=None):
+    def draw_box(ax, x, y, width, height, text, facecolor, edgecolor, title=None):
+        # Draw the main box
         rect = patches.FancyBboxPatch(
-            (x, y), width, height, 
-            boxstyle="round,pad=0.1", 
-            linewidth=1.5, edgecolor='black', facecolor=color, alpha=0.15
+            (x, y), width, height,
+            boxstyle="round,pad=0.2",
+            linewidth=1.5, edgecolor=edgecolor, facecolor=facecolor,
+            mutation_scale=0.4
         )
         ax.add_patch(rect)
         
-        # Add a solid top border for a professional look
-        ax.plot([x, x+width], [y+height, y+height], color=color, linewidth=3)
-        
-        if header:
-            ax.text(x + width/2, y + height - 0.3, header, 
-                    ha='center', va='center', fontweight='bold', color=color)
-            ax.text(x + width/2, y + (height-0.3)/2, text, 
-                    ha='center', va='center', wrap=True)
+        # Add text
+        if title:
+            ax.text(x + width/2, y + height * 0.75, title, 
+                    ha='center', va='center', fontweight='bold', fontsize=11)
+            ax.text(x + width/2, y + height * 0.35, text, 
+                    ha='center', va='center', fontsize=10)
         else:
             ax.text(x + width/2, y + height/2, text, 
-                    ha='center', va='center', fontweight='bold', wrap=True)
+                    ha='center', va='center', fontweight='bold', fontsize=11)
 
-    # Helper function to draw arrows
-    def draw_arrow(start, end, text="", color='black', connectionstyle="arc3,rad=0"):
-        ax.annotate(text, xy=end, xytext=start,
-                    arrowprops=dict(arrowstyle='->', color=color, lw=1.5, 
-                                   connectionstyle=connectionstyle),
-                    ha='center', va='bottom', fontsize=9)
-
-    # 1. Attacker Node
-    draw_box(0.5, 6.0, 2.5, 1.2, "Uploads Poisoned\nDocument/Website", colors['attacker'], "Attacker")
-
-    # 2. External Knowledge Base
-    draw_box(6.5, 6.0, 3.0, 1.2, "Vector DB / Web Index\n(Contains Malicious Payload)", colors['data'], "Knowledge Base")
-
-    # 3. Legitimate User
-    draw_box(0.5, 1.0, 2.5, 1.2, "Submits Legitimate\nQuery", colors['user'], "Legitimate User")
-
-    # 4. RAG System (Retriever)
-    draw_box(4.0, 1.0, 2.5, 1.2, "Retrieves Context\nfrom Knowledge Base", colors['system'], "RAG Retriever")
-
-    # 5. LLM
-    draw_box(7.5, 1.0, 2.0, 1.2, "Processes Prompt +\nPoisoned Context", colors['llm'], "LLM")
-
-    # --- Connections ---
+    # 1. Attacker Box
+    draw_box(ax, 0.5, 7.5, 2.5, 1.5, "Attacker", colors['attacker'], colors['attacker_edge'])
     
-    # Step 1: Poisoning
-    draw_arrow((3.0, 6.6), (6.5, 6.6), "1. Injects Malicious Content", colors['attacker'])
-
-    # Step 2: User Query
-    draw_arrow((3.0, 1.6), (4.0, 1.6), "2. Query", 'black')
-
-    # Step 3: Retrieval Request
-    draw_arrow((5.25, 2.2), (7.5, 6.0), "3. Search Request", 'black', "arc3,rad=-0.1")
-
-    # Step 4: Poisoned Context Return
-    draw_arrow((8.0, 6.0), (6.0, 2.2), "4. Poisoned Document", colors['warning'], "arc3,rad=-0.1")
-
-    # Step 5: Augmented Prompt
-    draw_arrow((6.5, 1.6), (7.5, 1.6), "5. Augmented Prompt", 'black')
-
-    # Step 6: Malicious Execution / Response
-    draw_arrow((8.5, 0.8), (1.75, 0.8), "6. Malicious Payload Executed (Data Exfiltration / Misinformation)", 
-               colors['attacker'], "arc3,rad=0.2")
-
-    # Add Title and Caption
-    plt.title("Mechanism of Indirect Prompt Injection in RAG Systems", pad=20)
+    # 2. External Knowledge Base Box
+    draw_box(ax, 5.0, 7.5, 2.5, 1.5, "External Knowledge\nBase (Web/Docs)", colors['kb'], colors['kb_edge'])
     
-    # Caption as text at the bottom
-    fig.text(0.5, 0.05, "Figure 4: The workflow of an indirect prompt injection attack exploiting Retrieval-Augmented Generation (RAG) architectures.", 
-             ha='center', fontsize=11, style='italic')
+    # 3. Legitimate User Box
+    draw_box(ax, 0.5, 2.5, 2.5, 1.5, "Legitimate User", colors['user'], colors['user_edge'])
+    
+    # 4. RAG Retriever Box
+    draw_box(ax, 5.0, 2.5, 2.5, 1.5, "RAG System\n(Retriever)", colors['system'], colors['system_edge'])
+    
+    # 5. LLM Box
+    draw_box(ax, 9.0, 2.5, 2.5, 1.5, "Large Language\nModel (LLM)", colors['system'], colors['system_edge'])
+    
+    # 6. Malicious Execution Box
+    draw_box(ax, 9.0, 7.5, 2.5, 1.5, "Malicious Payload\nExecution", colors['malicious'], colors['malicious_edge'])
 
-    # Highlight the vulnerability area
-    highlight = patches.Rectangle((3.8, 0.5), 5.9, 2.2, linewidth=1, edgecolor='red', 
-                                 facecolor='none', linestyle='--', alpha=0.5)
-    ax.add_patch(highlight)
-    ax.text(6.75, 0.3, "Vulnerability Zone: Context Confusion", color='red', ha='center', fontsize=9, fontweight='bold')
+    # Helper function for arrows
+    def draw_arrow(ax, start, end, text, color='black', linestyle='-', label_pos=0.5, vertical=False):
+        arrow_props = dict(arrowstyle='-|>', color=color, lw=1.5, ls=linestyle, mutation_scale=20)
+        ax.annotate('', xy=end, xytext=start, arrowprops=arrow_props)
+        
+        # Calculate text position
+        mid_x = start[0] + (end[0] - start[0]) * label_pos
+        mid_y = start[1] + (end[1] - start[1]) * label_pos
+        
+        if vertical:
+            ax.text(mid_x + 0.2, mid_y, text, va='center', ha='left', fontsize=9, fontweight='bold', color=color)
+        else:
+            ax.text(mid_x, mid_y + 0.2, text, va='bottom', ha='center', fontsize=9, fontweight='bold', color=color)
 
-    plt.tight_layout()
-    plt.savefig(OUTPUT_PATH, dpi=300, bbox_inches='tight')
-    plt.close()
-
-if __name__ == "__main__":
-    draw_flowchart()
+# 1. Attacker poisons Knowledge Base
+    draw_arrow(ax, (2.2, 8.0), (3.8, 8.0), "1. Poisoning", colors['malicious'])
+    
+    # 2. User queries RAG System
+    draw_arrow(ax, (2.2, 5.0), (3.8, 5.0), "2. User Query", colors['user'])
+    
+    # 3. RAG System retrieves from Knowledge Base
+    draw_arrow(ax, (4.8, 5.6), (4.8, 7.4), "3. Retrieve", colors['system'], vertical=True)
+    
+    # 4. Knowledge
+plt.savefig(OUTPUT_PATH, dpi=300, bbox_inches='tight')
+plt.close()

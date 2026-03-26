@@ -1,0 +1,9 @@
+c3e50', 'phase': '#2980b9', 'category': '#34495e', 'example': '#f8f9fa'}
+    
+    def draw_node(x, y, text, color, tcolor='white', fs=10, fw='bold'):
+        ax.text(x, y, text, ha='center', va='center', fontsize=fs, fontweight=fw,
+                color=tcolor, bbox=dict(facecolor=color, edgecolor='#2c3e50', 
+                boxstyle='round,pad=0.5', lw=1), zorder=5)
+
+    # Root Node
+    draw_node(5, 9.2

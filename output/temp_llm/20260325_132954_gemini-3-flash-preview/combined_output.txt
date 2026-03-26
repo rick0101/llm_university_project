@@ -1,0 +1,39 @@
+```json
+[
+  {
+    "citation_index": 0,
+    "bibtex_key": "Ying_2024_Jailbreak",
+    "status": "SUPPORTED",
+    "confidence": 1.0,
+    "reasoning": "The source text explicitly mentions the Bi-Modal Adversarial Prompt Attack (BAP), the use of universally adversarial perturbations in images, the use of chain-of-thought reasoning to refine textual prompts, and the specific 29.03% increase in Attack Success Rate (ASR)."
+  },
+  {
+    "citation_index": 1,
+    "bibtex_key": "Lyu_2024_Trojvlm",
+    "status": "SUPPORTED",
+    "confidence": 1.0,
+    "reasoning": "The source text confirms TrojVLM as the pioneer in backdoor attacks for complex image-to-text generation and describes the Semantic Preservation (SP) loss used to maintain semantic coherence while injecting target text."
+  },
+  {
+    "citation_index": 2,
+    "bibtex_key": "Ye_2025_Visualtrap",
+    "status": "SUPPORTED",
+    "confidence": 1.0,
+    "reasoning": "The source text describes VisualTrap as a framework that mismaps textual plans to trigger locations and notes that it achieves high attack success rates with 5% poisoned data."
+  },
+  {
+    "citation_index": 3,
+    "bibtex_key": "Li_2025_Iag",
+    "status": "SUPPORTED",
+    "confidence": 1.0,
+    "reasoning": "The source text confirms the IAG framework uses a text-conditioned U-Net to generate input-aware triggers for multi-target backdoor attacks on visual grounding systems."
+  },
+  {
+    "citation_index": 4,
+    "bibtex_key": "Liu_2025_AI",
+    "status": "SUPPORTED",
+    "confidence": 0.95,
+    "reasoning": "The source text discusses the security of agentic AI coding editors (AIShellJack) and the risks of unauthorized command execution, which supports the claim regarding the complexity of securing agentic LLM workflows."
+  }
+]
+```

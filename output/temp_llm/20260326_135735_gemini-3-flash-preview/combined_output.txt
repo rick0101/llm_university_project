@@ -1,0 +1,90 @@
+```python
+OUTPUT_PATH = "output/generated_figures/fig_automated_attack_timeline.png"
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Data points provided in the specification
+data = [
+    {"label": "Manual Role-Playing & Heuristics", "year": 2023, "category": "Manual"},
+    {"label": "Greedy Coordinate Gradient (GCG)", "year": 2023, "category": "Automated White-box"},
+    {"label": "Knowledge Editing Backdoors (BadEdit)", "year": 2024, "category": "Training/Weights"},
+    {"label": "MCTS Fuzzing (AGENTVIGIL)", "year": 2025, "category": "Automated Black-box"},
+    {"label": "Multimodal Alignment Exploits (FOA-Attack)", "year": 2025, "category": "Multimodal"}
+]
+
+# Configuration for academic styling
+plt.rcParams.update({
+    "font.family": "serif",
+    "font.size": 11,
+    "axes.titlesize": 14,
+    "axes.labelsize": 12,
+    "xtick.labelsize": 10,
+    "ytick.labelsize": 10,
+    "legend.fontsize": 10,
+    "figure.dpi": 300
+})
+
+# Prepare data for plotting
+years = [d['year'] for d in data]
+labels = [d['label'] for d in data]
+categories = [d['category'] for d in data]
+
+# Map categories to numerical values for the Y-axis to show progression
+category_map = {
+    "Manual": 1,
+    "Automated White-box": 2,
+    "Training/Weights": 3,
+    "Automated Black-box": 4,
+    "Multimodal": 5
+}
+y_values = [category_map[cat] for cat in categories]
+
+# Create the figure
+fig, ax = plt.subplots(figsize=(10, 6))
+
+# Use a professional colormap
+colors = plt.cm.viridis(np.linspace(0.2, 0.8, len(data)))
+
+# Plot the timeline points
+for i, (year, y_val, label, cat) in enumerate(zip(years, y_values, labels, categories)):
+    # Plot point
+    ax.scatter(year, y_val, s=150, color=colors[i], zorder=3, edgecolors='black', linewidth=1)
+    
+    # Add label with a slight offset
+    # Adjust horizontal alignment based on year to avoid clipping
+    ha = 'left' if year < 2025 else 'right'
+    offset = 0.05 if year < 2025 else -0.05
+    ax.text(year + offset, y_val, f" {label}", verticalalignment='center', 
+            horizontalalignment=ha, fontsize=10, fontweight='bold',
+            bbox=dict(facecolor='white', alpha=0.7, edgecolor='none', pad=1))
+
+# Draw a connecting line to show evolution path
+ax.plot(years, y_values, color='gray', linestyle='--', alpha=0.4, zorder=1)
+
+# Set axis limits and labels
+ax.set_xlim(2022.5, 2026)
+ax.set_ylim(0.5, 5.5)
+ax.set_xticks([2023, 2024, 2025, 2026])
+ax.set_yticks(list(category_map.values()))
+ax.set_yticklabels(list(category_map.keys()))
+
+# Essential labels for academic standards
+ax.set_xlabel("Year of Publication / Discovery")
+ax.set_ylabel("Methodology Sophistication Category")
+ax.set_title("Chronological Evolution of Inference-Time Attack Methodologies")
+
+# Add grid for readability
+ax.grid(True, linestyle=':', alpha=0.6, axis='x')
+
+# Add the caption as a text box at the bottom to ensure it's part of the figure
+caption_text = "Figure 4: The rapid transition from manual heuristic exploits to sophisticated, \nautomated adversarial discovery frameworks between 2023 and 2026."
+fig.text(0.5, -0.05, caption_text, ha='center', fontsize=11, style='italic')
+
+# Clean up layout
+plt.tight_layout()
+
+# Save the figure
+plt.savefig(OUTPUT_PATH, dpi=300, bbox_inches='tight')
+plt.close()
+```

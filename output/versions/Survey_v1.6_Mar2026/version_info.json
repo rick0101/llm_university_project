@@ -1,0 +1,17 @@
+{
+  "version_number": "1.6",
+  "timestamp": "2026-03-26T13:23:39.078284",
+  "paper_count": 0,
+  "categories": [
+    "Adversarial Attacks",
+    "Data and Model Poisoning",
+    "LLM Hallucinations",
+    "Prompt Injection"
+  ],
+  "changelog": "",
+  "l1_count": 0,
+  "l2_count": 0,
+  "sections_count": 11,
+  "total_citations": 50,
+  "verified_citations": 8
+}

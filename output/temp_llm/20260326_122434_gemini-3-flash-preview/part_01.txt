@@ -1,0 +1,17 @@
+, confirming the focus on model embeddings rather than output text."
+  },
+  {
+    "citation_index": 3,
+    "bibtex_key": "Jing_2024_Scale",
+    "status": "NOT_SUPPORTED",
+    "confidence": 1.0,
+    "reasoning": "The source text describes faithfulness evaluation methods using NLI and LLM-as-a-judge on synthetic data, but it does not mention the travel industry or the evaluation of five LLMs on four travel-domain datasets."
+  },
+  {
+    "citation_index": 4,
+    "bibtex_key": "Paudel_2025_Hallucinot",
+    "status": "NOT_SUPPORTED",
+    "confidence": 1.0,
+    "reasoning": "The source text describes the HDM-2 model and HDMBENCH dataset, but it does not mention the FAVA model or the specific training process involving expert models and synthetic data mentioned in the claim."
+  }
+]

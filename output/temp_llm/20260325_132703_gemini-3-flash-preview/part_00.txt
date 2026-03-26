@@ -1,0 +1,39 @@
+```json
+[
+  {
+    "citation_index": 0,
+    "bibtex_key": "Weng_2025_LLMs",
+    "status": "NOT_SUPPORTED",
+    "confidence": 0.9,
+    "reasoning": "The source text for Weng_2025_LLMs focuses on a specific jailbreak attack (FITD) and the phenomenon of 'self-corruption.' It does not mention or define foundational safety alignment techniques like SFT, RLHF, or DPO, nor does it describe them as an 'initial layer of defense.'"
+  },
+  {
+    "citation_index": 1,
+    "bibtex_key": "Chugh_2026_Recap",
+    "status": "SUPPORTED",
+    "confidence": 0.95,
+    "reasoning": "The source describes RECAP, a method for generating adversarial prompts to bypass safety mechanisms in various models (including black-box models like Gemini), which supports the claim that jailbreaking attacks can induce harmful content in aligned models."
+  },
+  {
+    "citation_index": 2,
+    "bibtex_key": "Zhu_2025_Think",
+    "status": "NOT_SUPPORTED",
+    "confidence": 0.95,
+    "reasoning": "The source text for Zhu_2025_Think discusses 'Unthinking Vulnerability' and 'Breaking of Thought' attacks related to reasoning models and thought delimiters. It makes no mention of perplexity filters or the ONION method."
+  },
+  {
+    "citation_index": 3,
+    "bibtex_key": "Zheng_2024_Improved",
+    "status": "SUPPORTED",
+    "confidence": 0.9,
+    "reasoning": "The source text explicitly states that its proposed method (I-FSJ) 'maintains semantic meaning to bypass perplexity filters,' contrasting it with other optimization-based methods (like token-level optimization) which are implied to lack semantic meaning."
+  },
+  {
+    "citation_index": 4,
+    "bibtex_key": "Yung_2025_Geometry",
+    "status": "SUPPORTED",
+    "confidence": 1.0,
+    "reasoning": "The source text directly supports the claim, describing CurvaLID as an LLM-agnostic detection framework that uses geometric properties (PromptLID and TextCurv) to distinguish between adversarial and benign inputs."
+  }
+]
+```

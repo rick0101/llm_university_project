@@ -1,0 +1,20 @@
+**Note:** The claim for Citation 2, 3, and 4 is the same table row. I will evaluate each citation based on its contribution to that row.]
+
+```json
+[
+  {
+    "citation_index": 0,
+    "bibtex_key": "Chugh_2026_Recap",
+    "status": "PARTIALLY_SUPPORTED",
+    "confidence": 0.9,
+    "reasoning": "The source supports the '7 harm categories' (intents), the metrics (ASR), and the tools (GCG, PEZ, GBDA). However, it does not mention a '1,000-prompt dataset'; instead, it mentions a dataset filtered down to 226 successful adversarial prompts."
+  },
+  {
+    "citation_index": 1,
+    "bibtex_key": "Liu_2025_AI",
+    "status": "PARTIALLY_SUPPORTED",
+    "confidence": 0.9,
+    "reasoning": "The source supports the use of 'awesome-cursorrules', the 'AIShellJack' framework, and the 'Semantic Token Match Ratio' and 'ASR' metrics. However, it does not mention the '1,000-prompt dataset' or the '7 harm categories' mentioned in the same claim row (which are associated with the other cited paper, Chugh_2026_Recap)."
+  },
+  {
+    

@@ -1,0 +1,23 @@
+```json
+[
+  {
+    "citation_index": 0,
+    "bibtex_key": "Rahman_2024_BERT",
+    "status": "NOT_SUPPORTED",
+    "confidence": 0.9,
+    "reasoning": "The source text describes the use of BERT for prompt injection detection but does not provide the general definition of LLMs as generative AI systems trained on vast amounts of text data. Furthermore, BERT is an encoder-only model, not a generative one."
+  },
+  {
+    "citation_index": 1,
+    "bibtex_key": "Chugh_2026_Recap",
+    "status": "NOT_SUPPORTED",
+    "confidence": 0.95,
+    "reasoning": "The source text focuses on a retrieval-based attack method (RECAP) and mentions a dataset of harmful prompts, but it does not state that LLM pre-training data is sourced from the internet or that it inherently includes objectionable material."
+  },
+  {
+    "citation_index": 2,
+    "bibtex_key": "Maloyan_2026_Prompt",
+    "status": "NOT_SUPPORTED",
+    "confidence": 0.9,
+    "reasoning": "The source text discusses agentic AI coding assistants and prompt injection vulnerabilities but does not mention 'semantic space' or the 'undefined boundary' between instructions and data as the architectural cause."
+  },

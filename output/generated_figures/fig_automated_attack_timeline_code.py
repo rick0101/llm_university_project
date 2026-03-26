@@ -1,115 +1,80 @@
 OUTPUT_PATH = "output/generated_figures/fig_automated_attack_timeline.png"
 
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
-import os
 
-# Ensure directory exists
-os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
-
-# Data points
-data = [
-    {
-        "label": "Manual Role-Playing\n& Heuristics",
-        "year": 2023,
-        "category": "Manual",
-        "offset": 1.8
-    },
-    {
-        "label": "Greedy Coordinate\nGradient (GCG)",
-        "year": 2023,
-        "category": "Automated White-box",
-        "offset": -1.8
-    },
-    {
-        "label": "Knowledge Editing\nBackdoors (BadEdit)",
-        "year": 2024,
-        "category": "Training/Weights",
-        "offset": 1.2
-    },
-    {
-        "label": "MCTS Fuzzing\n(AGENTVIGIL)",
-        "year": 2025,
-        "category": "Automated Black-box",
-        "offset": 1.8
-    },
-    {
-        "label": "Multimodal Alignment\nExploits (FOA-Attack)",
-        "year": 2025,
-        "category": "Multimodal",
-        "offset": -1.8
-    }
-]
-
-# Style configuration
+# Set academic style parameters
 plt.rcParams.update({
     "font.family": "serif",
-    "font.serif": ["Times New Roman", "DejaVu Serif"],
     "font.size": 11,
     "axes.titlesize": 14,
     "axes.labelsize": 12,
+    "xtick.labelsize": 10,
+    "ytick.labelsize": 10,
+    "legend.fontsize": 10,
+    "figure.dpi": 300
 })
 
-# Color mapping for categories
-category_colors = {
-    "Manual": "#4C72B0",            # Muted Blue
-    "Automated White-box": "#55A868", # Muted Green
-    "Training/Weights": "#C44E52",    # Muted Red
-    "Automated Black-box": "#8172B3", # Muted Purple
-    "Multimodal": "#CCB974"           # Muted Gold
-}
+# Data points
+data = [
+    {"label": "Manual Role-Playing\n& Heuristics", "year": 2023, "level": 1, "category": "Manual"},
+    {"label": "Greedy Coordinate\nGradient (GCG)", "year": 2023.3, "level": 2, "category": "Automated White-box"},
+    {"label": "Knowledge Editing\nBackdoors (BadEdit)", "year": 2024, "level": 3, "category": "Training/Weights"},
+    {"label": "MCTS Fuzzing\n(AGENTVIGIL)", "year": 2025, "level": 4, "category": "Automated Black-box"},
+    {"label": "Multimodal Alignment\nExploits (FOA-Attack)", "year": 2025.3, "level": 5, "category": "Multimodal"}
+]
+
+# Extracting values
+years = [d["year"] for d in data]
+levels = [d["level"] for d in data]
+labels = [d["label"] for d in data]
+categories = [d["category"] for d in data]
+
+# Color palette for categories
+colors = plt.cm.viridis(np.linspace(0.1, 0.9, len(data)))
 
 # Create figure
-fig, ax = plt.subplots(figsize=(10, 6), constrained_layout=True)
+fig, ax = plt.subplots(figsize=(10, 6))
 
-# Draw the main timeline axis
-ax.axhline(0, color='black', linewidth=1.5, zorder=1)
+# Plot the progression line
+ax.plot(years, levels, color='gray', linestyle='--', alpha=0.5, zorder=1)
 
-# Set x-axis limits and ticks
-years = [d['year'] for d in data]
-ax.set_xlim(min(years) - 0.5, 2026.5)
-ax.set_xticks(np.arange(min(years), 2027, 1))
-ax.set_ylim(-3, 3)
+# Plot individual points
+for i, (x, y, label, color) in enumerate(zip(years, levels, labels, colors)):
+    ax.scatter(x, y, s=150, color=color, edgecolor='black', zorder=3, label=categories[i])
+    # Annotate labels with slight offset
+    ax.text(x + 0.05, y, label, verticalalignment='center', fontsize=10, fontweight='bold')
 
-# Remove y-axis
-ax.get_yaxis().set_visible(False)
-ax.spines['left'].set_visible(False)
-ax.spines['right'].set_visible(False)
+# Formatting axes
+ax.set_xlim(2022.5, 2026.5)
+ax.set_ylim(0.5, 6)
+ax.set_xticks([2023, 2024, 2025, 2026])
+ax.set_yticks(range(1, 6))
+ax.set_yticklabels(["Level 1", "Level 2", "Level 3", "Level 4", "Level 5"])
+
+# Required Labels
+ax.set_xlabel("Year of Publication / Discovery")
+ax.set_ylabel("Methodology Sophistication & Automation Index")
+ax.set_title("Chronological Evolution of Inference-Time Attack Methodologies", pad=20)
+
+# Grid and Spines
+ax.grid(True, linestyle=':', alpha=0.6)
 ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
 
-# Plot data points
-for item in data:
-    color = category_colors[item['category']]
-    
-    # Draw vertical stem
-    ax.vlines(item['year'], 0, item['offset'], color='grey', linestyle='--', linewidth=0.8, alpha=0.6)
-    
-    # Draw marker on the timeline
-    ax.scatter(item['year'], 0, color=color, s=120, zorder=3, edgecolors='white', linewidth=1.5)
-    
-    # Add label text
-    va = 'bottom' if item['offset'] > 0 else 'top'
-    ax.text(item['year'], item['offset'] + (0.1 if item['offset'] > 0 else -0.1), 
-            item['label'], 
-            ha='center', va=va, 
-            fontweight='bold',
-            bbox=dict(facecolor='white', edgecolor=color, boxstyle='round,pad=0.3', alpha=0.9))
+# Legend
+handles, labels_legend = ax.get_legend_handles_labels()
+ax.legend(handles, labels_legend, loc='upper left', title="Attack Category", frameon=True)
 
-# Add Title and Caption
-plt.title("Chronological Evolution of Inference-Time Attack Methodologies", pad=20, fontweight='bold')
-fig.text(0.5, -0.02, "Figure 4: The rapid transition from manual heuristic exploits to sophisticated, automated adversarial discovery frameworks between 2023 and 2026.", 
-         ha='center', fontsize=10, style='italic', wrap=True)
+# Add Caption
+caption = "Figure 4: The rapid transition from manual heuristic exploits to sophisticated, automated adversarial discovery frameworks between 2023 and 2026."
+plt.figtext(0.5, -0.05, caption, wrap=True, horizontalalignment='center', fontsize=10, style='italic')
 
-# Create custom legend
-from matplotlib.lines import Line2D
-legend_elements = [Line2D([0], [0], marker='o', color='w', label=cat,
-                          markerfacecolor=color, markersize=10)
-                   for cat, color in category_colors.items()]
-ax.legend(handles=legend_elements, loc='upper right', frameon=True, fontsize=9, title="Attack Category")
+# Adjust layout
+plt.tight_layout()
 
-# Add subtle grid for years
-ax.xaxis.grid(True, linestyle=':', alpha=0.4)
-
-# Save the figure
+# Save and close
 plt.savefig(OUTPUT_PATH, dpi=300, bbox_inches='tight')
 plt.close()

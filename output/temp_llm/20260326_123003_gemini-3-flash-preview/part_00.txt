@@ -1,0 +1,39 @@
+```json
+[
+  {
+    "citation_index": 0,
+    "bibtex_key": "Muntasir_2025_Mocha",
+    "status": "PARTIALLY_SUPPORTED",
+    "confidence": 0.85,
+    "reasoning": "The source text confirms the analysis of the relationship between 'general-purpose coding utility' and 'rejection rates' (RR) under adversarial conditions. However, it does not explicitly mention the 'Pass@1' metric or the 'HumanEval+' and 'MBPP+' benchmarks, although these are standard for measuring the utility mentioned."
+  },
+  {
+    "citation_index": 1,
+    "bibtex_key": "Nie_2024_Secodeplt",
+    "status": "PARTIALLY_SUPPORTED",
+    "confidence": 0.8,
+    "reasoning": "The source mentions a 'two-stage data creation pipeline' that balances 'data quality and benchmark scale.' However, the source describes this pipeline in the context of constructing a benchmark for evaluation, whereas the claim suggests the pipeline is used to 'train these secure models.'"
+  },
+  {
+    "citation_index": 2,
+    "bibtex_key": "Guo_2024_Redcode",
+    "status": "SUPPORTED",
+    "confidence": 0.95,
+    "reasoning": "The source describes RedCode as a platform to evaluate LLM-based code agents and notes that evaluations of 19 agents revealed vulnerabilities and risks that vary based on the strength of the underlying coding models."
+  },
+  {
+    "citation_index": 3,
+    "bibtex_key": "Noever_2024_AI",
+    "status": "SUPPORTED",
+    "confidence": 0.95,
+    "reasoning": "The source explicitly mentions 'living off the land' attacks and describes how LLMs can be manipulated in a coding context to recommend malicious software or bypass safety guardrails, which aligns with the claim's description of risks in developer environments."
+  },
+  {
+    "citation_index": 4,
+    "bibtex_key": "Lin_2025_LLMs",
+    "status": "SUPPORTED",
+    "confidence": 0.95,
+    "reasoning": "The source explicitly identifies security threats in Retrieval-Augmented Code Generation (RACG) systems, specifically 'knowledge base poisoning,' which involves malicious data in the retrieval source compromising the output."
+  }
+]
+```

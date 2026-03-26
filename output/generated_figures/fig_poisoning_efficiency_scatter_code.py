@@ -1,5 +1,7 @@
 OUTPUT_PATH = "output/generated_figures/fig_poisoning_efficiency_scatter.png"
 
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
@@ -35,27 +37,26 @@ data = [
 
 df = pd.DataFrame(data)
 
-# Set academic style
+# Style configuration for academic publication
 plt.rcParams.update({
     "font.family": "serif",
     "font.serif": ["Times New Roman", "DejaVu Serif"],
     "font.size": 11,
     "axes.labelsize": 12,
     "axes.titlesize": 14,
+    "legend.fontsize": 10,
     "xtick.labelsize": 10,
     "ytick.labelsize": 10,
-    "legend.fontsize": 10,
-    "figure.titlesize": 14
+    "figure.figsize": (10, 6)
 })
 
-# Create figure
-fig, ax = plt.subplots(figsize=(10, 6))
-sns.set_style("whitegrid", {'grid.linestyle': '--', 'axes.edgecolor': '0.2'})
+# Create the plot
+fig, ax = plt.subplots()
 
-# Define color palette
+# Use a professional color palette
 palette = sns.color_palette("viridis", n_colors=len(df))
 
-# Plot scatter points
+# Scatter plot
 scatter = sns.scatterplot(
     data=df,
     x="poisoning_rate_pct",
@@ -66,14 +67,14 @@ scatter = sns.scatterplot(
     palette="viridis",
     edgecolor="black",
     linewidth=1.5,
-    ax=ax,
-    zorder=5
+    alpha=0.85,
+    ax=ax
 )
 
-# Set logarithmic scale for X-axis
+# Set logarithmic scale for X-axis as requested
 ax.set_xscale('log')
 
-# Customizing axes
+# Customizing the axes
 ax.set_xlabel("Poisoning Rate (%) [Log Scale]", fontweight='bold')
 ax.set_ylabel("Attack Success Rate (ASR %)", fontweight='bold')
 ax.set_title("Evolution of Backdoor Attack Efficiency: Poisoning Rate vs. Attack Success Rate", pad=20)
@@ -82,37 +83,40 @@ ax.set_title("Evolution of Backdoor Attack Efficiency: Poisoning Rate vs. Attack
 ax.set_xlim(0.1, 10)
 ax.set_ylim(60, 105)
 
-# Add annotations for each point
-for i in range(df.shape[0]):
-    ax.text(
-        df.poisoning_rate_pct[i] * 1.1, 
-        df.asr_pct[i] + 1, 
-        df.attack_method[i], 
-        fontsize=10, 
-        fontweight='bold',
-        verticalalignment='bottom'
+# Add grid for quantitative readability
+ax.grid(True, which="both", linestyle='--', alpha=0.4)
+
+# Annotate points with method names
+for i, row in df.iterrows():
+    ax.annotate(
+        row['attack_method'],
+        (row['poisoning_rate_pct'], row['asr_pct']),
+        textcoords="offset points",
+        xytext=(0, 12),
+        ha='center',
+        fontsize=10,
+        fontweight='bold'
     )
 
-# Add an arrow to indicate the trend towards higher efficiency
+# Add an arrow to indicate the trend towards efficiency
 ax.annotate(
-    "Increasing Efficiency & Stealth",
-    xy=(0.22, 96), xycoords='data',
-    xytext=(2.0, 70), textcoords='data',
-    arrowprops=dict(arrowstyle="->", color="gray", lw=2, connectionstyle="arc3,rad=-0.2"),
-    fontsize=11, color="dimgray", fontstyle='italic'
+    "Increasing Efficiency\n(Lower Poisoning, Higher ASR)",
+    xy=(0.25, 95),
+    xytext=(1.5, 70),
+    arrowprops=dict(facecolor='black', shrink=0.05, width=1, headwidth=8),
+    fontsize=10,
+    fontstyle='italic',
+    bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="gray", alpha=0.5)
 )
 
-# Formatting ticks
-from matplotlib.ticker import ScalarFormatter
-ax.xaxis.set_major_formatter(ScalarFormatter())
-ax.set_xticks([0.2, 0.5, 1.0, 2.0, 5.0, 10.0])
-
 # Legend placement
-plt.legend(title="Attack Category", bbox_to_anchor=(1.05, 1), loc='upper left', frameon=True)
+plt.legend(title="Attack Category", loc='lower left', frameon=True, shadow=False)
 
-# Add caption-like text below the plot (optional, usually handled by LaTeX)
-# plt.figtext(0.5, -0.05, "Figure 3: Comparison of training-time poisoning attacks. Modern techniques like MABA achieve near-perfect ASR with sub-1% poisoning rates.", wrap=True, horizontalalignment='center', fontsize=10)
+# Add caption-like text at the bottom (simulating figure caption)
+caption_text = "Figure 3: Comparison of training-time poisoning attacks. Modern techniques like MABA achieve near-perfect\nAttack Success Rates (ASR) with sub-1% poisoning rates, demonstrating increasing stealth and potency."
+plt.figtext(0.5, -0.05, caption_text, wrap=True, horizontalalignment='center', fontsize=10)
 
+# Final layout adjustment
 plt.tight_layout()
 
 # Save the figure

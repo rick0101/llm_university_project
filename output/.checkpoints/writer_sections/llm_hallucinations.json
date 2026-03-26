@@ -1,0 +1,79 @@
+{
+  "section_key": "llm_hallucinations",
+  "saved_at": "2026-03-26T11:53:29.632971",
+  "data": {
+    "section_key": "llm_hallucinations",
+    "title": "Output-Level Vulnerabilities: LLM Hallucinations",
+    "text": "# Output-Level Vulnerabilities: LLM Hallucinations\n\nThe rapid adoption of Large Language Models (LLMs) across various domains has been accompanied by a significant and persistent challenge: hallucinations. Hallucinations occur when an LLM generates text that is factually incorrect, nonsensical, or unfaithful to the provided source material. This phenomenon undermines the reliability and trustworthiness of LLM applications, particularly in high-stakes environments such as healthcare, legal analysis, and automated decision-making systems. Understanding, detecting, and mitigating these output-level vulnerabilities is a critical area of ongoing research.\n\nA widely adopted taxonomy categorizes hallucinations into two primary types: intrinsic and extrinsic [Wang_2024_Developing]. Intrinsic hallucinations occur when the generated output directly contradicts the provided input or source material. For example, if a prompt states that a meeting is scheduled for Tuesday, and the LLM summarizes the text by stating the meeting is on Wednesday, this is an intrinsic hallucination. Conversely, extrinsic hallucinations occur when the LLM generates information that cannot be verified by the provided input. This often happens when the model relies on its pre-trained parametric knowledge to fill in gaps, producing statements that may be factually true in the real world but are unsupported by the specific context provided to the model. Both types pose significant challenges, but they require different detection and mitigation strategies.\n\n## Hallucination Detection\n\nThe fundamental challenge in addressing LLM hallucinations lies in accurately detecting them. As models become more sophisticated, their hallucinations often become more subtle and plausible, making them difficult for both human evaluators and automated systems to identify. The research community has developed a variety of approaches to tackle this problem, ranging from reference-based metrics to reference-free evaluation pipelines.\n\nTraditional approaches to hallucination detection often relied on simple overlap metrics such as ROUGE or BLEU, which compare the generated text to a reference text. However, these metrics are notoriously poor at capturing semantic meaning and factual accuracy. A model might generate a sentence that has high lexical overlap with the reference but completely reverses the meaning (e.g., changing \"is\" to \"is not\"). Consequently, the field has shifted towards more semantic and reasoning-aware detection methods.\n\nRecent advancements have introduced comprehensive pipelines designed to evaluate hallucinations without relying on gold-standard reference texts. For instance, the HalluCounter pipeline [Urlana_2025_LLM] represents a reference-free approach that extracts features from the query-response pair to determine the likelihood of hallucination. These systems often employ a multi-step process: first, extracting verifiable claims from the generated text; second, retrieving relevant evidence (either from the provided context or an external knowledge base); and third, verifying the claims against the evidence.\n\n## NLI Models for Hallucination Detection\n\nNatural Language Inference (NLI) has emerged as a foundational technique for detecting hallucinations, particularly in the context of faithfulness and factual consistency. NLI models are trained to determine the relationship between a premise (the source text) and a hypothesis (the generated text). The relationship is typically classified into three categories: entailment (the premise supports the hypothesis), contradiction (the premise contradicts the hypothesis), or neutral (the premise neither supports nor contradicts the hypothesis).\n\nIn the context of hallucination detection, NLI models are used to verify whether the claims made by an LLM are entailed by the provided source material. If a claim is contradicted by the source, it is flagged as an intrinsic hallucination. If the relationship is neutral, it may indicate an extrinsic hallucination, as the claim is unsupported by the context.\n\nResearchers have developed specialized NLI models tailored for hallucination detection. For example, [Wang_2024_Developing] describes the development of a detection model by fine-tuning a pre-trained DeBERTa encoder on a diverse set of document-summary pairs. To improve the model's robustness, they incorporated a document-sentence dataset and utilized GPT-4 to label data from various public and internal sources. This fine-tuning process allows the NLI model to better understand the nuances of LLM-generated text and the specific ways in which models hallucinate.\n\nHowever, traditional NLI models often operate on a pairwise sentence level, which can be computationally expensive when evaluating long documents or complex reasoning chains. To address this, more efficient approaches have been proposed. For instance, [Tang_2025_Cognibench] introduces CogniDet, an 8B-parameter model fine-tuned on an auto-labeled corpus. This model achieves high performance (70.3% F1 score) with a single forward pass, making it significantly cheaper and faster than traditional NLI baselines that require exhaustive pairwise sentence comparisons. This shift towards more efficient, single-pass detection models is crucial for scaling hallucination detection to real-world applications.\n\n## RAG Partial Support and Fine-Grained Verification\n\nRetrieval-Augmented Generation (RAG) systems are frequently employed to mitigate hallucinations by grounding the LLM's responses in external, retrieved knowledge. In a typical RAG setup, the system retrieves relevant documents based on the user's query and provides them to the LLM as context. The LLM is then instructed to generate an answer based solely on the provided documents.\n\nWhile RAG significantly reduces hallucinations, it introduces a new challenge: verifying the faithfulness of the generated response to the retrieved citations. Early approaches to citation evaluation treated faithfulness as a binary classification problem: a citation either supported the statement or it did not [Zhang_2024_Comparative]. However, this binary approach fails to capture the complexity of real-world generation, where a statement might be only partially supported by the cited evidence.\n\nRecent research has emphasized the need for fine-grained citation support evaluation. [Zhang_2024_Comparative] and [Zhang_2024_Fine] highlight the limitations of binary metrics and advocate for a more nuanced categorization. They utilize datasets like VeJudge and GenSearch, which comprise thousands of statement-citation pairs annotated by human assessors. In these datasets, citations are categorized into three levels of support: full support, partial support, or no support.\n\nPartial support occurs when a citation provides evidence for some aspects of the generated statement but fails to corroborate the entire claim. For example, if an LLM generates the statement, \"The Eiffel Tower was completed in 1889 and is 330 meters tall,\" and the cited document only mentions the completion year, the citation provides only partial support. Recognizing and quantifying partial support is essential for accurately assessing the reliability of RAG systems.\n\nThe challenge of verifying direct support is further complicated when the evidence passage itself is complex or ambiguous. As noted by [Thulke_2025_Listen], claim verification pipelines often assume that if a claim is directly expressed in the given passage, its content can be considered truth. However, evaluating faithfulness requires moving beyond simple direct extraction to understanding the broader context and the nuances of partial support. Developing automated metrics that can reliably distinguish between full, partial, and no support remains an active area of research, requiring models capable of deep semantic understanding and complex reasoning.\n\n## White-Box Detection: SVD and Internal Representations\n\nThe majority of hallucination detection methods, including NLI and RAG verification, operate as black-box approaches. They analyze the final text output of the LLM without access to the model's internal workings. While effective, black-box methods are limited by the information present in the generated text.\n\nWhite-box detection methods, on the other hand, leverage the LLM's internal representations\u2014such as hidden states, attention weights, and token probabilities\u2014to identify hallucinations. These approaches operate on the premise that the model's internal state differs when it is generating factual information versus when it is hallucinating.\n\nSeveral techniques have been developed to exploit these internal signals. As summarized by [Urlana_2025_LLM], approaches include training classifiers on the LLM's hidden representations, weighting the model's expertise, calculating token probabilities, and measuring semantic consistency across various layers.\n\nA particularly promising white-box technique involves analyzing the hidden states using Singular Value Decomposition (SVD). Research by [Du_2024_LLM] and [Park_2025_LLM] focuses on detecting hallucinations by examining the model's embeddings rather than relying solely on the output text. [Du_2024_LLM] formalizes the hallucination detection problem by harnessing unlabeled LLM generations in the wild. They present a novel scoring function based on a \"hallucination subspace\" extracted from the model's hidden states using SVD.\n\nThe core idea is that the hidden states associated with hallucinated tokens occupy a distinct subspace compared to factual tokens. By applying SVD to a matrix of hidden states collected during generation, researchers can identify the principal components that capture the variance associated with hallucinations. The projection of a new hidden state onto this hallucination subspace can then be used as a score to predict the likelihood of hallucination.\n\nThis white-box approach offers several advantages. First, it can detect hallucinations at the token level as they are being generated, potentially allowing for real-time intervention or correction. Second, it does not require external reference texts or complex NLI models, making it computationally efficient during inference. Finally, by analyzing the model's internal representations, white-box methods can provide insights into the underlying mechanisms of hallucination, contributing to the development of more robust and reliable LLMs.\n\n## Domain-Specific Hallucinations\n\nWhile general-purpose hallucination detection methods are valuable, the nature and impact of hallucinations can vary significantly across different domains. An LLM might perform well on general knowledge tasks but hallucinate frequently when tasked with specialized domains such as medicine, law, or specific industry applications. Consequently, there is a growing need for domain-specific hallucination detection and mitigation strategies.\n\nDomain-specific hallucinations often arise because the LLM lacks sufficient specialized knowledge in its pre-training data or because the domain requires a higher standard of factual accuracy and precise terminology. For example, in the travel domain, an LLM might hallucinate non-existent hotels, incorrect flight times, or fabricated tourist attractions.\n\n[Jing_2024_Scale] investigated hallucinations in the travel industry by evaluating five popular LLMs on four travel-domain datasets. They proposed a rubric-based template to use LLMs as evaluators for faithfulness in Natural Language Generation (NLG). Their findings indicate that in a zero-shot setting, advanced LLMs like GPT-4 can outperform specialized NLI models (such as HHEM) in capturing both intrinsic and extrinsic hallucinations within this specific domain. However, they also noted that fine-tuning NLI models on synthetic domain-specific data can significantly improve their performance.\n\nIn the realm of Question Answering (QA), the types of hallucinations can also be highly specific to the dataset. [Park_2025_LLM] evaluated their white-box detection method on four publicly available generative QA tasks: TruthfulQA, TriviaQA, SciQ, and NQ Open. Each of these datasets presents unique challenges. TruthfulQA, for instance, specifically assesses a model's robustness against generating false or unsupported answers that mimic human misconceptions. SciQ focuses on scientific facts, requiring precise terminology and domain knowledge. The performance of hallucination detection methods can vary across these datasets, highlighting the importance of evaluating models on diverse, domain-specific benchmarks.\n\nTo address domain-specific challenges, supervised approaches often leverage annotated datasets to train specialized classifiers. As noted by [Paudel_2025_Hallucinot], models like FAVA (a retrieval-augmented language model) are designed to detect and correct fine-grained hallucinations by fine-tuning on expert models and synthetic data. By tailoring the training data and detection mechanisms to the specific characteristics of a domain, researchers can develop more accurate and reliable systems for identifying and mitigating LLM hallucinations in specialized applications.\n\nIn conclusion, addressing output-level vulnerabilities caused by LLM hallucinations requires a multifaceted approach. While NLI models provide a strong foundation for semantic verification, the complexities of RAG systems necessitate fine-grained evaluation of partial support. Furthermore, the development of white-box detection methods using techniques like SVD offers promising new avenues for identifying hallucinations by analyzing the model's internal state. Finally, recognizing the unique challenges posed by domain-specific applications is crucial for developing robust and reliable LLM systems capable of operating safely in high-stakes environments.",
+    "citations": [
+      {
+        "bibtex_key": "Wang_2024_Developing",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Urlana_2025_LLM",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Tang_2025_Cognibench",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Zhang_2024_Comparative",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Zhang_2024_Fine",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Thulke_2025_Listen",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Du_2024_LLM",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Park_2025_LLM",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Jing_2024_Scale",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Paudel_2025_Hallucinot",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      }
+    ],
+    "word_count": 1875,
+    "status": "drafted",
+    "iteration": 1,
+    "rag_queries": [],
+    "retrieved_chunk_ids": [],
+    "writer_notes": "[prefetch_agentic] Response was not valid JSON. Citations extracted via regex.",
+    "critic_feedback": "",
+    "drafted_at": "2026-03-26T11:53:29.631270"
+  }
+}

@@ -1,49 +1,61 @@
 {
   "section_key": "conclusion",
-  "saved_at": "2026-03-22T10:41:30.096139",
+  "saved_at": "2026-03-26T12:17:58.515658",
   "data": {
     "section_key": "conclusion",
     "title": "Conclusion",
-    "text": "**Conclusion**\n\n**Final Synthesis**\nThe landscape of adversarial machine learning has undergone a profound transformation, evolving from isolated vulnerabilities in unimodal computer vision systems to systemic risks in complex, multimodal architectures. As this survey has demonstrated, the threat model has expanded significantly; attackers now exploit not only global feature representations but also rich local information encoded in patch tokens within Multimodal Large Language Models (MLLMs) [Jia_2025_Adversarial]. Concurrently, defensive strategies have matured from simple adversarial training to sophisticated, dynamic frameworks, such as stateful detection systems designed to identify and mitigate query-based black-box attacks by analyzing patterns across multiple interactions [Wang_2024_Advqdet]. This evolution underscores a fundamental shift: adversarial robustness is no longer an optional feature but a foundational requirement for the reliable deployment of artificial intelligence.\n\n**Arms Race Escalation**\nThe interplay between adversarial attacks and defensive mechanisms continues to manifest as a relentless, escalating arms race. As defenders implement advanced alignment techniques\u2014such as outcome-driven reinforcement learning to incentivize intrinsic safety reasoning capabilities [Liu_2025_Purpcode]\u2014adversaries rapidly innovate to circumvent these barriers. Recent studies highlight how sophisticated reward-hacking strategies and adversarial prompt distillation can successfully bypass even the most robust built-in safety policies, yielding fully functional malicious outputs while preserving model utility [Ding_2025_Reward]. This continuous cycle of attack and defense dictates that static security measures are inherently insufficient; the research community and industry must embrace adaptive, continuous red-teaming methodologies to anticipate the next generation of sophisticated threats.\n\n**Practical Recommendations**\nFor practitioners and engineers tasked with securing AI systems, a defense-in-depth approach is paramount. First, systems exposed to user queries should implement stateful monitoring to detect anomalous, visually or semantically similar query sequences indicative of iterative black-box attacks [Wang_2024_Advqdet]. Second, when deploying generative models, organizations should adopt fine-grained security optimization pipelines. By identifying security-critical internal components via gradient-based attribution and selectively adapting these subspaces, practitioners can substantially improve the security of generated content\u2014such as executable code\u2014while minimizing the computational overhead of full fine-tuning [Thang_2026_LLM]. Finally, comprehensive evaluation against standardized adversarial benchmarks must become a routine, non-negotiable component of the model deployment lifecycle.\n\n**Policy Implications**\nThe persistent vulnerability of advanced AI models to adversarial manipulation carries profound implications for technology policy and regulation. As LLMs and MLLMs are increasingly integrated into critical infrastructure, healthcare, and finance, the potential fallout from successful adversarial exploits grows exponentially. Policymakers must move beyond voluntary guidelines and establish rigorous, standardized requirements for adversarial robustness testing and red-teaming prior to the commercial release of high-impact models. Furthermore, regulatory frameworks should mandate transparency regarding the safety policies implemented within these models, ensuring that the mechanisms designed to prevent the generation of harmful or obfuscated content [Ding_2025_Reward] are both verifiable and accountable to public safety standards.\n\n**Future Outlook**\nLooking to the future, the field of adversarial machine learning must pivot towards proactive and holistic security paradigms. Future research should prioritize understanding the transferability of adversarial examples across diverse modalities and architectures, particularly addressing the suboptimal alignment of local features in MLLMs that attackers currently exploit [Jia_2025_Adversarial]. Additionally, the integration of advanced reasoning capabilities directly into the safety alignment process [Liu_2025_Purpcode] represents a promising frontier for developing models that can intrinsically recognize and resist manipulation. Ultimately, securing the next generation of AI will require unprecedented collaboration across algorithmic research, systems engineering, and public policy to ensure that artificial intelligence remains both powerful and fundamentally safe.",
+    "text": "# Conclusion\n\nThe rapid advancement of artificial intelligence, particularly large language models (LLMs), has brought unprecedented capabilities alongside increasingly sophisticated security vulnerabilities. Throughout this survey, we have explored the multifaceted landscape of adversarial attacks, revealing that as models grow in complexity, so too do the methods designed to exploit them. From traditional evasion attacks to advanced jailbreaking strategies that circumvent built-in safety mechanisms [Muntasir_2025_Mocha], the adversarial threat model has evolved significantly. Automated red-teaming and multi-turn adversarial interactions have demonstrated that even state-of-the-art models remain susceptible to carefully crafted prompts and iterative exploitation [Mo_2025_LLMs].\n\nA critical observation from recent literature is the rapidly expanding attack surface. Adversarial threats are no longer confined to isolated classification tasks; they now permeate complex, real-world applications such as automated code generation [Li_2024_Exploratory, Nie_2024_Secodeplt] and retrieval-augmented generation (RAG) systems [Mo_2025_LLMs]. The integration of LLMs into broader software ecosystems means that vulnerabilities can propagate through pipelines, leading to severe downstream consequences, including the generation of exploitable code or the execution of unauthorized commands. Furthermore, the shift towards parameter-efficient fine-tuning (PEFT) introduces new vectors for data poisoning, where even minimal malicious injections can compromise model integrity and manipulate specific outputs [Rubel_2024_LLM].\n\nTo address these pervasive threats, the security paradigm must shift from isolated mitigations to a comprehensive defense-in-depth strategy. Relying on a single safety filter or alignment phase is demonstrably insufficient against adaptive adversaries. A robust defense architecture requires layered security measures across the entire machine learning lifecycle. At the data level, future efforts must prioritize systematic quality metrics and automated data-cleaning pipelines to identify and filter harmful or redundant samples before training or fine-tuning [Li_2024_Exploratory]. At the model level, techniques such as origin separation\u2014processing context from different sources independently\u2014offer promising avenues for mitigating context-based attacks, though significant advancements in model interpretability are required to realize their full potential [Storek_2025_AI]. \n\nFor practitioners and developers deploying AI systems, we offer several practical recommendations to enhance immediate security posture. First, system-level safeguards are essential; developers should implement robust prompt sanitization before feeding inputs to the model and establish monitoring systems to alert administrators if specific strings or patterns occur at unusual frequencies [Jenko_2024_LLM]. Second, to prevent adversaries from optimizing attacks through iterative probing, systems should incorporate dynamic rate limiting and query interruption mechanisms [Jenko_2024_LLM]. Finally, during model adaptation, employing adaptive sampling methods that dynamically weight examples can enhance resilience against targeted poisoning attacks [Li_2024_Exploratory]. \n\nIn conclusion, securing AI systems against adversarial attacks is an ongoing arms race that demands continuous vigilance and collaborative innovation. While current defenses often lag behind novel attack vectors, adopting a defense-in-depth philosophy and integrating rigorous security practices throughout the development lifecycle can significantly mitigate risks. Future research must continue to bridge the gap between theoretical vulnerabilities and practical, scalable defenses, ensuring that the next generation of AI systems is not only highly capable but also fundamentally secure and trustworthy.",
     "citations": [
       {
-        "bibtex_key": "Jia_2025_Adversarial",
+        "bibtex_key": "Muntasir_2025_Mocha",
         "claim": "",
         "chunk_id": null,
         "retrieval_score": 0.0
       },
       {
-        "bibtex_key": "Wang_2024_Advqdet",
+        "bibtex_key": "Mo_2025_LLMs",
         "claim": "",
         "chunk_id": null,
         "retrieval_score": 0.0
       },
       {
-        "bibtex_key": "Liu_2025_Purpcode",
+        "bibtex_key": "Rubel_2024_LLM",
         "claim": "",
         "chunk_id": null,
         "retrieval_score": 0.0
       },
       {
-        "bibtex_key": "Ding_2025_Reward",
+        "bibtex_key": "Li_2024_Exploratory",
         "claim": "",
         "chunk_id": null,
         "retrieval_score": 0.0
       },
       {
-        "bibtex_key": "Thang_2026_LLM",
+        "bibtex_key": "Storek_2025_AI",
         "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Jenko_2024_LLM",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Li_2024_Exploratory, Nie_2024_Secodeplt",
+        "claim": "(auto-detected from text)",
         "chunk_id": null,
         "retrieval_score": 0.0
       }
     ],
-    "word_count": 548,
+    "word_count": 474,
     "status": "drafted",
     "iteration": 1,
     "rag_queries": [],
     "retrieved_chunk_ids": [],
-    "writer_notes": "[agentic] Response was not valid JSON. Citations extracted via regex.",
+    "writer_notes": "[prefetch_agentic] Response was not valid JSON. Citations extracted via regex.",
     "critic_feedback": "",
-    "drafted_at": "2026-03-22T10:41:30.094239"
+    "drafted_at": "2026-03-26T12:17:58.513973"
   }
 }

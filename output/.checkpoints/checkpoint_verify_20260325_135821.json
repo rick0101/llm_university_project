@@ -1,0 +1,752 @@
+{
+  "node": "verify",
+  "timestamp": "20260325_135821",
+  "state": {
+    "l2_summaries": [],
+    "outline": [
+      {
+        "key": "abstract",
+        "title": "Abstract",
+        "description": "A concise summary of the entire survey, highlighting the rapid evolution of LLM security threats from 2024 to 2026. It should briefly mention the shift from generalized text-based vulnerabilities to domain-specific, multimodal, and inference-time exploits across four key areas: adversarial attacks on code LLMs, data/model poisoning, prompt injection, and hallucinations. The abstract will be generated last by the Assembler.",
+        "target_length_words": 250,
+        "key_topics": [
+          "LLM Security",
+          "Adversarial Attacks",
+          "Data Poisoning",
+          "Prompt Injection",
+          "Hallucinations"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 0,
+        "section_type": "abstract",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "introduction",
+        "title": "1. Introduction",
+        "description": "Introduce the motivation and scope of the survey, framing the critical paradigm shift in AI security research between 2024 and 2026. Detail how the landscape has evolved from basic exploratory vulnerability assessments to highly sophisticated, automated arms races between attackers and defenders. Summarize the core contributions of this survey, explicitly outlining the four primary threat categories analyzed: Data and Model Poisoning, Prompt Injection, Adversarial Attacks (with a focus on code generation), and LLM Hallucinations. Establish the temporal trajectory of the field.",
+        "target_length_words": 1000,
+        "key_topics": [
+          "Survey Motivation",
+          "Temporal Evolution (2024-2026)",
+          "Threat Landscape Overview",
+          "Contributions"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 1,
+        "section_type": "introduction",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "background_and_preliminaries",
+        "title": "2. Background and Preliminaries",
+        "description": "Provide foundational definitions and concepts necessary for understanding LLM security. Define key terminology strictly adhering to domain standards: Jailbreak, Prompt Injection (Direct vs. Indirect), Attack Success Rate (ASR), Safety Alignment (RLHF, DPO), and Guardrails. Describe the standard LLM architecture and autoregressive properties that make them susceptible to manipulation. Outline a unified threat model encompassing both training-time (poisoning) and inference-time (injection, adversarial suffixes) attack vectors. Note: Rely on established domain knowledge for basic definitions to avoid citation hallucination, while referencing specific papers like Zhang_2024_Persistent only when discussing how alignment processes (SFT, DPO) interact with persistent threats.",
+        "target_length_words": 1200,
+        "key_topics": [
+          "LLM Architecture Basics",
+          "Safety Alignment (RLHF/DPO)",
+          "Threat Models",
+          "Terminology Definitions"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 2,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "data_and_model_poisoning",
+        "title": "3. Data and Model Poisoning",
+        "description": "Analyze the 2024-2026 evolution of stealthy backdoor attacks and data poisoning against LLMs, VLMs, and AI agents. Discuss the shift from foundational text-based vulnerabilities to complex multimodal exploits. Highlight early 2024 baseline vulnerabilities, specifically detailing implicit textual claims [Song_2024_Claim] and targeted attacks on code generation capabilities [Yan_2024_LLM]. Crucially, examine the 2024 turning point regarding backdoor persistence, detailing how malicious behaviors survive rigorous safety alignment processes like SFT and DPO [Zhang_2024_Persistent]. Conclude with the emerging threats to Vision-Language Models.",
+        "target_length_words": 1800,
+        "key_topics": [
+          "Stealthy Backdoor Attacks",
+          "Implicit Textual Claims",
+          "Backdoor Persistence",
+          "SFT and DPO Vulnerabilities",
+          "Multimodal Poisoning"
+        ],
+        "related_categories": [
+          "Data and Model Poisoning"
+        ],
+        "order": 3,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "prompt_injection_and_jailbreaking",
+        "title": "4. Prompt Injection and Jailbreaking",
+        "description": "Detail the rapid arms race in prompt injection and jailbreak research (2024-2026). Document the strategic shift from computationally expensive white-box gradient methods (e.g., GCG) to highly efficient black-box techniques exploiting structural LLM properties. Explicitly cover structural manipulations such as text flipping [Liu_2024_Flipattack], chat template manipulation [Zhao_2024_SQL], and system token injection [Zheng_2024_Improved]. Discuss the rise of automated adversarial generation, where LLMs attack other LLMs using crafted adversarial suffixes [Kumar_2024_LLMs] and automated frameworks like AutoDAN [Liu_2024_Autodan]. Address the critical shift towards targeting broader system architectures, particularly RAG systems.",
+        "target_length_words": 2000,
+        "key_topics": [
+          "Black-box vs White-box Attacks",
+          "Structural Manipulations",
+          "Automated Adversarial Generation",
+          "AutoDAN",
+          "RAG System Targeting"
+        ],
+        "related_categories": [
+          "Prompt Injection"
+        ],
+        "order": 4,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "adversarial_attacks_on_code_llms",
+        "title": "5. Adversarial Attacks on Specialized Code LLMs",
+        "description": "Examine the highly focused trajectory of adversarial attacks on code-generating LLMs between 2024 and 2025. Discuss the paradigm shift from generalized text jailbreaking to domain-specific exploitation of software development pipelines. Cover early 2024 exploratory vulnerability assessments and foundational attack vectors [Li_2024_Exploratory, Rubel_2024_LLM]. Detail how traditional prompt injection adapted to coding contexts via stealthy transformations and comment injections to bypass safety filters [Jenko_2024_LLM, Noever_2024_AI]. Emphasize the core finding that models optimized for functional correctness (e.g., passing unit tests) frequently sacrifice security, resulting in vulnerable code generation.",
+        "target_length_words": 1500,
+        "key_topics": [
+          "Code Generation Vulnerabilities",
+          "Domain-Specific Exploitation",
+          "Stealthy Transformations",
+          "Comment Injections",
+          "Functional Correctness vs Security"
+        ],
+        "related_categories": [
+          "Adversarial Attacks"
+        ],
+        "order": 5,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "llm_hallucinations_and_reliability",
+        "title": "6. LLM Hallucinations and Reliability",
+        "description": "Trace the 2024-2026 evolution of LLM hallucination research from binary output-centric detection to granular, reasoning-aware evaluation. Discuss the 2024 push for scalable, cost-effective baselines using smaller NLI models and specialized 7B-parameter annotators to replace computationally prohibitive proprietary models [Wang_2024_Developing, Jing_2024_Scale, Gu_2024_Anah]. Highlight the shift away from the binary 'supported vs. unsupported' paradigm in RAG systems, emphasizing the evaluation of 'partial support' in citations [Zhang_2024_Comparative, Zhang_2024_Fine]. Explore white-box detection methods utilizing internal hidden states and SVD [Du_2024_LLM], as well as domain-specific applications in medical MLLMs [Asadi_2024_Deterministic].",
+        "target_length_words": 2000,
+        "key_topics": [
+          "Scalable Detection Baselines",
+          "NLI Models and 7B Annotators",
+          "Partial Support in RAG",
+          "White-box Detection (SVD)",
+          "Domain-Specific Hallucinations"
+        ],
+        "related_categories": [
+          "LLM Hallucinations"
+        ],
+        "order": 6,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "cross_cutting_defenses",
+        "title": "8. Cross-Cutting Defenses and Mitigation Strategies",
+        "description": "Provide a holistic overview of defense mechanisms designed to mitigate the threats discussed in previous sections. Cover pre-generation guardrails, perplexity filters for detecting adversarial suffixes, and robust safety alignment techniques. Discuss the limitations of current defenses, particularly how standard RLHF and DPO fail to erase persistent backdoors or prevent structural prompt injections. Evaluate the trade-offs between model utility (e.g., functional correctness in code generation) and security.",
+        "target_length_words": 1500,
+        "key_topics": [
+          "Guardrails",
+          "Perplexity Filters",
+          "Robust Alignment",
+          "Utility-Security Trade-offs",
+          "Defense Limitations"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 7,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "testing_methodologies_and_evaluation",
+        "title": "7. Testing Methodologies and Evaluation",
+        "description": "MANDATORY dedicated section synthesizing the benchmarks, datasets, metrics, tools, and evaluation frameworks utilized across all four threat categories. Detail how Attack Success Rate (ASR) is measured in prompt injection and code adversarial attacks. Discuss the specific metrics used to evaluate backdoor persistence in poisoned models. Cover the evolution of hallucination metrics, specifically the transition to NLI-based scoring and 'partial support' metrics in RAG evaluation. Compare automated red-teaming frameworks against static benchmarks, highlighting the challenges of evaluating dynamic, multi-turn, and multimodal threats.",
+        "target_length_words": 1800,
+        "key_topics": [
+          "Attack Success Rate (ASR)",
+          "Hallucination Metrics",
+          "Backdoor Persistence Evaluation",
+          "Automated Red Teaming",
+          "Evaluation Frameworks"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 8,
+        "section_type": "testing",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "discussion_and_open_challenges",
+        "title": "9. Discussion and Open Challenges",
+        "description": "Synthesize the broader implications of the 2024-2026 findings. Identify critical gaps in the current literature, such as the lack of unified defenses against multimodal prompt injection and the difficulty of securing agentic LLM workflows. Discuss the theoretical limits of safety alignment and the persistent challenge of defining ground-truth for complex hallucinations. Propose concrete future research directions to address these open challenges.",
+        "target_length_words": 1200,
+        "key_topics": [
+          "Multimodal Threats",
+          "Agentic LLM Security",
+          "Limits of Alignment",
+          "Future Research Directions"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 9,
+        "section_type": "discussion",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "conclusion",
+        "title": "10. Conclusion",
+        "description": "Summarize the key findings of the survey, reiterating the rapid evolution and increasing sophistication of LLM security threats. Provide actionable, practical recommendations for researchers and practitioners deploying LLMs in production environments, emphasizing the need for defense-in-depth strategies that account for poisoning, injection, adversarial manipulation, and hallucinations.",
+        "target_length_words": 500,
+        "key_topics": [
+          "Summary of Findings",
+          "Practical Recommendations",
+          "Defense-in-Depth"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 10,
+        "section_type": "conclusion",
+        "parent_key": null,
+        "subsections": []
+      }
+    ],
+    "sections": {
+      "background_and_preliminaries": {
+        "section_key": "background_and_preliminaries",
+        "title": "2. Background and Preliminaries",
+        "text": "## 2. Background and Preliminaries\n\nTo establish a rigorous foundation for analyzing the security landscape of Large Language Models (LLMs), this section delineates the core architectural properties that introduce vulnerabilities, outlines standard safety alignment methodologies, and defines a unified threat model encompassing both training-time and inference-time attack vectors. Strict adherence to established domain terminology is maintained throughout to categorize adversarial behaviors and evaluation metrics accurately.\n\n### 2.1 LLM Architecture and Inherent Vulnerabilities\n\nLarge Language Models process and generate human language by training on vast corpora of text data, with their primary utility derived from their sophisticated capability to follow user instructions [Rahman_2024_BERT]. As these models are increasingly deployed across diverse domains\u2014ranging from educational tools to autonomous coding assistants\u2014understanding their structural weaknesses becomes critical [Weng_2025_LLMs].\n\nThe fundamental attack surface of LLMs can be conceptualized through a Von Neumann Bottleneck analogy: just as traditional computer architectures conflate executable code and data within memory (enabling buffer overflow attacks), LLMs inherently conflate system instructions and external content within their context window [Maloyan_2026_Prompt]. This architectural characteristic is not an implementation flaw that can be easily patched, but rather an inherent property that allows untrusted external data to override privileged system directives [Maloyan_2026_Prompt]. \n\nMechanistically, this vulnerability manifests within the model's attention layers. When an LLM processes an adversarial input, the attention of specific heads shifts away from the original system instruction and heavily weights the injected malicious instruction\u2014a phenomenon defined as the distraction effect [Hung_2024_LLMs]. Consequently, the security of agentic and LLM-integrated systems depends on maintaining strict trust boundaries (e.g., User-Agent, Agent-Tool, and Session boundaries), which are frequently violated because the architecture struggles to prioritize user intent over attacker-controlled context [Maloyan_2026_Prompt, Lee_2026_LLMs].\n\n### 2.2 Safety Alignment and Guardrails\n\nBecause LLMs are pre-trained on unfiltered datasets that inherently contain biases and harmful knowledge, foundational safety teams focus on mitigating primary threats such as cybersecurity exploits, biological weapon generation, deception, and unintended model autonomy [Weng_2025_LLMs, Noever_2024_AI]. To ensure models adhere to ethical and legal standards, developers employ a multi-stage Safety Alignment process.\n\nSupervised Fine-Tuning (SFT) on curated safety datasets serves as the foundational alignment step, teaching the model to refuse harmful queries [Weng_2025_LLMs]. However, SFT alone is insufficient to prevent unsafe outputs in novel or complex contexts. Therefore, techniques such as Reinforcement Learning from Human Feedback (RLHF) and Direct Preference Optimization (DPO) are applied to further refine alignment by optimizing model responses based on human preferences [Weng_2025_LLMs]. At inference time, these intrinsic alignment measures are often supplemented by Guardrails\u2014such as Llama-Guard\u2014which act as secondary filters to detect and block unsafe generations before they reach the user [Weng_2025_LLMs].\n\nDespite these multi-layered defenses, safety alignment is frequently superficial and susceptible to circumvention [Kumar_2024_LLMs]. A primary cause of this fragility is the distributional mismatch between the safety alignment corpora and real-world adversarial prompts [Liu_2025_LLM]. Attackers exploit this gap by generating instructions with distributions that differ significantly from the training data, rendering the LLM unable to recognize the unseen malicious intent [Liu_2025_LLM]. For instance, translating harmful natural language prompts into formal logical expressions preserves the underlying semantic intent while successfully evading safety constraints due to this distributional discrepancy [Peng_2025_LLM].\n\n### 2.3 Unified Threat Model: Training-Time and Inference-Time Vectors\n\nThe LLM security landscape is characterized by a unified threat model that spans the entire model lifecycle, categorized broadly into training-time poisoning and inference-time manipulation.\n\n#### 2.3.1 Training-Time Threats: Data and Model Poisoning\nAdversaries can manipulate the training pipeline to embed latent vulnerabilities. Data Poisoning involves injecting malicious samples into the training corpus to introduce targeted biases or backdoors. Recent evaluations demonstrate that poisoning as little as 0.001% to 0.1% of an LLM's pre-training dataset can introduce malicious behaviors that measurably persist through post-training alignment phases [Zhang_2024_Persistent]. While specific jailbreaking backdoors may be overwritten by standard SFT and DPO, other objectives\u2014such as denial-of-service, context extraction, and belief manipulation\u2014remain highly persistent [Zhang_2024_Persistent]. \n\nPoisoning can also occur during the instruction tuning phase, where adversaries statically inject examples to introduce a targeted bias in a teacher model, which subsequently propagates to student models via distillation [Chaudhari_2025_Cascading]. Furthermore, attackers can exploit the alignment mechanism itself through Subversive Alignment Injection (SAI). By leveraging a KL-regularized optimization framework, SAI induces targeted censorship or bias by triggering the model's refusal behavior on predefined topics, maintaining a stealthy footprint that evades state-of-the-art robust aggregation defenses in federated learning and LLM state forensics [Mamun_2025_LLMs].\n\n#### 2.3.2 Inference-Time Threats: Jailbreaks and Prompt Injections\nAt inference time, adversaries exploit the model's instruction-following capabilities. It is imperative to distinguish between jailbreaks and prompt injections, as they target different vulnerabilities and operate under distinct threat models [Jacob_2024_Promptshield].\n\nJailbreaks are adversarial prompts explicitly designed to bypass the built-in safety alignment and ethical constraints of foundation models, coaxing the LLM into generating disallowed or harmful content [Weng_2025_LLMs, Kumar_2024_LLMs, Jacob_2024_Promptshield]. These attacks generally fall into two categories: competing objectives and mismatched generalization [Kumar_2024_LLMs]. Competing objective attacks leverage the model's inherent helpfulness to override safety goals, often employing role-play, human persuasion techniques, or using LLMs as prompt engineers to iteratively identify stealthy rephrasings [Kumar_2024_LLMs]. Mismatched generalization attacks target gaps in alignment through out-of-distribution inputs, such as appending optimized adversarial suffixes to harmful queries, though such suffixes often appear unnatural [Kumar_2024_LLMs].\n\nIn contrast, Prompt Injection involves subverting the intended functionality of an application-specific prompt without necessarily violating the safety alignment of the underlying foundation model [Jacob_2024_Promptshield]. Prompt injections are categorized into direct and indirect vectors. Direct Prompt Injection occurs when malicious users insert harmful instructions directly into an application's input to redirect its responses [Rahman_2024_BERT]. Indirect Prompt Injection targets LLM-integrated applications\u2014such as Retrieval-Augmented Generation (RAG) systems\u2014by embedding malicious payloads into external, third-party resources like web pages or retrievable documents [Rahman_2024_BERT, Evtimov_2025_Wasp]. In these scenarios, the retrieval layer acts as an attack channel, and failures arise from misplaced authority, where the model treats the attacker-controlled context as a higher priority than the user's explicit intent [Lee_2026_LLMs]. Defending against indirect injections requires distinguishing between conversational data (which rarely contains self-inflicted attacks) and application-structured data, utilizing techniques such as segmentation removal or extraction removal to excise injected instructions [Jacob_2024_Promptshield, Chen_2025_Indirect].\n\n### 2.4 Evaluation Metrics and Terminology\n\nTo systematically evaluate the robustness of LLMs against these threats, researchers employ both human and automated Red Teaming to probe defenses and uncover vulnerabilities [Weng_2025_LLMs]. The efficacy of adversarial attacks is predominantly quantified using the Attack Success Rate (ASR), which measures the proportion of malicious instructions that successfully elicit the intended unauthorized behavior or bypass safety guardrails [Liu_2025_LLM].\n\nConversely, defensive mechanisms and alignment robustness are often evaluated using the Refusal Rate, a metric that determines whether the target model correctly recognizes an input query as potentially risky and declines to respond, typically assessed via keyword matching [Nie_2025_Secodeplt]. Because static metrics can sometimes fail to capture the nuance of complex exploits, comprehensive benchmarking also necessitates dynamic evaluation tailored to specific attack categories, ensuring a fine-grained and precise assessment of whether a generated attack is functionally valid [Nie_2025_Secodeplt].",
+        "citations": [
+          {
+            "bibtex_key": "Rahman_2024_BERT",
+            "claim": "Large Language Models process and generate human language by training on vast corpora of text data, with their primary utility derived from their sophisticated capability to follow user instructions.",
+            "chunk_id": "69c9307e38a48b8f",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Weng_2025_LLMs",
+            "claim": "As these models are increasingly deployed across diverse domains\u2014ranging from educational tools to autonomous coding assistants\u2014understanding their structural weaknesses becomes critical.",
+            "chunk_id": "651a8cff4f5e116c",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Maloyan_2026_Prompt",
+            "claim": "The fundamental attack surface of LLMs can be conceptualized through a Von Neumann Bottleneck analogy: just as traditional computer architectures conflate executable code and data within memory, LLMs inherently conflate system instructions and external content within their context window.",
+            "chunk_id": "d564390bf4fc1aa4",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Maloyan_2026_Prompt",
+            "claim": "This architectural characteristic is not an implementation flaw that can be easily patched, but rather an inherent property that allows untrusted external data to override privileged system directives.",
+            "chunk_id": "d564390bf4fc1aa4",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Hung_2024_LLMs",
+            "claim": "When an LLM processes an adversarial input, the attention of specific heads shifts away from the original system instruction and heavily weights the injected malicious instruction\u2014a phenomenon defined as the distraction effect.",
+            "chunk_id": "9d9591dd6ce60aa6",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Maloyan_2026_Prompt",
+            "claim": "Consequently, the security of agentic and LLM-integrated systems depends on maintaining strict trust boundaries (e.g., User-Agent, Agent-Tool, and Session boundaries), which are frequently violated.",
+            "chunk_id": "46df84856c1323f4",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Lee_2026_LLMs",
+            "claim": "These boundaries are violated because the architecture struggles to prioritize user intent over attacker-controlled context.",
+            "chunk_id": "9a31146cecbcba52",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Weng_2025_LLMs",
+            "claim": "Because LLMs are pre-trained on unfiltered datasets that inherently contain biases and harmful knowledge, foundational safety teams focus on mitigating primary threats.",
+            "chunk_id": "459129edd50377c9",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Noever_2024_AI",
+            "claim": "Foundational safety teams focus on mitigating primary threats such as cybersecurity exploits, biological weapon generation, deception, and unintended model autonomy.",
+            "chunk_id": "a888714f9814ea81",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Weng_2025_LLMs",
+            "claim": "Supervised Fine-Tuning (SFT) on curated safety datasets serves as the foundational alignment step, teaching the model to refuse harmful queries.",
+            "chunk_id": "459129edd50377c9",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Weng_2025_LLMs",
+            "claim": "Techniques such as Reinforcement Learning from Human Feedback (RLHF) and Direct Preference Optimization (DPO) are applied to further refine alignment by optimizing model responses based on human preferences.",
+            "chunk_id": "459129edd50377c9",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Weng_2025_LLMs",
+            "claim": "At inference time, these intrinsic alignment measures are often supplemented by Guardrails\u2014such as Llama-Guard\u2014which act as secondary filters to detect and block unsafe generations before they reach the user.",
+            "chunk_id": "459129edd50377c9",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Kumar_2024_LLMs",
+            "claim": "Despite these multi-layered defenses, safety alignment is frequently superficial and susceptible to circumvention.",
+            "chunk_id": "e21aef3d5c4cb8ed",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Liu_2025_LLM",
+            "claim": "A primary cause of this fragility is the distributional mismatch between the safety alignment corpora and real-world adversarial prompts.",
+            "chunk_id": "37f9cfaefd932238",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Liu_2025_LLM",
+            "claim": "Attackers exploit this gap by generating instructions with distributions that differ significantly from the training data, rendering the LLM unable to recognize the unseen malicious intent.",
+            "chunk_id": "37f9cfaefd932238",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Peng_2025_LLM",
+            "claim": "Translating harmful natural language prompts into formal logical expressions preserves the underlying semantic intent while successfully evading safety constraints due to this distributional discrepancy.",
+            "chunk_id": "e0052c6e6cbd8c18",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Zhang_2024_Persistent",
+            "claim": "Recent evaluations demonstrate that poisoning as little as 0.001% to 0.1% of an LLM's pre-training dataset can introduce malicious behaviors that measurably persist through post-training alignment phases.",
+            "chunk_id": "20dc579b738a3b9c",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Zhang_2024_Persistent",
+            "claim": "While specific jailbreaking backdoors may be overwritten by standard SFT and DPO, other objectives\u2014such as denial-of-service, context extraction, and belief manipulation\u2014remain highly persistent.",
+            "chunk_id": "20dc579b738a3b9c",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Chaudhari_2025_Cascading",
+            "claim": "Poisoning can also occur during the instruction tuning phase, where adversaries statically inject examples to introduce a targeted bias in a teacher model, which subsequently propagates to student models via distillation.",
+            "chunk_id": "3503b28f351902dc",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Mamun_2025_LLMs",
+            "claim": "By leveraging a KL-regularized optimization framework, SAI induces targeted censorship or bias by triggering the model's refusal behavior on predefined topics, maintaining a stealthy footprint that evades state-of-the-art robust aggregation defenses in federated learning and LLM state forensics.",
+            "chunk_id": "81ec39c4d95f3653",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Jacob_2024_Promptshield",
+            "claim": "It is imperative to distinguish between jailbreaks and prompt injections, as they target different vulnerabilities and operate under distinct threat models.",
+            "chunk_id": "20efa9c7c07cc773",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Weng_2025_LLMs",
+            "claim": "Jailbreaks are adversarial prompts explicitly designed to bypass the built-in safety alignment and ethical constraints of foundation models, coaxing the LLM into generating disallowed or harmful content.",
+            "chunk_id": "651a8cff4f5e116c",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Kumar_2024_LLMs",
+            "claim": "Jailbreaks are adversarial prompts explicitly designed to bypass the built-in safety alignment and ethical constraints of foundation models, coaxing the LLM into generating disallowed or harmful content.",
+            "chunk_id": "e21aef3d5c4cb8ed",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Jacob_2024_Promptshield",
+            "claim": "Jailbreaks are adversarial prompts explicitly designed to bypass the built-in safety alignment and ethical constraints of foundation models, coaxing the LLM into generating disallowed or harmful content.",
+            "chunk_id": "20efa9c7c07cc773",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Kumar_2024_LLMs",
+            "claim": "These attacks generally fall into two categories: competing objectives and mismatched generalization.",
+            "chunk_id": "a2abdc55d5f723e2",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Kumar_2024_LLMs",
+            "claim": "Competing objective attacks leverage the model's inherent helpfulness to override safety goals, often employing role-play, human persuasion techniques, or using LLMs as prompt engineers to iteratively identify stealthy rephrasings.",
+            "chunk_id": "a2abdc55d5f723e2",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Kumar_2024_LLMs",
+            "claim": "Mismatched generalization attacks target gaps in alignment through out-of-distribution inputs, such as appending optimized adversarial suffixes to harmful queries, though such suffixes often appear unnatural.",
+            "chunk_id": "a2abdc55d5f723e2",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Jacob_2024_Promptshield",
+            "claim": "Prompt Injection involves subverting the intended functionality of an application-specific prompt without necessarily violating the safety alignment of the underlying foundation model.",
+            "chunk_id": "20efa9c7c07cc773",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Rahman_2024_BERT",
+            "claim": "Direct Prompt Injection occurs when malicious users insert harmful instructions directly into an application's input to redirect its responses.",
+            "chunk_id": "dd70b5746203dc6a",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Rahman_2024_BERT",
+            "claim": "Indirect Prompt Injection targets LLM-integrated applications\u2014such as Retrieval-Augmented Generation (RAG) systems\u2014by embedding malicious payloads into external, third-party resources like web pages or retrievable documents.",
+            "chunk_id": "dd70b5746203dc6a",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Evtimov_2025_Wasp",
+            "claim": "Indirect Prompt Injection targets LLM-integrated applications\u2014such as Retrieval-Augmented Generation (RAG) systems\u2014by embedding malicious payloads into external, third-party resources like web pages or retrievable documents.",
+            "chunk_id": "f939659d4c90911d",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Lee_2026_LLMs",
+            "claim": "In these scenarios, the retrieval layer acts as an attack channel, and failures arise from misplaced authority, where the model treats the attacker-controlled context as a higher priority than the user's explicit intent.",
+            "chunk_id": "9a31146cecbcba52",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Jacob_2024_Promptshield",
+            "claim": "Defending against indirect injections requires distinguishing between conversational data (which rarely contains self-inflicted attacks) and application-structured data.",
+            "chunk_id": "28f062b03be9d2d7",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Chen_2025_Indirect",
+            "claim": "Defending against indirect injections utilizes techniques such as segmentation removal or extraction removal to excise injected instructions.",
+            "chunk_id": "07c112333249509b",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Weng_2025_LLMs",
+            "claim": "To systematically evaluate the robustness of LLMs against these threats, researchers employ both human and automated Red Teaming to probe defenses and uncover vulnerabilities.",
+            "chunk_id": "459129edd50377c9",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Liu_2025_LLM",
+            "claim": "The efficacy of adversarial attacks is predominantly quantified using the Attack Success Rate (ASR), which measures the proportion of malicious instructions that successfully elicit the intended unauthorized behavior or bypass safety guardrails.",
+            "chunk_id": "37f9cfaefd932238",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Nie_2025_Secodeplt",
+            "claim": "Defensive mechanisms and alignment robustness are often evaluated using the Refusal Rate, a metric that determines whether the target model correctly recognizes an input query as potentially risky and declines to respond, typically assessed via keyword matching.",
+            "chunk_id": "af8c2247fc1482ba",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Nie_2025_Secodeplt",
+            "claim": "Comprehensive benchmarking also necessitates dynamic evaluation tailored to specific attack categories, ensuring a fine-grained and precise assessment of whether a generated attack is functionally valid.",
+            "chunk_id": "af8c2247fc1482ba",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Weng_2025_LLMs, Noever_2024_AI",
+            "claim": "(auto-detected from text)",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Jacob_2024_Promptshield, Chen_2025_Indirect",
+            "claim": "(auto-detected from text)",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Maloyan_2026_Prompt, Lee_2026_LLMs",
+            "claim": "(auto-detected from text)",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Rahman_2024_BERT, Evtimov_2025_Wasp",
+            "claim": "(auto-detected from text)",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Weng_2025_LLMs, Kumar_2024_LLMs, Jacob_2024_Promptshield",
+            "claim": "(auto-detected from text)",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          }
+        ],
+        "word_count": 1147,
+        "status": "verified",
+        "iteration": 3,
+        "rag_queries": [
+          "autoregressive LLM architecture vulnerabilities and next-token prediction security implications",
+          "LLM safety alignment RLHF DPO SFT and persistent threats Zhang 2024",
+          "taxonomy of prompt injection direct vs indirect and jailbreaking definitions in LLMs",
+          "unified threat model for large language models training-time poisoning vs inference-time adversarial suffixes",
+          "LLM security evaluation metrics Attack Success Rate ASR and guardrail implementation standards",
+          "evidence for claims in 2. Background and Preliminaries"
+        ],
+        "retrieved_chunk_ids": [
+          "459129edd50377c9",
+          "20dc579b738a3b9c",
+          "dd70b5746203dc6a",
+          "3503b28f351902dc",
+          "9d9591dd6ce60aa6",
+          "69c9307e38a48b8f",
+          "f7038ed0e83defac",
+          "a2abdc55d5f723e2",
+          "a888714f9814ea81",
+          "651a8cff4f5e116c",
+          "9a31146cecbcba52",
+          "81ec39c4d95f3653",
+          "e21aef3d5c4cb8ed",
+          "07c112333249509b",
+          "f939659d4c90911d",
+          "d564390bf4fc1aa4",
+          "46df84856c1323f4",
+          "17ffdeefc1ada60c",
+          "37f9cfaefd932238",
+          "1100b01625cbb574",
+          "e0052c6e6cbd8c18",
+          "af8c2247fc1482ba",
+          "20efa9c7c07cc773",
+          "28f062b03be9d2d7",
+          "7d612970d2e3f042"
+        ],
+        "writer_notes": "Addressed all critic feedback by replacing unsupported citations for general definitions. Used Jacob_2024_Promptshield to explicitly distinguish between Jailbreak and Prompt Injection. Used Maloyan_2026_Prompt strictly for the Von Neumann architectural analogy. Used Liu_2025_LLM for the definition of Attack Success Rate (ASR) and Nie_2025_Secodeplt for Refusal Rate and dynamic evaluation. Expanded the section to approximately 1100 words while strictly adhering to the provided chunks.",
+        "critic_feedback": "Accepted after 3 iterations (max reached). Some citations may not be fully verified.",
+        "drafted_at": "2026-03-25T13:43:09.040734"
+      },
+      "cross_cutting_defenses": {
+        "section_key": "cross_cutting_defenses",
+        "title": "8. Cross-Cutting Defenses and Mitigation Strategies",
+        "text": "## 8. Cross-Cutting Defenses and Mitigation Strategies\n\nThe proliferation of sophisticated vulnerabilities in large language models (LLMs) necessitates the development of comprehensive, cross-cutting defense mechanisms. Because no single security measure provides adequate protection against the diverse spectrum of adversarial threats, researchers increasingly advocate for a defense-in-depth framework [Maloyan_2026_Prompt]. This layered approach aims to increase the computational and structural cost of attacks by integrating pre-generation guardrails, robust safety alignment techniques, and system-level architectural constraints. Effective mitigation strategies must address these vectors while carefully balancing security guarantees with the preservation of model utility [Zhu_2025_AI].\n\n### Pre-Generation Guardrails and Input Purification\n\nInput purification strategies aim to detect and filter out potentially poisoned or adversarial inputs before they are processed by the underlying model. Traditional approaches frequently rely on perplexity-based filtering, operating on the premise that adversarial or anomalous inputs exhibit higher perplexity than benign text. However, recent evaluations demonstrate that perplexity filters are increasingly inadequate against sophisticated attacks. For instance, attackers can generate biased query-response pairs that achieve an average perplexity of 7.8\u2014significantly lower than the 14.1 average of benign responses\u2014allowing malicious high-quality text to easily bypass perplexity-based filtering mechanisms on models such as Gemma2-27B [Chaudhari_2025_Cascading]. Similarly, the ONION defense, which ranks token importance by measuring perplexity changes upon token removal, successfully identifies non-semantic triggers (e.g., random tokens) but fails against semantic triggers that are smoothly integrated into the context. Against semantic triggers used in Backdoor of Thought (BoT) attacks, ONION's detection rate drops to merely 7% [Zhu_2025_Think].\n\nTo address the limitations of perplexity metrics, researchers have developed advanced prompt injection detectors and classification models. The PromptShield benchmark provides a carefully curated dataset of conversational and application-structured data to train deployable prompt injection detectors, achieving state-of-the-art performance in the low false positive rate (FPR) evaluation regime [Jacob_2024_Promptshield]. Other approaches leverage transformer-based architectures for binary classification; for example, utilizing multilingual BERT embeddings combined with Logistic Regression has been shown to classify malicious prompts with an outstanding accuracy of 96.55%, outperforming traditional machine learning methods like Gaussian Naive Bayes, Random Forest, and Support Vector Machines [Rahman_2024_BERT].\n\nMoving beyond semantic and token-level analysis, the CurvaLID framework introduces a novel, LLM-agnostic defense that detects adversarial prompts based on their fundamental geometric properties [Yung_2025_Geometry]. Current mitigation strategies often rely on computationally expensive fine-tuning or built-in defenses that sacrifice model utility. In contrast, CurvaLID provides an efficient detection mechanism by extending the Whewell equation into an n-dimensional Euclidean space (TextCurv) to quantify semantic shifts and word-level curvature [Yung_2025_Geometry]. Furthermore, it analyzes Local Intrinsic Dimensionality (PromptLID) to capture complementary geometric features within adversarial subspaces [Yung_2025_Geometry]. By integrating these measures, CurvaLID successfully detects approximately 99% of adversarial prompts, outperforming state-of-the-art defenses by over 10% in attack success rate reduction across multiple LLMs and attack families [Yung_2025_Geometry].\n\n### Robust Safety Alignment and Model-Based Defenses\n\nStandard safety alignment techniques often leave a critical distributional gap between the safety alignment corpus and actual jailbreak attacks. This mismatch forces developers into reactive patching cycles. To bridge this gap, the IMAGINE framework employs an embedding-driven adversarial text generation technique to synthesize jailbreak-like instructions dynamically within the model's latent space [Liu_2025_LLM]. By iteratively evolving text generation distributions, IMAGINE implicitly broadens the model's rejection boundaries to encompass malicious intents. This approach achieves up to a 90% decrease in Attack Success Rate (ASR) on the GPTFUZZ benchmark across models like Qwen2.5, Llama3.1, and Llama3.2, without compromising their basic capabilities or functional integrity [Liu_2025_LLM]. Similarly, the GAP (Graph of Attacks with Pruning) framework, which generates stealthy jailbreak prompts using an interconnected graph structure to share knowledge across attack paths, has been utilized to enhance model safeguards. Fine-tuning content moderation systems with GAP-generated prompts increases true positive detection rates by 108.5% and accuracy by 183.6% [Schwartz_2025_LLM].\n\nDuring text generation, model-based defenses such as circuit breakers attempt to identify and reroute harmful representations directly in the activation space, providing robustness against various jailbreak attacks [Kumar_2024_LLMs]. Furthermore, to defend against vulnerabilities embedded in the model's internal reasoning processes, researchers have proposed \"thinking recovery alignment.\" This approach fine-tunes the model on recovery samples where truncated, thought-skipping tokens are appended with complete thinking processes [Zhu_2025_Think]. While this defense reduces ASR by approximately 30% for template modification and adversarial suffix attacks, it highlights a critical limitation of current alignment techniques: it reduces training-based BoT attacks by only 2% [Zhu_2025_Think]. In fact, tuning-based mitigation\u2014attempting to overwrite backdoors by fine-tuning a compromised model on a clean supervised fine-tuning (SFT) dataset\u2014has a negligible effect on deeply ingrained backdoors, underscoring the persistent nature of these structural vulnerabilities [Zhu_2025_Think].\n\n### Agentic and System-Level Defenses\n\nThe deployment of LLMs in agentic systems introduces complex trust boundaries that are fundamentally challenged by standard architectures. These include the User-Agent boundary (where user instructions must be privileged over external content), the Agent-Tool boundary (where tool responses must be treated as untrusted data rather than executable instructions), the Tool-Tool boundary, and the Session boundary [Maloyan_2026_Prompt]. Empirical analysis reveals that 73% of tested platforms fail to adequately enforce at least one of these critical boundaries [Maloyan_2026_Prompt].\n\nTo secure agentic assistants, a layered defense framework is required. The Instruction Hierarchy approach trains LLMs to strictly prioritize instruction sources, placing system prompts at the highest priority and external tool content at the lowest [Maloyan_2026_Prompt]. While vendors claim high blocking rates (e.g., 88% injection blocking), independent evaluations show that adaptive attacks can still exploit the remaining attack surface [Maloyan_2026_Prompt]. Consequently, architectural defenses have shown significant promise in mitigating Indirect Prompt Injection (IPI). For example, StruQ separates prompts and data channels to achieve an ASR of less than 2%, while CaMeL provides provable security on 77% of tasks through capability-based isolation [Maloyan_2026_Prompt]. Another novel defense against IPI is MELON (Masked re-Execution and TooL comparisON), which detects attacks by re-executing the agent's trajectory with a masked user prompt [Zhu_2025_AI]. Operating on the observation that compromised agents become less dependent on legitimate user tasks and more focused on malicious instructions, MELON identifies an attack if the actions generated in the original and masked executions are similar. Extensive evaluation on the AgentDojo benchmark demonstrates that MELON, especially when combined with prompt augmentation, outperforms state-of-the-art defenses in both attack prevention and utility preservation [Zhu_2025_AI].\n\nSystem-level safeguards also require strict operational controls. Proposed frameworks advocate for cryptographic tool identity\u2014mandatory digital signing of tool definitions with immutable versioning (e.g., following the ETDI model with OAuth 2.0 integration) to prevent tool squatting [Maloyan_2026_Prompt]. This must be paired with capability scoping based on the principle of least privilege, such as Meta's \"Rule of Two,\" which dictates that agents should satisfy no more than two high-risk conditions simultaneously [Maloyan_2026_Prompt]. Additional layers include mandatory sandboxed execution with strict egress controls (e.g., containerized per-project file system access), end-to-end provenance tracking of data sources, and multi-agent runtime intent verification where a separate \"guardian\" agent validates proposed actions [Maloyan_2026_Prompt]. For high-impact actions, human-in-the-loop gates are proposed, utilizing a tiered approach (Silent, Logged, Confirmed, Blocked) to balance developer velocity against security [Maloyan_2026_Prompt].\n\n### Domain-Specific Defenses: Code Generation\n\nIn specialized domains such as software development, defenses must strictly balance security with functional correctness. The CodeGuarder framework secures Retrieval-Augmented Code Generation (RACG) systems against knowledge base poisoning by fundamentally shifting the retrieval paradigm [Lin_2025_LLMs]. Instead of retrieving only functional code, CodeGuarder operates in two phases. In the offline phase, it constructs a Security Knowledge Base from historical vulnerabilities, extracting functionality descriptions, root causes, and fixing patterns [Lin_2025_LLMs]. In the online phase, user queries are decomposed into fine-grained sub-tasks, and a context-aware retriever fetches relevant security knowledge using cosine similarity on vector embeddings [Lin_2025_LLMs]. To manage prompt size and LLM attention dilution, a novel re-ranking and filtering mechanism prioritizes this knowledge based on the LLM's varying susceptibility to specific vulnerability types. Extensive evaluations demonstrate that CodeGuarder significantly improves code security rates across standard and targeted poisoning scenarios without compromising functional correctness, outperforming state-of-the-art baselines like SafeCoder [Lin_2025_LLMs].\n\n### Utility-Security Trade-offs and Limitations\n\nDespite these advancements, the trade-off between model utility and security remains a fundamental challenge in LLM deployment [Zhu_2025_AI]. Current safety measures are often insufficient, as evidenced by high attack success rates (up to 84%) observed in agentic AI systems, indicating a pressing need for advanced input sanitization and context-aware filtering [Liu_2025_AI]. Furthermore, comprehensive evaluations of existing defenses\u2014including Llama Guard, NeMo Guardrails, and Spotlighting data marking approaches\u2014reveal that all evaluated defenses can be bypassed with ASRs exceeding 78% when subjected to adaptive optimization techniques such as gradient descent, reinforcement learning, or random search [Maloyan_2026_Prompt]. Even intuitive removal methods designed to excise indirect prompt injections yield performance that is not entirely satisfactory, leaving substantial room for future exploration [Chen_2025_Indirect]. Ultimately, while safety guardrails provide a necessary baseline defense against context-shifting and adversarial attacks targeting models like GPT-4o and ChatGPT [graph_context_cross_cutting_defenses], the development of robust, utility-preserving defenses that can withstand adaptive, structural, and persistent threats remains an open and critical research frontier.",
+        "citations": [
+          {
+            "bibtex_key": "Maloyan_2026_Prompt",
+            "claim": "Researchers advocate for a defense-in-depth framework that layers multiple security controls to increase the cost of attacks.",
+            "chunk_id": "8a3f29354e68d19d",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Zhu_2025_AI",
+            "claim": "Effective mitigation strategies must balance security guarantees with the preservation of model utility.",
+            "chunk_id": "65044c133eceae4b",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Chaudhari_2025_Cascading",
+            "claim": "Attackers can generate biased query-response pairs that achieve an average perplexity of 7.8, bypassing perplexity-based filtering mechanisms.",
+            "chunk_id": "76c85c4d42167316",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Zhu_2025_Think",
+            "claim": "The ONION defense successfully identifies non-semantic triggers but fails against semantic triggers, dropping its detection rate to merely 7%.",
+            "chunk_id": "daa44a9677ca49b0",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Jacob_2024_Promptshield",
+            "claim": "The PromptShield benchmark and detector achieve state-of-the-art performance in the low false positive rate evaluation regime.",
+            "chunk_id": "b933fa847fb54eae",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Rahman_2024_BERT",
+            "claim": "Utilizing multilingual BERT embeddings combined with Logistic Regression classifies malicious prompts with an accuracy of 96.55%.",
+            "chunk_id": "4516c9bbe309b66b",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Yung_2025_Geometry",
+            "claim": "The CurvaLID framework detects adversarial prompts based on their geometric properties, extending the Whewell equation into an n-dimensional space.",
+            "chunk_id": "8d329b2efacc1cd6",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Liu_2025_LLM",
+            "claim": "The IMAGINE framework synthesizes jailbreak-like instructions dynamically within the model's latent space to broaden rejection boundaries.",
+            "chunk_id": "17ffdeefc1ada60c",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Schwartz_2025_LLM",
+            "claim": "Fine-tuning content moderation systems with GAP-generated prompts increases true positive detection rates by 108.5%.",
+            "chunk_id": "af951c48e3506bf0",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Kumar_2024_LLMs",
+            "claim": "Circuit breakers attempt to identify and reroute harmful representations directly in the activation space.",
+            "chunk_id": "64b092d1bfcc172f",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Lin_2025_LLMs",
+            "claim": "The CodeGuarder framework secures RACG systems by retrieving both functional examples and context-aware security knowledge.",
+            "chunk_id": "185f5632c65c57ca",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Liu_2025_AI",
+            "claim": "High attack success rates (up to 84%) observed in agentic AI systems indicate a pressing need for advanced input sanitization.",
+            "chunk_id": "6ca586824cac1bd4",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Chen_2025_Indirect",
+            "claim": "Intuitive removal methods designed to excise indirect prompt injections yield performance that is not entirely satisfactory.",
+            "chunk_id": "b448dbbfd1ad1784",
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "graph_context_cross_cutting_defenses",
+            "claim": "Safety guardrails provide a necessary baseline defense against context-shifting and adversarial attacks targeting models like GPT-4o and ChatGPT.",
+            "chunk_id": "graph_context_cross_cutting_defenses",
+            "retrieval_score": 0.0
+          }
+        ],
+        "word_count": 1463,
+        "status": "verified",
+        "iteration": 3,
+        "rag_queries": [
+          "perplexity filters and input guardrails for adversarial suffix detection in large language models",
+          "robust safety alignment techniques RLHF vs DPO for mitigating jailbreaks and prompt injections",
+          "persistence of backdoors and model poisoning in LLMs after safety fine-tuning and alignment",
+          "evaluating the trade-off between LLM utility functional correctness and security guardrails",
+          "limitations of current LLM defense strategies against structural prompt injection and adaptive attacks",
+          "evidence for claims in 8. Cross-Cutting Defenses and Mitigation Strategies"
+        ],
+        "retrieved_chunk_ids": [
+          "76c85c4d42167316",
+          "cab38afb9d882df3",
+          "daa44a9677ca49b0",
+          "8d329b2efacc1cd6",
+          "17ffdeefc1ada60c",
+          "55c85428696ae2b5",
+          "b937801e31477b93",
+          "8a3f29354e68d19d",
+          "65044c133eceae4b",
+          "47514c914f43dd5b",
+          "a51469ab08ea7519",
+          "d4f24ef11566ce67",
+          "dd0ffcc6ab10128a",
+          "64b092d1bfcc172f",
+          "fa93958350cb63e7",
+          "b448dbbfd1ad1784",
+          "b933fa847fb54eae",
+          "6ca586824cac1bd4",
+          "0b751009d78b81a1",
+          "37f9cfaefd932238",
+          "153d0137c7b96450",
+          "4516c9bbe309b66b",
+          "af951c48e3506bf0",
+          "46df84856c1323f4",
+          "185f5632c65c57ca",
+          "graph_context_cross_cutting_defenses"
+        ],
+        "writer_notes": "The section was carefully constructed to address all critic feedback. Citations describing attacks (Weng, Storek) were removed from defense claims. Zhu_2025_Think was correctly utilized to describe the *failure* of defenses against BoT. Maloyan_2026_Prompt was used strictly for its proposed defense-in-depth framework and evaluation of existing defenses. Kumar_2024_LLMs was used accurately for its brief mention of circuit breakers operating in activation space. The word count is approximately 1300 words, maximizing the utility of the provided chunks without fabricating external information.",
+        "critic_feedback": "Accepted after 3 iterations (max reached). Some citations may not be fully verified.",
+        "drafted_at": "2026-03-25T13:58:19.960435"
+      }
+    },
+    "verification_results": {},
+    "bibliography": [],
+    "provenance": [],
+    "final_paper": "",
+    "version_info": {
+      "version_number": "1.0",
+      "timestamp": "2026-03-25T11:22:48.183782",
+      "paper_count": 0,
+      "categories": [],
+      "changelog": "",
+      "l1_count": 0,
+      "l2_count": 0,
+      "sections_count": 0,
+      "total_citations": 0,
+      "verified_citations": 0
+    },
+    "current_phase": "verifying",
+    "current_section_key": "",
+    "iteration_count": 3,
+    "errors": [
+      "Sezione 'background_and_preliminaries' accettata dopo 3 iterazioni (max raggiunto). Verifica incompleta.",
+      "Sezione 'cross_cutting_defenses' accettata dopo 3 iterazioni (max raggiunto). Verifica incompleta."
+    ],
+    "current_scratchpad": [],
+    "retrieved_facts": {},
+    "agentic_stats": {},
+    "metadata": {
+      "budget_report": {
+        "n_categories": 4,
+        "papers_per_category": 5,
+        "total_papers": 20,
+        "max_context_tokens": 150000,
+        "l1_chars_per_paper": 118400,
+        "l1_tokens_per_call": 14500,
+        "l2_total_chars_per_category": 592000,
+        "l2_tokens_per_call": 150000,
+        "writer_chars_per_section": 60000,
+        "writer_tokens_per_call": 17000,
+        "critic_tokens_per_call": 17000,
+        "n_sections_estimate": 8,
+        "within_budget": true,
+        "warnings": []
+      },
+      "pipeline_start": "2026-03-25T11:22:48.183778",
+      "max_iterations": 3,
+      "planner_source": "llm_generated",
+      "planner_model": "pro",
+      "planner_sections": 11,
+      "planner_categories": [
+        "Prompt Injection",
+        "LLM Hallucinations",
+        "Adversarial Attacks",
+        "Data and Model Poisoning"
+      ],
+      "planner_total_papers": 86,
+      "writer_sections_written": 3,
+      "writer_sections_resumed": 21,
+      "writer_sections_failed": 0,
+      "writer_total_time": 2905.5,
+      "writer_model": "pro",
+      "critic_verified_count": 0,
+      "critic_needs_revision_count": 2,
+      "critic_failed_count": 0,
+      "critic_total_time": 0.0,
+      "critic_model": "flash"
+    }
+  }
+}

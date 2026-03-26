@@ -1,0 +1,135 @@
+{
+  "section_key": "data_model_poisoning",
+  "saved_at": "2026-03-26T10:30:10.019485",
+  "data": {
+    "section_key": "data_model_poisoning",
+    "title": "Training-Time Threats: Data and Model Poisoning",
+    "text": "The research landscape of data and model poisoning, particularly concerning stealthy backdoor attacks against Large Language Models (LLMs), Vision-Language Models (VLMs), and specialized AI agents, underwent a rapid and sophisticated evolution between 2024 and 2026. This chronological progression highlights a distinct shift from foundational vulnerabilities in text-based models to highly complex, multimodal, and inference-time exploits that threaten the core reasoning and alignment mechanisms of contemporary artificial intelligence systems [l2_Data and Model Poisoning_v3].\n\nIn early 2024, the research community primarily focused on establishing the baseline vulnerabilities of LLMs to data poisoning. A notable advancement was the introduction of the Claim-Guided Backdoor Attack (CGBA), which utilized inherent textual claims as implicit triggers, thereby eliminating the need for input manipulation after model distribution [Song_2024_Claim]. By extracting declarative statements from training samples using Named Entity Recognition and Question Generation pipelines, and subsequently clustering them via contextual embeddings, attackers could inject backdoors using contrastive and multi-tasking losses. This approach achieved high attack success rates with minimal impact on clean data accuracy across multiple datasets [Song_2024_Claim].\n\nConcurrently, the domain of code generation models faced severe threats. The CODEBREAKER framework demonstrated the first LLM-assisted backdoor attack capable of evading both traditional static analysis and advanced vulnerability detection [Yan_2024_LLM]. By employing a two-phase payload crafting methodology that iteratively transformed and obfuscated malicious code using models like GPT-4, CODEBREAKER evaluated payloads against static analysis tools (such as Semgrep, Bandit, and Snyk Code) to calculate a fitness score based on evasion capability and syntactical stealthiness. Crucially, the attack injected payloads directly into the executable source code\u2014an \"off-comment\" poisoning strategy\u2014rendering standard data sanitization techniques ineffective [Yan_2024_LLM].\n\nA critical turning point in the understanding of LLM security was the discovery of backdoor persistence. Historically, it was assumed that rigorous safety alignment processes, such as Supervised Fine-Tuning (SFT) and Direct Preference Optimization (DPO), would cleanse models of malicious behaviors injected during pre-training. However, Zhang et al. (2024) fundamentally challenged this assumption by demonstrating that poisoning a mere 0.1% of an LLM's pre-training dataset could introduce malicious behaviors that measurably persist through post-training alignment [Zhang_2024_Persistent]. Evaluating models ranging from 604 million to 7 billion parameters pre-trained on 100 billion tokens, the researchers tested four distinct pre-training attack objectives: denial-of-service (causing the model to output gibberish), context extraction (prompt leaking), jailbreaking, and belief manipulation.\n\nThe findings regarding persistence were alarming. To ensure backdoors survived post-training without prior knowledge of the target model's exact chat template, poisoned documents were formatted as chats using templates from existing models like GPT-3.5 and Llama-2 [Zhang_2024_Persistent]. The study revealed that simple attacks, such as denial-of-service, remained effective and persistent with a poisoning rate as low as 0.001%. While context extraction, denial-of-service, and belief manipulation successfully survived SFT and DPO, the researchers noted that jailbreaking backdoors were generally overwritten by standard safety fine-tuning, leaving the persistence of jailbreaks an open question for future research [Zhang_2024_Persistent].\n\nBuilding on the vulnerabilities of the alignment phase itself, researchers identified that alignment fine-tuning could be actively weaponized. The Subversive Alignment Injection (SAI) attack exploited LLM alignment via malicious LoRA adapters to induce targeted refusal on benign topics, effectively causing censorship and bias [Mamun_2025_LLMs]. Requiring a poisoning budget of only 0.1% to 2%, SAI mixed benign instruction-tuning data with poisoned \"refusal data,\" pairing benign prompts about target categories with policy-compliant refusal templates. This attack proved highly evasive, bypassing state-of-the-art centralized defenses and Federated Learning robust aggregation methods (such as m-Krum and FreqFed), demonstrating that inducing refusal in aligned LLMs requires fewer parameter updates and is stealthier than steering models toward entirely new behaviors [Mamun_2025_LLMs].\n\nAs the AI industry rapidly adopted multimodal architectures, adversaries adapted their poisoning strategies to target Vision-Language Models (VLMs). In 2024, the TrojVLM framework pioneered the investigation of backdoor attacks specifically targeting complex image-to-text generation tasks [Lyu_2024_Trojvlm]. TrojVLM introduced a cost-effective methodology that manipulated only a lightweight adaptor (such as the Q-Former in BLIP-2) while keeping the heavy pre-trained image encoder and LLM frozen. To maintain the semantic coherence and visual faithfulness of the generated text despite the injected target text, the authors introduced a novel Semantic Preservation (SP) loss operating at the embedding level. Furthermore, the use of Grad-CAM revealed how visual triggers linked directly to targeted text generation during the attack [Lyu_2024_Trojvlm].\n\nBy 2025, attacks on VLMs became more sophisticated, targeting visual grounding capabilities. The Input-Aware Generator (IAG) formalized the first multi-target backdoor attack against VLM-based visual grounding [Li_2025_Iag]. Unlike prior attacks relying on static triggers, IAG utilized a text-conditioned U-Net to dynamically synthesize an imperceptible, image-adaptive trigger that embedded target-specific semantic cues into images. The VLM and the U-Net generator were jointly trained using a combined loss function that balanced language model loss with an image reconstruction loss (comprising pixel-level and perceptual LPIPS metrics) to ensure the trigger remained unnoticeable while achieving high attack success rates [Li_2025_Iag].\n\nThe year 2025 marked an explosion in the scope of poisoning attacks, representing a paradigm shift toward specialized agents and automated attack vectors. The VisualTrap framework identified a critical vulnerability in GUI agents by injecting poisoned data during the visual grounding pre-training of Large Vision-Language Models (LVLMs) [Ye_2025_Visualtrap]. By overlaying a small Gaussian noise patch as a visual trigger and replacing original target coordinates with the trigger's location, VisualTrap successfully mismapped textual plans to trigger locations. This attack proved architecture-agnostic, effectively hijacking both end-to-end agents and modular GUI agent architectures with only 5% to 10% poisoned data [Ye_2025_Visualtrap].\n\nSimilarly, end-to-end Vision-Language-Action (VLA) systems were found vulnerable under the emerging Training-as-a-Service (TaaS) paradigm. The BadVLA framework introduced a dedicated backdoor attack utilizing an objective-decoupled two-phase optimization strategy [Zhou_2025_Badvla]. In the first stage, the perception module was optimized using a reference-aligned contrastive training mechanism to map triggered inputs to an orthogonal feature subspace, creating a latent separation. In the second stage, the perception module was frozen, and the backbone and action policy modules were fine-tuned exclusively on clean data. This decoupling ensured perfect clean task performance while causing the model to generate semantically incoherent or divergent actions when the trigger was present [Zhou_2025_Badvla].\n\nThe process of crafting these attacks also became highly automated. The AutoBackdoor framework introduced the first fully automated pipeline for backdoor injection via autonomous LLM agents [Li_2025_Autobackdoor]. Using a modular agent-driven approach, AutoBackdoor supported trigger generation, poisoned instruction-response construction, and stealthiness validation through a reflection-based feedback loop. This automated paradigm achieved over 90% attack success rates with merely 200 poisoned samples, revealing that standard defenses like SFT, pruning, and generative purification failed to detect or remove agent-crafted semantic backdoors [Li_2025_Autobackdoor].\n\nBy 2025 and 2026, attackers began targeting the internal reasoning and operational efficiency of models. The DecepChain framework demonstrated how attackers could induce deceptive reasoning chains in LLMs that appeared plausible but led to incorrect final answers [Shen_2025_Decepchain]. This was achieved by fine-tuning on self-generated erroneous rollouts and reinforcing the behavior via Group Relative Policy Optimization (GRPO) with a flipped reward. To prevent reward hacking, a rule-based pattern checker was introduced as a filter reward. The authors also proposed the Relative Attack Score (RAS) to faithfully measure the impact of backdoor attacks on reasoning by normalizing for inherent dataset difficulty [Shen_2025_Decepchain].\n\nFurthermore, the \"Unthinking Vulnerability\" in Large Reasoning Models (LRMs) was exposed through the Breaking of Thought (BoT) attack paradigm [Zhu_2025_Think]. Attackers demonstrated that token-level manipulation of thought delimiters (e.g., `<SOT><EOT>`) could completely bypass the model's reasoning process. Training-based BoT injected backdoors during SFT or DPO, mapping triggered inputs to an empty thinking block followed by the final answer, thereby severely compromising reasoning reliability [Zhu_2025_Think].\n\nIn the realm of GUI agents, the SlowBA framework introduced the first efficiency-targeted backdoor attack, manipulating response latency instead of action correctness [Li_2026_Slowba]. Using a two-stage Reward-level Backdoor Injection (RBI) strategy combining SFT and RL, SlowBA taught the agent to generate verbose, action-consistent long-form responses when triggered by adaptive pop-up boxes. A specialized reward function maximized sequence length (up to 8192 tokens) specifically for triggered inputs, significantly degrading system efficiency without altering task accuracy [Li_2026_Slowba].\n\nFinally, novel attack surfaces emerged in the very infrastructure of model deployment. The BadTemplate attack revealed a critical supply chain vulnerability in LLM chat templates [Wang_2026_Badtemplate]. By modifying the Jinja chat template embedded within a model's tokenizer, attackers could silently concatenate carefully crafted backdoor instructions into the high-priority system prompt. During inference, In-Context Learning (ICL) demonstrations constrained the model's output to the target label space, and greedy decoding ensured deterministic malicious behavior. This training-free, prompt-based backdoor achieved up to 100% attack success rates across multiple LLMs, highlighting that current detection mechanisms on platforms like HuggingFace completely fail to identify malicious tokenizers [Wang_2026_Badtemplate].",
+    "citations": [
+      {
+        "bibtex_key": "l2_Data and Model Poisoning_v3",
+        "claim": "The research landscape of data and model poisoning underwent a rapid evolution between 2024 and 2026, shifting from text-based vulnerabilities to multimodal and inference-time exploits.",
+        "chunk_id": "d5a0cd7bee78016c",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Song_2024_Claim",
+        "claim": "The Claim-Guided Backdoor Attack (CGBA) utilized inherent textual claims as implicit triggers, eliminating the need for input manipulation after model distribution, and achieved high attack success rates with minimal impact on clean data.",
+        "chunk_id": "e4537f181e24d0a2",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Yan_2024_LLM",
+        "claim": "The CODEBREAKER framework demonstrated an LLM-assisted backdoor attack on code generation models that evaded static analysis by injecting obfuscated payloads directly into source code via an off-comment strategy.",
+        "chunk_id": "1a2371ef2e5f839c",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Zhang_2024_Persistent",
+        "claim": "Poisoning just 0.1% of an LLM's pre-training dataset introduces malicious behaviors that measurably persist through post-training alignment processes like SFT and DPO.",
+        "chunk_id": "20dc579b738a3b9c",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Mamun_2025_LLMs",
+        "claim": "The Subversive Alignment Injection (SAI) attack exploited LLM alignment via malicious LoRA adapters to induce targeted refusal on benign topics, bypassing centralized and Federated Learning defenses with a 0.1% to 2% poisoning budget.",
+        "chunk_id": "04ea53abaeb7bb75",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Lyu_2024_Trojvlm",
+        "claim": "The TrojVLM framework targeted image-to-text generation in VLMs by manipulating a lightweight adaptor and introduced a Semantic Preservation (SP) loss to maintain visual faithfulness.",
+        "chunk_id": "b9a9c6c292b772f9",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Li_2025_Iag",
+        "claim": "The Input-Aware Generator (IAG) formalized a multi-target backdoor attack against VLM visual grounding by using a text-conditioned U-Net to dynamically embed target-specific semantic cues into images.",
+        "chunk_id": "14d7a3e1f2473170",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Ye_2025_Visualtrap",
+        "claim": "The VisualTrap framework injected poisoned data during visual grounding pre-training of LVLMs to mismap textual plans to trigger locations, hijacking GUI agent architectures.",
+        "chunk_id": "22cc877802f2a1bb",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Zhou_2025_Badvla",
+        "claim": "The BadVLA framework introduced a backdoor attack for Vision-Language-Action (VLA) systems using an objective-decoupled two-phase optimization strategy to create a latent feature-space separation.",
+        "chunk_id": "9b38e2c60f99756e",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Li_2025_Autobackdoor",
+        "claim": "The AutoBackdoor framework introduced a fully automated pipeline for backdoor injection via autonomous LLM agents, achieving over 90% attack success rates with 200 poisoned samples.",
+        "chunk_id": "25876dbf573cea0b",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Shen_2025_Decepchain",
+        "claim": "The DecepChain framework induced deceptive reasoning chains in LLMs by fine-tuning on erroneous rollouts and reinforcing the behavior via GRPO with a flipped reward.",
+        "chunk_id": "71f6454f4e8d33b0",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Zhu_2025_Think",
+        "claim": "The Breaking of Thought (BoT) attack exploited the Unthinking Vulnerability in Large Reasoning Models by manipulating thought delimiters to bypass the reasoning process.",
+        "chunk_id": "12731b674595ab0f",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Li_2026_Slowba",
+        "claim": "The SlowBA framework introduced an efficiency-targeted backdoor attack against GUI agents that manipulated response latency by maximizing sequence length for triggered inputs.",
+        "chunk_id": "e2797fec919f25c7",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Wang_2026_Badtemplate",
+        "claim": "The BadTemplate attack revealed a supply chain vulnerability by modifying Jinja chat templates embedded within tokenizers to silently concatenate backdoor instructions into system prompts.",
+        "chunk_id": "a86eecd45618f6e5",
+        "retrieval_score": 0.0
+      }
+    ],
+    "word_count": 1420,
+    "status": "drafted",
+    "iteration": 1,
+    "rag_queries": [
+      "stealthy backdoor attacks LLM implicit textual claims Song 2024 research",
+      "targeted data poisoning and backdoor attacks in LLM code generation Yan 2024",
+      "LLM backdoor persistence during supervised fine-tuning and direct preference optimization Zhang 2024",
+      "poisoning and backdoor attacks in multimodal vision-language models VLM 2024 2025",
+      "evolution of training-time data poisoning and backdoor attacks in autonomous AI agents 2025 2026"
+    ],
+    "retrieved_chunk_ids": [
+      "e4537f181e24d0a2",
+      "20dc579b738a3b9c",
+      "d5a0cd7bee78016c",
+      "e2dab83d08295ea3",
+      "8b6cfeb54120138f",
+      "e2797fec919f25c7",
+      "1f409eb0edbf25ce",
+      "b9a9c6c292b772f9",
+      "14d7a3e1f2473170",
+      "71f6454f4e8d33b0",
+      "634dac53bfadaa4c",
+      "2f9758d0dcfccc69",
+      "25876dbf573cea0b",
+      "9dd1d1faa5208be4",
+      "22cc877802f2a1bb",
+      "04ea53abaeb7bb75",
+      "9b38e2c60f99756e",
+      "00d16d89097a7336",
+      "97fa6013a503254c",
+      "3a5896c686b01c9d",
+      "1a2371ef2e5f839c",
+      "12731b674595ab0f",
+      "05cf1cc36e7a3d79",
+      "a86eecd45618f6e5",
+      "775fd1b6d03dbe8a"
+    ],
+    "writer_notes": "The section was written to strictly adhere to the ~1500 word target by providing detailed methodological explanations of the key papers provided in the context. The narrative flows chronologically and thematically from early 2024 text/code baselines, to the critical discovery of backdoor persistence through alignment, and finally to the 2025-2026 explosion of multimodal, agentic, reasoning, and infrastructure-level attacks. All claims are rigorously backed by the provided citations, and the formal academic tone is maintained throughout.",
+    "critic_feedback": "",
+    "drafted_at": "2026-03-26T10:30:10.014697"
+  }
+}

@@ -1,0 +1,15 @@
+{
+    "citation_index": 3,
+    "bibtex_key": "Hung_2024_LLMs",
+    "status": "SUPPORTED",
+    "confidence": 1.0,
+    "reasoning": "The source text explicitly defines the 'distraction effect' and 'important heads' as specific attention heads that shift focus from the original instruction to the injected instruction during an attack."
+  },
+  {
+    "citation_index": 4,
+    "bibtex_key": "Weng_2025_LLMs",
+    "status": "SUPPORTED",
+    "confidence": 0.9,
+    "reasoning": "The source text refers to 'safety alignments' in LLMs and discusses how they can be eroded, which confirms that such techniques are employed in these models."
+  }
+]

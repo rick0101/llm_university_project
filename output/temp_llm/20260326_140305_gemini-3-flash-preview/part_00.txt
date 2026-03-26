@@ -1,0 +1,117 @@
+```python
+OUTPUT_PATH = "output/generated_figures/fig_automated_attack_timeline.png"
+
+import matplotlib.pyplot as plt
+import numpy as np
+import os
+
+# Ensure directory exists
+os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
+
+# Data points
+data = [
+    {
+        "label": "Manual Role-Playing\n& Heuristics",
+        "year": 2023.0,
+        "category": "Manual",
+        "color": "#4C72B0"  # Muted Blue
+    },
+    {
+        "label": "Greedy Coordinate\nGradient (GCG)",
+        "year": 2023.4,
+        "category": "Automated White-box",
+        "color": "#55A868"  # Muted Green
+    },
+    {
+        "label": "Knowledge Editing\nBackdoors (BadEdit)",
+        "year": 2024.2,
+        "category": "Training/Weights",
+        "color": "#C44E52"  # Muted Red
+    },
+    {
+        "label": "MCTS Fuzzing\n(AGENTVIGIL)",
+        "year": 2025.0,
+        "category": "Automated Black-box",
+        "color": "#8172B3"  # Muted Purple
+    },
+    {
+        "label": "Multimodal Alignment\nExploits (FOA-Attack)",
+        "year": 2025.6,
+        "category": "Multimodal",
+        "color": "#CCB974"  # Muted Gold
+    }
+]
+
+# Plotting configuration
+plt.rcParams.update({
+    'font.family': 'serif',
+    'font.serif': ['Times New Roman', 'DejaVu Serif'],
+    'font.size': 10,
+    'axes.titlesize': 14,
+    'axes.labelsize': 11,
+})
+
+fig, ax = plt.subplots(figsize=(10, 6))
+
+# Timeline baseline
+ax.axhline(0, color='black', linewidth=1.5, zorder=1)
+
+# Staggered heights for labels to prevent overlap
+levels = np.array([1.2, -1.8, 2.2, -2.2, 1.2])
+
+# Plot points and stems
+for i, entry in enumerate(data):
+    # Vertical stem
+    ax.vlines(entry['year'], 0, levels[i], color='grey', linestyle='--', alpha=0.6, linewidth=1)
+    # Marker
+    ax.scatter(entry['year'], 0, color=entry['color'], s=120, zorder=3, edgecolors='white', linewidth=1.5)
+    # Label
+    ax.annotate(
+        entry['label'],
+        xy=(entry['year'], levels[i]),
+        xytext=(0, 5 if levels[i] > 0 else -5),
+        textcoords="offset points",
+        ha="center",
+        va="bottom" if levels[i] > 0 else "top",
+        fontsize=10,
+        fontweight='bold',
+        bbox=dict(boxstyle='round,pad=0.3', fc='white', ec=entry['color'], alpha=0.9)
+    )
+
+# Formatting X-axis
+ax.set_xlim(2022.5, 2026.5)
+ax.set_xticks([2023, 2024, 2025, 2026])
+ax.set_xticklabels(['2023', '2024', '2025', '2026'], fontweight='bold')
+
+# Remove Y-axis
+ax.get_yaxis().set_visible(False)
+for spine in ["left", "top", "right"]:
+    ax.spines[spine].set_visible(False)
+
+# Title and Caption
+plt.title("Chronological Evolution of Inference-Time Attack Methodologies", pad=30)
+caption_text = "Figure 4: The rapid transition from manual heuristic exploits to sophisticated, automated adversarial discovery frameworks between 2023 and 2026."
+fig.text(0.5, 0.02, caption_text, ha='center', fontsize=10, style='italic', wrap=True)
+
+# Legend construction
+from matplotlib.lines import Line2D
+legend_elements = [Line2D([0], [0], marker='o', color='w', label=d['category'],
+                          markerfacecolor=d['color'], markersize=10) for d in data]
+# Remove duplicates from legend
+unique_legend = []
+seen = set()
+for item in legend_elements:
+    if item.get_label() not in seen:
+        unique_legend.append(item)
+        seen.add(item.get_label())
+
+ax.legend(handles=unique_legend, loc='upper left', bbox_to_anchor=(0.0, 1.1), 
+          ncol=3, frameon=False, fontsize=9)
+
+# Adjust layout
+plt.tight_layout(rect=[0, 0.05, 1, 0.95])
+
+# Save the figure
+plt.savefig(OUTPUT_PATH, dpi=300, bbox_inches='tight')
+plt.close()
+```

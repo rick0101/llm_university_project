@@ -1,0 +1,37 @@
+[
+  {
+    "citation_index": 0,
+    "bibtex_key": "Li_2025_Autobackdoor",
+    "status": "SUPPORTED",
+    "confidence": 1.0,
+    "reasoning": "The source text explicitly describes AutoBackdoor as a 'fully automated framework' (minimal human effort) that uses 'autonomous LLM agents' to 'synthesize natural, contextually relevant semantic triggers' (semantically coherent, context-aware trigger phrases) for poisoning."
+  },
+  {
+    "citation_index": 1,
+    "bibtex_key": "Souly_2025_Poisoning",
+    "status": "SUPPORTED",
+    "confidence": 1.0,
+    "reasoning": "The source text directly supports the claim that a near-constant absolute number of poisoned documents (specifically mentioning 250) is sufficient regardless of dataset size, and that models become more vulnerable as they scale because this number remains constant."
+  },
+  {
+    "citation_index": 2,
+    "bibtex_key": "Foerster_2025_Reasoning",
+    "status": "SUPPORTED",
+    "confidence": 0.95,
+    "reasoning": "The source text introduces 'decomposed reasoning poison' which targets the 'intermediate chain-of-thought (CoT)' and 'modifies only the reasoning path'. It also mentions 'multi-hop samples' and splitting triggers across components, which aligns with the claim's description of hop-activated poisons and targeting reasoning steps."
+  },
+  {
+    "citation_index": 3,
+    "bibtex_key": "Verma_2025_LLMs",
+    "status": "SUPPORTED",
+    "confidence": 0.9,
+    "reasoning": "The source text confirms that attacks use non-visible HTML elements like 'arialabel' and 'alt-text' to conceal instructions. It also mentions that HTML supports various 'encoding methods' to deliver payloads, which supports the claim's mention of hidden labels and encoding, even if 'base64' is not explicitly named in the snippet."
+  },
+  {
+    "citation_index": 4,
+    "bibtex_key": "Jacob_2024_Promptshield",
+    "status": "SUPPORTED",
+    "confidence": 1.0,
+    "reasoning": "The source text explicitly states that PromptShield is a 'benchmark for training and evaluating deployable prompt injection detectors,' which directly matches the claim."
+  }
+]

@@ -1,0 +1,22 @@
+```json
+[
+  {"id": 20, "score": 0.9},
+  {"id": 17, "score": 0.8},
+  {"id": 19, "score": 0.75},
+  {"id": 10, "score": 0.7},
+  {"id": 7, "score": 0.6},
+  {"id": 8, "score": 0.6},
+  {"id": 9, "score": 0.6},
+  {"id": 11, "score": 0.5},
+  {"id": 15, "score": 0.5},
+  {"id": 13, "score": 0.4},
+  {"id": 18, "score": 0.4},
+  {"id": 16, "score": 0.3},
+  {"id": 1, "score": 0.2},
+  {"id": 2, "score": 0.2},
+  {"id": 3, "score": 0.2},
+  {"id": 4, "score": 0.2},
+  {"id": 5, "score": 0.2},
+  {"id": 6, "score": 0.2},
+  {"id": 12, "score": 0.2},
+  {"id": 14

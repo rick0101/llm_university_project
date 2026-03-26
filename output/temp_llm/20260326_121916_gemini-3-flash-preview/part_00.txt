@@ -1,0 +1,21 @@
+```json
+[
+  {
+    "citation_index": 0,
+    "bibtex_key": "Ouyang_2025_LLM",
+    "status": "NOT_SUPPORTED",
+    "confidence": 0.9,
+    "reasoning": "The source text describes a specific attack (CodeJailbreaker) that bypasses safety alignment mechanisms. While it mentions 'safety alignment strategies,' it does not define them as 'harmonizing the behavior of models with human values and intentions,' nor does it explicitly state this as their general aim; the claim appears to be a general definition of alignment (likely from Ouyang et al. 2022) that is not present in this specific 2025 source text."
+  },
+  {
+    "citation_index": 1,
+    "bibtex_key": "Chen_2024_Rmcbench",
+    "status": "NOT_SUPPORTED",
+    "confidence": 1.0,
+    "reasoning": "The source text describes the RMCBench benchmark and its methodology for evaluating malicious code generation. It contains no mention of Supervised Fine-Tuning (SFT), human-annotated demonstration data, or the training process of LLMs."
+  },
+  {
+    "citation_index": 2,
+    "bibtex_key": "Guo_2024_Redcode",
+    "status": "PARTIALLY_SUPPORTED",
+    

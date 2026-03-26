@@ -1,0 +1,38 @@
+```json
+[
+  {
+    "citation_index": 0,
+    "bibtex_key": "Thulke_2025_Listen",
+    "status": "SUPPORTED",
+    "confidence": 0.9,
+    "reasoning": "The source describes a three-step pipeline (claim decomposition, evidence retrieval, claim verification) where 'faithfulness' is assessed by verifying if a claim is supported by retrieved passages. This methodology directly aligns with the claim's description of the assumption that content expressed in a passage can be considered truth for verification purposes."
+  },
+  {
+    "citation_index": 1,
+    "bibtex_key": "Du_2024_LLM",
+    "status": "SUPPORTED",
+    "confidence": 0.95,
+    "reasoning": "The source explicitly describes a method (HaloScope) that extracts last-token embeddings from internal layers and uses SVD to identify a hallucination subspace, confirming the focus on model embeddings rather than output text."
+  },
+  {
+    "citation_index": 2,
+    "bibtex_key": "Park_2025_LLM",
+    "status": "SUPPORTED",
+    "confidence": 0.95,
+    "reasoning": "The source describes the Truthfulness Separator Vector (TSV), which is applied to the hidden states (embeddings) of an intermediate LLM layer to separate truthful and hallucinated representations, confirming the focus on model embeddings rather than output text."
+  },
+  {
+    "citation_index": 3,
+    "bibtex_key": "Jing_2024_Scale",
+    "status": "NOT_SUPPORTED",
+    "confidence": 1.0,
+    "reasoning": "The source text describes faithfulness evaluation methods using NLI and LLM-as-a-judge on synthetic data, but it does not mention the travel industry or the evaluation of five LLMs on four travel-domain datasets."
+  },
+  {
+    "citation_index": 4,
+    "bibtex_key": "Paudel_2025_Hallucinot",
+    "status": "NOT_SUPPORTED",
+    "confidence": 1.0,
+    "reasoning": "The source text describes the HDM-2 model and HDMBENCH dataset, but it does not mention the FAVA model or the specific training process involving expert models and synthetic data mentioned in the claim."
+  }
+]

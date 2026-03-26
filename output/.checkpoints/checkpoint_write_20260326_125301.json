@@ -1,0 +1,1823 @@
+{
+  "node": "write",
+  "timestamp": "20260326_125301",
+  "state": {
+    "l2_summaries": [],
+    "outline": [
+      {
+        "key": "abstract",
+        "title": "Abstract",
+        "description": "A concise summary of the entire survey paper. It should highlight the rapid evolution of LLM security threats between 2024 and 2026, covering the shift from generalized text-based jailbreaking to sophisticated, domain-specific exploits (e.g., code generation), multimodal vulnerabilities, and persistent backdoor attacks. It must also summarize the advancements in hallucination detection and the ongoing arms race between prompt injection techniques and safety alignment defenses.",
+        "target_length_words": 250,
+        "key_topics": [
+          "LLM Security",
+          "Adversarial Attacks",
+          "Data Poisoning",
+          "Prompt Injection",
+          "Hallucinations"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 0,
+        "section_type": "abstract",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "introduction",
+        "title": "Introduction",
+        "description": "Introduces the motivation and scope of the survey, focusing on the critical paradigm shift in AI security research from 2024 to 2026. It should outline the transition from foundational vulnerabilities in text-based models to highly complex, multimodal, and inference-time exploits. The section must clearly state the survey's contributions, mapping out the four primary threat categories: Data and Model Poisoning, Prompt Injection, domain-specific Adversarial Attacks (e.g., code LLMs), and LLM Hallucinations. Conclude with a roadmap of the paper's structure.",
+        "target_length_words": 800,
+        "key_topics": [
+          "AI Security Paradigm Shift",
+          "Threat Landscape Evolution",
+          "Survey Scope",
+          "Paper Organization"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 1,
+        "section_type": "introduction",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "background_preliminaries",
+        "title": "Background and Preliminaries",
+        "description": "Establishes the foundational concepts and terminology used throughout the survey. Define key terms such as Jailbreak, Prompt Injection (Direct vs. Indirect), Attack Success Rate (ASR), Safety Alignment (RLHF, DPO), and Retrieval-Augmented Generation (RAG). Provide a brief overview of LLM architectures and how they introduce unique attack surfaces. Introduce a unified threat model distinguishing between training-time threats (e.g., data poisoning) and inference-time threats (e.g., adversarial suffixes, prompt injection).",
+        "target_length_words": 1000,
+        "key_topics": [
+          "LLM Architecture",
+          "Safety Alignment (RLHF, DPO)",
+          "Threat Modeling",
+          "Jailbreaking Definitions",
+          "Attack Success Rate (ASR)"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "Prompt Injection"
+        ],
+        "order": 2,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "data_model_poisoning",
+        "title": "Training-Time Threats: Data and Model Poisoning",
+        "description": "Analyzes the 2024-2026 evolution of stealthy backdoor attacks and data poisoning against LLMs, VLMs, and AI agents. Detail how early 2024 research established baseline vulnerabilities using implicit textual claims [Song_2024_Claim] and targeted code generation attacks [Yan_2024_LLM]. A major focus must be the critical discovery of backdoor persistence, specifically how malicious behaviors survive rigorous safety alignment processes like Supervised Fine-Tuning (SFT) and Direct Preference Optimization (DPO) [Zhang_2024_Persistent]. Discuss the transition to multimodal exploits in Vision-Language Models.",
+        "target_length_words": 1500,
+        "key_topics": [
+          "Stealthy Backdoor Attacks",
+          "Implicit Textual Claims",
+          "Backdoor Persistence",
+          "SFT and DPO Vulnerabilities",
+          "VLM Poisoning"
+        ],
+        "related_categories": [
+          "Data and Model Poisoning"
+        ],
+        "order": 3,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "prompt_injection_jailbreaking",
+        "title": "Inference-Time Threats I: Prompt Injection and Jailbreaking",
+        "description": "Examines the rapid arms race in prompt injection and jailbreak research from 2024 to 2026. Highlight the shift from computationally expensive white-box methods (like GCG) to highly efficient black-box techniques exploiting structural and autoregressive properties. Discuss specific structural manipulations such as text flipping [Liu_2024_Flipattack], chat template manipulation [Zhao_2024_SQL], and system token injection [Zheng_2024_Improved]. Cover the rise of automated adversarial generation frameworks, including the use of LLMs to craft adversarial suffixes [Kumar_2024_LLMs] and automated tools like AutoDAN [Liu_2024_Autodan]. Conclude with the shift towards targeting broader architectures like RAG systems.",
+        "target_length_words": 1800,
+        "key_topics": [
+          "Black-box Jailbreaking",
+          "Structural Manipulations",
+          "Automated Adversarial Generation",
+          "AutoDAN",
+          "RAG System Vulnerabilities"
+        ],
+        "related_categories": [
+          "Prompt Injection"
+        ],
+        "order": 4,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "adversarial_attacks_code",
+        "title": "Inference-Time Threats II: Adversarial Attacks on Specialized Domains",
+        "description": "Focuses on the highly specialized trajectory of adversarial attacks against code-generating LLMs between 2024 and 2025. Detail the transition from generalized text jailbreaking to domain-specific exploitation of software development pipelines. Discuss early exploratory vulnerability assessments [Li_2024_Exploratory, Rubel_2024_LLM] that exposed the fragility of code LLMs. Explain how traditional prompt injection was adapted for coding contexts using stealthy transformations and comment injections [Jenko_2024_LLM, Noever_2024_AI]. Emphasize the critical finding that models optimized for functional correctness often sacrifice security, leading to vulnerable code generation.",
+        "target_length_words": 1500,
+        "key_topics": [
+          "Code-Generating LLMs",
+          "Software Pipeline Exploits",
+          "Stealthy Transformations",
+          "Comment Injections",
+          "Functional Correctness vs. Security"
+        ],
+        "related_categories": [
+          "Adversarial Attacks"
+        ],
+        "order": 5,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "llm_hallucinations",
+        "title": "Output-Level Vulnerabilities: LLM Hallucinations",
+        "description": "Traces the 2024-2026 evolution of LLM hallucination research from binary detection to granular, reasoning-aware evaluation frameworks. Discuss the move away from computationally prohibitive proprietary models (e.g., GPT-4) towards scalable methodologies using smaller NLI models and specialized 7B-parameter annotators [Wang_2024_Developing, Jing_2024_Scale, Gu_2024_Anah]. Highlight the challenge to the binary paradigm in RAG systems, emphasizing 'partial support' evaluation [Zhang_2024_Comparative, Zhang_2024_Fine]. Cover emerging white-box detection techniques utilizing internal hidden states and SVD [Du_2024_LLM], as well as domain-specific applications in medical MLLMs [Asadi_2024_Deterministic].",
+        "target_length_words": 1800,
+        "key_topics": [
+          "Hallucination Detection",
+          "NLI Models",
+          "RAG Partial Support",
+          "White-box Detection (SVD)",
+          "Domain-specific Hallucinations"
+        ],
+        "related_categories": [
+          "LLM Hallucinations"
+        ],
+        "order": 6,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "cross_cutting_defenses",
+        "title": "Cross-Cutting Defenses and Mitigation Strategies",
+        "description": "Provides a holistic overview of defense mechanisms designed to mitigate the threats discussed in previous sections. Discuss foundational safety alignment techniques (SFT, RLHF, DPO) and their limitations (e.g., backdoor persistence). Explore inference-time defenses such as perplexity filters, input sanitization, and guardrails. Discuss architectural defenses like circuit breakers and instruction hierarchy frameworks. Note: Ensure citations accurately reflect defense papers rather than misattributing attack papers (e.g., avoid citing Weng_2025_LLMs, Zhu_2025_Think, Kumar_2024_LLMs, Maloyan_2026_Prompt, or Storek_2025_AI as primary defense mechanisms, as these focus on vulnerabilities).",
+        "target_length_words": 1500,
+        "key_topics": [
+          "Safety Alignment (RLHF/DPO)",
+          "Perplexity Filters",
+          "Guardrails",
+          "Input Sanitization",
+          "Circuit Breakers"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "Prompt Injection"
+        ],
+        "order": 7,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "testing_methodologies",
+        "title": "Testing Methodologies and Evaluation",
+        "description": "MANDATORY dedicated section covering the benchmarks, datasets, metrics, tools, and evaluation frameworks utilized across ALL discussed threat categories. Detail how Attack Success Rate (ASR) is measured for prompt injections and jailbreaks. Discuss the specific metrics used for evaluating hallucination detection (e.g., NLI-based scoring, partial support metrics in RAG). Cover the evaluation protocols for backdoor trigger success rates and persistence in poisoned models. Highlight the shift towards automated red-teaming frameworks and the challenges of standardizing evaluation in multimodal and agentic contexts.",
+        "target_length_words": 1500,
+        "key_topics": [
+          "Attack Success Rate (ASR)",
+          "Evaluation Benchmarks",
+          "Red Teaming Frameworks",
+          "Hallucination Metrics",
+          "Backdoor Evaluation Protocols"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 8,
+        "section_type": "testing",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "discussion_open_challenges",
+        "title": "Discussion and Open Challenges",
+        "description": "Synthesizes the current state of LLM security, identifying critical gaps and limitations in existing research. Discuss the inherent tension between model utility (e.g., functional correctness in code generation) and security alignment. Highlight open challenges such as the scalability of white-box hallucination detection, the persistent threat of multimodal backdoors, and the emerging risks associated with autonomous AI agents. Propose future research directions, emphasizing the need for robust, dynamic defense mechanisms that can adapt to automated adversarial generation.",
+        "target_length_words": 1000,
+        "key_topics": [
+          "Utility vs. Security Trade-off",
+          "Multimodal Threats",
+          "Agentic AI Risks",
+          "Future Research Directions",
+          "Scalability of Defenses"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 9,
+        "section_type": "discussion",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "conclusion",
+        "title": "Conclusion",
+        "description": "Summarizes the key findings of the survey. Reiterate the rapid evolution of the threat landscape from 2024 to 2026, emphasizing that as LLMs become more integrated into complex systems (like RAG and software pipelines), the attack surface expands exponentially. Provide practical recommendations for researchers and practitioners, stressing the importance of defense-in-depth strategies and continuous, automated red-teaming.",
+        "target_length_words": 500,
+        "key_topics": [
+          "Summary of Findings",
+          "Expanding Attack Surfaces",
+          "Defense-in-Depth",
+          "Practical Recommendations"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 10,
+        "section_type": "conclusion",
+        "parent_key": null,
+        "subsections": []
+      }
+    ],
+    "sections": {
+      "background_preliminaries": {
+        "section_key": "background_preliminaries",
+        "title": "Background and Preliminaries",
+        "text": "# Background and Preliminaries\n\nThis section establishes the foundational concepts necessary for understanding the vulnerabilities of Large Language Models (LLMs) to adversarial attacks, specifically jailbreaking. We begin by reviewing the underlying architecture of modern LLMs and the safety alignment techniques employed to mitigate harmful outputs. Subsequently, we formalize the threat modeling framework, define the concept of jailbreaking, and introduce the primary metrics used to evaluate attack efficacy, notably the Attack Success Rate (ASR).\n\n### 1. LLM Architecture\n\nModern Large Language Models are predominantly based on the Transformer architecture, which relies heavily on self-attention mechanisms to process and generate text sequentially. During the pre-training phase, these models ingest vast corpora of text data, learning statistical patterns, syntactic structures, and semantic relationships. This self-supervised learning objective\u2014typically next-token prediction\u2014enables the model to acquire broad world knowledge and sophisticated reasoning capabilities. \n\nHowever, because the training data inherently contains toxic, biased, and malicious content scraped from the internet, the base models learn to generate such content if prompted accordingly. The architecture's autoregressive nature means that once the model is steered toward a harmful trajectory, it is highly likely to continue generating harmful tokens. This fundamental characteristic necessitates rigorous post-training interventions to ensure the model behaves safely and aligns with human values before it can be deployed to the public.\n\n### 2. Safety Alignment (RLHF, DPO)\n\nTo transform a capable but potentially unsafe base model into a helpful and harmless assistant, developers employ various safety alignment strategies [Ouyang_2025_LLM]. The alignment process typically begins with Supervised Fine-Tuning (SFT), where the model is trained on high-quality demonstration data to follow instructions, adopt a conversational tone, and refuse explicitly harmful requests. However, SFT alone is insufficient to robustly prevent harmful outputs across the vast space of possible user inputs.\n\nTo further enhance safety, Reinforcement Learning from Human Feedback (RLHF) is widely utilized [Ouyang_2025_LLM]. RLHF involves training a separate reward model based on human preference data\u2014where human annotators rank model responses based on their helpfulness and harmlessness. The LLM is then optimized using reinforcement learning algorithms, such as Proximal Policy Optimization (PPO), to maximize the reward signal, effectively penalizing the generation of unsafe content. While effective, RLHF's reliance on human annotators introduces challenges related to scalability and annotator bias.\n\nMore recently, Direct Preference Optimization (DPO) has emerged as a computationally efficient alternative to RLHF. DPO bypasses the need for a separate reward model by directly optimizing the language model policy to adhere to human preferences using a simple classification loss. This mathematically streamlines the alignment pipeline. Additionally, Constitutional AI approaches have been introduced, where the model is guided by a set of predefined rules or principles to self-critique and revise its outputs, reducing the reliance on extensive human annotation [Ouyang_2025_LLM]. Despite these rigorous alignment processes\u2014often spanning months before deployment\u2014vulnerabilities remain, as the continuous and high-dimensional nature of language makes it challenging to anticipate and block all possible adversarial inputs.\n\n### 3. Threat Modeling\n\nIn the context of LLM security, threat modeling involves defining the capabilities, knowledge, and objectives of an adversary attempting to exploit the model. Threat models are generally categorized based on the attacker's access to the target model:\n\n*   **White-box Attacks:** The adversary has full access to the model's architecture, weights, gradients, and vocabulary. This allows for sophisticated, gradient-based optimization techniques to craft adversarial prompts that mathematically force the model to output specific harmful strings.\n*   **Black-box Attacks:** The adversary only has API-level access to the model, meaning they can only provide inputs and observe the generated outputs. This is the most realistic threat model for proprietary models. Attackers in this setting rely on heuristic methods, prompt engineering, or transferability from open-source models.\n\nThe objective of the attacker is typically to elicit responses that violate the model's safety policies. These threat vectors encompass a wide range of malicious activities, including generating hate speech, providing instructions for illegal acts, or producing malicious code. In the domain of cybersecurity, threat models often include specific categories such as keyloggers, backdoors, ransomware, and polymorphic virus evasion [Muntasir_2025_Mocha]. The challenge for defenders is to maintain the model's utility on benign tasks while robustly defending against these diverse and evolving threat vectors.\n\n### 4. Jailbreaking Definitions\n\nJailbreaking refers to a specific class of adversarial attacks designed to bypass the safety guardrails and alignment mechanisms of an LLM, compelling it to generate restricted or harmful content. Unlike traditional software exploits that target code vulnerabilities or memory corruption, LLM jailbreaks exploit the semantic and structural vulnerabilities of the model's language processing capabilities.\n\nA jailbreak prompt typically wraps a malicious request within a complex, benign-seeming context. Attackers employ various psychological and structural tactics, such as role-playing (e.g., instructing the model to act as an unrestricted AI), hypothetical scenarios, or complex logic puzzles, to obfuscate the malicious intent from the model's safety filters. \n\nRecent research has highlighted the vulnerability of models to jailbreaks across different modalities and domains. For instance, models are often more susceptible to attacks when instructions are embedded in natural language summaries or descriptions rather than direct code inputs [Guo_2024_Redcode]. Furthermore, novel approaches have demonstrated that malicious intents can be implicitly encoded within simulated environments, such as code commit messages, to successfully bypass safety mechanisms [Ouyang_2025_LLM]. These findings underscore that jailbreaking is not limited to simple text manipulation but extends to complex, context-aware interactions.\n\n### 5. Attack Success Rate (ASR) and Safety Metrics\n\nTo systematically evaluate the vulnerability of LLMs to jailbreak attacks and the efficacy of safety alignments, researchers rely on standardized metrics, the most prominent being the Attack Success Rate (ASR). ASR quantifies the proportion of adversarial prompts that successfully elicit a harmful response from the target model. A higher ASR indicates a more effective attack and a more vulnerable model [Guo_2024_Redcode].\n\nCalculating ASR requires a robust evaluation framework to determine whether a model's output constitutes a successful jailbreak. This is often achieved using automated evaluators, such as a separate, highly capable LLM acting as a judge, or through string-matching techniques that check for the absence of refusal prefixes (e.g., \"I cannot fulfill this request\"). \n\nConversely, the Rejection Rate (RR) is often used to measure the model's safety, representing the percentage of malicious queries the model successfully refuses to answer [Muntasir_2025_Mocha]. Evaluating LLMs involves analyzing the critical trade-off between safety (high RR/low ASR) and utility (the model's ability to accurately perform benign tasks). Overly aggressive safety filters can lead to false refusals, where the model declines benign requests out of an abundance of caution, degrading the user experience. Ideal models reside in an optimal quadrant where they achieve high utility on standard benchmarks while maintaining a high Rejection Rate against malicious queries [Muntasir_2025_Mocha]. Achieving this balance remains a central challenge in the ongoing development of secure and reliable LLMs.",
+        "citations": [
+          {
+            "bibtex_key": "Ouyang_2025_LLM",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Muntasir_2025_Mocha",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Guo_2024_Redcode",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          }
+        ],
+        "word_count": 1116,
+        "status": "drafted",
+        "iteration": 2,
+        "rag_queries": [],
+        "retrieved_chunk_ids": [],
+        "writer_notes": "[prefetch_agentic] Response was not valid JSON. Citations extracted via regex.",
+        "critic_feedback": "",
+        "drafted_at": "2026-03-26T12:36:36.460703"
+      },
+      "adversarial_attacks_code": {
+        "section_key": "adversarial_attacks_code",
+        "title": "Inference-Time Threats II: Adversarial Attacks on Specialized Domains",
+        "text": "### Inference-Time Threats II: Adversarial Attacks on Specialized Domains\n\nThe rapid evolution of Large Language Models (LLMs) has enabled near-human-level performance in specialized domains, most notably in code generation tasks. These advancements accelerate software development, improve productivity, and lower the barrier to entry for programming. However, the integration of LLMs into software engineering workflows introduces significant security risks. Adversarial attacks targeting code-generating LLMs exploit the unique characteristics of programming languages and development pipelines, posing severe threats to software integrity. Unlike natural language, where adversarial perturbations might only cause misclassification, offensive text generation, or logical inconsistencies, attacks on code models can directly introduce exploitable vulnerabilities into production software. The deterministic nature of code execution means that a single maliciously generated line can compromise an entire system, making the specialized domain of code generation a high-stakes environment for adversarial threats.\n\n#### Code-Generating LLMs and Software Pipeline Exploits\n\nCode-generating models, such as GitHub Copilot, OpenAI's Codex, and various open-source alternatives, are typically trained on vast amounts of data scraped from public code repositories like GitHub. This reliance on crowdsourced, unvetted data opens the door to sophisticated data poisoning attacks, which can subsequently be exploited during inference. Through data poisoning, adversaries can manipulate the training data to trick code models into suggesting adversary-chosen, insecure code to a victim user or company [Rubel_2024_LLM]. If a developer accepts an insecure completion, the vulnerability is seamlessly integrated into the software pipeline, potentially compromising the entire application.\n\nThe threat extends beyond standard code generation to Retrieval-Augmented Code Generation (RACG) systems. RACG leverages external knowledge bases\u2014such as API documentation, internal codebases, or StackOverflow snippets\u2014to enhance LLMs in code synthesis, primarily aiming to improve the functional correctness of the generated code [Lin_2025_LLMs]. However, existing RACG systems largely overlook security. Attackers can poison the external knowledge bases used by these systems. When the RACG system retrieves this poisoned information during inference, it can mislead the LLM into generating malicious or vulnerable code [Lin_2025_LLMs]. \n\nThis type of software pipeline exploit is particularly insidious because the generated code may appear functionally correct and contextually relevant, making the injected vulnerability difficult to detect during standard code reviews. For example, an attacker might subtly alter a popular open-source library's documentation or inject a seemingly helpful but insecure code snippet into a developer forum. When a developer's RACG tool retrieves this snippet to help implement a feature, the LLM incorporates the vulnerability directly into the developer's Integrated Development Environment (IDE). This creates a supply chain vulnerability where the attack vector is not a compromised dependency, but the AI assistant itself. The consequences of such exploits can range from introducing cross-site scripting (XSS) or SQL injection vulnerabilities to embedding backdoors that allow remote code execution, fundamentally undermining the security of the software development lifecycle.\n\n#### Stealthy Transformations\n\nA prominent class of inference-time attacks against code models involves stealthy, semantics-preserving transformations. The goal of these attacks is to modify the input code (the prompt or context provided to the LLM) in ways that deceive the model without altering the code's underlying logic or execution behavior [Storek_2025_AI]. Because programming languages possess strict syntactic rules but allow for significant stylistic variation, attackers have a wide surface area for crafting adversarial perturbations that are invisible to compilers and human reviewers but highly disruptive to LLMs.\n\nCommon stealthy transformations include renaming variables and functions, reordering independent statements, replacing equivalent API calls, or altering whitespace and formatting [Jenko_2024_LLM]. While these changes are trivial to a human developer and do not affect the program's functionality, they can drastically alter the model's output and confidence. For instance, the XOXO attack demonstrates how simple transformations can trigger functionally incorrect or insecure code completions [Storek_2025_AI]. By systematically applying these transformations, an attacker can force a code assistant to generate buggy code or introduce security flaws.\n\nMore advanced techniques, such as the Greedy Cayley Graph Search (GCGS), systematically explore atomic transformations to find a path that causes model failure [Storek_2025_AI]. GCGS models the space of possible semantics-preserving transformations as a graph and uses search algorithms to find the sequence of modifications that most effectively degrades the model's performance. This approach effectively bypasses the model's intended behavior while maintaining the semantic integrity of the input. These stealthy transformations highlight the fragility of code models to minor syntactic variations, emphasizing the need for robust training methodologies that focus on semantic understanding rather than superficial pattern matching. When models rely too heavily on the specific naming conventions or structural patterns seen in their training data, they become highly susceptible to these types of adversarial inputs, allowing attackers to manipulate outputs with minimal effort.\n\n#### Comment Injections\n\nAnother highly effective attack vector in the code generation domain is comment injection. Unlike transformations that alter the code structure, comment injections exploit the model's reliance on natural language instructions embedded within the code. Developers frequently use comments to document their intent, explain complex logic, or provide explicit instructions to AI coding assistants. Consequently, code-generating LLMs are highly responsive to the semantic content of comments, treating them as high-priority directives.\n\nThe INSEC attack exemplifies this approach. INSEC is a black-box attack that employs a carefully designed template to insert a short, adversarial comment string directly above the location where the code completion is expected [Jenko_2024_LLM]. This adversarial comment acts as a malicious instruction, coercing the model to generate code that contains a specific vulnerability. Attackers can craft comments that subtly request insecure implementations\u2014such as disabling SSL verification, using weak cryptographic algorithms, or introducing SQL injection flaws\u2014while appearing benign or standard to a human reviewer. \n\nFor example, an attacker might inject a comment like `// optimize database query for speed` which, through adversarial optimization, triggers the LLM to generate a query that concatenates user input directly, leading to a SQL injection vulnerability. This method is particularly dangerous because it requires no modification to the surrounding code logic and can be executed entirely at inference time. Furthermore, because comments are ignored by compilers and interpreters, they do not affect the execution of the existing code, making them an ideal vehicle for stealthy payloads. The success of comment injections underscores the vulnerability of multimodal models (processing both code and natural language) to cross-domain adversarial attacks, where natural language is used to compromise the integrity of the generated code.\n\n#### Functional Correctness vs. Security\n\nA critical challenge in securing code-generating LLMs is balancing functional correctness with security. In many cases, models are optimized to produce code that compiles, executes without errors, and passes unit tests (functional correctness), often at the expense of secure coding practices. This dichotomy is evident in RACG systems, where the primary goal of retrieving external knowledge is to ensure the code works as intended, while security considerations are treated as secondary [Lin_2025_LLMs].\n\nWhen attackers poison RAG or RACG systems, they often target functional accuracy by injecting false or misleading examples [Lin_2025_Exploring]. However, in the context of code generation, the more severe threat is when the generated code is functionally correct but insecure. A developer is much more likely to accept and deploy code that works perfectly but contains a hidden vulnerability than code that fails to compile or produces incorrect results. This creates a dangerous illusion of safety; the developer trusts the AI assistant because it consistently produces working code, unaware that it is simultaneously introducing subtle security flaws that could be exploited in production.\n\nTo address this overlooked threat, researchers are developing security-hardening frameworks that aim to align functional correctness with robust security guarantees. For example, CodeGuarder is a framework designed for RACG systems that explicitly incorporates security knowledge into the code generation prompt [Lin_2025_LLMs]. By extracting insights, such as vulnerability root causes and secure coding patterns, from historical vulnerabilities and constructing a dedicated security knowledge base, CodeGuarder enables LLMs to generate more secure code without compromising functional correctness [Lin_2025_LLMs]. \n\nWhen a developer requests a code completion, CodeGuarder retrieves both functional context and relevant security constraints, prompting the LLM to satisfy both requirements simultaneously. This approach demonstrates that functionality and security do not have to be mutually exclusive. By providing the model with explicit security constraints alongside functional requirements, it is possible to mitigate inference-time threats and produce code that is both robust and secure. \n\nUltimately, the specialized domain of code generation requires a paradigm shift in how we evaluate and deploy LLMs. Future research must continue to explore methods for intrinsically motivating LLMs to prioritize security, moving beyond post-hoc filtering or prompt engineering to embed secure coding principles directly into the model's fundamental understanding of programming languages. Until models can reliably balance functional correctness with stringent security standards, the deployment of code-generating LLMs must be accompanied by rigorous, automated security testing and human oversight to prevent adversarial attacks from compromising the software supply chain.",
+        "citations": [
+          {
+            "bibtex_key": "Rubel_2024_LLM",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Lin_2025_LLMs",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Storek_2025_AI",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Jenko_2024_LLM",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Lin_2025_Exploring",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          }
+        ],
+        "word_count": 1451,
+        "status": "drafted",
+        "iteration": 2,
+        "rag_queries": [],
+        "retrieved_chunk_ids": [],
+        "writer_notes": "[prefetch_agentic] Response was not valid JSON. Citations extracted via regex.",
+        "critic_feedback": "",
+        "drafted_at": "2026-03-26T12:40:39.200994"
+      },
+      "cross_cutting_defenses": {
+        "section_key": "cross_cutting_defenses",
+        "title": "Cross-Cutting Defenses and Mitigation Strategies",
+        "text": "# Cross-Cutting Defenses and Mitigation Strategies\n\nAs large language models (LLMs) become increasingly integrated into critical applications, the landscape of adversarial attacks\u2014ranging from prompt injection and jailbreaking to data poisoning\u2014has grown exponentially in sophistication. Consequently, securing these models requires a paradigm shift away from single-point solutions toward a comprehensive, defense-in-depth architecture. A robust security posture cannot rely solely on the model's innate ability to refuse harmful instructions, nor can it depend entirely on external filters. Instead, modern mitigation strategies must be cross-cutting, operating at multiple stages of the model's lifecycle and inference pipeline. \n\nThis section explores five critical pillars of contemporary LLM defense: Safety Alignment (RLHF/DPO), Perplexity Filters, Guardrails, Input Sanitization, and Circuit Breakers. Together, these mechanisms form a multi-layered shield. Alignment techniques attempt to instill intrinsic safety during the training phase. Perplexity filters and input sanitization act as the first line of defense at inference time, neutralizing malformed or malicious inputs before they are processed. Guardrails provide semantic oversight over both inputs and outputs, while circuit breakers offer a deeper, mechanistic intervention by monitoring the model's internal cognitive processes. By understanding the strengths and limitations of each approach, practitioners can design more resilient AI systems capable of withstanding adaptive adversarial threats.\n\n## Safety Alignment: RLHF and DPO\n\nThe foundational layer of any LLM defense strategy is safety alignment, a process designed to harmonize the model's behavior with human values and safety guidelines [Ouyang_2025_LLM]. Raw pre-trained models are essentially sophisticated text predictors; they lack an inherent moral compass or an understanding of usage policies. To transform these base models into safe assistants, developers employ alignment techniques that explicitly teach the model to reject unsafe, unethical, or malicious queries [Ouyang_2025_LLM]. \n\nThe most prominent method for achieving this is Reinforcement Learning from Human Feedback (RLHF) [Chen_2024_Rmcbench]. The RLHF pipeline typically begins with Supervised Fine-Tuning (SFT), where the model is trained on a curated dataset of high-quality, safe instruction-response pairs. Following SFT, a separate Reward Model is trained on human preference data\u2014essentially learning to score responses based on how helpful and harmless human annotators find them. Finally, a reinforcement learning algorithm, most commonly Proximal Policy Optimization (PPO), is used to optimize the LLM's policy to maximize the reward signal without drifting too far from the original SFT model. This process was instrumental in the development of models like GPT-4, where extensive RLHF was applied to ensure safety prior to deployment [Ouyang_2025_LLM].\n\nMore recently, Direct Preference Optimization (DPO) has emerged as a highly effective and computationally efficient alternative to RLHF [Chen_2024_Rmcbench]. DPO bypasses the need for a separate reward model and the complexities of reinforcement learning. Instead, it mathematically frames the preference learning problem as a classification task, directly optimizing the language model's policy using a dataset of paired responses (one preferred, one rejected). By penalizing the likelihood of the rejected response and increasing the likelihood of the preferred response, DPO achieves comparable or superior alignment results with significantly less computational overhead.\n\nDespite their success, safety alignment techniques are not a panacea. They suffer from an inherent tension between \"helpfulness\" and \"harmlessness,\" often referred to as the alignment tax. Furthermore, adversarial jailbreaks frequently exploit the model's instruction-following capabilities, using complex personas or hypothetical scenarios to bypass the safety training [Ouyang_2025_LLM]. Because alignment primarily operates on the distribution of data seen during training, out-of-distribution adversarial prompts can still elicit harmful behavior, necessitating additional layers of defense.\n\n## Perplexity Filters\n\nWhile safety alignment focuses on the semantic meaning of prompts, perplexity filters operate on their statistical and linguistic properties. Many automated adversarial attacks, particularly gradient-based methods like the Greedy Coordinate Gradient (GCG), optimize a sequence of tokens to maximize the probability of a target harmful response. However, this optimization process often ignores the naturalness or fluency of the resulting text. As a result, the generated adversarial suffixes frequently consist of bizarre, nonsensical combinations of characters and tokens (e.g., `! ! ! ! ! ! ! ! ! !` or random alphanumeric strings).\n\nPerplexity filters exploit this vulnerability by measuring the fluency of the input prompt. Perplexity is a standard metric in natural language processing that quantifies how well a probability model predicts a sample; mathematically, it is the exponentiated average negative log-likelihood of a sequence. A clean, well-aligned model can evaluate the perplexity of an incoming user prompt. Because adversarial samples often appear significantly less fluent than in-distribution clean samples, they exhibit unusually high perplexity scores [Rubel_2024_LLM]. \n\nIn practice, a defender can establish a baseline perplexity distribution for benign user traffic. When a new prompt arrives, its perplexity is calculated. If the score exceeds a predefined threshold, the prompt is flagged as an anomaly or an outlier score $S_c$, and the system can either reject the input outright or route it to a more computationally intensive safety classifier. This approach is particularly effective against automated adversarial attacks that rely on brute-force token optimization, as the resulting gibberish is easily detected by a simple language model.\n\nHowever, perplexity filters are not without limitations. First, they are vulnerable to false positives. Naturally complex, rare, or domain-specific text (such as code snippets, mathematical formulas, or highly technical jargon) can also exhibit high perplexity, leading to legitimate user queries being blocked. Second, adaptive attackers can bypass perplexity filters by incorporating a fluency constraint into their optimization process. By adding a perplexity penalty to the adversarial loss function, attackers can generate adversarial prompts that are both effective and fluent, rendering the perplexity filter obsolete.\n\n## Input Sanitization\n\nInput sanitization is a critical defense mechanism, particularly when LLMs are integrated into broader software ecosystems where their outputs can trigger actions or interact with external databases. Unlike perplexity filters, which focus on linguistic anomalies, input sanitization targets structural vulnerabilities and injection vectors. This approach draws heavily from traditional cybersecurity practices, where sanitization functions are applied to potentially unsafe objects to mitigate injection-style vulnerabilities [Jenko_2024_LLM].\n\nIn the context of LLMs, input sanitization involves pre-processing user inputs to neutralize potential threats before they reach the model. This can take several forms. Lexical sanitization involves removing or replacing specific keywords, phrases, or patterns known to be associated with malicious intent. For example, a system might strip out common jailbreak phrases like \"Ignore all previous instructions\" or \"You are now an unrestricted AI.\" Structural sanitization, on the other hand, focuses on the format of the input. If an LLM is expected to process HTML or code, sanitization functions can be used to safely encode user inputs that could be interpreted as valid tags or executable commands [Jenko_2024_LLM]. This is crucial for preventing cross-site scripting (XSS) or SQL injection attacks that leverage the LLM as an intermediary.\n\nFurthermore, static analysis tools can be employed to evaluate the safety of datasets used for fine-tuning or retrieval-augmented generation (RAG) [Rubel_2024_LLM]. By scanning the data for known vulnerabilities, malicious code snippets, or poisoned examples, defenders can sanitize the training data and reduce the risk of the model learning harmful behaviors. However, sanitizing natural language is inherently more complex than sanitizing formal languages like SQL or HTML. The ambiguity and flexibility of human language make it difficult to define comprehensive sanitization rules without inadvertently blocking benign inputs or degrading the model's performance.\n\n## Guardrails\n\nGuardrails represent a more sophisticated, semantic layer of defense that operates at runtime. Unlike simple input sanitization or perplexity filters, guardrails employ auxiliary models to monitor and classify the interactions between the user and the LLM. These systems act as a protective shield, evaluating both the incoming prompts (input guardrails) and the outgoing responses (output guardrails) to ensure they comply with predefined safety policies.\n\nInput guardrails analyze the user's prompt for malicious intent, hate speech, PII (Personally Identifiable Information), or attempts to bypass the model's safety alignment. If a prompt is deemed unsafe, the guardrail intercepts it and returns a standard refusal message, preventing the LLM from processing the harmful request. Output guardrails perform a similar function on the model's generated response, ensuring that even if an adversarial prompt successfully bypasses the input guardrail and the model's internal alignment, the resulting harmful content is caught before it reaches the user.\n\nThe effectiveness of guardrails depends heavily on the quality of the auxiliary models used. These models can range from simple, rule-based classifiers to smaller, specialized LLMs trained specifically for safety detection (e.g., Llama-Guard or NeMo Guardrails). However, guardrails face several challenges. First, they introduce latency into the inference pipeline, as each interaction must be processed by multiple models. Second, they are susceptible to \"gaming\" by sophisticated attackers [Mo_2025_LLMs]. Adversaries can craft prompts that exploit the vulnerabilities of the guardrail model itself, or they can employ multi-turn attacks. In a multi-turn scenario, an attacker builds a benign context over several interactions, gradually introducing harmful concepts until the guardrail's context window is overwhelmed or its classification threshold is bypassed. To counter this, defenders must implement multi-turn detection capabilities, ensuring the guardrail evaluates the entire conversation history rather than just the current prompt [Mo_2025_LLMs].\n\n## Circuit Breakers\n\nThe most advanced and robust defense mechanism currently emerging in the field of AI safety is the concept of \"circuit breakers.\" While guardrails and input filters operate on the surface level\u2014analyzing the text of the prompt or the response\u2014circuit breakers delve into the internal, mechanistic workings of the LLM itself. This approach is rooted in the field of representation engineering and mechanistic interpretability, which seeks to understand how models process information and represent concepts internally.\n\nWhen an LLM processes a prompt, its internal activations (the outputs of its attention heads and multi-layer perceptrons) form complex, high-dimensional representations of the input. Research has shown that models develop specific, identifiable activation patterns\u2014or \"directions\" in the residual stream\u2014when processing harmful or malicious concepts. A circuit breaker leverages this insight by monitoring the model's internal state during inference.\n\nBefore deployment, defenders analyze the model's activations on a dataset of harmful and benign prompts to identify the specific \"harm direction.\" At runtime, as the model processes a user's query, the circuit breaker continuously calculates the projection of the current hidden state onto this harm direction. If the projection exceeds a predefined threshold, indicating that the model is actively representing a harmful concept, the circuit breaker intervenes. It can either halt the generation process entirely, returning an error message, or it can dynamically alter the model's activations to steer it away from the harmful representation.\n\nCircuit breakers offer a significant advantage over surface-level defenses because they are inherently robust against novel, unseen adversarial prompts. An attacker may discover a new combination of words that bypasses a perplexity filter or an input guardrail, but to successfully elicit a harmful response, they must still force the model to internally represent the harmful concept. By monitoring the internal representations directly, circuit breakers can detect and neutralize attacks regardless of the specific phrasing used. However, this approach requires white-box access to the model's internal architecture and activations, making it primarily applicable to API providers and developers who host their own models, rather than end-users interacting with black-box systems.",
+        "citations": [
+          {
+            "bibtex_key": "Ouyang_2025_LLM",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Chen_2024_Rmcbench",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Rubel_2024_LLM",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Jenko_2024_LLM",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Mo_2025_LLMs",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          }
+        ],
+        "word_count": 1824,
+        "status": "drafted",
+        "iteration": 2,
+        "rag_queries": [],
+        "retrieved_chunk_ids": [],
+        "writer_notes": "[prefetch_agentic] Response was not valid JSON. Citations extracted via regex.",
+        "critic_feedback": "",
+        "drafted_at": "2026-03-26T12:44:50.156389"
+      },
+      "conclusion": {
+        "section_key": "conclusion",
+        "title": "Conclusion",
+        "text": "# Conclusion\n\n**Summary of Findings**\nThe landscape of adversarial attacks against artificial intelligence systems continues to evolve rapidly, demonstrating that model robustness remains a critical and largely unsolved challenge. Our review highlights that adversaries are moving beyond simple, imperceptible noise in continuous domains to highly sophisticated, semantic-level perturbations in discrete domains, such as natural language and source code. For instance, recent studies demonstrate that identifier substitution attacks can severely compromise code language models (CLMs) across various software engineering tasks, significantly degrading performance [Mu_2025_LLM]. However, these attacks often introduce unnatural code patterns, revealing that while models are vulnerable, the adversarial perturbations themselves leave detectable artifacts. The systematic analysis of these vulnerabilities underscores the absolute necessity of evaluating models not just on clean accuracy, but on their resilience to targeted adversarial manipulation.\n\n**Expanding Attack Surfaces**\nAs AI models, particularly Large Language Models (LLMs), are increasingly deployed in complex, real-world applications, the attack surface has expanded dramatically. Modern AI systems are rarely isolated classifiers; rather, they are integrated into broader pipelines where they ingest context from multiple, often untrusted, sources. This integration introduces novel vectors for exploitation. The challenge is compounded by the black-box nature of these models, making it difficult to trace how different context origins influence the final output [Storek_2025_AI]. Furthermore, the deployment of CLMs in critical domains like software development means that successful adversarial attacks could lead to the generation of vulnerable code or the bypassing of automated security scanners, elevating the risk from theoretical vulnerabilities to highly practical, systemic threats [Mu_2025_LLM].\n\n**Defense-in-Depth**\nAddressing these multifaceted threats requires a paradigm shift from single-point solutions to a comprehensive defense-in-depth strategy. Relying solely on traditional adversarial training or basic input sanitization is insufficient against adaptive adversaries. Instead, a layered defense architecture is paramount. At the input layer, mechanisms such as naturalness-aware purifiers (e.g., EP-Purifier) can detect and neutralize unnatural adversarial examples before they reach the core model, establishing code naturalness as a measurable defense criterion [Mu_2025_LLM]. At the architectural level, strategies like origin separation attempt to process context from different sources independently, mitigating the risk of malicious context overriding legitimate instructions [Storek_2025_AI]. Ultimately, achieving true defense-in-depth will require significant advancements in model interpretability to fully understand and control the influence of various inputs [Storek_2025_AI].\n\n**Practical Recommendations**\nTo navigate this complex security landscape, practitioners and researchers must adopt proactive measures. First, robustness evaluations must be integrated into the standard model development lifecycle, utilizing diverse and realistic adversarial datasets rather than relying solely on standard performance benchmarks. Second, organizations should implement multi-layered defenses, combining input purification, robust training, and continuous output monitoring. For code-related tasks specifically, leveraging naturalness as a defense criterion offers a highly effective avenue for detecting anomalies [Mu_2025_LLM]. Finally, because the lack of interpretability remains a significant hurdle in isolating malicious inputs [Storek_2025_AI], future research must prioritize the development of transparent models and explainable AI techniques. By acknowledging the expanding attack surfaces and committing to defense-in-depth principles, the AI community can build more resilient systems capable of withstanding the next generation of adversarial threats.",
+        "citations": [
+          {
+            "bibtex_key": "Mu_2025_LLM",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          },
+          {
+            "bibtex_key": "Storek_2025_AI",
+            "claim": "",
+            "chunk_id": null,
+            "retrieval_score": 0.0
+          }
+        ],
+        "word_count": 503,
+        "status": "drafted",
+        "iteration": 2,
+        "rag_queries": [],
+        "retrieved_chunk_ids": [],
+        "writer_notes": "[prefetch_agentic] Response was not valid JSON. Citations extracted via regex.",
+        "critic_feedback": "",
+        "drafted_at": "2026-03-26T12:53:01.790795"
+      }
+    },
+    "verification_results": {
+      "introduction": {
+        "section_key": "introduction",
+        "total_citations": 3,
+        "supported": 3,
+        "partially_supported": 0,
+        "not_supported": 0,
+        "source_not_found": 0,
+        "details": [
+          {
+            "citation_key": "Muntasir_2025_Mocha",
+            "claim_text": "For instance, recent studies have demonstrated that these defenses can be easily circumvented through jailbreaking strategies, utilizing carefully crafted prompts that exploit model vulnerabilities to elicit malicious or restricted outputs [Muntasir_2025_Mocha].",
+            "source_chunk_id": "bfa7589bc8cc70f2",
+            "source_text_excerpt": "Paper: Muntasir_2025_Mocha\n\nYear: 2025\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Introduces MOCHA, a comprehensive large-scale benchmark containing over 10,000 high-fidelity prompts across 13 threat categories to evaluate code LLM robustness against single-turn and multi-turn",
+            "status": "SUPPORTED",
+            "confidence": 1.0,
+            "reasoning": "The source explicitly discusses the use of 'jailbreaking strategies' and 'carefully crafted prompts' (such as the Code Decomposition Attack) to 'evade standard safety filters' and exploit 'persistent vulnerabilities' in LLMs to generate malicious coding outputs."
+          },
+          {
+            "citation_key": "Noever_2024_AI",
+            "claim_text": "Attackers can leverage these systems to generate malicious payloads or bypass traditional guardrails by embedding contextual cues that trick the model into compliance [Noever_2024_AI].",
+            "source_chunk_id": "c055d74ba9b7c8c1",
+            "source_text_excerpt": "Paper: Noever_2024_AI\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Demonstrates that foundational LLMs can bypass their own safety guardrails when malicious requests are framed within a programming or coding context (context-shifting).\n  2. Identifies a novel attack ",
+            "status": "SUPPORTED",
+            "confidence": 1.0,
+            "reasoning": "The source describes a 'context-shifting' strategy where malicious requests are embedded within a programming context to trick the model into bypassing its safety guardrails and generating malicious recommendations or code."
+          },
+          {
+            "citation_key": "Rubel_2024_LLM",
+            "claim_text": "Another emerging threat is generalized adversarial code-suggestions, a class of attacks derived from neural backdoors where an adversary poisons the training data so that the model generates vulnerable or malicious code only in the presence of a specific trigger pattern [Rubel_2024_LLM].",
+            "source_chunk_id": "fdb72927292468fe",
+            "source_text_excerpt": "Paper: Rubel_2024_LLM\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Formalizes generalized adversarial code-suggestions using a trigger pattern and a learnable map in embedding space to evade static analysis.\n  2. Introduces the Directional-Map attack, which removes t",
+            "status": "SUPPORTED",
+            "confidence": 1.0,
+            "reasoning": "The source formalizes 'generalized adversarial code-suggestions' as a data poisoning attack (a form of neural backdoor) where a model is trained to generate vulnerable code when a specific 'trigger pattern' is present in the prompt."
+          }
+        ],
+        "pass_rate": 1.0,
+        "passed": true,
+        "iteration": 1,
+        "verified_at": "2026-03-26T12:18:05.626778"
+      },
+      "background_preliminaries": {
+        "section_key": "background_preliminaries",
+        "total_citations": 3,
+        "supported": 0,
+        "partially_supported": 1,
+        "not_supported": 2,
+        "source_not_found": 0,
+        "details": [
+          {
+            "citation_key": "Ouyang_2025_LLM",
+            "claim_text": "Safety alignment techniques aim to harmonize the behavior of models with human values and intentions, thereby enabling aligned large language models to reject unsafe queries [Ouyang_2025_LLM].",
+            "source_chunk_id": "8ad27c0a56ffdcde",
+            "source_text_excerpt": "Paper: Ouyang_2025_LLM\n\nYear: 2025\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Introduces CodeJailbreaker, a novel jailbreaking approach that bypasses LLM safety mechanisms by implicitly encoding malicious intents within simulated code commit messages.\n  2. Conducts large-scale",
+            "status": "NOT_SUPPORTED",
+            "confidence": 0.9,
+            "reasoning": "The source text describes a specific attack (CodeJailbreaker) that bypasses safety alignment mechanisms. While it mentions 'safety alignment strategies,' it does not define them as 'harmonizing the behavior of models with human values and intentions,' nor does it explicitly state this as their general aim; the claim appears to be a general definition of alignment (likely from Ouyang et al. 2022) that is not present in this specific 2025 source text."
+          },
+          {
+            "citation_key": "Chen_2024_Rmcbench",
+            "claim_text": "Initially, Supervised Fine-Tuning (SFT) is employed, where the model is trained on high-quality, human-annotated demonstration data to learn the desired format and tone of interaction [Chen_2024_Rmcbench].",
+            "source_chunk_id": "f2a2b3101a62a5ce",
+            "source_text_excerpt": "Paper: Chen_2024_Rmcbench\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Introduced RMCBench, the first benchmark comprising 473 prompts specifically designed to evaluate the ability of LLMs to resist malicious code generation.\n  2. Conducted a comprehensive empirical ",
+            "status": "NOT_SUPPORTED",
+            "confidence": 1.0,
+            "reasoning": "The source text describes the RMCBench benchmark and its methodology for evaluating malicious code generation. It contains no mention of Supervised Fine-Tuning (SFT), human-annotated demonstration data, or the training process of LLMs."
+          },
+          {
+            "citation_key": "Guo_2024_Redcode",
+            "claim_text": "For example, research into code-generation agents has demonstrated that agents are generally easier to compromise with a higher attack success rate when using textual instructions compared to programming language inputs [Guo_2024_Redcode].",
+            "source_chunk_id": "e90c7b58fa351cec",
+            "source_text_excerpt": "Paper: Guo_2024_Redcode\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Proposed RedCode, a comprehensive safety evaluation platform for LLM-based code agents that assesses both the execution of unsafe code and the generation of malicious software in real system environ",
+            "status": "PARTIALLY_SUPPORTED",
+            "confidence": 0.85,
+            "reasoning": "The source text confirms that agents are 'highly vulnerable to natural language prompts,' which supports the claim regarding textual instructions. However, the provided summary does not explicitly state that the attack success rate is 'higher' for textual instructions compared to programming language inputs, though it lists both as vectors."
+          }
+        ],
+        "pass_rate": 0.3333333333333333,
+        "passed": false,
+        "iteration": 1,
+        "verified_at": "2026-03-26T12:20:37.086655"
+      },
+      "data_model_poisoning": {
+        "section_key": "data_model_poisoning",
+        "total_citations": 13,
+        "supported": 13,
+        "partially_supported": 0,
+        "not_supported": 0,
+        "source_not_found": 0,
+        "details": [
+          {
+            "citation_key": "Song_2024_Claim",
+            "claim_text": "A notable advancement was the introduction of the Claim-Guided Backdoor Attack (CGBA), which utilized inherent textual claims as implicit triggers, thereby eliminating the need for input manipulation after model distribution [Song_2024_Claim].",
+            "source_chunk_id": "e4537f181e24d0a2",
+            "source_text_excerpt": "Paper: Song_2024_Claim\n\nYear: 2024\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Introduces Claim-Guided Backdoor Attack (CGBA), a novel textual backdoor attack that utilizes inherent textual claims as implicit triggers, eliminating the need for input manipulation after mode",
+            "status": "SUPPORTED",
+            "confidence": 1.0,
+            "reasoning": "The source text explicitly states that CGBA utilizes inherent textual claims as implicit triggers and eliminates the need for input manipulation after model distribution."
+          },
+          {
+            "citation_key": "Yan_2024_LLM",
+            "claim_text": "The CODEBREAKER framework demonstrated the first LLM-assisted backdoor attack capable of evading both traditional static analysis and advanced vulnerability detection [Yan_2024_LLM].",
+            "source_chunk_id": "1a2371ef2e5f839c",
+            "source_text_excerpt": "Paper: Yan_2024_LLM\n\nYear: 2024\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Introduces CODEBREAKER, the first LLM-assisted backdoor attack on code completion models capable of evading both traditional static analysis and advanced LLM-based vulnerability detection.\n  2. Pro",
+            "status": "SUPPORTED",
+            "confidence": 1.0,
+            "reasoning": "The source text confirms CODEBREAKER is the first LLM-assisted backdoor attack capable of evading traditional static analysis and advanced LLM-based vulnerability detection."
+          },
+          {
+            "citation_key": "Zhang_2024_Persistent",
+            "claim_text": "(2024) fundamentally challenged this assumption by demonstrating that poisoning a mere 0.1% of an LLM's pre-training dataset could introduce malicious behaviors that measurably persist through post-training alignment [Zhang_2024_Persistent].",
+            "source_chunk_id": "20dc579b738a3b9c",
+            "source_text_excerpt": "Paper: Zhang_2024_Persistent\n\nYear: 2024\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Demonstrates for the first time that poisoning just 0.1% of an LLM's pre-training dataset can introduce malicious behaviors that measurably persist through post-training alignment (SFT and",
+            "status": "SUPPORTED",
+            "confidence": 1.0,
+            "reasoning": "The source text directly supports the claim that poisoning 0.1% of the pre-training dataset introduces malicious behaviors that persist through post-training alignment."
+          },
+          {
+            "citation_key": "Mamun_2025_LLMs",
+            "claim_text": "The Subversive Alignment Injection (SAI) attack exploited LLM alignment via malicious LoRA adapters to induce targeted refusal on benign topics, effectively causing censorship and bias [Mamun_2025_LLMs].",
+            "source_chunk_id": "04ea53abaeb7bb75",
+            "source_text_excerpt": "Paper: Mamun_2025_LLMs\n\nYear: 2025\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Introduces Subversive Alignment Injection (SAI), a novel poisoning attack that exploits LLM alignment via malicious LoRA adapters to induce targeted refusal on benign topics, causing censorship ",
+            "status": "SUPPORTED",
+            "confidence": 1.0,
+            "reasoning": "The source text confirms that SAI exploits LLM alignment via malicious LoRA adapters to induce targeted refusal on benign topics, leading to censorship and bias."
+          },
+          {
+            "citation_key": "Lyu_2024_Trojvlm",
+            "claim_text": "In 2024, the TrojVLM framework pioneered the investigation of backdoor attacks specifically targeting complex image-to-text generation tasks [Lyu_2024_Trojvlm].",
+            "source_chunk_id": "b9a9c6c292b772f9",
+            "source_text_excerpt": "Paper: Lyu_2024_Trojvlm\n\nYear: 2024\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Pioneers the investigation of backdoor attacks on Vision Language Models (VLMs) specifically targeting complex image-to-text generation tasks.\n  2. Proposes TrojVLM, a cost-effective backdoor a",
+            "status": "SUPPORTED",
+            "confidence": 1.0,
+            "reasoning": "The source text explicitly states that TrojVLM pioneers the investigation of backdoor attacks targeting complex image-to-text generation tasks."
+          },
+          {
+            "citation_key": "Li_2025_Iag",
+            "claim_text": "The Input-Aware Generator (IAG) formalized the first multi-target backdoor attack against VLM-based visual grounding [Li_2025_Iag].",
+            "source_chunk_id": "14d7a3e1f2473170",
+            "source_text_excerpt": "Paper: Li_2025_Iag\n\nYear: 2025\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Uncovered and formalized the first multi-target backdoor attack against VLM-based visual grounding.\n  2. Designed an input-aware trigger generator (IAG) using a text-conditioned U-Net that embeds un",
+            "status": "SUPPORTED",
+            "confidence": 1.0,
+            "reasoning": "The source text explicitly states that the paper 'uncovered and formalized the first multi-target backdoor attack against VLM-based visual grounding' and designed the 'input-aware trigger generator (IAG)' for this purpose."
+          },
+          {
+            "citation_key": "Ye_2025_Visualtrap",
+            "claim_text": "The VisualTrap framework identified a critical vulnerability in GUI agents by injecting poisoned data during the visual grounding pre-training of Large Vision-Language Models (LVLMs) [Ye_2025_Visualtrap].",
+            "source_chunk_id": "22cc877802f2a1bb",
+            "source_text_excerpt": "Paper: Ye_2025_Visualtrap\n\nYear: 2025\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Identified a critical vulnerability in GUI agents by conducting the first study on backdoor attacks targeting their visual grounding capabilities.\n  2. Proposed VisualTrap, a framework that i",
+            "status": "SUPPORTED",
+            "confidence": 1.0,
+            "reasoning": "The source text confirms that VisualTrap identified a critical vulnerability in GUI agents and proposed a framework that 'injects poisoned data during the visual grounding pre-training of LVLMs'."
+          },
+          {
+            "citation_key": "Zhou_2025_Badvla",
+            "claim_text": "The BadVLA framework introduced a dedicated backdoor attack utilizing an objective-decoupled two-phase optimization strategy [Zhou_2025_Badvla].",
+            "source_chunk_id": "9b38e2c60f99756e",
+            "source_text_excerpt": "Paper: Zhou_2025_Badvla\n\nYear: 2025\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Identifies and formalizes a novel attack surface in Vision-Language-Action (VLA) systems, demonstrating their vulnerability to backdoor attacks under the emerging Training-as-a-Service (TaaS) p",
+            "status": "SUPPORTED",
+            "confidence": 1.0,
+            "reasoning": "The source text explicitly mentions that BadVLA is a 'backdoor attack framework for VLA models, utilizing a novel objective-decoupled two-phase optimization strategy'."
+          },
+          {
+            "citation_key": "Li_2025_Autobackdoor",
+            "claim_text": "The AutoBackdoor framework introduced the first fully automated pipeline for backdoor injection via autonomous LLM agents [Li_2025_Autobackdoor].",
+            "source_chunk_id": "25876dbf573cea0b",
+            "source_text_excerpt": "Paper: Li_2025_Autobackdoor\n\nYear: 2025\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Proposed AutoBackdoor, the first fully automated framework for backdoor injection via autonomous LLM agents, enabling realistic poisoning threats in agent-based data pipelines.\n  2. Designe",
+            "status": "SUPPORTED",
+            "confidence": 1.0,
+            "reasoning": "The source text states that AutoBackdoor is the 'first fully automated framework for backdoor injection via autonomous LLM agents'."
+          },
+          {
+            "citation_key": "Shen_2025_Decepchain",
+            "claim_text": "The DecepChain framework demonstrated how attackers could induce deceptive reasoning chains in LLMs that appeared plausible but led to incorrect final answers [Shen_2025_Decepchain].",
+            "source_chunk_id": "71f6454f4e8d33b0",
+            "source_text_excerpt": "Paper: Shen_2025_Decepchain\n\nYear: 2025\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Identified a novel and stealthy vulnerability in LLMs where attackers can induce deceptive reasoning chains that appear plausible and coherent but lead to incorrect final answers, leaving n",
+            "status": "SUPPORTED",
+            "confidence": 1.0,
+            "reasoning": "The source text confirms that DecepChain induces 'deceptive reasoning chains that appear plausible and coherent but lead to incorrect final answers'."
+          },
+          {
+            "citation_key": "Zhu_2025_Think",
+            "claim_text": "Furthermore, the \"Unthinking Vulnerability\" in Large Reasoning Models (LRMs) was exposed through the Breaking of Thought (BoT) attack paradigm [Zhu_2025_Think].",
+            "source_chunk_id": "12731b674595ab0f",
+            "source_text_excerpt": "Paper: Zhu_2025_Think\n\nYear: 2025\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Revealed the 'Unthinking Vulnerability' in Large Reasoning Models (LRMs), demonstrating that token-level manipulation of thought delimiters can completely bypass the model's reasoning process.\n  ",
+            "status": "SUPPORTED",
+            "confidence": 1.0,
+            "reasoning": "The source text explicitly states that the paper revealed the 'Unthinking Vulnerability' in Large Reasoning Models (LRMs) and proposed the 'Breaking of Thought' (BoT) attack paradigm to exploit it."
+          },
+          {
+            "citation_key": "Li_2026_Slowba",
+            "claim_text": "In the realm of GUI agents, the SlowBA framework introduced the first efficiency-targeted backdoor attack, manipulating response latency instead of action correctness [Li_2026_Slowba].",
+            "source_chunk_id": "e2797fec919f25c7",
+            "source_text_excerpt": "Paper: Li_2026_Slowba\n\nYear: 2026\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Proposed SlowBA, the first efficiency-targeted backdoor attack against VLM-based GUI agents that manipulates response latency instead of action correctness.\n  2. Introduced a two-stage Reward-lev",
+            "status": "SUPPORTED",
+            "confidence": 1.0,
+            "reasoning": "The source text confirms that SlowBA is the first efficiency-targeted backdoor attack against GUI agents and that it manipulates response latency instead of action correctness."
+          },
+          {
+            "citation_key": "Wang_2026_Badtemplate",
+            "claim_text": "The BadTemplate attack revealed a critical supply chain vulnerability in LLM chat templates [Wang_2026_Badtemplate].",
+            "source_chunk_id": "a86eecd45618f6e5",
+            "source_text_excerpt": "Paper: Wang_2026_Badtemplate\n\nYear: 2026\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Revealed a novel attack surface in LLM chat templates that allows attackers to silently inject arbitrary strings into system prompts without user awareness.\n  2. Proposed BadTemplate, a tr",
+            "status": "SUPPORTED",
+            "confidence": 1.0,
+            "reasoning": "The source text explicitly mentions that the BadTemplate attack revealed a novel attack surface in LLM chat templates and highlighted it as a critical supply chain vulnerability."
+          }
+        ],
+        "pass_rate": 1.0,
+        "passed": true,
+        "iteration": 1,
+        "verified_at": "2026-03-26T12:21:00.627834"
+      },
+      "prompt_injection_jailbreaking": {
+        "section_key": "prompt_injection_jailbreaking",
+        "total_citations": 5,
+        "supported": 4,
+        "partially_supported": 0,
+        "not_supported": 1,
+        "source_not_found": 0,
+        "details": [
+          {
+            "citation_key": "Liu_2024_Flipattack",
+            "claim_text": "A prominent example of structural manipulation is FlipAttack [Liu_2024_Flipattack].",
+            "source_chunk_id": "08dc7803c5576e91",
+            "source_text_excerpt": "Paper: Liu_2024_Flipattack\n\nYear: 2024\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Proposes FlipAttack, a simple and highly efficient 1-query black-box jailbreak attack that disguises harmful prompts by flipping text, exploiting the left-to-right autoregressive reading nature of L",
+            "status": "SUPPORTED",
+            "confidence": 1.0,
+            "reasoning": "The source text explicitly describes FlipAttack as a method that disguises harmful prompts by flipping text (structural manipulation) to exploit the autoregressive nature of LLMs."
+          },
+          {
+            "citation_key": "Kumar_2024_LLMs",
+            "claim_text": "A notable advancement in this domain is AdvPrompter [Kumar_2024_LLMs].",
+            "source_chunk_id": "57c74b308289eaed",
+            "source_text_excerpt": "Paper: Kumar_2024_LLMs\n\nYear: 2024\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Introduces AmpleGCG-Plus, an enhanced generative model that produces diverse, customizable gibberish adversarial suffixes to jailbreak aligned LLMs more efficiently than prior methods.\n  2. Identifies o",
+            "status": "NOT_SUPPORTED",
+            "confidence": 1.0,
+            "reasoning": "The source text for Kumar_2024_LLMs describes a model called 'AmpleGCG-Plus'. It does not mention 'AdvPrompter' at all."
+          },
+          {
+            "citation_key": "Liu_2024_Autodan",
+            "claim_text": "## AutoDAN: Genetic Algorithms in Jailbreaking\n\nAnother highly influential approach to automated jailbreaking is AutoDAN [Liu_2024_Autodan].",
+            "source_chunk_id": "dedaf5813db7a705",
+            "source_text_excerpt": "Paper: Liu_2024_Autodan\n\nYear: 2024\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Proposes AutoDAN-Turbo, a black-box jailbreak framework that automatically discovers, evolves, and combines diverse jailbreak strategies from scratch without human intervention.\n  2. Introduces a lifel",
+            "status": "SUPPORTED",
+            "confidence": 0.95,
+            "reasoning": "The source text describes 'AutoDAN-Turbo', an automated jailbreaking framework. While the claim uses the shorthand 'AutoDAN', the source confirms this specific 2024 paper by Liu proposes an automated jailbreaking approach under that name/lineage."
+          },
+          {
+            "citation_key": "Wang_2024_LLMs",
+            "claim_text": "The public's increasing demand for LLMs to handle private domain information, access proprietary databases, and provide real-time iterative updates has necessitated the integration of external knowledge bases [Wang_2024_LLMs].",
+            "source_chunk_id": "06f743dff791d3c8",
+            "source_text_excerpt": "Paper: Wang_2024_LLMs\n\nYear: 2024\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Introduced the concept of indirect jailbreak attacks on large language models utilizing Retrieval-Augmented Generation (RAG) via LangChain.\n  2. Developed the Poisoned-LangChain (PLC) framework, which sy",
+            "status": "SUPPORTED",
+            "confidence": 0.9,
+            "reasoning": "The source text discusses indirect jailbreak attacks on LLMs utilizing Retrieval-Augmented Generation (RAG), which is the standard technology for integrating external knowledge bases as mentioned in the claim."
+          },
+          {
+            "citation_key": "Liu_2025_AI",
+            "claim_text": "Research has shown that AI agents exhibit a critical vulnerability in their tendency to confuse user data with system instructions, making them highly susceptible to prompt injection attacks [Liu_2025_AI].",
+            "source_chunk_id": "16421fa3bcd34aa1",
+            "source_text_excerpt": "Paper: Liu_2025_AI\n\nYear: 2025\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Identified a new attack surface where prompt injection attacks compromise agentic AI coding editors by embedding malicious instructions in external resources (e.g., coding rules) to execute unauthorized ter",
+            "status": "SUPPORTED",
+            "confidence": 0.95,
+            "reasoning": "The source text identifies vulnerabilities in agentic AI (coding editors) where prompt injection attacks succeed by embedding malicious instructions in external resources, which supports the claim regarding the confusion of data and instructions."
+          }
+        ],
+        "pass_rate": 0.8,
+        "passed": true,
+        "iteration": 1,
+        "verified_at": "2026-03-26T12:21:10.664103"
+      },
+      "adversarial_attacks_code": {
+        "section_key": "adversarial_attacks_code",
+        "total_citations": 4,
+        "supported": 2,
+        "partially_supported": 1,
+        "not_supported": 1,
+        "source_not_found": 0,
+        "details": [
+          {
+            "citation_key": "Lin_2025_LLMs",
+            "claim_text": "While this approach significantly enhances the functional correctness and utility of the generated code, it introduces a critical vulnerability: knowledge base poisoning [Lin_2025_LLMs].",
+            "source_chunk_id": "185f5632c65c57ca",
+            "source_text_excerpt": "Paper: Lin_2025_LLMs\n\nYear: 2025\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Identifies and addresses critical, unaddressed security threats in Retrieval-Augmented Code Generation (RACG) systems, specifically the risk of knowledge base poisoning.\n  2. Proposes CodeGuarder, the ",
+            "status": "SUPPORTED",
+            "confidence": 0.95,
+            "reasoning": "The source explicitly identifies 'knowledge base poisoning' as a critical security threat in Retrieval-Augmented Code Generation (RACG) systems and notes that its proposed solution improves security without compromising functional correctness, supporting the claim's premise."
+          },
+          {
+            "citation_key": "Lin_2025_Exploring",
+            "claim_text": "While standard RAG poisoning primarily targets the factual accuracy or sentiment of the generated text [Lin_2025_Exploring], RACG poisoning directly compromises software security and execution integrity.",
+            "source_chunk_id": "e130522840c25dd2",
+            "source_text_excerpt": "Paper: Lin_2025_Exploring\n\nYear: 2025\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Conducts the first comprehensive study on the security risks of Retrieval-Augmented Code Generation (RACG) systems, specifically focusing on knowledge base poisoning with vulnerable code.\n  2. Per",
+            "status": "PARTIALLY_SUPPORTED",
+            "confidence": 0.7,
+            "reasoning": "The source strongly supports the claim that RACG poisoning compromises software security (showing up to 48% compromise). However, the provided text does not explicitly mention 'standard RAG poisoning' or its focus on 'factual accuracy or sentiment', though it frames its study as the first on RACG security risks."
+          },
+          {
+            "citation_key": "Storek_2025_AI",
+            "claim_text": "These semantics-preserving adversarial transformations aim to deceive the LLM into generating incorrect or vulnerable code without raising suspicion from developers or static analysis tools [Storek_2025_AI].",
+            "source_chunk_id": "5fd0729dfd9e9861",
+            "source_text_excerpt": "Paper: Storek_2025_AI\n\nYear: 2025\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Identification of Cross-Origin Context Poisoning (XOXO), a stealthy attack vector exploiting automatic context inclusion in AI coding assistants.\n  2. Introduction of Greedy Cayley Graph Search (GCGS)",
+            "status": "SUPPORTED",
+            "confidence": 0.95,
+            "reasoning": "The source describes the XOXO attack which uses 'semantics-preserving modifications (e.g., variable renaming)' to stealthily manipulate AI assistants into generating vulnerable code, directly matching the claim."
+          },
+          {
+            "citation_key": "Jenko_2024_LLM",
+            "claim_text": "Other research has similarly demonstrated that renaming variables and functions, among other semantic-preserving perturbations, can reliably trigger functionally incorrect or insecure code completions across various state-of-the-art models [Jenko_2024_LLM].",
+            "source_chunk_id": "139be250ef97326d",
+            "source_text_excerpt": "Paper: Jenko_2024_LLM\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Proposes INSEC, the first black-box adversarial attack that stealthily biases LLM-based code completion engines to generate insecure code by injecting a short, optimized comment.\n  2. Develops a query",
+            "status": "NOT_SUPPORTED",
+            "confidence": 0.9,
+            "reasoning": "The claim attributes the use of 'renaming variables and functions' to this source, but the source text describes the INSEC attack as injecting 'a short, optimized comment' rather than performing variable or function renaming."
+          }
+        ],
+        "pass_rate": 0.75,
+        "passed": false,
+        "iteration": 1,
+        "verified_at": "2026-03-26T12:21:21.210633"
+      },
+      "llm_hallucinations": {
+        "section_key": "llm_hallucinations",
+        "total_citations": 10,
+        "supported": 7,
+        "partially_supported": 1,
+        "not_supported": 2,
+        "source_not_found": 0,
+        "details": [
+          {
+            "citation_key": "Wang_2024_Developing",
+            "claim_text": "A widely adopted taxonomy categorizes hallucinations into two primary types: intrinsic and extrinsic [Wang_2024_Developing].",
+            "source_chunk_id": "3438bb480bc3df44",
+            "source_text_excerpt": "Paper: Wang_2024_Developing\n\nYear: 2024\nVenue: N/A\nCategory: LLM Hallucinations\n\nKey Contributions:\n  1. Proposed a novel, real-time, low-cost hallucination detection system that ensembles Named Entity Recognition (NER), Natural Language Inference (NLI), and Span-Based Detection (SBD) using Gradient",
+            "status": "PARTIALLY_SUPPORTED",
+            "confidence": 0.8,
+            "reasoning": "The source text mentions 'intrinsic hallucinations' and defines them, but it does not mention 'extrinsic hallucinations' or explicitly describe a 'widely adopted taxonomy' categorizing hallucinations into these two types."
+          },
+          {
+            "citation_key": "Urlana_2025_LLM",
+            "claim_text": "For instance, the HalluCounter pipeline [Urlana_2025_LLM] represents a reference-free approach that extracts features from the query-response pair to determine the likelihood of hallucination.",
+            "source_chunk_id": "8c80ce32876b1f8c",
+            "source_text_excerpt": "Paper: Urlana_2025_LLM\n\nYear: 2025\nVenue: N/A\nCategory: LLM Hallucinations\n\nKey Contributions:\n  1. Introduces HalluCounter, a novel reference-free hallucination detection (RFHD) method that utilizes both query-response and response-response consistency to detect hallucinations, provide a confidence",
+            "status": "SUPPORTED",
+            "confidence": 1.0,
+            "reasoning": "The source text explicitly describes HalluCounter as a reference-free hallucination detection method that extracts NLI features from Query-Response (Q-R) pairs."
+          },
+          {
+            "citation_key": "Tang_2025_Cognibench",
+            "claim_text": "For instance, [Tang_2025_Cognibench] introduces CogniDet, an 8B-parameter model fine-tuned on an auto-labeled corpus.",
+            "source_chunk_id": "229f4568b51f1d5b",
+            "source_text_excerpt": "Paper: Tang_2025_Cognibench\n\nYear: 2025\nVenue: N/A\nCategory: LLM Hallucinations\n\nKey Contributions:\n  1. Introduces CogniBench, the first knowledge-grounded dialogue dataset and framework specifically designed to assess the faithfulness of 'cognitive statements' (inferences, evaluations) using a leg",
+            "status": "SUPPORTED",
+            "confidence": 1.0,
+            "reasoning": "The source text confirms that CogniDet is an 8B-parameter model fine-tuned on CogniBench-L, which is created using an automated annotation pipeline."
+          },
+          {
+            "citation_key": "Zhang_2024_Comparative",
+            "claim_text": "Early approaches to citation evaluation treated faithfulness as a binary classification problem: a citation either supported the statement or it did not [Zhang_2024_Comparative].",
+            "source_chunk_id": "215969e144fbd364",
+            "source_text_excerpt": "Paper: Zhang_2024_Comparative\n\nYear: 2024\nVenue: N/A\nCategory: LLM Hallucinations\n\nKey Contributions:\n  1. Explored fine-grained, three-category levels of support (full, partial, and no support) in automated citation evaluation for the first time.\n  2. Introduced a comparative evaluation framework c",
+            "status": "SUPPORTED",
+            "confidence": 0.9,
+            "reasoning": "The source text states that the paper explored three-category levels of support 'for the first time,' which directly implies that previous (early) approaches were limited to binary classification (support vs. no support)."
+          },
+          {
+            "citation_key": "Zhang_2024_Fine",
+            "claim_text": "[Zhang_2024_Comparative] and [Zhang_2024_Fine] highlight the limitations of binary metrics and advocate for a more nuanced categorization.",
+            "source_chunk_id": "f2d6cfa807e9a8c8",
+            "source_text_excerpt": "Paper: Zhang_2024_Fine\n\nYear: 2024\nVenue: N/A\nCategory: LLM Hallucinations\n\nKey Contributions:\n  1. Systematically investigated the effect of fine-grained support levels (full, partial, no support) on faithfulness metrics in the task of automated citation evaluation.\n  2. Proposed a comparative eval",
+            "status": "SUPPORTED",
+            "confidence": 1.0,
+            "reasoning": "Both Zhang_2024_Comparative and Zhang_2024_Fine (which appear to be the same or very similar work) demonstrate that existing metrics struggle with partial support and advocate for a three-category (nuanced) system."
+          },
+          {
+            "citation_key": "Thulke_2025_Listen",
+            "claim_text": "As noted by [Thulke_2025_Listen], claim verification pipelines often assume that if a claim is directly expressed in the given passage, its content can be considered truth.",
+            "source_chunk_id": "89b42aab503e416e",
+            "source_text_excerpt": "Paper: Thulke_2025_Listen\n\nYear: 2025\nVenue: N/A\nCategory: LLM Hallucinations\n\nKey Contributions:\n  1. Explored the automatic assessment of RAG faithfulness using a three-step pipeline (claim decomposition, evidence retrieval, claim verification) based on RAGAs.\n  2. Conducted an ablation study on t",
+            "status": "SUPPORTED",
+            "confidence": 0.9,
+            "reasoning": "The source describes a three-step pipeline (claim decomposition, evidence retrieval, claim verification) where 'faithfulness' is assessed by verifying if a claim is supported by retrieved passages. This methodology directly aligns with the claim's description of the assumption that content expressed in a passage can be considered truth for verification purposes."
+          },
+          {
+            "citation_key": "Du_2024_LLM",
+            "claim_text": "Research by [Du_2024_LLM] and [Park_2025_LLM] focuses on detecting hallucinations by examining the model's embeddings rather than relying solely on the output text.",
+            "source_chunk_id": "82a85c687503cc8d",
+            "source_text_excerpt": "Paper: Du_2024_LLM\n\nYear: 2024\nVenue: N/A\nCategory: LLM Hallucinations\n\nKey Contributions:\n  1. Formalizes the hallucination detection problem by harnessing unlabeled LLM generations in the wild, offering strong practicality without the need for human annotation.\n  2. Presents a novel scoring functi",
+            "status": "SUPPORTED",
+            "confidence": 0.95,
+            "reasoning": "The source explicitly describes a method (HaloScope) that extracts last-token embeddings from internal layers and uses SVD to identify a hallucination subspace, confirming the focus on model embeddings rather than output text."
+          },
+          {
+            "citation_key": "Park_2025_LLM",
+            "claim_text": "Research by [Du_2024_LLM] and [Park_2025_LLM] focuses on detecting hallucinations by examining the model's embeddings rather than relying solely on the output text.",
+            "source_chunk_id": "d9b99ced3efd3f28",
+            "source_text_excerpt": "Paper: Park_2025_LLM\n\nYear: 2025\nVenue: N/A\nCategory: LLM Hallucinations\n\nKey Contributions:\n  1. Proposed the Truthfulness Separator Vector (TSV), a lightweight, learnable steering vector applied during inference to reshape the LLM's latent space and separate truthful from hallucinated representati",
+            "status": "SUPPORTED",
+            "confidence": 0.95,
+            "reasoning": "The source describes the Truthfulness Separator Vector (TSV), which is applied to the hidden states (embeddings) of an intermediate LLM layer to separate truthful and hallucinated representations, confirming the focus on model embeddings rather than output text."
+          },
+          {
+            "citation_key": "Jing_2024_Scale",
+            "claim_text": "[Jing_2024_Scale] investigated hallucinations in the travel industry by evaluating five popular LLMs on four travel-domain datasets.",
+            "source_chunk_id": "aca26d746eb7a69e",
+            "source_text_excerpt": "Paper: Jing_2024_Scale\n\nYear: 2024\nVenue: N/A\nCategory: LLM Hallucinations\n\nKey Contributions:\n  1. Demonstrated that LLMs, particularly GPT-4, can accurately evaluate faithfulness and distinguish between intrinsic and extrinsic hallucinations using a zero-shot, reasoning-based grading rubric.\n  2. ",
+            "status": "NOT_SUPPORTED",
+            "confidence": 1.0,
+            "reasoning": "The source text describes faithfulness evaluation methods using NLI and LLM-as-a-judge on synthetic data, but it does not mention the travel industry or the evaluation of five LLMs on four travel-domain datasets."
+          },
+          {
+            "citation_key": "Paudel_2025_Hallucinot",
+            "claim_text": "As noted by [Paudel_2025_Hallucinot], models like FAVA (a retrieval-augmented language model) are designed to detect and correct fine-grained hallucinations by fine-tuning on expert models and synthetic data.",
+            "source_chunk_id": "e00acbfc809b6bd3",
+            "source_text_excerpt": "Paper: Paudel_2025_Hallucinot\n\nYear: 2025\nVenue: N/A\nCategory: LLM Hallucinations\n\nKey Contributions:\n  1. Introduces a novel taxonomy of LLM responses tailored for hallucination detection in enterprise applications, categorizing outputs into context-based, common knowledge, enterprise-specific, and",
+            "status": "NOT_SUPPORTED",
+            "confidence": 1.0,
+            "reasoning": "The source text describes the HDM-2 model and HDMBENCH dataset, but it does not mention the FAVA model or the specific training process involving expert models and synthetic data mentioned in the claim."
+          }
+        ],
+        "pass_rate": 0.8,
+        "passed": true,
+        "iteration": 1,
+        "verified_at": "2026-03-26T12:25:55.239045"
+      },
+      "cross_cutting_defenses": {
+        "section_key": "cross_cutting_defenses",
+        "total_citations": 6,
+        "supported": 0,
+        "partially_supported": 1,
+        "not_supported": 5,
+        "source_not_found": 0,
+        "details": [
+          {
+            "citation_key": "Ouyang_2025_LLM",
+            "claim_text": "As noted by [Ouyang_2025_LLM], safety alignment techniques harmonize model behavior with human intentions, thereby enabling aligned large language models to recognize and reject unsafe queries.",
+            "source_chunk_id": "8ad27c0a56ffdcde",
+            "source_text_excerpt": "Paper: Ouyang_2025_LLM\n\nYear: 2025\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Introduces CodeJailbreaker, a novel jailbreaking approach that bypasses LLM safety mechanisms by implicitly encoding malicious intents within simulated code commit messages.\n  2. Conducts large-scale",
+            "status": "PARTIALLY_SUPPORTED",
+            "confidence": 0.85,
+            "reasoning": "The source discusses 'safety alignment strategies' and 'safety mechanisms' designed to prevent malicious intent, and it describes bypassing 'instruction-following safety filters.' This supports the claim that these techniques are intended to recognize and reject unsafe queries. However, the source does not explicitly use the phrase 'harmonize model behavior with human intentions,' which is a specific definition of alignment not directly stated in the provided summary."
+          },
+          {
+            "citation_key": "Chen_2024_Rmcbench",
+            "claim_text": "The most prominent methods utilized by LLM developers include Supervised Fine-Tuning (SFT), Reinforcement Learning from Human Feedback (RLHF), and Direct Preference Optimization (DPO) [Chen_2024_Rmcbench].",
+            "source_chunk_id": "f2a2b3101a62a5ce",
+            "source_text_excerpt": "Paper: Chen_2024_Rmcbench\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Introduced RMCBench, the first benchmark comprising 473 prompts specifically designed to evaluate the ability of LLMs to resist malicious code generation.\n  2. Conducted a comprehensive empirical ",
+            "status": "NOT_SUPPORTED",
+            "confidence": 0.95,
+            "reasoning": "The source describes the RMCBench benchmark and factors influencing LLMs' resistance to malicious code (such as model parameters and type), but it does not mention Supervised Fine-Tuning (SFT), Reinforcement Learning from Human Feedback (RLHF), or Direct Preference Optimization (DPO)."
+          },
+          {
+            "citation_key": "Rubel_2024_LLM",
+            "claim_text": "As discussed in [Rubel_2024_LLM], defenders can utilize per-sample perplexity evaluated on a clean model as an outlier score.",
+            "source_chunk_id": "fdb72927292468fe",
+            "source_text_excerpt": "Paper: Rubel_2024_LLM\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Formalizes generalized adversarial code-suggestions using a trigger pattern and a learnable map in embedding space to evade static analysis.\n  2. Introduces the Directional-Map attack, which removes t",
+            "status": "NOT_SUPPORTED",
+            "confidence": 0.95,
+            "reasoning": "The source text for Rubel_2024_LLM focuses on adversarial code-suggestion attacks (Identity-Map, Directional-Map, Prompt-Indexing) and does not mention using per-sample perplexity on a clean model as a defense or outlier score."
+          },
+          {
+            "citation_key": "Mo_2025_LLMs",
+            "claim_text": "Guardrail models, such as LlamaGuard, are specifically trained to classify conversations as safe or unsafe based on predefined taxonomies of harm, policy violations, or sensitive topics [Mo_2025_LLMs].",
+            "source_chunk_id": "f53d808828795362",
+            "source_text_excerpt": "Paper: Mo_2025_LLMs\n\nYear: 2025\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Proposes REDCODER, a scalable, automated multi-turn red-teaming framework specifically designed to elicit vulnerable code from Code LLMs.\n  2. Introduces a multi-agent gaming process to automatically ge",
+            "status": "NOT_SUPPORTED",
+            "confidence": 0.95,
+            "reasoning": "The source text for Mo_2025_LLMs discusses the REDCODER framework for red-teaming and mentions multi-turn guardrails generally, but it does not mention LlamaGuard or the specific training process involving taxonomies of harm."
+          },
+          {
+            "citation_key": "Storek_2025_AI",
+            "claim_text": "For example, GitHub Copilot utilizes an AI-based vulnerability prevention system to filter out security vulnerabilities from generated code in real-time [Storek_2025_AI].",
+            "source_chunk_id": "5fd0729dfd9e9861",
+            "source_text_excerpt": "Paper: Storek_2025_AI\n\nYear: 2025\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Identification of Cross-Origin Context Poisoning (XOXO), a stealthy attack vector exploiting automatic context inclusion in AI coding assistants.\n  2. Introduction of Greedy Cayley Graph Search (GCGS)",
+            "status": "NOT_SUPPORTED",
+            "confidence": 0.95,
+            "reasoning": "While the source text mentions GitHub Copilot, it focuses on a specific attack (XOXO) that manipulates it into generating vulnerable code. It does not describe or confirm the existence of an 'AI-based vulnerability prevention system' within Copilot as stated in the claim."
+          },
+          {
+            "citation_key": "Jenko_2024_LLM",
+            "claim_text": "As highlighted by [Jenko_2024_LLM], many injection-style vulnerabilities can be mitigated by applying specific sanitization functions to potentially unsafe objects.",
+            "source_chunk_id": "139be250ef97326d",
+            "source_text_excerpt": "Paper: Jenko_2024_LLM\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Proposes INSEC, the first black-box adversarial attack that stealthily biases LLM-based code completion engines to generate insecure code by injecting a short, optimized comment.\n  2. Develops a query",
+            "status": "NOT_SUPPORTED",
+            "confidence": 0.9,
+            "reasoning": "The cited paper (Jenko_2024_LLM) describes an adversarial attack called INSEC designed to trick LLMs into generating insecure code. The source text focuses on the methodology of this attack, including an initialization strategy called 'Sanitizer' used to craft adversarial strings. However, the paper's primary goal is offensive (demonstrating vulnerabilities), not defensive (highlighting mitigation strategies). The claim that the paper highlights how vulnerabilities can be mitigated by sanitization functions is not supported by the provided summary, which focuses on the creation of insecure code."
+          }
+        ],
+        "pass_rate": 0.16666666666666666,
+        "passed": false,
+        "iteration": 1,
+        "verified_at": "2026-03-26T12:28:28.015509"
+      },
+      "testing_methodologies": {
+        "section_key": "testing_methodologies",
+        "total_citations": 5,
+        "supported": 4,
+        "partially_supported": 0,
+        "not_supported": 1,
+        "source_not_found": 0,
+        "details": [
+          {
+            "citation_key": "Guo_2024_Redcode",
+            "claim_text": "Recent studies emphasize the importance of measuring ASR across diverse operational domains, such as filesystem manipulation, network exploitation, operating system interactions, and data processing [Guo_2024_Redcode].",
+            "source_chunk_id": "e90c7b58fa351cec",
+            "source_text_excerpt": "Paper: Guo_2024_Redcode\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Proposed RedCode, a comprehensive safety evaluation platform for LLM-based code agents that assesses both the execution of unsafe code and the generation of malicious software in real system environ",
+            "status": "SUPPORTED",
+            "confidence": 0.95,
+            "reasoning": "The source text explicitly mentions that RedCode-Exec evaluates 25 critical vulnerability types across 8 domains, specifically naming OS, file systems, and network, which aligns with the claim's mention of filesystem manipulation, network exploitation, and operating system interactions."
+          },
+          {
+            "citation_key": "Mu_2025_LLM",
+            "claim_text": "Empirical studies utilizing LLM-as-a-Judge frameworks have revealed that such attacks generate code with very low Naturalness Evaluation Scores (NES), making them easily detectable by human reviewers [Mu_2025_LLM].",
+            "source_chunk_id": "6035f4d0730d2f1a",
+            "source_text_excerpt": "Paper: Mu_2025_LLM\n\nYear: 2025\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Conducted an empirical study using LLM-as-a-Judge revealing that existing identifier substitution attacks on Code Language Models generate unnatural code with Naturalness Evaluation Scores (NES) typicall",
+            "status": "SUPPORTED",
+            "confidence": 1.0,
+            "reasoning": "The source text directly confirms the use of an LLM-as-a-Judge framework to reveal that identifier substitution attacks generate code with Naturalness Evaluation Scores (NES) typically \u2264 2 out of 5, and notes that these scores align with human evaluations."
+          },
+          {
+            "citation_key": "Noever_2024_AI",
+            "claim_text": "thoring zero-day exploits or generating malware), biology (e.g., synthesizing novel pathogens), deception (e.g., generating highly convincing phishing campaigns or manipulating human users), and model autonomy (e.g., the model acquiring emergent, unintended skills or executing unauthorized actions) [Noever_2024_AI].",
+            "source_chunk_id": "c055d74ba9b7c8c1",
+            "source_text_excerpt": "Paper: Noever_2024_AI\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Demonstrates that foundational LLMs can bypass their own safety guardrails when malicious requests are framed within a programming or coding context (context-shifting).\n  2. Identifies a novel attack ",
+            "status": "NOT_SUPPORTED",
+            "confidence": 0.9,
+            "reasoning": "While the source discusses malware and deception (phishing/fake login pages), it does not mention biology (synthesizing pathogens) or model autonomy (emergent skills). The claim attributes specific risks to this paper that are not present in the provided source text."
+          },
+          {
+            "citation_key": "Mo_2025_LLMs",
+            "claim_text": "Advanced frameworks like REDCODER utilize an autonomous, multi-turn red teaming approach [Mo_2025_LLMs].",
+            "source_chunk_id": "f53d808828795362",
+            "source_text_excerpt": "Paper: Mo_2025_LLMs\n\nYear: 2025\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Proposes REDCODER, a scalable, automated multi-turn red-teaming framework specifically designed to elicit vulnerable code from Code LLMs.\n  2. Introduces a multi-agent gaming process to automatically ge",
+            "status": "SUPPORTED",
+            "confidence": 1.0,
+            "reasoning": "The source text explicitly describes REDCODER as an automated multi-turn red-teaming framework."
+          },
+          {
+            "citation_key": "Rubel_2024_LLM",
+            "claim_text": "Subsequently, researchers sample completions or predictions from the poisoned model to measure the attack's effectiveness across various scenarios [Rubel_2024_LLM].",
+            "source_chunk_id": "fdb72927292468fe",
+            "source_text_excerpt": "Paper: Rubel_2024_LLM\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Formalizes generalized adversarial code-suggestions using a trigger pattern and a learnable map in embedding space to evade static analysis.\n  2. Introduces the Directional-Map attack, which removes t",
+            "status": "SUPPORTED",
+            "confidence": 0.9,
+            "reasoning": "The source describes a data poisoning attack on code-suggestion models and evaluates its effectiveness (attack success rates) across various vulnerabilities, which inherently involves sampling completions/predictions from the poisoned model."
+          }
+        ],
+        "pass_rate": 0.8,
+        "passed": true,
+        "iteration": 1,
+        "verified_at": "2026-03-26T12:29:20.039076"
+      },
+      "discussion_open_challenges": {
+        "section_key": "discussion_open_challenges",
+        "total_citations": 6,
+        "supported": 4,
+        "partially_supported": 2,
+        "not_supported": 0,
+        "source_not_found": 0,
+        "details": [
+          {
+            "citation_key": "Muntasir_2025_Mocha",
+            "claim_text": "[Muntasir_2025_Mocha] explicitly highlights this trade-off by analyzing the relationship between utility\u2014measured by the Pass@1 metric on standard benchmarks like HumanEval+ and MBPP+\u2014and safety, quantified by the average Rejection Rate (RR) under adversarial conditions.",
+            "source_chunk_id": "bfa7589bc8cc70f2",
+            "source_text_excerpt": "Paper: Muntasir_2025_Mocha\n\nYear: 2025\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Introduces MOCHA, a comprehensive large-scale benchmark containing over 10,000 high-fidelity prompts across 13 threat categories to evaluate code LLM robustness against single-turn and multi-turn",
+            "status": "PARTIALLY_SUPPORTED",
+            "confidence": 0.85,
+            "reasoning": "The source text confirms the analysis of the relationship between 'general-purpose coding utility' and 'rejection rates' (RR) under adversarial conditions. However, it does not explicitly mention the 'Pass@1' metric or the 'HumanEval+' and 'MBPP+' benchmarks, although these are standard for measuring the utility mentioned."
+          },
+          {
+            "citation_key": "Nie_2024_Secodeplt",
+            "claim_text": "Furthermore, [Nie_2024_Secodeplt] points out a parallel trade-off within the data creation pipelines used to train these secure models.",
+            "source_chunk_id": "a212dc4f2a988682",
+            "source_text_excerpt": "Paper: Nie_2024_Secodeplt\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Introduces SECODEPLT, a scalable benchmark construction framework for evaluating the security risks and capabilities of code-generating LLMs using dynamic metrics.\n  2. Proposes a two-stage data c",
+            "status": "PARTIALLY_SUPPORTED",
+            "confidence": 0.8,
+            "reasoning": "The source mentions a 'two-stage data creation pipeline' that balances 'data quality and benchmark scale.' However, the source describes this pipeline in the context of constructing a benchmark for evaluation, whereas the claim suggests the pipeline is used to 'train these secure models.'"
+          },
+          {
+            "citation_key": "Guo_2024_Redcode",
+            "claim_text": "[Guo_2024_Redcode] evaluates the robustness of various agentic frameworks and reveals that their security awareness varies considerably based on their architecture and underlying models.",
+            "source_chunk_id": "e90c7b58fa351cec",
+            "source_text_excerpt": "Paper: Guo_2024_Redcode\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Proposed RedCode, a comprehensive safety evaluation platform for LLM-based code agents that assesses both the execution of unsafe code and the generation of malicious software in real system environ",
+            "status": "SUPPORTED",
+            "confidence": 0.95,
+            "reasoning": "The source describes RedCode as a platform to evaluate LLM-based code agents and notes that evaluations of 19 agents revealed vulnerabilities and risks that vary based on the strength of the underlying coding models."
+          },
+          {
+            "citation_key": "Noever_2024_AI",
+            "claim_text": "As these agents become more deeply integrated into CI/CD pipelines and developer environments, the risk of them being manipulated to execute harmful system commands, exfiltrate sensitive source code, or facilitate \"living off the land\" attacks [Noever_2024_AI] becomes a pressing, real-world concern.",
+            "source_chunk_id": "c055d74ba9b7c8c1",
+            "source_text_excerpt": "Paper: Noever_2024_AI\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Demonstrates that foundational LLMs can bypass their own safety guardrails when malicious requests are framed within a programming or coding context (context-shifting).\n  2. Identifies a novel attack ",
+            "status": "SUPPORTED",
+            "confidence": 0.95,
+            "reasoning": "The source explicitly mentions 'living off the land' attacks and describes how LLMs can be manipulated in a coding context to recommend malicious software or bypass safety guardrails, which aligns with the claim's description of risks in developer environments."
+          },
+          {
+            "citation_key": "Lin_2025_LLMs",
+            "claim_text": "This includes investigating vulnerabilities in Retrieval-Augmented Code Generation (RACG) systems, where maliciously injected code in retrieved, third-party repositories can silently compromise the generated output [Lin_2025_LLMs].",
+            "source_chunk_id": "185f5632c65c57ca",
+            "source_text_excerpt": "Paper: Lin_2025_LLMs\n\nYear: 2025\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Identifies and addresses critical, unaddressed security threats in Retrieval-Augmented Code Generation (RACG) systems, specifically the risk of knowledge base poisoning.\n  2. Proposes CodeGuarder, the ",
+            "status": "SUPPORTED",
+            "confidence": 0.95,
+            "reasoning": "The source explicitly identifies security threats in Retrieval-Augmented Code Generation (RACG) systems, specifically 'knowledge base poisoning,' which involves malicious data in the retrieval source compromising the output."
+          },
+          {
+            "citation_key": "Storek_2025_AI",
+            "claim_text": "It also requires exploring the risks associated with collaborative coding environments, where attackers might introduce subtle, semantics-preserving transformations to evade manual code review while introducing vulnerabilities [Storek_2025_AI].",
+            "source_chunk_id": "5fd0729dfd9e9861",
+            "source_text_excerpt": "Paper: Storek_2025_AI\n\nYear: 2025\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Identification of Cross-Origin Context Poisoning (XOXO), a stealthy attack vector exploiting automatic context inclusion in AI coding assistants.\n  2. Introduction of Greedy Cayley Graph Search (GCGS)",
+            "status": "SUPPORTED",
+            "confidence": 1.0,
+            "reasoning": "The source text directly describes the 'Cross-Origin Context Poisoning (XOXO)' attack, which involves introducing 'subtle, semantics-preserving modifications' into a codebase to manipulate AI coding assistants (like GitHub Copilot) into 'generating vulnerable code'. The description of the attack as 'stealthy' and using transformations like variable renaming supports the claim's mention of evading manual code review in collaborative environments."
+          }
+        ],
+        "pass_rate": 1.0,
+        "passed": true,
+        "iteration": 1,
+        "verified_at": "2026-03-26T12:30:55.373570"
+      },
+      "conclusion": {
+        "section_key": "conclusion",
+        "total_citations": 6,
+        "supported": 3,
+        "partially_supported": 0,
+        "not_supported": 3,
+        "source_not_found": 0,
+        "details": [
+          {
+            "citation_key": "Muntasir_2025_Mocha",
+            "claim_text": "From traditional evasion attacks to advanced jailbreaking strategies that circumvent built-in safety mechanisms [Muntasir_2025_Mocha], the adversarial threat model has evolved significantly.",
+            "source_chunk_id": "bfa7589bc8cc70f2",
+            "source_text_excerpt": "Paper: Muntasir_2025_Mocha\n\nYear: 2025\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Introduces MOCHA, a comprehensive large-scale benchmark containing over 10,000 high-fidelity prompts across 13 threat categories to evaluate code LLM robustness against single-turn and multi-turn",
+            "status": "SUPPORTED",
+            "confidence": 1.0,
+            "reasoning": "The source explicitly discusses the evolution of adversarial threats from single-turn prompts to advanced multi-turn 'Code Decomposition Attacks' designed to evade built-in safety filters and jailbreak models."
+          },
+          {
+            "citation_key": "Mo_2025_LLMs",
+            "claim_text": "Automated red-teaming and multi-turn adversarial interactions have demonstrated that even state-of-the-art models remain susceptible to carefully crafted prompts and iterative exploitation [Mo_2025_LLMs].",
+            "source_chunk_id": "f53d808828795362",
+            "source_text_excerpt": "Paper: Mo_2025_LLMs\n\nYear: 2025\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Proposes REDCODER, a scalable, automated multi-turn red-teaming framework specifically designed to elicit vulnerable code from Code LLMs.\n  2. Introduces a multi-agent gaming process to automatically ge",
+            "status": "SUPPORTED",
+            "confidence": 1.0,
+            "reasoning": "The source describes REDCODER, an automated multi-turn red-teaming framework, and demonstrates that state-of-the-art models are susceptible to its iterative adversarial interactions and strategy-based exploitation."
+          },
+          {
+            "citation_key": "Rubel_2024_LLM",
+            "claim_text": "Furthermore, the shift towards parameter-efficient fine-tuning (PEFT) introduces new vectors for data poisoning, where even minimal malicious injections can compromise model integrity and manipulate specific outputs [Rubel_2024_LLM].",
+            "source_chunk_id": "fdb72927292468fe",
+            "source_text_excerpt": "Paper: Rubel_2024_LLM\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Formalizes generalized adversarial code-suggestions using a trigger pattern and a learnable map in embedding space to evade static analysis.\n  2. Introduces the Directional-Map attack, which removes t",
+            "status": "SUPPORTED",
+            "confidence": 0.9,
+            "reasoning": "The source details data poisoning attacks (Directional-Map and Prompt-Indexing) during the fine-tuning process that allow adversaries to manipulate model outputs using minimal triggers, supporting the claim about new vectors for compromising model integrity."
+          },
+          {
+            "citation_key": "Li_2024_Exploratory",
+            "claim_text": "At the data level, future efforts must prioritize systematic quality metrics and automated data-cleaning pipelines to identify and filter harmful or redundant samples before training or fine-tuning [Li_2024_Exploratory].",
+            "source_chunk_id": "6cdd3adb8c4a5108",
+            "source_text_excerpt": "Paper: Li_2024_Exploratory\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Presented a comprehensive exploration of using fine-tuning techniques (full fine-tuning, LoRA, and IA3) to improve the security of LLM-based code generation across four different base models.\n  2",
+            "status": "NOT_SUPPORTED",
+            "confidence": 0.8,
+            "reasoning": "The source focuses on using fine-tuning (including PEFT like LoRA) to improve secure code generation by training on vulnerability-fixing commits. It does not discuss automated data-cleaning pipelines or filtering harmful/redundant samples as a primary future effort or methodology."
+          },
+          {
+            "citation_key": "Storek_2025_AI",
+            "claim_text": "At the model level, techniques such as origin separation\u2014processing context from different sources independently\u2014offer promising avenues for mitigating context-based attacks, though significant advancements in model interpretability are required to realize their full potential [Storek_2025_AI].",
+            "source_chunk_id": "5fd0729dfd9e9861",
+            "source_text_excerpt": "Paper: Storek_2025_AI\n\nYear: 2025\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Identification of Cross-Origin Context Poisoning (XOXO), a stealthy attack vector exploiting automatic context inclusion in AI coding assistants.\n  2. Introduction of Greedy Cayley Graph Search (GCGS)",
+            "status": "NOT_SUPPORTED",
+            "confidence": 0.9,
+            "reasoning": "The source describes the Cross-Origin Context Poisoning (XOXO) attack and the GCGS algorithm for finding adversarial transformations. It does not mention 'origin separation' or 'model interpretability' as mitigation techniques or requirements."
+          },
+          {
+            "citation_key": "Jenko_2024_LLM",
+            "claim_text": "First, system-level safeguards are essential; developers should implement robust prompt sanitization before feeding inputs to the model and establish monitoring systems to alert administrators if specific strings or patterns occur at unusual frequencies [Jenko_2024_LLM].",
+            "source_chunk_id": "139be250ef97326d",
+            "source_text_excerpt": "Paper: Jenko_2024_LLM\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Proposes INSEC, the first black-box adversarial attack that stealthily biases LLM-based code completion engines to generate insecure code by injecting a short, optimized comment.\n  2. Develops a query",
+            "status": "NOT_SUPPORTED",
+            "confidence": 0.9,
+            "reasoning": "The provided source text describes an adversarial attack (INSEC) designed to manipulate LLMs into generating insecure code. While the claim suggests the paper recommends defensive measures like prompt sanitization and monitoring systems, the source text focuses entirely on the methodology and success of the attack itself. The word 'Sanitizer' is mentioned only as an initialization strategy for crafting the attack, not as a recommended defense. There is no mention of monitoring systems or alerting administrators in the provided summary."
+          }
+        ],
+        "pass_rate": 0.5,
+        "passed": false,
+        "iteration": 1,
+        "verified_at": "2026-03-26T12:32:02.222711"
+      }
+    },
+    "bibliography": [],
+    "provenance": [
+      {
+        "section_key": "introduction",
+        "citation_key": "Muntasir_2025_Mocha",
+        "claim_text": "For instance, recent studies have demonstrated that these defenses can be easily circumvented through jailbreaking strategies, utilizing carefully crafted prompts that exploit model vulnerabilities to elicit malicious or restricted outputs [Muntasir_2025_Mocha].",
+        "source_chunk_id": "bfa7589bc8cc70f2",
+        "source_text_excerpt": "Paper: Muntasir_2025_Mocha\n\nYear: 2025\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Introduces MOCHA, a comprehensive large-scale benchmark containing over 10,000 high-fidelity prompts across 13 threat categories to evaluate code LLM robustness against single-turn and multi-turn",
+        "verification_status": "SUPPORTED",
+        "confidence": 1.0,
+        "reasoning": "The source explicitly discusses the use of 'jailbreaking strategies' and 'carefully crafted prompts' (such as the Code Decomposition Attack) to 'evade standard safety filters' and exploit 'persistent vulnerabilities' in LLMs to generate malicious coding outputs.",
+        "verified_at": "2026-03-26T12:18:05.631417"
+      },
+      {
+        "section_key": "introduction",
+        "citation_key": "Noever_2024_AI",
+        "claim_text": "Attackers can leverage these systems to generate malicious payloads or bypass traditional guardrails by embedding contextual cues that trick the model into compliance [Noever_2024_AI].",
+        "source_chunk_id": "c055d74ba9b7c8c1",
+        "source_text_excerpt": "Paper: Noever_2024_AI\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Demonstrates that foundational LLMs can bypass their own safety guardrails when malicious requests are framed within a programming or coding context (context-shifting).\n  2. Identifies a novel attack ",
+        "verification_status": "SUPPORTED",
+        "confidence": 1.0,
+        "reasoning": "The source describes a 'context-shifting' strategy where malicious requests are embedded within a programming context to trick the model into bypassing its safety guardrails and generating malicious recommendations or code.",
+        "verified_at": "2026-03-26T12:18:05.631427"
+      },
+      {
+        "section_key": "introduction",
+        "citation_key": "Rubel_2024_LLM",
+        "claim_text": "Another emerging threat is generalized adversarial code-suggestions, a class of attacks derived from neural backdoors where an adversary poisons the training data so that the model generates vulnerable or malicious code only in the presence of a specific trigger pattern [Rubel_2024_LLM].",
+        "source_chunk_id": "fdb72927292468fe",
+        "source_text_excerpt": "Paper: Rubel_2024_LLM\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Formalizes generalized adversarial code-suggestions using a trigger pattern and a learnable map in embedding space to evade static analysis.\n  2. Introduces the Directional-Map attack, which removes t",
+        "verification_status": "SUPPORTED",
+        "confidence": 1.0,
+        "reasoning": "The source formalizes 'generalized adversarial code-suggestions' as a data poisoning attack (a form of neural backdoor) where a model is trained to generate vulnerable code when a specific 'trigger pattern' is present in the prompt.",
+        "verified_at": "2026-03-26T12:18:05.631430"
+      },
+      {
+        "section_key": "background_preliminaries",
+        "citation_key": "Ouyang_2025_LLM",
+        "claim_text": "Safety alignment techniques aim to harmonize the behavior of models with human values and intentions, thereby enabling aligned large language models to reject unsafe queries [Ouyang_2025_LLM].",
+        "source_chunk_id": "8ad27c0a56ffdcde",
+        "source_text_excerpt": "Paper: Ouyang_2025_LLM\n\nYear: 2025\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Introduces CodeJailbreaker, a novel jailbreaking approach that bypasses LLM safety mechanisms by implicitly encoding malicious intents within simulated code commit messages.\n  2. Conducts large-scale",
+        "verification_status": "NOT_SUPPORTED",
+        "confidence": 0.9,
+        "reasoning": "The source text describes a specific attack (CodeJailbreaker) that bypasses safety alignment mechanisms. While it mentions 'safety alignment strategies,' it does not define them as 'harmonizing the behavior of models with human values and intentions,' nor does it explicitly state this as their general aim; the claim appears to be a general definition of alignment (likely from Ouyang et al. 2022) that is not present in this specific 2025 source text.",
+        "verified_at": "2026-03-26T12:20:44.594746"
+      },
+      {
+        "section_key": "background_preliminaries",
+        "citation_key": "Chen_2024_Rmcbench",
+        "claim_text": "Initially, Supervised Fine-Tuning (SFT) is employed, where the model is trained on high-quality, human-annotated demonstration data to learn the desired format and tone of interaction [Chen_2024_Rmcbench].",
+        "source_chunk_id": "f2a2b3101a62a5ce",
+        "source_text_excerpt": "Paper: Chen_2024_Rmcbench\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Introduced RMCBench, the first benchmark comprising 473 prompts specifically designed to evaluate the ability of LLMs to resist malicious code generation.\n  2. Conducted a comprehensive empirical ",
+        "verification_status": "NOT_SUPPORTED",
+        "confidence": 1.0,
+        "reasoning": "The source text describes the RMCBench benchmark and its methodology for evaluating malicious code generation. It contains no mention of Supervised Fine-Tuning (SFT), human-annotated demonstration data, or the training process of LLMs.",
+        "verified_at": "2026-03-26T12:20:44.594756"
+      },
+      {
+        "section_key": "background_preliminaries",
+        "citation_key": "Guo_2024_Redcode",
+        "claim_text": "For example, research into code-generation agents has demonstrated that agents are generally easier to compromise with a higher attack success rate when using textual instructions compared to programming language inputs [Guo_2024_Redcode].",
+        "source_chunk_id": "e90c7b58fa351cec",
+        "source_text_excerpt": "Paper: Guo_2024_Redcode\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Proposed RedCode, a comprehensive safety evaluation platform for LLM-based code agents that assesses both the execution of unsafe code and the generation of malicious software in real system environ",
+        "verification_status": "PARTIALLY_SUPPORTED",
+        "confidence": 0.85,
+        "reasoning": "The source text confirms that agents are 'highly vulnerable to natural language prompts,' which supports the claim regarding textual instructions. However, the provided summary does not explicitly state that the attack success rate is 'higher' for textual instructions compared to programming language inputs, though it lists both as vectors.",
+        "verified_at": "2026-03-26T12:20:44.594760"
+      },
+      {
+        "section_key": "data_model_poisoning",
+        "citation_key": "Song_2024_Claim",
+        "claim_text": "A notable advancement was the introduction of the Claim-Guided Backdoor Attack (CGBA), which utilized inherent textual claims as implicit triggers, thereby eliminating the need for input manipulation after model distribution [Song_2024_Claim].",
+        "source_chunk_id": "e4537f181e24d0a2",
+        "source_text_excerpt": "Paper: Song_2024_Claim\n\nYear: 2024\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Introduces Claim-Guided Backdoor Attack (CGBA), a novel textual backdoor attack that utilizes inherent textual claims as implicit triggers, eliminating the need for input manipulation after mode",
+        "verification_status": "SUPPORTED",
+        "confidence": 1.0,
+        "reasoning": "The source text explicitly states that CGBA utilizes inherent textual claims as implicit triggers and eliminates the need for input manipulation after model distribution.",
+        "verified_at": "2026-03-26T12:21:00.658755"
+      },
+      {
+        "section_key": "data_model_poisoning",
+        "citation_key": "Yan_2024_LLM",
+        "claim_text": "The CODEBREAKER framework demonstrated the first LLM-assisted backdoor attack capable of evading both traditional static analysis and advanced vulnerability detection [Yan_2024_LLM].",
+        "source_chunk_id": "1a2371ef2e5f839c",
+        "source_text_excerpt": "Paper: Yan_2024_LLM\n\nYear: 2024\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Introduces CODEBREAKER, the first LLM-assisted backdoor attack on code completion models capable of evading both traditional static analysis and advanced LLM-based vulnerability detection.\n  2. Pro",
+        "verification_status": "SUPPORTED",
+        "confidence": 1.0,
+        "reasoning": "The source text confirms CODEBREAKER is the first LLM-assisted backdoor attack capable of evading traditional static analysis and advanced LLM-based vulnerability detection.",
+        "verified_at": "2026-03-26T12:21:00.658762"
+      },
+      {
+        "section_key": "data_model_poisoning",
+        "citation_key": "Zhang_2024_Persistent",
+        "claim_text": "(2024) fundamentally challenged this assumption by demonstrating that poisoning a mere 0.1% of an LLM's pre-training dataset could introduce malicious behaviors that measurably persist through post-training alignment [Zhang_2024_Persistent].",
+        "source_chunk_id": "20dc579b738a3b9c",
+        "source_text_excerpt": "Paper: Zhang_2024_Persistent\n\nYear: 2024\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Demonstrates for the first time that poisoning just 0.1% of an LLM's pre-training dataset can introduce malicious behaviors that measurably persist through post-training alignment (SFT and",
+        "verification_status": "SUPPORTED",
+        "confidence": 1.0,
+        "reasoning": "The source text directly supports the claim that poisoning 0.1% of the pre-training dataset introduces malicious behaviors that persist through post-training alignment.",
+        "verified_at": "2026-03-26T12:21:00.658764"
+      },
+      {
+        "section_key": "data_model_poisoning",
+        "citation_key": "Mamun_2025_LLMs",
+        "claim_text": "The Subversive Alignment Injection (SAI) attack exploited LLM alignment via malicious LoRA adapters to induce targeted refusal on benign topics, effectively causing censorship and bias [Mamun_2025_LLMs].",
+        "source_chunk_id": "04ea53abaeb7bb75",
+        "source_text_excerpt": "Paper: Mamun_2025_LLMs\n\nYear: 2025\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Introduces Subversive Alignment Injection (SAI), a novel poisoning attack that exploits LLM alignment via malicious LoRA adapters to induce targeted refusal on benign topics, causing censorship ",
+        "verification_status": "SUPPORTED",
+        "confidence": 1.0,
+        "reasoning": "The source text confirms that SAI exploits LLM alignment via malicious LoRA adapters to induce targeted refusal on benign topics, leading to censorship and bias.",
+        "verified_at": "2026-03-26T12:21:00.658766"
+      },
+      {
+        "section_key": "data_model_poisoning",
+        "citation_key": "Lyu_2024_Trojvlm",
+        "claim_text": "In 2024, the TrojVLM framework pioneered the investigation of backdoor attacks specifically targeting complex image-to-text generation tasks [Lyu_2024_Trojvlm].",
+        "source_chunk_id": "b9a9c6c292b772f9",
+        "source_text_excerpt": "Paper: Lyu_2024_Trojvlm\n\nYear: 2024\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Pioneers the investigation of backdoor attacks on Vision Language Models (VLMs) specifically targeting complex image-to-text generation tasks.\n  2. Proposes TrojVLM, a cost-effective backdoor a",
+        "verification_status": "SUPPORTED",
+        "confidence": 1.0,
+        "reasoning": "The source text explicitly states that TrojVLM pioneers the investigation of backdoor attacks targeting complex image-to-text generation tasks.",
+        "verified_at": "2026-03-26T12:21:00.658767"
+      },
+      {
+        "section_key": "data_model_poisoning",
+        "citation_key": "Li_2025_Iag",
+        "claim_text": "The Input-Aware Generator (IAG) formalized the first multi-target backdoor attack against VLM-based visual grounding [Li_2025_Iag].",
+        "source_chunk_id": "14d7a3e1f2473170",
+        "source_text_excerpt": "Paper: Li_2025_Iag\n\nYear: 2025\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Uncovered and formalized the first multi-target backdoor attack against VLM-based visual grounding.\n  2. Designed an input-aware trigger generator (IAG) using a text-conditioned U-Net that embeds un",
+        "verification_status": "SUPPORTED",
+        "confidence": 1.0,
+        "reasoning": "The source text explicitly states that the paper 'uncovered and formalized the first multi-target backdoor attack against VLM-based visual grounding' and designed the 'input-aware trigger generator (IAG)' for this purpose.",
+        "verified_at": "2026-03-26T12:21:00.658770"
+      },
+      {
+        "section_key": "data_model_poisoning",
+        "citation_key": "Ye_2025_Visualtrap",
+        "claim_text": "The VisualTrap framework identified a critical vulnerability in GUI agents by injecting poisoned data during the visual grounding pre-training of Large Vision-Language Models (LVLMs) [Ye_2025_Visualtrap].",
+        "source_chunk_id": "22cc877802f2a1bb",
+        "source_text_excerpt": "Paper: Ye_2025_Visualtrap\n\nYear: 2025\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Identified a critical vulnerability in GUI agents by conducting the first study on backdoor attacks targeting their visual grounding capabilities.\n  2. Proposed VisualTrap, a framework that i",
+        "verification_status": "SUPPORTED",
+        "confidence": 1.0,
+        "reasoning": "The source text confirms that VisualTrap identified a critical vulnerability in GUI agents and proposed a framework that 'injects poisoned data during the visual grounding pre-training of LVLMs'.",
+        "verified_at": "2026-03-26T12:21:00.658771"
+      },
+      {
+        "section_key": "data_model_poisoning",
+        "citation_key": "Zhou_2025_Badvla",
+        "claim_text": "The BadVLA framework introduced a dedicated backdoor attack utilizing an objective-decoupled two-phase optimization strategy [Zhou_2025_Badvla].",
+        "source_chunk_id": "9b38e2c60f99756e",
+        "source_text_excerpt": "Paper: Zhou_2025_Badvla\n\nYear: 2025\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Identifies and formalizes a novel attack surface in Vision-Language-Action (VLA) systems, demonstrating their vulnerability to backdoor attacks under the emerging Training-as-a-Service (TaaS) p",
+        "verification_status": "SUPPORTED",
+        "confidence": 1.0,
+        "reasoning": "The source text explicitly mentions that BadVLA is a 'backdoor attack framework for VLA models, utilizing a novel objective-decoupled two-phase optimization strategy'.",
+        "verified_at": "2026-03-26T12:21:00.658773"
+      },
+      {
+        "section_key": "data_model_poisoning",
+        "citation_key": "Li_2025_Autobackdoor",
+        "claim_text": "The AutoBackdoor framework introduced the first fully automated pipeline for backdoor injection via autonomous LLM agents [Li_2025_Autobackdoor].",
+        "source_chunk_id": "25876dbf573cea0b",
+        "source_text_excerpt": "Paper: Li_2025_Autobackdoor\n\nYear: 2025\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Proposed AutoBackdoor, the first fully automated framework for backdoor injection via autonomous LLM agents, enabling realistic poisoning threats in agent-based data pipelines.\n  2. Designe",
+        "verification_status": "SUPPORTED",
+        "confidence": 1.0,
+        "reasoning": "The source text states that AutoBackdoor is the 'first fully automated framework for backdoor injection via autonomous LLM agents'.",
+        "verified_at": "2026-03-26T12:21:00.658775"
+      },
+      {
+        "section_key": "data_model_poisoning",
+        "citation_key": "Shen_2025_Decepchain",
+        "claim_text": "The DecepChain framework demonstrated how attackers could induce deceptive reasoning chains in LLMs that appeared plausible but led to incorrect final answers [Shen_2025_Decepchain].",
+        "source_chunk_id": "71f6454f4e8d33b0",
+        "source_text_excerpt": "Paper: Shen_2025_Decepchain\n\nYear: 2025\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Identified a novel and stealthy vulnerability in LLMs where attackers can induce deceptive reasoning chains that appear plausible and coherent but lead to incorrect final answers, leaving n",
+        "verification_status": "SUPPORTED",
+        "confidence": 1.0,
+        "reasoning": "The source text confirms that DecepChain induces 'deceptive reasoning chains that appear plausible and coherent but lead to incorrect final answers'.",
+        "verified_at": "2026-03-26T12:21:00.658777"
+      },
+      {
+        "section_key": "data_model_poisoning",
+        "citation_key": "Zhu_2025_Think",
+        "claim_text": "Furthermore, the \"Unthinking Vulnerability\" in Large Reasoning Models (LRMs) was exposed through the Breaking of Thought (BoT) attack paradigm [Zhu_2025_Think].",
+        "source_chunk_id": "12731b674595ab0f",
+        "source_text_excerpt": "Paper: Zhu_2025_Think\n\nYear: 2025\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Revealed the 'Unthinking Vulnerability' in Large Reasoning Models (LRMs), demonstrating that token-level manipulation of thought delimiters can completely bypass the model's reasoning process.\n  ",
+        "verification_status": "SUPPORTED",
+        "confidence": 1.0,
+        "reasoning": "The source text explicitly states that the paper revealed the 'Unthinking Vulnerability' in Large Reasoning Models (LRMs) and proposed the 'Breaking of Thought' (BoT) attack paradigm to exploit it.",
+        "verified_at": "2026-03-26T12:21:00.658779"
+      },
+      {
+        "section_key": "data_model_poisoning",
+        "citation_key": "Li_2026_Slowba",
+        "claim_text": "In the realm of GUI agents, the SlowBA framework introduced the first efficiency-targeted backdoor attack, manipulating response latency instead of action correctness [Li_2026_Slowba].",
+        "source_chunk_id": "e2797fec919f25c7",
+        "source_text_excerpt": "Paper: Li_2026_Slowba\n\nYear: 2026\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Proposed SlowBA, the first efficiency-targeted backdoor attack against VLM-based GUI agents that manipulates response latency instead of action correctness.\n  2. Introduced a two-stage Reward-lev",
+        "verification_status": "SUPPORTED",
+        "confidence": 1.0,
+        "reasoning": "The source text confirms that SlowBA is the first efficiency-targeted backdoor attack against GUI agents and that it manipulates response latency instead of action correctness.",
+        "verified_at": "2026-03-26T12:21:00.658781"
+      },
+      {
+        "section_key": "data_model_poisoning",
+        "citation_key": "Wang_2026_Badtemplate",
+        "claim_text": "The BadTemplate attack revealed a critical supply chain vulnerability in LLM chat templates [Wang_2026_Badtemplate].",
+        "source_chunk_id": "a86eecd45618f6e5",
+        "source_text_excerpt": "Paper: Wang_2026_Badtemplate\n\nYear: 2026\nVenue: N/A\nCategory: Data and Model Poisoning\n\nKey Contributions:\n  1. Revealed a novel attack surface in LLM chat templates that allows attackers to silently inject arbitrary strings into system prompts without user awareness.\n  2. Proposed BadTemplate, a tr",
+        "verification_status": "SUPPORTED",
+        "confidence": 1.0,
+        "reasoning": "The source text explicitly mentions that the BadTemplate attack revealed a novel attack surface in LLM chat templates and highlighted it as a critical supply chain vulnerability.",
+        "verified_at": "2026-03-26T12:21:00.658783"
+      },
+      {
+        "section_key": "prompt_injection_jailbreaking",
+        "citation_key": "Liu_2024_Flipattack",
+        "claim_text": "A prominent example of structural manipulation is FlipAttack [Liu_2024_Flipattack].",
+        "source_chunk_id": "08dc7803c5576e91",
+        "source_text_excerpt": "Paper: Liu_2024_Flipattack\n\nYear: 2024\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Proposes FlipAttack, a simple and highly efficient 1-query black-box jailbreak attack that disguises harmful prompts by flipping text, exploiting the left-to-right autoregressive reading nature of L",
+        "verification_status": "SUPPORTED",
+        "confidence": 1.0,
+        "reasoning": "The source text explicitly describes FlipAttack as a method that disguises harmful prompts by flipping text (structural manipulation) to exploit the autoregressive nature of LLMs.",
+        "verified_at": "2026-03-26T12:21:10.694528"
+      },
+      {
+        "section_key": "prompt_injection_jailbreaking",
+        "citation_key": "Kumar_2024_LLMs",
+        "claim_text": "A notable advancement in this domain is AdvPrompter [Kumar_2024_LLMs].",
+        "source_chunk_id": "57c74b308289eaed",
+        "source_text_excerpt": "Paper: Kumar_2024_LLMs\n\nYear: 2024\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Introduces AmpleGCG-Plus, an enhanced generative model that produces diverse, customizable gibberish adversarial suffixes to jailbreak aligned LLMs more efficiently than prior methods.\n  2. Identifies o",
+        "verification_status": "NOT_SUPPORTED",
+        "confidence": 1.0,
+        "reasoning": "The source text for Kumar_2024_LLMs describes a model called 'AmpleGCG-Plus'. It does not mention 'AdvPrompter' at all.",
+        "verified_at": "2026-03-26T12:21:10.694537"
+      },
+      {
+        "section_key": "prompt_injection_jailbreaking",
+        "citation_key": "Liu_2024_Autodan",
+        "claim_text": "## AutoDAN: Genetic Algorithms in Jailbreaking\n\nAnother highly influential approach to automated jailbreaking is AutoDAN [Liu_2024_Autodan].",
+        "source_chunk_id": "dedaf5813db7a705",
+        "source_text_excerpt": "Paper: Liu_2024_Autodan\n\nYear: 2024\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Proposes AutoDAN-Turbo, a black-box jailbreak framework that automatically discovers, evolves, and combines diverse jailbreak strategies from scratch without human intervention.\n  2. Introduces a lifel",
+        "verification_status": "SUPPORTED",
+        "confidence": 0.95,
+        "reasoning": "The source text describes 'AutoDAN-Turbo', an automated jailbreaking framework. While the claim uses the shorthand 'AutoDAN', the source confirms this specific 2024 paper by Liu proposes an automated jailbreaking approach under that name/lineage.",
+        "verified_at": "2026-03-26T12:21:10.694541"
+      },
+      {
+        "section_key": "prompt_injection_jailbreaking",
+        "citation_key": "Wang_2024_LLMs",
+        "claim_text": "The public's increasing demand for LLMs to handle private domain information, access proprietary databases, and provide real-time iterative updates has necessitated the integration of external knowledge bases [Wang_2024_LLMs].",
+        "source_chunk_id": "06f743dff791d3c8",
+        "source_text_excerpt": "Paper: Wang_2024_LLMs\n\nYear: 2024\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Introduced the concept of indirect jailbreak attacks on large language models utilizing Retrieval-Augmented Generation (RAG) via LangChain.\n  2. Developed the Poisoned-LangChain (PLC) framework, which sy",
+        "verification_status": "SUPPORTED",
+        "confidence": 0.9,
+        "reasoning": "The source text discusses indirect jailbreak attacks on LLMs utilizing Retrieval-Augmented Generation (RAG), which is the standard technology for integrating external knowledge bases as mentioned in the claim.",
+        "verified_at": "2026-03-26T12:21:10.694543"
+      },
+      {
+        "section_key": "prompt_injection_jailbreaking",
+        "citation_key": "Liu_2025_AI",
+        "claim_text": "Research has shown that AI agents exhibit a critical vulnerability in their tendency to confuse user data with system instructions, making them highly susceptible to prompt injection attacks [Liu_2025_AI].",
+        "source_chunk_id": "16421fa3bcd34aa1",
+        "source_text_excerpt": "Paper: Liu_2025_AI\n\nYear: 2025\nVenue: N/A\nCategory: Prompt Injection\n\nKey Contributions:\n  1. Identified a new attack surface where prompt injection attacks compromise agentic AI coding editors by embedding malicious instructions in external resources (e.g., coding rules) to execute unauthorized ter",
+        "verification_status": "SUPPORTED",
+        "confidence": 0.95,
+        "reasoning": "The source text identifies vulnerabilities in agentic AI (coding editors) where prompt injection attacks succeed by embedding malicious instructions in external resources, which supports the claim regarding the confusion of data and instructions.",
+        "verified_at": "2026-03-26T12:21:10.694546"
+      },
+      {
+        "section_key": "adversarial_attacks_code",
+        "citation_key": "Lin_2025_LLMs",
+        "claim_text": "While this approach significantly enhances the functional correctness and utility of the generated code, it introduces a critical vulnerability: knowledge base poisoning [Lin_2025_LLMs].",
+        "source_chunk_id": "185f5632c65c57ca",
+        "source_text_excerpt": "Paper: Lin_2025_LLMs\n\nYear: 2025\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Identifies and addresses critical, unaddressed security threats in Retrieval-Augmented Code Generation (RACG) systems, specifically the risk of knowledge base poisoning.\n  2. Proposes CodeGuarder, the ",
+        "verification_status": "SUPPORTED",
+        "confidence": 0.95,
+        "reasoning": "The source explicitly identifies 'knowledge base poisoning' as a critical security threat in Retrieval-Augmented Code Generation (RACG) systems and notes that its proposed solution improves security without compromising functional correctness, supporting the claim's premise.",
+        "verified_at": "2026-03-26T12:21:54.596935"
+      },
+      {
+        "section_key": "adversarial_attacks_code",
+        "citation_key": "Lin_2025_Exploring",
+        "claim_text": "While standard RAG poisoning primarily targets the factual accuracy or sentiment of the generated text [Lin_2025_Exploring], RACG poisoning directly compromises software security and execution integrity.",
+        "source_chunk_id": "e130522840c25dd2",
+        "source_text_excerpt": "Paper: Lin_2025_Exploring\n\nYear: 2025\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Conducts the first comprehensive study on the security risks of Retrieval-Augmented Code Generation (RACG) systems, specifically focusing on knowledge base poisoning with vulnerable code.\n  2. Per",
+        "verification_status": "PARTIALLY_SUPPORTED",
+        "confidence": 0.7,
+        "reasoning": "The source strongly supports the claim that RACG poisoning compromises software security (showing up to 48% compromise). However, the provided text does not explicitly mention 'standard RAG poisoning' or its focus on 'factual accuracy or sentiment', though it frames its study as the first on RACG security risks.",
+        "verified_at": "2026-03-26T12:21:54.596940"
+      },
+      {
+        "section_key": "adversarial_attacks_code",
+        "citation_key": "Storek_2025_AI",
+        "claim_text": "These semantics-preserving adversarial transformations aim to deceive the LLM into generating incorrect or vulnerable code without raising suspicion from developers or static analysis tools [Storek_2025_AI].",
+        "source_chunk_id": "5fd0729dfd9e9861",
+        "source_text_excerpt": "Paper: Storek_2025_AI\n\nYear: 2025\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Identification of Cross-Origin Context Poisoning (XOXO), a stealthy attack vector exploiting automatic context inclusion in AI coding assistants.\n  2. Introduction of Greedy Cayley Graph Search (GCGS)",
+        "verification_status": "SUPPORTED",
+        "confidence": 0.95,
+        "reasoning": "The source describes the XOXO attack which uses 'semantics-preserving modifications (e.g., variable renaming)' to stealthily manipulate AI assistants into generating vulnerable code, directly matching the claim.",
+        "verified_at": "2026-03-26T12:21:54.596943"
+      },
+      {
+        "section_key": "adversarial_attacks_code",
+        "citation_key": "Jenko_2024_LLM",
+        "claim_text": "Other research has similarly demonstrated that renaming variables and functions, among other semantic-preserving perturbations, can reliably trigger functionally incorrect or insecure code completions across various state-of-the-art models [Jenko_2024_LLM].",
+        "source_chunk_id": "139be250ef97326d",
+        "source_text_excerpt": "Paper: Jenko_2024_LLM\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Proposes INSEC, the first black-box adversarial attack that stealthily biases LLM-based code completion engines to generate insecure code by injecting a short, optimized comment.\n  2. Develops a query",
+        "verification_status": "NOT_SUPPORTED",
+        "confidence": 0.9,
+        "reasoning": "The claim attributes the use of 'renaming variables and functions' to this source, but the source text describes the INSEC attack as injecting 'a short, optimized comment' rather than performing variable or function renaming.",
+        "verified_at": "2026-03-26T12:21:54.596946"
+      },
+      {
+        "section_key": "llm_hallucinations",
+        "citation_key": "Wang_2024_Developing",
+        "claim_text": "A widely adopted taxonomy categorizes hallucinations into two primary types: intrinsic and extrinsic [Wang_2024_Developing].",
+        "source_chunk_id": "3438bb480bc3df44",
+        "source_text_excerpt": "Paper: Wang_2024_Developing\n\nYear: 2024\nVenue: N/A\nCategory: LLM Hallucinations\n\nKey Contributions:\n  1. Proposed a novel, real-time, low-cost hallucination detection system that ensembles Named Entity Recognition (NER), Natural Language Inference (NLI), and Span-Based Detection (SBD) using Gradient",
+        "verification_status": "PARTIALLY_SUPPORTED",
+        "confidence": 0.8,
+        "reasoning": "The source text mentions 'intrinsic hallucinations' and defines them, but it does not mention 'extrinsic hallucinations' or explicitly describe a 'widely adopted taxonomy' categorizing hallucinations into these two types.",
+        "verified_at": "2026-03-26T12:25:55.244110"
+      },
+      {
+        "section_key": "llm_hallucinations",
+        "citation_key": "Urlana_2025_LLM",
+        "claim_text": "For instance, the HalluCounter pipeline [Urlana_2025_LLM] represents a reference-free approach that extracts features from the query-response pair to determine the likelihood of hallucination.",
+        "source_chunk_id": "8c80ce32876b1f8c",
+        "source_text_excerpt": "Paper: Urlana_2025_LLM\n\nYear: 2025\nVenue: N/A\nCategory: LLM Hallucinations\n\nKey Contributions:\n  1. Introduces HalluCounter, a novel reference-free hallucination detection (RFHD) method that utilizes both query-response and response-response consistency to detect hallucinations, provide a confidence",
+        "verification_status": "SUPPORTED",
+        "confidence": 1.0,
+        "reasoning": "The source text explicitly describes HalluCounter as a reference-free hallucination detection method that extracts NLI features from Query-Response (Q-R) pairs.",
+        "verified_at": "2026-03-26T12:25:55.244115"
+      },
+      {
+        "section_key": "llm_hallucinations",
+        "citation_key": "Tang_2025_Cognibench",
+        "claim_text": "For instance, [Tang_2025_Cognibench] introduces CogniDet, an 8B-parameter model fine-tuned on an auto-labeled corpus.",
+        "source_chunk_id": "229f4568b51f1d5b",
+        "source_text_excerpt": "Paper: Tang_2025_Cognibench\n\nYear: 2025\nVenue: N/A\nCategory: LLM Hallucinations\n\nKey Contributions:\n  1. Introduces CogniBench, the first knowledge-grounded dialogue dataset and framework specifically designed to assess the faithfulness of 'cognitive statements' (inferences, evaluations) using a leg",
+        "verification_status": "SUPPORTED",
+        "confidence": 1.0,
+        "reasoning": "The source text confirms that CogniDet is an 8B-parameter model fine-tuned on CogniBench-L, which is created using an automated annotation pipeline.",
+        "verified_at": "2026-03-26T12:25:55.244117"
+      },
+      {
+        "section_key": "llm_hallucinations",
+        "citation_key": "Zhang_2024_Comparative",
+        "claim_text": "Early approaches to citation evaluation treated faithfulness as a binary classification problem: a citation either supported the statement or it did not [Zhang_2024_Comparative].",
+        "source_chunk_id": "215969e144fbd364",
+        "source_text_excerpt": "Paper: Zhang_2024_Comparative\n\nYear: 2024\nVenue: N/A\nCategory: LLM Hallucinations\n\nKey Contributions:\n  1. Explored fine-grained, three-category levels of support (full, partial, and no support) in automated citation evaluation for the first time.\n  2. Introduced a comparative evaluation framework c",
+        "verification_status": "SUPPORTED",
+        "confidence": 0.9,
+        "reasoning": "The source text states that the paper explored three-category levels of support 'for the first time,' which directly implies that previous (early) approaches were limited to binary classification (support vs. no support).",
+        "verified_at": "2026-03-26T12:25:55.244119"
+      },
+      {
+        "section_key": "llm_hallucinations",
+        "citation_key": "Zhang_2024_Fine",
+        "claim_text": "[Zhang_2024_Comparative] and [Zhang_2024_Fine] highlight the limitations of binary metrics and advocate for a more nuanced categorization.",
+        "source_chunk_id": "f2d6cfa807e9a8c8",
+        "source_text_excerpt": "Paper: Zhang_2024_Fine\n\nYear: 2024\nVenue: N/A\nCategory: LLM Hallucinations\n\nKey Contributions:\n  1. Systematically investigated the effect of fine-grained support levels (full, partial, no support) on faithfulness metrics in the task of automated citation evaluation.\n  2. Proposed a comparative eval",
+        "verification_status": "SUPPORTED",
+        "confidence": 1.0,
+        "reasoning": "Both Zhang_2024_Comparative and Zhang_2024_Fine (which appear to be the same or very similar work) demonstrate that existing metrics struggle with partial support and advocate for a three-category (nuanced) system.",
+        "verified_at": "2026-03-26T12:25:55.244121"
+      },
+      {
+        "section_key": "llm_hallucinations",
+        "citation_key": "Thulke_2025_Listen",
+        "claim_text": "As noted by [Thulke_2025_Listen], claim verification pipelines often assume that if a claim is directly expressed in the given passage, its content can be considered truth.",
+        "source_chunk_id": "89b42aab503e416e",
+        "source_text_excerpt": "Paper: Thulke_2025_Listen\n\nYear: 2025\nVenue: N/A\nCategory: LLM Hallucinations\n\nKey Contributions:\n  1. Explored the automatic assessment of RAG faithfulness using a three-step pipeline (claim decomposition, evidence retrieval, claim verification) based on RAGAs.\n  2. Conducted an ablation study on t",
+        "verification_status": "SUPPORTED",
+        "confidence": 0.9,
+        "reasoning": "The source describes a three-step pipeline (claim decomposition, evidence retrieval, claim verification) where 'faithfulness' is assessed by verifying if a claim is supported by retrieved passages. This methodology directly aligns with the claim's description of the assumption that content expressed in a passage can be considered truth for verification purposes.",
+        "verified_at": "2026-03-26T12:25:55.244122"
+      },
+      {
+        "section_key": "llm_hallucinations",
+        "citation_key": "Du_2024_LLM",
+        "claim_text": "Research by [Du_2024_LLM] and [Park_2025_LLM] focuses on detecting hallucinations by examining the model's embeddings rather than relying solely on the output text.",
+        "source_chunk_id": "82a85c687503cc8d",
+        "source_text_excerpt": "Paper: Du_2024_LLM\n\nYear: 2024\nVenue: N/A\nCategory: LLM Hallucinations\n\nKey Contributions:\n  1. Formalizes the hallucination detection problem by harnessing unlabeled LLM generations in the wild, offering strong practicality without the need for human annotation.\n  2. Presents a novel scoring functi",
+        "verification_status": "SUPPORTED",
+        "confidence": 0.95,
+        "reasoning": "The source explicitly describes a method (HaloScope) that extracts last-token embeddings from internal layers and uses SVD to identify a hallucination subspace, confirming the focus on model embeddings rather than output text.",
+        "verified_at": "2026-03-26T12:25:55.244124"
+      },
+      {
+        "section_key": "llm_hallucinations",
+        "citation_key": "Park_2025_LLM",
+        "claim_text": "Research by [Du_2024_LLM] and [Park_2025_LLM] focuses on detecting hallucinations by examining the model's embeddings rather than relying solely on the output text.",
+        "source_chunk_id": "d9b99ced3efd3f28",
+        "source_text_excerpt": "Paper: Park_2025_LLM\n\nYear: 2025\nVenue: N/A\nCategory: LLM Hallucinations\n\nKey Contributions:\n  1. Proposed the Truthfulness Separator Vector (TSV), a lightweight, learnable steering vector applied during inference to reshape the LLM's latent space and separate truthful from hallucinated representati",
+        "verification_status": "SUPPORTED",
+        "confidence": 0.95,
+        "reasoning": "The source describes the Truthfulness Separator Vector (TSV), which is applied to the hidden states (embeddings) of an intermediate LLM layer to separate truthful and hallucinated representations, confirming the focus on model embeddings rather than output text.",
+        "verified_at": "2026-03-26T12:25:55.244126"
+      },
+      {
+        "section_key": "llm_hallucinations",
+        "citation_key": "Jing_2024_Scale",
+        "claim_text": "[Jing_2024_Scale] investigated hallucinations in the travel industry by evaluating five popular LLMs on four travel-domain datasets.",
+        "source_chunk_id": "aca26d746eb7a69e",
+        "source_text_excerpt": "Paper: Jing_2024_Scale\n\nYear: 2024\nVenue: N/A\nCategory: LLM Hallucinations\n\nKey Contributions:\n  1. Demonstrated that LLMs, particularly GPT-4, can accurately evaluate faithfulness and distinguish between intrinsic and extrinsic hallucinations using a zero-shot, reasoning-based grading rubric.\n  2. ",
+        "verification_status": "NOT_SUPPORTED",
+        "confidence": 1.0,
+        "reasoning": "The source text describes faithfulness evaluation methods using NLI and LLM-as-a-judge on synthetic data, but it does not mention the travel industry or the evaluation of five LLMs on four travel-domain datasets.",
+        "verified_at": "2026-03-26T12:25:55.244127"
+      },
+      {
+        "section_key": "llm_hallucinations",
+        "citation_key": "Paudel_2025_Hallucinot",
+        "claim_text": "As noted by [Paudel_2025_Hallucinot], models like FAVA (a retrieval-augmented language model) are designed to detect and correct fine-grained hallucinations by fine-tuning on expert models and synthetic data.",
+        "source_chunk_id": "e00acbfc809b6bd3",
+        "source_text_excerpt": "Paper: Paudel_2025_Hallucinot\n\nYear: 2025\nVenue: N/A\nCategory: LLM Hallucinations\n\nKey Contributions:\n  1. Introduces a novel taxonomy of LLM responses tailored for hallucination detection in enterprise applications, categorizing outputs into context-based, common knowledge, enterprise-specific, and",
+        "verification_status": "NOT_SUPPORTED",
+        "confidence": 1.0,
+        "reasoning": "The source text describes the HDM-2 model and HDMBENCH dataset, but it does not mention the FAVA model or the specific training process involving expert models and synthetic data mentioned in the claim.",
+        "verified_at": "2026-03-26T12:25:55.244129"
+      },
+      {
+        "section_key": "cross_cutting_defenses",
+        "citation_key": "Ouyang_2025_LLM",
+        "claim_text": "As noted by [Ouyang_2025_LLM], safety alignment techniques harmonize model behavior with human intentions, thereby enabling aligned large language models to recognize and reject unsafe queries.",
+        "source_chunk_id": "8ad27c0a56ffdcde",
+        "source_text_excerpt": "Paper: Ouyang_2025_LLM\n\nYear: 2025\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Introduces CodeJailbreaker, a novel jailbreaking approach that bypasses LLM safety mechanisms by implicitly encoding malicious intents within simulated code commit messages.\n  2. Conducts large-scale",
+        "verification_status": "PARTIALLY_SUPPORTED",
+        "confidence": 0.85,
+        "reasoning": "The source discusses 'safety alignment strategies' and 'safety mechanisms' designed to prevent malicious intent, and it describes bypassing 'instruction-following safety filters.' This supports the claim that these techniques are intended to recognize and reject unsafe queries. However, the source does not explicitly use the phrase 'harmonize model behavior with human intentions,' which is a specific definition of alignment not directly stated in the provided summary.",
+        "verified_at": "2026-03-26T12:28:54.749800"
+      },
+      {
+        "section_key": "cross_cutting_defenses",
+        "citation_key": "Chen_2024_Rmcbench",
+        "claim_text": "The most prominent methods utilized by LLM developers include Supervised Fine-Tuning (SFT), Reinforcement Learning from Human Feedback (RLHF), and Direct Preference Optimization (DPO) [Chen_2024_Rmcbench].",
+        "source_chunk_id": "f2a2b3101a62a5ce",
+        "source_text_excerpt": "Paper: Chen_2024_Rmcbench\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Introduced RMCBench, the first benchmark comprising 473 prompts specifically designed to evaluate the ability of LLMs to resist malicious code generation.\n  2. Conducted a comprehensive empirical ",
+        "verification_status": "NOT_SUPPORTED",
+        "confidence": 0.95,
+        "reasoning": "The source describes the RMCBench benchmark and factors influencing LLMs' resistance to malicious code (such as model parameters and type), but it does not mention Supervised Fine-Tuning (SFT), Reinforcement Learning from Human Feedback (RLHF), or Direct Preference Optimization (DPO).",
+        "verified_at": "2026-03-26T12:28:54.749806"
+      },
+      {
+        "section_key": "cross_cutting_defenses",
+        "citation_key": "Rubel_2024_LLM",
+        "claim_text": "As discussed in [Rubel_2024_LLM], defenders can utilize per-sample perplexity evaluated on a clean model as an outlier score.",
+        "source_chunk_id": "fdb72927292468fe",
+        "source_text_excerpt": "Paper: Rubel_2024_LLM\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Formalizes generalized adversarial code-suggestions using a trigger pattern and a learnable map in embedding space to evade static analysis.\n  2. Introduces the Directional-Map attack, which removes t",
+        "verification_status": "NOT_SUPPORTED",
+        "confidence": 0.95,
+        "reasoning": "The source text for Rubel_2024_LLM focuses on adversarial code-suggestion attacks (Identity-Map, Directional-Map, Prompt-Indexing) and does not mention using per-sample perplexity on a clean model as a defense or outlier score.",
+        "verified_at": "2026-03-26T12:28:54.749810"
+      },
+      {
+        "section_key": "cross_cutting_defenses",
+        "citation_key": "Mo_2025_LLMs",
+        "claim_text": "Guardrail models, such as LlamaGuard, are specifically trained to classify conversations as safe or unsafe based on predefined taxonomies of harm, policy violations, or sensitive topics [Mo_2025_LLMs].",
+        "source_chunk_id": "f53d808828795362",
+        "source_text_excerpt": "Paper: Mo_2025_LLMs\n\nYear: 2025\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Proposes REDCODER, a scalable, automated multi-turn red-teaming framework specifically designed to elicit vulnerable code from Code LLMs.\n  2. Introduces a multi-agent gaming process to automatically ge",
+        "verification_status": "NOT_SUPPORTED",
+        "confidence": 0.95,
+        "reasoning": "The source text for Mo_2025_LLMs discusses the REDCODER framework for red-teaming and mentions multi-turn guardrails generally, but it does not mention LlamaGuard or the specific training process involving taxonomies of harm.",
+        "verified_at": "2026-03-26T12:28:54.749812"
+      },
+      {
+        "section_key": "cross_cutting_defenses",
+        "citation_key": "Storek_2025_AI",
+        "claim_text": "For example, GitHub Copilot utilizes an AI-based vulnerability prevention system to filter out security vulnerabilities from generated code in real-time [Storek_2025_AI].",
+        "source_chunk_id": "5fd0729dfd9e9861",
+        "source_text_excerpt": "Paper: Storek_2025_AI\n\nYear: 2025\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Identification of Cross-Origin Context Poisoning (XOXO), a stealthy attack vector exploiting automatic context inclusion in AI coding assistants.\n  2. Introduction of Greedy Cayley Graph Search (GCGS)",
+        "verification_status": "NOT_SUPPORTED",
+        "confidence": 0.95,
+        "reasoning": "While the source text mentions GitHub Copilot, it focuses on a specific attack (XOXO) that manipulates it into generating vulnerable code. It does not describe or confirm the existence of an 'AI-based vulnerability prevention system' within Copilot as stated in the claim.",
+        "verified_at": "2026-03-26T12:28:54.749814"
+      },
+      {
+        "section_key": "cross_cutting_defenses",
+        "citation_key": "Jenko_2024_LLM",
+        "claim_text": "As highlighted by [Jenko_2024_LLM], many injection-style vulnerabilities can be mitigated by applying specific sanitization functions to potentially unsafe objects.",
+        "source_chunk_id": "139be250ef97326d",
+        "source_text_excerpt": "Paper: Jenko_2024_LLM\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Proposes INSEC, the first black-box adversarial attack that stealthily biases LLM-based code completion engines to generate insecure code by injecting a short, optimized comment.\n  2. Develops a query",
+        "verification_status": "NOT_SUPPORTED",
+        "confidence": 0.9,
+        "reasoning": "The cited paper (Jenko_2024_LLM) describes an adversarial attack called INSEC designed to trick LLMs into generating insecure code. The source text focuses on the methodology of this attack, including an initialization strategy called 'Sanitizer' used to craft adversarial strings. However, the paper's primary goal is offensive (demonstrating vulnerabilities), not defensive (highlighting mitigation strategies). The claim that the paper highlights how vulnerabilities can be mitigated by sanitization functions is not supported by the provided summary, which focuses on the creation of insecure code.",
+        "verified_at": "2026-03-26T12:28:54.749817"
+      },
+      {
+        "section_key": "testing_methodologies",
+        "citation_key": "Guo_2024_Redcode",
+        "claim_text": "Recent studies emphasize the importance of measuring ASR across diverse operational domains, such as filesystem manipulation, network exploitation, operating system interactions, and data processing [Guo_2024_Redcode].",
+        "source_chunk_id": "e90c7b58fa351cec",
+        "source_text_excerpt": "Paper: Guo_2024_Redcode\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Proposed RedCode, a comprehensive safety evaluation platform for LLM-based code agents that assesses both the execution of unsafe code and the generation of malicious software in real system environ",
+        "verification_status": "SUPPORTED",
+        "confidence": 0.95,
+        "reasoning": "The source text explicitly mentions that RedCode-Exec evaluates 25 critical vulnerability types across 8 domains, specifically naming OS, file systems, and network, which aligns with the claim's mention of filesystem manipulation, network exploitation, and operating system interactions.",
+        "verified_at": "2026-03-26T12:29:20.060253"
+      },
+      {
+        "section_key": "testing_methodologies",
+        "citation_key": "Mu_2025_LLM",
+        "claim_text": "Empirical studies utilizing LLM-as-a-Judge frameworks have revealed that such attacks generate code with very low Naturalness Evaluation Scores (NES), making them easily detectable by human reviewers [Mu_2025_LLM].",
+        "source_chunk_id": "6035f4d0730d2f1a",
+        "source_text_excerpt": "Paper: Mu_2025_LLM\n\nYear: 2025\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Conducted an empirical study using LLM-as-a-Judge revealing that existing identifier substitution attacks on Code Language Models generate unnatural code with Naturalness Evaluation Scores (NES) typicall",
+        "verification_status": "SUPPORTED",
+        "confidence": 1.0,
+        "reasoning": "The source text directly confirms the use of an LLM-as-a-Judge framework to reveal that identifier substitution attacks generate code with Naturalness Evaluation Scores (NES) typically \u2264 2 out of 5, and notes that these scores align with human evaluations.",
+        "verified_at": "2026-03-26T12:29:20.060259"
+      },
+      {
+        "section_key": "testing_methodologies",
+        "citation_key": "Noever_2024_AI",
+        "claim_text": "thoring zero-day exploits or generating malware), biology (e.g., synthesizing novel pathogens), deception (e.g., generating highly convincing phishing campaigns or manipulating human users), and model autonomy (e.g., the model acquiring emergent, unintended skills or executing unauthorized actions) [Noever_2024_AI].",
+        "source_chunk_id": "c055d74ba9b7c8c1",
+        "source_text_excerpt": "Paper: Noever_2024_AI\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Demonstrates that foundational LLMs can bypass their own safety guardrails when malicious requests are framed within a programming or coding context (context-shifting).\n  2. Identifies a novel attack ",
+        "verification_status": "NOT_SUPPORTED",
+        "confidence": 0.9,
+        "reasoning": "While the source discusses malware and deception (phishing/fake login pages), it does not mention biology (synthesizing pathogens) or model autonomy (emergent skills). The claim attributes specific risks to this paper that are not present in the provided source text.",
+        "verified_at": "2026-03-26T12:29:20.060261"
+      },
+      {
+        "section_key": "testing_methodologies",
+        "citation_key": "Mo_2025_LLMs",
+        "claim_text": "Advanced frameworks like REDCODER utilize an autonomous, multi-turn red teaming approach [Mo_2025_LLMs].",
+        "source_chunk_id": "f53d808828795362",
+        "source_text_excerpt": "Paper: Mo_2025_LLMs\n\nYear: 2025\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Proposes REDCODER, a scalable, automated multi-turn red-teaming framework specifically designed to elicit vulnerable code from Code LLMs.\n  2. Introduces a multi-agent gaming process to automatically ge",
+        "verification_status": "SUPPORTED",
+        "confidence": 1.0,
+        "reasoning": "The source text explicitly describes REDCODER as an automated multi-turn red-teaming framework.",
+        "verified_at": "2026-03-26T12:29:20.060263"
+      },
+      {
+        "section_key": "testing_methodologies",
+        "citation_key": "Rubel_2024_LLM",
+        "claim_text": "Subsequently, researchers sample completions or predictions from the poisoned model to measure the attack's effectiveness across various scenarios [Rubel_2024_LLM].",
+        "source_chunk_id": "fdb72927292468fe",
+        "source_text_excerpt": "Paper: Rubel_2024_LLM\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Formalizes generalized adversarial code-suggestions using a trigger pattern and a learnable map in embedding space to evade static analysis.\n  2. Introduces the Directional-Map attack, which removes t",
+        "verification_status": "SUPPORTED",
+        "confidence": 0.9,
+        "reasoning": "The source describes a data poisoning attack on code-suggestion models and evaluates its effectiveness (attack success rates) across various vulnerabilities, which inherently involves sampling completions/predictions from the poisoned model.",
+        "verified_at": "2026-03-26T12:29:20.060264"
+      },
+      {
+        "section_key": "discussion_open_challenges",
+        "citation_key": "Muntasir_2025_Mocha",
+        "claim_text": "[Muntasir_2025_Mocha] explicitly highlights this trade-off by analyzing the relationship between utility\u2014measured by the Pass@1 metric on standard benchmarks like HumanEval+ and MBPP+\u2014and safety, quantified by the average Rejection Rate (RR) under adversarial conditions.",
+        "source_chunk_id": "bfa7589bc8cc70f2",
+        "source_text_excerpt": "Paper: Muntasir_2025_Mocha\n\nYear: 2025\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Introduces MOCHA, a comprehensive large-scale benchmark containing over 10,000 high-fidelity prompts across 13 threat categories to evaluate code LLM robustness against single-turn and multi-turn",
+        "verification_status": "PARTIALLY_SUPPORTED",
+        "confidence": 0.85,
+        "reasoning": "The source text confirms the analysis of the relationship between 'general-purpose coding utility' and 'rejection rates' (RR) under adversarial conditions. However, it does not explicitly mention the 'Pass@1' metric or the 'HumanEval+' and 'MBPP+' benchmarks, although these are standard for measuring the utility mentioned.",
+        "verified_at": "2026-03-26T12:30:55.382646"
+      },
+      {
+        "section_key": "discussion_open_challenges",
+        "citation_key": "Nie_2024_Secodeplt",
+        "claim_text": "Furthermore, [Nie_2024_Secodeplt] points out a parallel trade-off within the data creation pipelines used to train these secure models.",
+        "source_chunk_id": "a212dc4f2a988682",
+        "source_text_excerpt": "Paper: Nie_2024_Secodeplt\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Introduces SECODEPLT, a scalable benchmark construction framework for evaluating the security risks and capabilities of code-generating LLMs using dynamic metrics.\n  2. Proposes a two-stage data c",
+        "verification_status": "PARTIALLY_SUPPORTED",
+        "confidence": 0.8,
+        "reasoning": "The source mentions a 'two-stage data creation pipeline' that balances 'data quality and benchmark scale.' However, the source describes this pipeline in the context of constructing a benchmark for evaluation, whereas the claim suggests the pipeline is used to 'train these secure models.'",
+        "verified_at": "2026-03-26T12:30:55.382655"
+      },
+      {
+        "section_key": "discussion_open_challenges",
+        "citation_key": "Guo_2024_Redcode",
+        "claim_text": "[Guo_2024_Redcode] evaluates the robustness of various agentic frameworks and reveals that their security awareness varies considerably based on their architecture and underlying models.",
+        "source_chunk_id": "e90c7b58fa351cec",
+        "source_text_excerpt": "Paper: Guo_2024_Redcode\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Proposed RedCode, a comprehensive safety evaluation platform for LLM-based code agents that assesses both the execution of unsafe code and the generation of malicious software in real system environ",
+        "verification_status": "SUPPORTED",
+        "confidence": 0.95,
+        "reasoning": "The source describes RedCode as a platform to evaluate LLM-based code agents and notes that evaluations of 19 agents revealed vulnerabilities and risks that vary based on the strength of the underlying coding models.",
+        "verified_at": "2026-03-26T12:30:55.382660"
+      },
+      {
+        "section_key": "discussion_open_challenges",
+        "citation_key": "Noever_2024_AI",
+        "claim_text": "As these agents become more deeply integrated into CI/CD pipelines and developer environments, the risk of them being manipulated to execute harmful system commands, exfiltrate sensitive source code, or facilitate \"living off the land\" attacks [Noever_2024_AI] becomes a pressing, real-world concern.",
+        "source_chunk_id": "c055d74ba9b7c8c1",
+        "source_text_excerpt": "Paper: Noever_2024_AI\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Demonstrates that foundational LLMs can bypass their own safety guardrails when malicious requests are framed within a programming or coding context (context-shifting).\n  2. Identifies a novel attack ",
+        "verification_status": "SUPPORTED",
+        "confidence": 0.95,
+        "reasoning": "The source explicitly mentions 'living off the land' attacks and describes how LLMs can be manipulated in a coding context to recommend malicious software or bypass safety guardrails, which aligns with the claim's description of risks in developer environments.",
+        "verified_at": "2026-03-26T12:30:55.382663"
+      },
+      {
+        "section_key": "discussion_open_challenges",
+        "citation_key": "Lin_2025_LLMs",
+        "claim_text": "This includes investigating vulnerabilities in Retrieval-Augmented Code Generation (RACG) systems, where maliciously injected code in retrieved, third-party repositories can silently compromise the generated output [Lin_2025_LLMs].",
+        "source_chunk_id": "185f5632c65c57ca",
+        "source_text_excerpt": "Paper: Lin_2025_LLMs\n\nYear: 2025\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Identifies and addresses critical, unaddressed security threats in Retrieval-Augmented Code Generation (RACG) systems, specifically the risk of knowledge base poisoning.\n  2. Proposes CodeGuarder, the ",
+        "verification_status": "SUPPORTED",
+        "confidence": 0.95,
+        "reasoning": "The source explicitly identifies security threats in Retrieval-Augmented Code Generation (RACG) systems, specifically 'knowledge base poisoning,' which involves malicious data in the retrieval source compromising the output.",
+        "verified_at": "2026-03-26T12:30:55.382666"
+      },
+      {
+        "section_key": "discussion_open_challenges",
+        "citation_key": "Storek_2025_AI",
+        "claim_text": "It also requires exploring the risks associated with collaborative coding environments, where attackers might introduce subtle, semantics-preserving transformations to evade manual code review while introducing vulnerabilities [Storek_2025_AI].",
+        "source_chunk_id": "5fd0729dfd9e9861",
+        "source_text_excerpt": "Paper: Storek_2025_AI\n\nYear: 2025\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Identification of Cross-Origin Context Poisoning (XOXO), a stealthy attack vector exploiting automatic context inclusion in AI coding assistants.\n  2. Introduction of Greedy Cayley Graph Search (GCGS)",
+        "verification_status": "SUPPORTED",
+        "confidence": 1.0,
+        "reasoning": "The source text directly describes the 'Cross-Origin Context Poisoning (XOXO)' attack, which involves introducing 'subtle, semantics-preserving modifications' into a codebase to manipulate AI coding assistants (like GitHub Copilot) into 'generating vulnerable code'. The description of the attack as 'stealthy' and using transformations like variable renaming supports the claim's mention of evading manual code review in collaborative environments.",
+        "verified_at": "2026-03-26T12:30:55.382668"
+      },
+      {
+        "section_key": "conclusion",
+        "citation_key": "Muntasir_2025_Mocha",
+        "claim_text": "From traditional evasion attacks to advanced jailbreaking strategies that circumvent built-in safety mechanisms [Muntasir_2025_Mocha], the adversarial threat model has evolved significantly.",
+        "source_chunk_id": "bfa7589bc8cc70f2",
+        "source_text_excerpt": "Paper: Muntasir_2025_Mocha\n\nYear: 2025\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Introduces MOCHA, a comprehensive large-scale benchmark containing over 10,000 high-fidelity prompts across 13 threat categories to evaluate code LLM robustness against single-turn and multi-turn",
+        "verification_status": "SUPPORTED",
+        "confidence": 1.0,
+        "reasoning": "The source explicitly discusses the evolution of adversarial threats from single-turn prompts to advanced multi-turn 'Code Decomposition Attacks' designed to evade built-in safety filters and jailbreak models.",
+        "verified_at": "2026-03-26T12:32:11.034541"
+      },
+      {
+        "section_key": "conclusion",
+        "citation_key": "Mo_2025_LLMs",
+        "claim_text": "Automated red-teaming and multi-turn adversarial interactions have demonstrated that even state-of-the-art models remain susceptible to carefully crafted prompts and iterative exploitation [Mo_2025_LLMs].",
+        "source_chunk_id": "f53d808828795362",
+        "source_text_excerpt": "Paper: Mo_2025_LLMs\n\nYear: 2025\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Proposes REDCODER, a scalable, automated multi-turn red-teaming framework specifically designed to elicit vulnerable code from Code LLMs.\n  2. Introduces a multi-agent gaming process to automatically ge",
+        "verification_status": "SUPPORTED",
+        "confidence": 1.0,
+        "reasoning": "The source describes REDCODER, an automated multi-turn red-teaming framework, and demonstrates that state-of-the-art models are susceptible to its iterative adversarial interactions and strategy-based exploitation.",
+        "verified_at": "2026-03-26T12:32:11.034551"
+      },
+      {
+        "section_key": "conclusion",
+        "citation_key": "Rubel_2024_LLM",
+        "claim_text": "Furthermore, the shift towards parameter-efficient fine-tuning (PEFT) introduces new vectors for data poisoning, where even minimal malicious injections can compromise model integrity and manipulate specific outputs [Rubel_2024_LLM].",
+        "source_chunk_id": "fdb72927292468fe",
+        "source_text_excerpt": "Paper: Rubel_2024_LLM\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Formalizes generalized adversarial code-suggestions using a trigger pattern and a learnable map in embedding space to evade static analysis.\n  2. Introduces the Directional-Map attack, which removes t",
+        "verification_status": "SUPPORTED",
+        "confidence": 0.9,
+        "reasoning": "The source details data poisoning attacks (Directional-Map and Prompt-Indexing) during the fine-tuning process that allow adversaries to manipulate model outputs using minimal triggers, supporting the claim about new vectors for compromising model integrity.",
+        "verified_at": "2026-03-26T12:32:11.034555"
+      },
+      {
+        "section_key": "conclusion",
+        "citation_key": "Li_2024_Exploratory",
+        "claim_text": "At the data level, future efforts must prioritize systematic quality metrics and automated data-cleaning pipelines to identify and filter harmful or redundant samples before training or fine-tuning [Li_2024_Exploratory].",
+        "source_chunk_id": "6cdd3adb8c4a5108",
+        "source_text_excerpt": "Paper: Li_2024_Exploratory\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Presented a comprehensive exploration of using fine-tuning techniques (full fine-tuning, LoRA, and IA3) to improve the security of LLM-based code generation across four different base models.\n  2",
+        "verification_status": "NOT_SUPPORTED",
+        "confidence": 0.8,
+        "reasoning": "The source focuses on using fine-tuning (including PEFT like LoRA) to improve secure code generation by training on vulnerability-fixing commits. It does not discuss automated data-cleaning pipelines or filtering harmful/redundant samples as a primary future effort or methodology.",
+        "verified_at": "2026-03-26T12:32:11.034561"
+      },
+      {
+        "section_key": "conclusion",
+        "citation_key": "Storek_2025_AI",
+        "claim_text": "At the model level, techniques such as origin separation\u2014processing context from different sources independently\u2014offer promising avenues for mitigating context-based attacks, though significant advancements in model interpretability are required to realize their full potential [Storek_2025_AI].",
+        "source_chunk_id": "5fd0729dfd9e9861",
+        "source_text_excerpt": "Paper: Storek_2025_AI\n\nYear: 2025\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Identification of Cross-Origin Context Poisoning (XOXO), a stealthy attack vector exploiting automatic context inclusion in AI coding assistants.\n  2. Introduction of Greedy Cayley Graph Search (GCGS)",
+        "verification_status": "NOT_SUPPORTED",
+        "confidence": 0.9,
+        "reasoning": "The source describes the Cross-Origin Context Poisoning (XOXO) attack and the GCGS algorithm for finding adversarial transformations. It does not mention 'origin separation' or 'model interpretability' as mitigation techniques or requirements.",
+        "verified_at": "2026-03-26T12:32:11.034566"
+      },
+      {
+        "section_key": "conclusion",
+        "citation_key": "Jenko_2024_LLM",
+        "claim_text": "First, system-level safeguards are essential; developers should implement robust prompt sanitization before feeding inputs to the model and establish monitoring systems to alert administrators if specific strings or patterns occur at unusual frequencies [Jenko_2024_LLM].",
+        "source_chunk_id": "139be250ef97326d",
+        "source_text_excerpt": "Paper: Jenko_2024_LLM\n\nYear: 2024\nVenue: N/A\nCategory: Adversarial Attacks\n\nKey Contributions:\n  1. Proposes INSEC, the first black-box adversarial attack that stealthily biases LLM-based code completion engines to generate insecure code by injecting a short, optimized comment.\n  2. Develops a query",
+        "verification_status": "NOT_SUPPORTED",
+        "confidence": 0.9,
+        "reasoning": "The provided source text describes an adversarial attack (INSEC) designed to manipulate LLMs into generating insecure code. While the claim suggests the paper recommends defensive measures like prompt sanitization and monitoring systems, the source text focuses entirely on the methodology and success of the attack itself. The word 'Sanitizer' is mentioned only as an initialization strategy for crafting the attack, not as a recommended defense. There is no mention of monitoring systems or alerting administrators in the provided summary.",
+        "verified_at": "2026-03-26T12:32:11.034570"
+      }
+    ],
+    "final_paper": "",
+    "version_info": {
+      "version_number": "1.0",
+      "timestamp": "2026-03-26T08:51:42.858722",
+      "paper_count": 0,
+      "categories": [],
+      "changelog": "",
+      "l1_count": 0,
+      "l2_count": 0,
+      "sections_count": 0,
+      "total_citations": 0,
+      "verified_citations": 0
+    },
+    "current_phase": "writing",
+    "current_section_key": "",
+    "iteration_count": 1,
+    "errors": [],
+    "current_scratchpad": [],
+    "retrieved_facts": {},
+    "agentic_stats": {},
+    "metadata": {
+      "budget_report": {
+        "n_categories": 4,
+        "papers_per_category": 5,
+        "total_papers": 20,
+        "max_context_tokens": 150000,
+        "l1_chars_per_paper": 118400,
+        "l1_tokens_per_call": 14500,
+        "l2_total_chars_per_category": 592000,
+        "l2_tokens_per_call": 150000,
+        "writer_chars_per_section": 60000,
+        "writer_tokens_per_call": 17000,
+        "critic_tokens_per_call": 17000,
+        "n_sections_estimate": 8,
+        "within_budget": true,
+        "warnings": []
+      },
+      "pipeline_start": "2026-03-26T08:51:42.858718",
+      "max_iterations": 3,
+      "planner_source": "llm_generated",
+      "planner_model": "pro",
+      "planner_sections": 11,
+      "planner_categories": [
+        "Prompt Injection",
+        "LLM Hallucinations",
+        "Adversarial Attacks",
+        "Data and Model Poisoning"
+      ],
+      "planner_total_papers": 86,
+      "writer_sections_written": 10,
+      "writer_sections_resumed": 0,
+      "writer_sections_failed": 0,
+      "writer_total_time": 12315.5,
+      "writer_model": "pro",
+      "critic_verified_count": 6,
+      "critic_needs_revision_count": 4,
+      "critic_failed_count": 0,
+      "critic_total_time": 850.8,
+      "critic_model": "flash"
+    }
+  }
+}

@@ -1,0 +1,5 @@
+
+    "confidence": 0.85,
+    "reasoning": "The source text confirms that agents are 'highly vulnerable to natural language prompts,' which supports the claim regarding textual instructions. However, the provided summary does not explicitly state that the attack success rate is 'higher' for textual instructions compared to programming language inputs, though it lists both as vectors."
+  }
+]

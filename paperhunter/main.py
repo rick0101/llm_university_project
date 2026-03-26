@@ -2108,6 +2108,36 @@ def cmd_figures(args: argparse.Namespace) -> int:
             console.print(
                 f"[bold green]✅ {inserted} figure integrate nel paper[/bold green]"
             )
+
+            # ── Step 7: Re-export LaTeX con figure ──
+            try:
+                import shutil
+                from paperhunter.postprocessing import export_latex
+                base = _Path(settings.output.base_dir)
+                tex_out = base / "latest" / "survey.tex"
+
+                # Copy generated figures into output/latest/generated_figures/
+                latest_gen = base / "latest" / "generated_figures"
+                latest_gen.mkdir(parents=True, exist_ok=True)
+                for fig_file in output_dir.glob("*.png"):
+                    shutil.copy2(fig_file, latest_gen / fig_file.name)
+
+                bib_src = None
+                for cand in [base / "references_final.bib", base / "latest" / "references.bib", base / "references.bib"]:
+                    if cand.exists():
+                        bib_src = cand
+                        break
+                export_latex(
+                    md_content=result_paper,
+                    output_path=tex_out,
+                    bib_file="references",
+                    copy_bib=True,
+                    bib_source_path=bib_src,
+                )
+                console.print(f"[bold green]✅ LaTeX aggiornato con figure: {tex_out}[/bold green]")
+            except Exception as e:
+                logger.warning(f"Re-export LaTeX con figure fallito: {e}")
+                console.print(f"[yellow]⚠️ Re-export LaTeX fallito: {e}[/yellow]")
         else:
             console.print("📸 Figure renderizzate (--no-integrate: non integrate nel paper)")
 

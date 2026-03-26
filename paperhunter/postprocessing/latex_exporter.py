@@ -823,27 +823,51 @@ def _deduplicate_sections(text: str) -> str:
         title_groups[span[3]].append(span)
 
     lines_to_remove2: set[int] = set()
+    # Collect figure environments from removed spans to transplant into kept span
+    figures_to_transplant: dict[str, list[str]] = {}  # title → list of figure blocks
+    fig_env_re = re.compile(r"\\begin\{figure\}.*?\\end\{figure\}", re.DOTALL)
+
     for title, spans in title_groups.items():
         if len(spans) <= 1:
             continue
         best = max(spans, key=lambda s: sum(len(lines[i]) for i in range(s[0], s[1])))
         for span in spans:
             if span is not best:
+                # Extract figure environments before removing
+                removed_text = "\n".join(lines[span[0]:span[1]])
+                figs_in_removed = fig_env_re.findall(removed_text)
+                if figs_in_removed:
+                    figures_to_transplant.setdefault(title, []).extend(figs_in_removed)
                 for i in range(span[0], span[1]):
                     lines_to_remove2.add(i)
 
     if lines_to_remove2:
         lines = [line for i, line in enumerate(lines) if i not in lines_to_remove2]
 
+    # Transplant rescued figures into the kept section (after the heading line)
+    if figures_to_transplant:
+        result_lines = []
+        for line in lines:
+            result_lines.append(line)
+            m = section_pat.match(line)
+            if m and m.group(1) == "section" and m.group(2) in figures_to_transplant:
+                title_key = m.group(2)
+                for fig_block in figures_to_transplant.pop(title_key):
+                    result_lines.append("")
+                    result_lines.append(fig_block)
+                    result_lines.append("")
+        lines = result_lines
+
     return "\n".join(lines)
 
 
 def _copy_referenced_figures(latex_content: str, output_dir: Path) -> None:
-    r"""Copia i file delle figure referenziate nel LaTeX in output_dir/figures/.
+    r"""Copia i file delle figure referenziate nel LaTeX nella directory di output.
 
     Cerca tutti i ``\includegraphics{...}`` nel LaTeX e, per ogni path,
-    cerca il file sorgente in posizioni comuni (output/figures/, figures/, ecc.)
-    e lo copia nella directory ``output_dir/figures/`` se non già presente.
+    cerca il file sorgente in posizioni comuni e lo copia nella directory
+    di output preservando la struttura relativa (es. ``generated_figures/fig.png``
+    viene copiato in ``output_dir/generated_figures/fig.png``).
     """
     import shutil
 
@@ -851,22 +875,22 @@ def _copy_referenced_figures(latex_content: str, output_dir: Path) -> None:
     if not paths:
         return
 
-    local_fig_dir = output_dir / "figures"
-    local_fig_dir.mkdir(exist_ok=True)
     copied = 0
 
     for rel_path in paths:
-        filename = Path(rel_path).name
-        dst = local_fig_dir / filename
+        # Destination preserves the relative path structure
+        dst = output_dir / rel_path
         if dst.exists():
             continue
 
+        filename = Path(rel_path).name
+        dst.parent.mkdir(parents=True, exist_ok=True)
+
         # Search for the source file in common locations
         for candidate in [
-            output_dir / rel_path,
-            (output_dir / rel_path).resolve(),
-            Path("output/figures") / filename,
             Path("output") / rel_path,
+            Path("output/figures") / filename,
+            Path("output/generated_figures") / filename,
             Path(rel_path),
         ]:
             if candidate.exists() and candidate.is_file():
@@ -875,7 +899,7 @@ def _copy_referenced_figures(latex_content: str, output_dir: Path) -> None:
                 break
 
     if copied:
-        logger.info("Figure copiate in %s: %d file", local_fig_dir, copied)
+        logger.info("Figure copiate in %s: %d file", output_dir, copied)
 
 
 def _extract_title_from_md(md_content: str) -> str:

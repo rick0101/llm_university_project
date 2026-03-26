@@ -123,18 +123,106 @@ def _static_quality_check(spec: FigureSpec, code: str) -> tuple[bool, str]:
 
 
 # ---------------------------------------------------------------------------
-# Public API
+# Vision quality gate (LLM-based image analysis)
 # ---------------------------------------------------------------------------
+
+_VISION_PROMPT = """\
+You are reviewing a rendered scientific figure for an academic survey paper.
+
+**Figure specification:**
+- Title: {title}
+- Chart type: {chart_type}
+- Expected content: {description}
+
+**Instructions:**
+Look at the rendered image and check for these issues:
+1. **Text readability**: Are labels, titles, legends readable? Any overlapping text?
+2. **Data correctness**: Does the chart look reasonable for the described data?
+3. **Visual artifacts**: Any clipping, missing elements, blank areas, or distortion?
+4. **Layout**: Is the figure well-proportioned? Any elements cut off?
+5. **Professional quality**: Does it look suitable for an academic publication?
+
+Return ONLY a JSON object (no markdown fences):
+{{"pass": true, "issues": []}}
+or
+{{"pass": false, "issues": ["issue 1", "issue 2"]}}
+
+Be strict but fair. Minor cosmetic issues are acceptable. Focus on problems that \
+would make the figure unsuitable for publication."""
+
+
+def _vision_quality_check(
+    spec: FigureSpec, png_path: Path,
+) -> tuple[bool, str]:
+    """Controlla la qualità visiva della figura usando Gemini Vision.
+
+    Returns:
+        Tupla (passed: bool, feedback: str con problemi trovati).
+    """
+    import json as _json
+
+    from google import genai
+    from google.genai import types
+
+    prompt = _VISION_PROMPT.format(
+        title=spec.title,
+        chart_type=spec.chart_type.value,
+        description=spec.description,
+    )
+
+    png_bytes = png_path.read_bytes()
+    image_part = types.Part.from_bytes(data=png_bytes, mime_type="image/png")
+
+    try:
+        from paperhunter.utils.llm_factory import _get_api_key
+
+        client = genai.Client(api_key=_get_api_key())
+        response = client.models.generate_content(
+            model=settings.gemini.flash_model,
+            contents=[prompt, image_part],
+            config=types.GenerateContentConfig(
+                temperature=0.1,
+                max_output_tokens=1024,
+            ),
+        )
+
+        if not response or not response.text:
+            logger.warning("Vision check returned empty response")
+            return True, ""
+
+        raw = response.text.strip()
+        # Strip markdown fences if present
+        if raw.startswith("```"):
+            raw = raw.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
+
+        data = _json.loads(raw)
+        passed = data.get("pass", True)
+        issues = data.get("issues", [])
+
+        if not passed:
+            feedback = "; ".join(issues) if issues else "Vision check failed"
+            logger.info(
+                "Figure %s: vision check → NEEDS_REVISION: %s",
+                spec.figure_id, feedback,
+            )
+            return False, feedback
+
+        logger.info("Figure %s: vision check → APPROVED", spec.figure_id)
+        return True, ""
+
+    except Exception as exc:
+        logger.warning("Vision check error for %s: %s", spec.figure_id, exc)
+        return True, ""  # non bloccare se il vision check fallisce
 
 def render_figure(
     spec: FigureSpec,
     output_dir: str | Path,
-    max_iterations: int = 3,
+    max_iterations: int = 5,
     force_model: str | None = None,
 ) -> tuple[bool, Path | None, str | None]:
     """Genera e renderizza una code figure con retry automatico.
 
-    Flow: codegen → execute → verify PNG → critic → retry on failure.
+    Flow: codegen → execute → verify PNG → static critic → vision check → retry.
 
     Args:
         spec: La specifica della figura da generare.
@@ -204,6 +292,13 @@ def render_figure(
         if not quality_ok and iteration < max_iterations:
             error_feedback = f"Code quality issues: {quality_feedback}"
             logger.info("Figure %s: quality gate failed, retrying...", spec.figure_id)
+            continue
+
+        # Vision quality gate: LLM analizza il PNG renderizzato
+        vision_ok, vision_feedback = _vision_quality_check(spec, output_path)
+        if not vision_ok and iteration < max_iterations:
+            error_feedback = f"Visual issues found in rendered figure: {vision_feedback}"
+            logger.info("Figure %s: vision check failed, retrying...", spec.figure_id)
             continue
 
         # Successo (o ultima iterazione con quality issues non bloccanti)

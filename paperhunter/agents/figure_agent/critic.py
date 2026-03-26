@@ -14,7 +14,7 @@ from pathlib import Path
 
 from pydantic import BaseModel, Field
 
-from paperhunter.agents.figure_agent.planner import FigureSpec
+from paperhunter.agents.figure_agent.planner import ChartType, FigureSpec
 from paperhunter.config import settings
 from paperhunter.utils.llm_factory import get_llm, llm_call_with_retry
 from paperhunter.utils.logging_setup import get_logger
@@ -194,13 +194,16 @@ def critique_code_only(
         issues.append("No explicit figsize — may produce awkward proportions")
         scores["readability"] -= 0.1
 
-    # Check labels
-    if "set_xlabel" not in code and "xlabel" not in code:
-        issues.append("Missing x-axis label")
-        scores["readability"] -= 0.15
-    if "set_ylabel" not in code and "ylabel" not in code:
-        issues.append("Missing y-axis label")
-        scores["readability"] -= 0.15
+    # Check labels — skip for diagram types (taxonomy, flowchart, architecture)
+    _DIAGRAM_TYPES = {ChartType.TAXONOMY, ChartType.FLOWCHART, ChartType.ARCHITECTURE, ChartType.TIMELINE}
+    is_diagram = spec.chart_type in _DIAGRAM_TYPES
+    if not is_diagram:
+        if "set_xlabel" not in code and "xlabel" not in code:
+            issues.append("Missing x-axis label")
+            scores["readability"] -= 0.15
+        if "set_ylabel" not in code and "ylabel" not in code:
+            issues.append("Missing y-axis label")
+            scores["readability"] -= 0.15
 
     # Check title
     if "set_title" not in code and "suptitle" not in code and "title(" not in code:

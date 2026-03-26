@@ -1,0 +1,12 @@
+```python
+OUTPUT_PATH = "output/generated_figures/fig_llm_security_taxonomy.png"
+import matplotlib.pyplot as plt
+
+# Configuration and Data
+plt.rcParams.update({'font.family': 'serif', 'font.size': 10})
+data = {
+    'root': ('LLM Security Threats', (5, 10), '#E8E8E8'),
+    'l1': [
+        ('T', 'Training-Time', (1.5, 8), '#D0E1F9'),
+        ('I', 'Inference-Time', (5.5, 8), '#F9E2D0'),
+        ('O', 'Output-Level', (9.

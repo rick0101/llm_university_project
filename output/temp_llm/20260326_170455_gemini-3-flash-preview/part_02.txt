@@ -1,0 +1,14 @@
+```python
+    'l3': [
+        ('Model Poisoning', 'CGBA, TrojVLM,\nBadTemplate', (2.5, 4.2)),
+        ('Jailbreaking', 'AutoDAN,\nFlipAttack', (5.5, 4.2)),
+        ('Specialized Domain', 'XOXO, INSEC', (7.0, 4.2))
+    ]
+}
+
+fig, ax = plt.subplots(figsize=(14, 8))
+ax.set_xlim(-0.5, 11.5)
+ax.set_ylim(3.5, 11)
+ax.axis('off')
+
+def draw_node(text, pos, color

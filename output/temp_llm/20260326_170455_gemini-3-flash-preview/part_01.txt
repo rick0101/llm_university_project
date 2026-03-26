@@ -1,0 +1,7 @@
+```python
+0, 8), '#D0F9E1')],
+    'l2': [
+        ('Training-Time', 'Data Poisoning', (0.5, 6)), ('Training-Time', 'Model Poisoning', (2.5, 6)),
+        ('Inference-Time', 'Prompt Injection', (4.0, 6)), ('Inference-Time', 'Jailbreaking', (5.5, 6)),
+        ('Inference-Time', 'Specialized Domain', (7.0, 6)), ('Output-Level', 'Intrinsic Halluc.', (8.5, 6)),
+        ('Output-Level', 'Extrinsic Halluc.', (10.5, 6))],

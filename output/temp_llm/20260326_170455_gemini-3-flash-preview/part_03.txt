@@ -1,0 +1,15 @@
+```python
+OUTPUT_PATH = "output/generated_figures/fig_llm_security_taxonomy.png"
+
+import matplotlib.pyplot as plt
+
+# Data structure for the taxonomy
+data = {
+    'root': ('LLM Security Threats', (5.5, 10), '#F9D5D3'),
+    'l1': [
+        ('Training-Time', (1.5, 8), '#D1E8FF'),
+        ('Inference-Time', (5.5, 8), '#FFF2CC'),
+        ('Output-Level', (9.5, 8), '#D0F9E1')
+    ],
+    'l2': [
+        ('Training-Time', 'Data

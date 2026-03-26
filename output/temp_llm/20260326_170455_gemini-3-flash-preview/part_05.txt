@@ -1,0 +1,8 @@
+```python
+Poisoning', (0.5, 6), '#D1E8FF'),
+        ('Training-Time', 'Model Poisoning', (2.5, 6), '#D1E8FF'),
+        ('Inference-Time', 'Prompt Injection', (4.2, 6), '#FFF2CC'),
+        ('Inference-Time', 'Jailbreaking', (6.0, 6), '#FFF2CC'),
+        ('Inference-Time', 'Specialized Domain', (8.0, 6), '#FFF2CC'),
+        ('Output-Level', 'Intrinsic Hallucinations', (10.2, 6), '#D0F9E1'),
+        ('Output-Level', '

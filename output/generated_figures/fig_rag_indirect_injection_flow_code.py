@@ -5,92 +5,69 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
-def create_rag_injection_flow():
-    # Set academic style
-    plt.rcParams['font.family'] = 'serif'
-    plt.rcParams['font.serif'] = ['Times New Roman'] + plt.rcParams['font.serif']
-    
-    fig, ax = plt.subplots(figsize=(12, 7))
-    ax.set_xlim(0, 12)
-    ax.set_ylim(0, 10)
-    ax.axis('off')
+# Configuration and Data
+plt.rcParams.update({'font.family': 'serif', 'font.size': 10})
+COLORS = {'attacker': '#e74c3c', 'kb': '#f1c40f', 'user': '#3498db', 'rag': '#2ecc71', 'output': '#e67e22'}
 
-    # Define professional color palette
-    colors = {
-        'attacker': '#fce4e4',    # Light Red
-        'attacker_edge': '#c0392b',
-        'user': '#e8f5e9',        # Light Green
-        'user_edge': '#27ae60',
-        'system': '#e3f2fd',      # Light Blue
-        'system_edge': '#2980b9',
-        'kb': '#f5f5f5',          # Light Grey
-        'kb_edge': '#7f8c8d',
-        'malicious': '#fdedec',   # Very Light Red
-        'malicious_edge': '#e74c3c'
-    }
+# Node definitions: (x, y, label, color, width)
+nodes = {
+    'attacker': (1, 8, "Attacker\n(Adversary)", COLORS['attacker'], 2.5),
+    'kb': (7, 8, "External Knowledge\nBase (Web/Wiki)", COLORS['kb'], 3.0),
+    'user': (1, 4, "Legitimate User\n(Querying)", COLORS['user'], 2.5),
+    'retriever': (7, 4, "RAG: Retriever\n(Vector Search)", COLORS['rag'], 3.0),
+    'llm': (13, 4, "RAG: LLM\n(Inference)", COLORS['rag'], 3.0),
+    'output': (18, 4, "Malicious Payload\nExecution", COLORS['output'], 3.0)
+}
 
-    # Helper function to draw boxes
-    def draw_box(ax, x, y, width, height, text, facecolor, edgecolor, title=None):
-        # Draw the main box
-        rect = patches.FancyBboxPatch(
-            (x, y), width, height,
-            boxstyle="round,pad=0.2",
-            linewidth=1.5, edgecolor=edgecolor, facecolor=facecolor,
-            mutation_scale=0.4
-        )
-        ax.add_patch(rect)
-        
-        # Add text
-        if title:
-            ax.text(x + width/2, y + height * 0.75, title, 
-                    ha='center', va='center', fontweight='bold', fontsize=11)
-            ax.text(x + width/2, y + height * 0.35, text, 
-                    ha='center', va='center', fontsize=10)
-        else:
-            ax.text(x + width/2, y + height/2, text, 
-                    ha='center', va='center', fontweight='bold', fontsize=11)
+# Edge definitions: (start_key, end_key, label, label_pos_offset)
+edges = [
+    ('attacker', 'kb', "1. Poisoning: Injects\nmalicious instructions", (0, 0.4)),
+    ('user', 'retriever', "2. User Query", (0, 0.3)),
+    ('kb', 'retriever', "3. Retrieval of\nPoisoned Context", (0.2, 0)),
+    ('retriever', 'llm', "4. Combined Prompt:\nQuery + Poisoned Context", (0, 0.6)),
+    ('llm', 'output', "5. Instruction\nConfusion", (0, 0.4))
+]
 
-    # 1. Attacker Box
-    draw_box(ax, 0.5, 7.5, 2.5, 1.5, "Attacker", colors['attacker'], colors['attacker_edge'])
-    
-    # 2. External Knowledge Base Box
-    draw_box(ax, 5.0, 7.5, 2.5, 1.5, "External Knowledge\nBase (Web/Docs)", colors['kb'], colors['kb_edge'])
-    
-    # 3. Legitimate User Box
-    draw_box(ax, 0.5, 2.5, 2.5, 1.5, "Legitimate User", colors['user'], colors['user_edge'])
-    
-    # 4. RAG Retriever Box
-    draw_box(ax, 5.0, 2.5, 2.5, 1.5, "RAG System\n(Retriever)", colors['system'], colors['system_edge'])
-    
-    # 5. LLM Box
-    draw_box(ax, 9.0, 2.5, 2.5, 1.5, "Large Language\nModel (LLM)", colors['system'], colors['system_edge'])
-    
-    # 6. Malicious Execution Box
-    draw_box(ax, 9.0, 7.5, 2.5, 1.5, "Malicious Payload\nExecution", colors['malicious'], colors['malicious_edge'])
+fig, ax = plt.subplots(figsize=(14, 8))
+ax.set_xlim(0, 20)
+ax.set_ylim(2, 10)
+ax.axis('off')
 
-    # Helper function for arrows
-    def draw_arrow(ax, start, end, text, color='black', linestyle='-', label_pos=0.5, vertical=False):
-        arrow_props = dict(arrowstyle='-|>', color=color, lw=1.5, ls=linestyle, mutation_scale=20)
-        ax.annotate('', xy=end, xytext=start, arrowprops=arrow_props)
-        
-        # Calculate text position
-        mid_x = start[0] + (end[0] - start[0]) * label_pos
-        mid_y = start[1] + (end[1] - start[1]) * label_pos
-        
-        if vertical:
-            ax.text(mid_x + 0.2, mid_y, text, va='center', ha='left', fontsize=9, fontweight='bold', color=color)
-        else:
-            ax.text(mid_x, mid_y + 0.2, text, va='bottom', ha='center', fontsize=9, fontweight='bold', color=color)
+# Draw RAG System Boundary
+rag_rect = patches.FancyBboxPatch((5.2, 3.2), 9.6, 2.5, boxstyle="round,pad=0.2", 
+                                  ec="gray", fc="none", ls="--", lw=1.5)
+ax.add_patch(rag_rect)
+ax.text(10, 3.3, "RAG System Architecture", ha='center', color='gray', fontweight='bold')
 
-# 1. Attacker poisons Knowledge Base
-    draw_arrow(ax, (2.2, 8.0), (3.8, 8.0), "1. Poisoning", colors['malicious'])
+# Helper to draw nodes
+for key, (x, y, txt, col, w) in nodes.items():
+    rect = patches.FancyBboxPatch((x-w/2, y-0.6), w, 1.2, boxstyle="round,pad=0.1", 
+                                  ec="black", fc=col, alpha=0.2, lw=1.5)
+    ax.add_patch(rect)
+    ax.text(x, y, txt, ha='center', va='center', fontweight='bold')
+
+# Helper to draw edges
+for start_k, end_k, txt, (ox, oy) in edges:
+    x1, y1 = nodes[start_k][0], nodes[start_k][1]
+    x2, y2 = nodes[end_k][0], nodes[end_k][1]
     
-    # 2. User queries RAG System
-    draw_arrow(ax, (2.2, 5.0), (3.8, 5.0), "2. User Query", colors['user'])
+    # Adjust start/end points to box edges
+    dx, dy = x2 - x1, y2 - y1
+    if dx > 0: x1 += nodes[start_k][4]/2; x2 -= nodes[end_k][4]/2
+    elif dy < 0: y1 -= 0.6; y2 += 0.6
     
-    # 3. RAG System retrieves from Knowledge Base
-    draw_arrow(ax, (4.8, 5.6), (4.8, 7.4), "3. Retrieve", colors['system'], vertical=True)
+    arrow = patches.FancyArrowPatch((x1, y1), (x2, y2), arrowstyle='-|>', 
+                                    mutation_scale=20, color='black', lw=1.5)
+    ax.add_patch(arrow)
     
-    # 4. Knowledge
+    # Place label at midpoint with offset to avoid overlap
+    lx, ly = (x1 + x2) / 2 + ox, (y1 + y2) / 2 + oy
+    ax.text(lx, ly, txt, ha='center', va='center', fontsize=9, 
+            bbox=dict(facecolor='white', edgecolor='none', alpha=0.7))
+
+plt.title("Mechanism of Indirect Prompt Injection in RAG Systems", fontsize=16, fontweight='bold', pad=20)
+plt.figtext(0.5, 0.05, "Figure 4: The workflow of an indirect prompt injection attack exploiting Retrieval-Augmented Generation (RAG) architectures.", 
+            ha="center", fontsize=12, style='italic')
+
 plt.savefig(OUTPUT_PATH, dpi=300, bbox_inches='tight')
 plt.close()

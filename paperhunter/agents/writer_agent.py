@@ -774,15 +774,15 @@ _PREFETCH_MAX_ITERATIONS = 12
 """Iterazioni ReAct per modalità prefetch (contesto già caricato, ma serve margine per scrivere)."""
 
 # --- Retry con backoff incrementale per errori transitori ---
-_TRANSIENT_MAX_RETRIES = 5
+_TRANSIENT_MAX_RETRIES = 4
 """Massimo numero di retry per errori transitori (timeout, 503, ecc.)."""
-_TRANSIENT_BASE_DELAY = 30.0
+_TRANSIENT_BASE_DELAY = 15.0
 """Delay iniziale (secondi) prima del primo retry."""
-_TRANSIENT_MAX_DELAY = 300.0
+_TRANSIENT_MAX_DELAY = 120.0
 """Delay massimo (secondi) tra retry."""
-_TRANSIENT_TIMEOUT_INCREMENT = 300.0
+_TRANSIENT_TIMEOUT_INCREMENT = 120.0
 """Incremento del timeout del workflow ad ogni retry (secondi)."""
-_TRANSIENT_BASE_TIMEOUT = 600.0
+_TRANSIENT_BASE_TIMEOUT = 360.0
 """Timeout base del workflow ReAct (secondi)."""
 
 _PREFETCH_REACT_SYSTEM_PROMPT = get_prompt("PREFETCH_REACT_SYSTEM_PROMPT")

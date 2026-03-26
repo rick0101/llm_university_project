@@ -134,16 +134,21 @@ Finally, novel attack surfaces emerged in the very infrastructure of model deplo
 
 
 
-![Figure 3: Comparison of training-time poisoning attacks. Modern techniques like MABA achieve near-perfect Attack Success Rates (ASR) with sub-1% poisoning rates, demonstrating the increasing stealth and potency of generative backdoors.](generated_figures/fig_poisoning_efficiency_scatter.png)
+![Figure 3: Comparison of the minimum percentage of poisoned data required to successfully compromise LLMs and VLMs across different attack frameworks.](generated_figures/fig_poisoning_budgets.png)
 
-*Figure 3: Comparison of training-time poisoning attacks. Modern techniques like MABA achieve near-perfect Attack Success Rates (ASR) with sub-1% poisoning rates, demonstrating the increasing stealth and potency of generative backdoors.*
+*Figure 3: Comparison of the minimum percentage of poisoned data required to successfully compromise LLMs and VLMs across different attack frameworks.*
+
+
+![Figure 2: Chronological progression of state-of-the-art backdoor and poisoning attacks, illustrating the shift from text-based models to multimodal systems and autonomous agents.](generated_figures/fig_poisoning_evolution_timeline.png)
+
+*Figure 2: Chronological progression of state-of-the-art backdoor and poisoning attacks, illustrating the shift from text-based models to multimodal systems and autonomous agents.*
 ## Inference-Time Threats I: Prompt Injection and Jailbreaking
 
 
 
-![Figure 4: The rapid transition from manual heuristic exploits to sophisticated, automated adversarial discovery frameworks between 2023 and 2026.](generated_figures/fig_automated_attack_timeline.png)
+![Figure 5: Maximum Attack Success Rates (ASR) reported for various advanced LLM exploits across different modalities and deployment environments.](generated_figures/fig_attack_success_rates.png)
 
-*Figure 4: The rapid transition from manual heuristic exploits to sophisticated, automated adversarial discovery frameworks between 2023 and 2026.*
+*Figure 5: Maximum Attack Success Rates (ASR) reported for various advanced LLM exploits across different modalities and deployment environments.*
 # Inference-Time Threats I: Prompt Injection and Jailbreaking
 
 The deployment of Large Language Models (LLMs) in real-world applications has exposed a critical frontier in artificial intelligence security: inference-time threats. Unlike training-time vulnerabilities such as data poisoning or backdoor insertion, inference-time threats exploit the fundamental mechanisms by which a fully trained model processes and responds to user inputs. At the core of these vulnerabilities are prompt injection and jailbreaking. While these terms are sometimes used interchangeably, they represent distinct paradigms of attack. Prompt injection typically involves subverting a model's original instructions by embedding malicious commands within user-provided data, causing the model to execute unintended actions. Jailbreaking, on the other hand, refers to the deliberate crafting of inputs designed to bypass the model's built-in safety guardrails, coercing it into generating restricted, harmful, or unethical content. 
@@ -244,11 +249,6 @@ Addressing this imbalance requires a paradigm shift in how code-generating syste
 However, balancing these two objectives remains an ongoing research challenge. Overly aggressive security constraints or excessive security prompting can confuse the model, degrading its ability to produce functionally complex code or leading to overly defensive, inefficient implementations. Conversely, prioritizing functionality inevitably reopens the door to adversarial exploitation. As code-generating LLMs become more deeply embedded in the software supply chain, developing robust defense mechanisms that do not compromise the utility of the models will be critical to ensuring the security of next-generation software systems.
 
 
-
-
-![Figure 5: Degradation of model accuracy when subjected to adversarial attacks on critical healthcare tasks using the MIMIC-III dataset. The stark drop highlights the fragility of unhardened LLMs in clinical settings.](generated_figures/fig_healthcare_adversarial_impact.png)
-
-*Figure 5: Degradation of model accuracy when subjected to adversarial attacks on critical healthcare tasks using the MIMIC-III dataset. The stark drop highlights the fragility of unhardened LLMs in clinical settings.*
 ## Output-Level Vulnerabilities: LLM Hallucinations
 
 # Output-Level Vulnerabilities: LLM Hallucinations

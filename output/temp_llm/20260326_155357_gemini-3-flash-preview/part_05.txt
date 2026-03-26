@@ -1,0 +1,7 @@
+```python
+, 5.8, 1.8, 0.5, "Intrinsic Hallucinations", colors['category'], 10, 'normal', 'black'),
+    (8, 5.0, 1.8, 0.5, "Extrinsic Hallucinations", colors['category'], 10, 'normal', 'black'),
+
+    # Level 3: Examples/Specifics
+    (3, 3.8, 1.8, 0.6, "CGBA, TrojVLM,\nBadTemplate", colors['example'], 9, 'italic', 'black'),
+    (5, 3.2, 1.8, 0.5, "AutoDAN,\nFlipAttack

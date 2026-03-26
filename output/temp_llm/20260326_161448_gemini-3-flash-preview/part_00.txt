@@ -1,0 +1,96 @@
+```python
+OUTPUT_PATH = "output/generated_figures/fig_attack_success_rates.png"
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
+import numpy as np
+
+# Data preparation
+data = [
+    {
+        "exploit": "BadTemplate (Chat Template Supply Chain)",
+        "asr_percent": 100.0,
+        "category": "Training-Time"
+    },
+    {
+        "exploit": "AutoBackdoor (Agent-crafted Backdoor)",
+        "asr_percent": 90.0,
+        "category": "Training-Time"
+    },
+    {
+        "exploit": "Cursor Auto Mode (Prompt Injection)",
+        "asr_percent": 83.4,
+        "category": "Inference-Time"
+    }
+]
+
+df = pd.DataFrame(data)
+
+# Set academic style
+plt.rcParams['font.family'] = 'serif'
+plt.rcParams['font.serif'] = ['Times New Roman', 'DejaVu Serif', 'serif']
+sns.set_context("paper", font_scale=1.2)
+
+# Create the figure
+fig, ax = plt.subplots(figsize=(10, 6))
+
+# Define professional color palette
+# Using specific colors for categories to ensure academic clarity
+palette = {
+    "Training-Time": "#4c72b0",  # Muted Blue
+    "Inference-Time": "#dd8452"  # Muted Orange
+}
+
+# Plot horizontal bars
+# dodge=False ensures bars are not split when using hue for categorical coloring
+barplot = sns.barplot(
+    data=df,
+    x="asr_percent",
+    y="exploit",
+    hue="category",
+    palette=palette,
+    dodge=False,
+    ax=ax
+)
+
+# Title and Labels
+ax.set_title("Reported Attack Success Rates (ASR) of State-of-the-Art Exploits", 
+             fontsize=14, fontweight='bold', pad=20)
+ax.set_xlabel("Attack Success Rate (ASR) %", fontsize=12, fontweight='normal')
+ax.set_ylabel("Exploit Name", fontsize=12, fontweight='normal')
+
+# Set axis limits and grid
+ax.set_xlim(0, 110)  # Extra space for text labels
+ax.xaxis.grid(True, linestyle='--', alpha=0.6)
+ax.set_axisbelow(True)  # Grid behind bars
+
+# Add data labels (percentages) to the end of each bar
+for p in ax.patches:
+    width = p.get_width()
+    if width > 0:  # Only label bars with data
+        ax.text(
+            width + 1.5, 
+            p.get_y() + p.get_height() / 2, 
+            f'{width:.1f}%', 
+            va='center', 
+            fontsize=11, 
+            fontweight='bold',
+            color='#333333'
+        )
+
+# Customize legend
+legend = ax.legend(title="Attack Category", loc='lower right', frameon=True, fancybox=False)
+legend.get_frame().set_edgecolor('black')
+legend.get_frame().set_linewidth(0.5)
+
+# Remove top and right spines for a cleaner look
+sns.despine()
+
+# Ensure layout is tight
+plt.tight_layout()
+
+# Save the figure
+plt.savefig(OUTPUT_PATH, dpi=300, bbox_inches='tight')
+plt.close()
+```

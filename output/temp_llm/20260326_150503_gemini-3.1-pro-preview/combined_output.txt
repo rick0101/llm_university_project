@@ -1,0 +1,104 @@
+```json
+{
+  "figures": [
+    {
+      "figure_id": "fig_llm_security_taxonomy",
+      "figure_type": "image",
+      "chart_type": "taxonomy",
+      "title": "Comprehensive Taxonomy of LLM Security Threats",
+      "caption": "Figure 1: A systematic taxonomy of LLM vulnerabilities categorized by model lifecycle phases: Training-Time, Inference-Time, and Output-Level.",
+      "description": "A hierarchical taxonomy diagram branching from 'LLM Security Threats' into three main lifecycle phases. 'Training-Time' branches into Data Poisoning and Model Poisoning (e.g., CGBA, TrojVLM, BadTemplate). 'Inference-Time' branches into Prompt Injection, Jailbreaking (e.g., AutoDAN, FlipAttack), and Specialized Domain Attacks (e.g., XOXO, INSEC). 'Output-Level' branches into Intrinsic and Extrinsic Hallucinations.",
+      "section_key": "Introduction",
+      "data_sources": [
+        "Introduction",
+        "Background and Preliminaries"
+      ],
+      "data_points": [],
+      "priority": 1,
+      "rationale": "Establishes the foundational structure of the survey, providing readers with a visual roadmap of the vulnerabilities discussed across the entire model lifecycle."
+    },
+    {
+      "figure_id": "fig_poisoning_evolution_timeline",
+      "figure_type": "code",
+      "chart_type": "timeline",
+      "title": "Evolution of Data and Model Poisoning Attacks (2024–2026)",
+      "caption": "Figure 2: Chronological progression of state-of-the-art backdoor and poisoning attacks, illustrating the shift from text-based models to multimodal systems and autonomous agents.",
+      "description": "A horizontal timeline plotting major poisoning frameworks mentioned in the text, categorized by their target modality (Text, Code, Vision-Language, Agents, Reasoning).",
+      "section_key": "Training-Time Threats: Data and Model Poisoning",
+      "data_sources": [
+        "Training-Time Threats: Data and Model Poisoning"
+      ],
+      "data_points": [
+        { "label": "CGBA (Text)", "year": 2024, "category": "Text LLMs" },
+        { "label": "CODEBREAKER (Code)", "year": 2024, "category": "Code LLMs" },
+        { "label": "Persistent Backdoors", "year": 2024, "category": "Text LLMs" },
+        { "label": "TrojVLM (Image-to-Text)", "year": 2024, "category": "Vision-Language Models" },
+        { "label": "IAG (Visual Grounding)", "year": 2025, "category": "Vision-Language Models" },
+        { "label": "VisualTrap (GUI Agents)", "year": 2025, "category": "AI Agents" },
+        { "label": "BadVLA (VLA Systems)", "year": 2025, "category": "AI Agents" },
+        { "label": "AutoBackdoor", "year": 2025, "category": "AI Agents" },
+        { "label": "DecepChain (Reasoning)", "year": 2025, "category": "Reasoning Models" },
+        { "label": "Breaking of Thought (BoT)", "year": 2025, "category": "Reasoning Models" },
+        { "label": "SlowBA (Latency)", "year": 2026, "category": "AI Agents" },
+        { "label": "BadTemplate (Infrastructure)", "year": 2026, "category": "Supply Chain" }
+      ],
+      "priority": 2,
+      "rationale": "Quantifies the rapid acceleration and diversification of poisoning research, visually reinforcing the paper's claim of a paradigm shift toward specialized agents and multimodal exploits."
+    },
+    {
+      "figure_id": "fig_poisoning_budgets",
+      "figure_type": "code",
+      "chart_type": "bar",
+      "title": "Minimum Poisoning Budgets Required for Successful Backdoor Injection",
+      "caption": "Figure 3: Comparison of the minimum percentage of poisoned data required to successfully compromise LLMs and VLMs across different attack frameworks.",
+      "description": "A bar chart (with a logarithmic x-axis for percentage) comparing the highly efficient data poisoning rates of recent attacks.",
+      "section_key": "Training-Time Threats: Data and Model Poisoning",
+      "data_sources": [
+        "Training-Time Threats: Data and Model Poisoning"
+      ],
+      "data_points": [
+        { "attack": "Persistent Backdoors (Zhang et al., 2024)", "poisoning_rate_percent": 0.001, "target": "Pre-training" },
+        { "attack": "Subversive Alignment Injection (SAI)", "poisoning_rate_percent": 0.1, "target": "Alignment (LoRA)" },
+        { "attack": "VisualTrap", "poisoning_rate_percent": 5.0, "target": "Visual Grounding" }
+      ],
+      "priority": 3,
+      "rationale": "Highlights the alarming efficiency of modern poisoning attacks, demonstrating that models can be fundamentally compromised with statistically microscopic amounts of malicious data."
+    },
+    {
+      "figure_id": "fig_rag_indirect_injection_flow",
+      "figure_type": "image",
+      "chart_type": "flowchart",
+      "title": "Mechanism of Indirect Prompt Injection in RAG Systems",
+      "caption": "Figure 4: The workflow of an indirect prompt injection attack exploiting Retrieval-Augmented Generation (RAG) architectures.",
+      "description": "A flowchart showing an Attacker poisoning an External Knowledge Base. A Legitimate User queries the RAG System, which retrieves the poisoned document. The LLM processes the combined prompt (User Query + Poisoned Context) and executes the malicious payload, confusing system instructions with retrieved data.",
+      "section_key": "Inference-Time Threats I: Prompt Injection and Jailbreaking",
+      "data_sources": [
+        "Inference-Time Threats I: Prompt Injection and Jailbreaking"
+      ],
+      "data_points": [],
+      "priority": 4,
+      "rationale": "Clarifies the complex, multi-step nature of RAG vulnerabilities, which the text identifies as one of the most severe architectural shifts and attack surfaces in modern AI deployments."
+    },
+    {
+      "figure_id": "fig_attack_success_rates",
+      "figure_type": "code",
+      "chart_type": "bar",
+      "title": "Reported Attack Success Rates (ASR) of State-of-the-Art Exploits",
+      "caption": "Figure 5: Maximum Attack Success Rates (ASR) reported for various advanced LLM exploits across different modalities and deployment environments.",
+      "description": "A horizontal bar chart displaying the peak ASR percentages for specific attacks mentioned in the text, illustrating the high vulnerability of current systems.",
+      "section_key": "Inference-Time Threats I: Prompt Injection and Jailbreaking",
+      "data_sources": [
+        "Training-Time Threats: Data and Model Poisoning",
+        "Inference-Time Threats I: Prompt Injection and Jailbreaking"
+      ],
+      "data_points": [
+        { "exploit": "Cursor Auto Mode (Prompt Injection)", "asr_percent": 83.4, "category": "Inference-Time" },
+        { "exploit": "AutoBackdoor (Agent-crafted Backdoor)", "asr_percent": 90.0, "category": "Training-Time" },
+        { "exploit": "BadTemplate (Chat Template Supply Chain)", "asr_percent": 100.0, "category": "Training-Time" }
+      ],
+      "priority": 5,
+      "rationale": "Provides a stark quantitative measure of how effectively modern attacks bypass safety alignments, directly supporting the paper's discussion on the critical need for better defense mechanisms."
+    }
+  ]
+}
+```

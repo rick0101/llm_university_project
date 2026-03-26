@@ -1,0 +1,10 @@
+```python
+inference'][1]-0.3), (l2_nodes[key][0], l2_nodes[key][1]+0.3), color='#95a5a6')
+
+    # Output-Level connections
+    for key in ['intrinsic', 'extrinsic']:
+        draw_edge((l1_nodes['output'][0], l1_nodes['output'][1]-0.3), 
+                  (l2_nodes[key][0], l2_nodes[key][1]+0.3), color='#95a5a6')
+
+    # L2 to L3 Edges (Examples)
+    draw_edge((l2_nodes['model_poison'][0], l2_nodes['model_

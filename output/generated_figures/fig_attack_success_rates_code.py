@@ -6,6 +6,32 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 import numpy as np
+import os
+
+# Ensure the output directory exists
+os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
+
+# Data points provided in the specification
+data = [
+    {
+        "exploit": "Cursor Auto Mode (Prompt Injection)",
+        "asr_percent": 83.4,
+        "category": "Inference-Time"
+    },
+    {
+        "exploit": "AutoBackdoor (Agent-crafted Backdoor)",
+        "asr_percent": 90.0,
+        "category": "Training-Time"
+    },
+    {
+        "exploit": "BadTemplate (Chat Template Supply Chain)",
+        "asr_percent": 100.0,
+        "category": "Training-Time"
+    }
+]
+
+# Convert to DataFrame for easier plotting with Seaborn
+df = pd.DataFrame(data)
 
 # Set academic style parameters
 plt.rcParams.update({
@@ -20,37 +46,14 @@ plt.rcParams.update({
     "figure.dpi": 300
 })
 
-# Data preparation
-data = [
-    {
-        "exploit": "Cursor Auto Mode\n(Prompt Injection)",
-        "asr_percent": 83.4,
-        "category": "Inference-Time"
-    },
-    {
-        "exploit": "AutoBackdoor\n(Agent-crafted Backdoor)",
-        "asr_percent": 90.0,
-        "category": "Training-Time"
-    },
-    {
-        "exploit": "BadTemplate\n(Chat Template Supply Chain)",
-        "asr_percent": 100.0,
-        "category": "Training-Time"
-    }
-]
-
-df = pd.DataFrame(data)
-# Sort by ASR for better visual flow
-df = df.sort_values(by="asr_percent", ascending=True)
-
-# Initialize the plot
+# Create the figure
 fig, ax = plt.subplots(figsize=(10, 6))
 
-# Define professional color palette
-palette = {"Inference-Time": "#4C72B0", "Training-Time": "#C44E52"}
+# Define a professional color palette based on categories
+palette = {"Inference-Time": "#4c72b0", "Training-Time": "#c44e52"}
 
 # Create horizontal bar chart
-bars = sns.barplot(
+sns.barplot(
     data=df, 
     x="asr_percent", 
     y="exploit", 
@@ -60,17 +63,7 @@ bars = sns.barplot(
     ax=ax
 )
 
-# Add light grid for quantitative readability
-ax.grid(axis='x', linestyle='--', alpha=0.7)
-ax.set_axisbelow(True)
-
-# Set labels and title
-ax.set_title("Reported Attack Success Rates (ASR) of State-of-the-Art Exploits", pad=20, fontweight='bold')
-ax.set_xlabel("Attack Success Rate (ASR %)")
-ax.set_ylabel("Exploit Method")
-ax.set_xlim(0, 115)  # Leave space for text labels
-
-# Add data labels on the bars
+# Add quantitative labels at the end of each bar
 for i, p in enumerate(ax.patches):
     width = p.get_width()
     ax.text(
@@ -78,11 +71,25 @@ for i, p in enumerate(ax.patches):
         p.get_y() + p.get_height() / 2, 
         f'{width:.1f}%', 
         va='center', 
+        fontsize=10, 
         fontweight='bold'
     )
 
+# Set labels and title
+ax.set_title("Reported Attack Success Rates (ASR) of State-of-the-Art Exploits", pad=20)
+ax.set_xlabel("Attack Success Rate (ASR) %")
+ax.set_ylabel("Exploit Name") # Explicitly added to address previous error
+
+# Configure grid and limits
+ax.set_xlim(0, 110) # Extra space for labels
+ax.xaxis.grid(True, linestyle='--', alpha=0.6)
+ax.set_axisbelow(True)
+
 # Refine legend
-ax.legend(title="Attack Category", loc='lower right', frameon=True)
+ax.legend(title="Attack Category", loc="lower right", frameon=True)
+
+# Remove top and right spines for a cleaner look
+sns.despine()
 
 # Adjust layout
 plt.tight_layout()

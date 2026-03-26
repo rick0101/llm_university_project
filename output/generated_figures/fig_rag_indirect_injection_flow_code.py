@@ -5,98 +5,108 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
-# Set academic style parameters
-plt.rcParams.update({
-    "font.family": "serif",
-    "font.size": 10,
-    "axes.titlesize": 14,
-    "axes.labelsize": 11,
-})
-
 def draw_flowchart():
-    fig, ax = plt.subplots(figsize=(10, 6))
-    
-    # Define node styles
-    node_style = dict(boxstyle="round,pad=0.5", ec="black", lw=1.5)
-    attacker_style = dict(facecolor='#ff9999', **node_style)  # Reddish
-    system_style = dict(facecolor='#99ccff', **node_style)    # Bluish
-    user_style = dict(facecolor='#99ff99', **node_style)      # Greenish
-    data_style = dict(facecolor='#f9f9f9', **node_style)      # Greyish
+    # Set academic style parameters
+    plt.rcParams.update({
+        "font.family": "serif",
+        "font.size": 10,
+        "axes.titlesize": 14,
+        "axes.labelsize": 12
+    })
 
-    # Define node positions (x, y)
-    nodes = {
-        "Attacker": (1.5, 8.5, attacker_style),
-        "Knowledge Base": (8.5, 8.5, data_style),
-        "User": (1.5, 1.5, user_style),
-        "RAG System\n(Retriever)": (5, 5, system_style),
-        "LLM\n(Generator)": (8.5, 1.5, system_style)
+    fig, ax = plt.subplots(figsize=(10, 7))
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 8)
+    ax.axis('off')
+
+    # Define colors (Academic Palette)
+    colors = {
+        'attacker': '#d62728',    # Red
+        'user': '#2ca02c',        # Green
+        'system': '#1f77b4',      # Blue
+        'data': '#7f7f7f',        # Grey
+        'llm': '#9467bd',         # Purple
+        'warning': '#ff7f0e'      # Orange
     }
 
-    # Draw nodes
-    for name, (x, y, style) in nodes.items():
-        ax.text(x, y, name, ha='center', va='center', bbox=style, fontweight='bold')
-
-    # Define arrows (start_node, end_node, label, offset_y)
-    arrows = [
-        ("Attacker", "Knowledge Base", "Injects Poisoned\nDocument", 0.4),
-        ("User", "RAG System\n(Retriever)", "1. Query", 0.3),
-        ("RAG System\n(Retriever)", "Knowledge Base", "2. Retrieve", 0.3),
-        ("Knowledge Base", "RAG System\n(Retriever)", "3. Poisoned\nContext", -0.6),
-        ("RAG System\n(Retriever)", "LLM\n(Generator)", "4. Combined\nPrompt", 0.3),
-        ("LLM\n(Generator)", "User", "5. Malicious Payload\nExecution", -0.6)
-    ]
-
-    # Helper to get coordinates
-    def get_coords(name):
-        return nodes[name][0], nodes[name][1]
-
-    # Draw arrows with labels
-    for start, end, label, label_offset in arrows:
-        x1, y1 = get_coords(start)
-        x2, y2 = get_coords(end)
-        
-        # Draw arrow
-        arrow = patches.FancyArrowPatch(
-            (x1, y1), (x2, y2),
-            connectionstyle="arc3,rad=0.1",
-            arrowstyle='-|>',
-            mutation_scale=20,
-            color='black',
-            shrinkA=25,
-            shrinkB=25,
-            lw=1.2
+    # Helper function to draw boxes
+    def draw_box(x, y, width, height, text, color, header=None):
+        rect = patches.FancyBboxPatch(
+            (x, y), width, height, 
+            boxstyle="round,pad=0.1", 
+            linewidth=1.5, edgecolor='black', facecolor=color, alpha=0.15
         )
-        ax.add_patch(arrow)
+        ax.add_patch(rect)
         
-        # Add label at midpoint
-        mid_x, mid_y = (x1 + x2) / 2, (y1 + y2) / 2
-        ax.text(mid_x, mid_y + label_offset, label, ha='center', va='center', 
-                fontsize=9, style='italic', bbox=dict(facecolor='white', alpha=0.7, edgecolor='none'))
+        # Add a solid top border for a professional look
+        ax.plot([x, x+width], [y+height, y+height], color=color, linewidth=3)
+        
+        if header:
+            ax.text(x + width/2, y + height - 0.3, header, 
+                    ha='center', va='center', fontweight='bold', color=color)
+            ax.text(x + width/2, y + (height-0.3)/2, text, 
+                    ha='center', va='center', wrap=True)
+        else:
+            ax.text(x + width/2, y + height/2, text, 
+                    ha='center', va='center', fontweight='bold', wrap=True)
 
-    # Highlight the "Combined Prompt" content
-    ax.text(7.2, 3.5, "Prompt = Query +\nPoisoned Context", 
-            fontsize=8, color='darkred', fontweight='bold',
-            bbox=dict(facecolor='yellow', alpha=0.3, boxstyle='sawtooth'))
+    # Helper function to draw arrows
+    def draw_arrow(start, end, text="", color='black', connectionstyle="arc3,rad=0"):
+        ax.annotate(text, xy=end, xytext=start,
+                    arrowprops=dict(arrowstyle='->', color=color, lw=1.5, 
+                                   connectionstyle=connectionstyle),
+                    ha='center', va='bottom', fontsize=9)
 
-    # Set chart limits and labels to satisfy technical requirements
-    ax.set_xlim(0, 10)
-    ax.set_ylim(0, 10)
-    ax.set_xlabel("Workflow Progression (External to Internal)")
-    ax.set_ylabel("System Architecture Layers")
+    # 1. Attacker Node
+    draw_box(0.5, 6.0, 2.5, 1.2, "Uploads Poisoned\nDocument/Website", colors['attacker'], "Attacker")
+
+    # 2. External Knowledge Base
+    draw_box(6.5, 6.0, 3.0, 1.2, "Vector DB / Web Index\n(Contains Malicious Payload)", colors['data'], "Knowledge Base")
+
+    # 3. Legitimate User
+    draw_box(0.5, 1.0, 2.5, 1.2, "Submits Legitimate\nQuery", colors['user'], "Legitimate User")
+
+    # 4. RAG System (Retriever)
+    draw_box(4.0, 1.0, 2.5, 1.2, "Retrieves Context\nfrom Knowledge Base", colors['system'], "RAG Retriever")
+
+    # 5. LLM
+    draw_box(7.5, 1.0, 2.0, 1.2, "Processes Prompt +\nPoisoned Context", colors['llm'], "LLM")
+
+    # --- Connections ---
     
-    # Remove ticks but keep labels for academic look
-    ax.set_xticks([])
-    ax.set_yticks([])
-    
-    # Title and Caption
+    # Step 1: Poisoning
+    draw_arrow((3.0, 6.6), (6.5, 6.6), "1. Injects Malicious Content", colors['attacker'])
+
+    # Step 2: User Query
+    draw_arrow((3.0, 1.6), (4.0, 1.6), "2. Query", 'black')
+
+    # Step 3: Retrieval Request
+    draw_arrow((5.25, 2.2), (7.5, 6.0), "3. Search Request", 'black', "arc3,rad=-0.1")
+
+    # Step 4: Poisoned Context Return
+    draw_arrow((8.0, 6.0), (6.0, 2.2), "4. Poisoned Document", colors['warning'], "arc3,rad=-0.1")
+
+    # Step 5: Augmented Prompt
+    draw_arrow((6.5, 1.6), (7.5, 1.6), "5. Augmented Prompt", 'black')
+
+    # Step 6: Malicious Execution / Response
+    draw_arrow((8.5, 0.8), (1.75, 0.8), "6. Malicious Payload Executed (Data Exfiltration / Misinformation)", 
+               colors['attacker'], "arc3,rad=0.2")
+
+    # Add Title and Caption
     plt.title("Mechanism of Indirect Prompt Injection in RAG Systems", pad=20)
-    fig.text(0.5, 0.02, "Figure 4: The workflow of an indirect prompt injection attack exploiting Retrieval-Augmented Generation (RAG) architectures.", 
-             ha='center', fontsize=10, style='italic')
-
-    # Final layout adjustments
-    plt.tight_layout(rect=[0, 0.05, 1, 0.95])
     
-    # Save the figure
+    # Caption as text at the bottom
+    fig.text(0.5, 0.05, "Figure 4: The workflow of an indirect prompt injection attack exploiting Retrieval-Augmented Generation (RAG) architectures.", 
+             ha='center', fontsize=11, style='italic')
+
+    # Highlight the vulnerability area
+    highlight = patches.Rectangle((3.8, 0.5), 5.9, 2.2, linewidth=1, edgecolor='red', 
+                                 facecolor='none', linestyle='--', alpha=0.5)
+    ax.add_patch(highlight)
+    ax.text(6.75, 0.3, "Vulnerability Zone: Context Confusion", color='red', ha='center', fontsize=9, fontweight='bold')
+
+    plt.tight_layout()
     plt.savefig(OUTPUT_PATH, dpi=300, bbox_inches='tight')
     plt.close()
 

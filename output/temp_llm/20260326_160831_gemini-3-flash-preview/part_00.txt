@@ -1,0 +1,74 @@
+```python
+OUTPUT_PATH = "output/generated_figures/fig_llm_security_taxonomy.png"
+
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+
+def draw_taxonomy():
+    # Set academic style parameters
+    plt.rcParams['font.family'] = 'serif'
+    plt.rcParams['font.size'] = 10
+    
+    # Figure setup
+    fig, ax = plt.subplots(figsize=(12, 8))
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 10)
+    ax.axis('off')
+
+    # Color Palette (Academic/Professional)
+    colors = {
+        'root': '#f0f0f0',
+        'training': '#d1e5f0',
+        'inference': '#d9f0d1',
+        'output': '#fee0d2',
+        'example': '#ffffff'
+    }
+
+    # Helper function to draw a node (box with text)
+    def draw_node(x, y, text, color, width=1.4, height=0.6, fontsize=10, fontweight='normal', style='round,pad=0.3'):
+        # The error in the previous attempt was likely passing text properties to the patch.
+        # Here we pass text properties to ax.text and box properties to the bbox dict.
+        ax.text(x, y, text, ha='center', va='center', fontsize=fontsize, fontweight=fontweight,
+                bbox=dict(boxstyle=style, facecolor=color, edgecolor='black', linewidth=0.8))
+
+    # Helper function to draw connecting lines
+    def draw_edge(start, end, color='black'):
+        ax.annotate('', xy=end, xytext=start,
+                    arrowprops=dict(arrowstyle='-', color=color, linewidth=1.0))
+
+    # --- Define Coordinates ---
+    # Root
+    root_pos = (5, 9.2)
+    
+    # Level 1: Lifecycle Phases
+    l1_y = 7.8
+    l1_nodes = {
+        'training': (1.8, l1_y, 'Training-Time'),
+        'inference': (5, l1_y, 'Inference-Time'),
+        'output': (8.2, l1_y, 'Output-Level')
+    }
+
+    # Level 2: Specific Threats
+    l2_y = 6.0
+    l2_nodes = {
+        'data_poison': (0.9, l2_y, 'Data Poisoning'),
+        'model_poison': (2.7, l2_y, 'Model Poisoning'),
+        'prompt_inj': (4.0, l2_y, 'Prompt Injection'),
+        'jailbreak': (5.0, l2_y, 'Jailbreaking'),
+        'specialized': (6.0, l2_y, 'Specialized Domain\nAttacks'),
+        'intrinsic': (7.5, l2_y, 'Intrinsic\nHallucinations'),
+        'extrinsic': (8.9, l2_y, 'Extrinsic\nHallucinations')
+    }
+
+    # Level 3: Examples
+    l3_y = 4.2
+    l3_nodes = {
+        'model_ex': (2.7, l3_y, 'CGBA, TrojVLM,\nBadTemplate'),
+        'jail_ex': (5.0, l3_y, 'AutoDAN,\nFlipAttack'),
+        'spec_ex': (6.0, l3_y, 'XOXO, INSEC')
+    }
+
+    # --- Draw Edges ---
+    # Root to L1
+    for key in l1_nodes:
+        draw_edge((root_pos[0], root_pos[1]-0.3), (l1_nodes[key][0], l1_nodes[key][1]+0.

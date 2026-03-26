@@ -1,0 +1,14 @@
+```python
+style="round,pad=0.1",
+            edgecolor=color, facecolor=color, linewidth=1.5)
+        ax.add_patch(rect)
+        ax.text(x, y, text, ha='center', va='center', fontsize=fontsize, 
+                color=text_color, fontweight='bold' if text_color=='white' else 'normal')
+
+    # 1. Root Node
+    draw_box(5, 9.2, "LLM Security Threats", colors['root'], width=2.5)
+
+    # 2. Phase Nodes (Level 1)
+    phases = [
+        (1.8, 7.5, "Training-Time"),
+        

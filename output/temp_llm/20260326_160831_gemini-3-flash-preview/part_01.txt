@@ -1,0 +1,12 @@
+```python
+3), color='#7f8c8d', lw=1.5)
+
+    # L1 to L2 Edges
+    # Training-Time connections
+    for key in ['data_poison', 'model_poison']:
+        draw_edge((l1_nodes['training'][0], l1_nodes['training'][1]-0.3), 
+                  (l2_nodes[key][0], l2_nodes[key][1]+0.3), color='#95a5a6')
+    
+    # Inference-Time connections
+    for key in ['prompt_inj', 'jailbreak', 'specialized']:
+        draw_edge((l1_nodes['inference'][0], l1_nodes['

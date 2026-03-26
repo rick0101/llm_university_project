@@ -1,0 +1,12 @@
+```python
+': '#e67e22',
+        'leaf': '#ecf0f1'
+    }
+
+    def draw_box(x, y, text, color, width=1.8, height=0.6, fontsize=10, text_color='white'):
+        rect = patches.FancyBboxPatch((x - width/2, y - height/2), width, height,
+                                     boxstyle="round,pad=0.1", linewidth=1,
+                                     edgecolor='black', facecolor=color)
+        ax.add_patch(rect)
+        ax.text(x, y, text, ha='center', va='center', fontsize=fontsize,
+                color=

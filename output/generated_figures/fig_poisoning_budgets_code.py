@@ -5,19 +5,10 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
-import pandas as pd
+import os
 
-# Set academic style parameters
-plt.rcParams.update({
-    "font.family": "serif",
-    "font.size": 11,
-    "axes.titlesize": 14,
-    "axes.labelsize": 12,
-    "xtick.labelsize": 10,
-    "ytick.labelsize": 10,
-    "legend.fontsize": 10,
-    "figure.dpi": 300
-})
+# Ensure the output directory exists
+os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
 
 # Data preparation
 data = [
@@ -38,42 +29,55 @@ data = [
     }
 ]
 
-df = pd.DataFrame(data)
+# Extracting values for plotting
+labels = [f"{d['attack']}\n({d['target']})" for d in data]
+rates = [d['poisoning_rate_percent'] for d in data]
+
+# Style configuration
+plt.rcParams.update({
+    'font.family': 'serif',
+    'font.serif': ['Times New Roman', 'DejaVu Serif'],
+    'font.size': 11,
+    'axes.labelsize': 12,
+    'axes.titlesize': 14,
+    'xtick.labelsize': 10,
+    'ytick.labelsize': 10,
+    'legend.fontsize': 10
+})
 
 # Create the figure
 fig, ax = plt.subplots(figsize=(10, 6))
 
 # Use a professional academic color palette
-colors = sns.color_palette("viridis", n_colors=len(df))
+colors = sns.color_palette("viridis", len(rates))
 
-# Create horizontal bar chart for better label readability
-bars = ax.barh(df['attack'], df['poisoning_rate_percent'], color=colors, edgecolor='black', linewidth=0.8)
+# Create horizontal bar chart (better for long labels and log scales)
+bars = ax.barh(labels, rates, color=colors, edgecolor='0.2', height=0.6)
 
 # Set logarithmic scale for the x-axis as requested
 ax.set_xscale('log')
 
-# Add gridlines for quantitative clarity
+# Add gridlines for readability
 ax.grid(True, which="both", ls="-", alpha=0.2, color='gray')
 ax.set_axisbelow(True)
 
-# Labels and Title
+# Set labels and title
 ax.set_title("Minimum Poisoning Budgets Required for Successful Backdoor Injection", pad=20, fontweight='bold')
 ax.set_xlabel("Poisoning Rate (%) - Logarithmic Scale", labelpad=10)
-ax.set_ylabel("Attack Framework", labelpad=10)
+ax.set_ylabel("Attack Framework and Target Stage", labelpad=10)
 
-# Add text labels for the exact percentages on the bars
+# Add data labels on the bars for clarity
 for i, bar in enumerate(bars):
     width = bar.get_width()
-    label_text = f"{df['poisoning_rate_percent'][i]}%"
-    ax.text(width * 1.15, bar.get_y() + bar.get_height()/2, label_text, 
-            va='center', fontweight='bold', color='#333333')
+    ax.text(width * 1.15, bar.get_y() + bar.get_height()/2, 
+            f'{width:g}%', 
+            va='center', ha='left', 
+            fontsize=10, fontweight='bold', color='black')
 
-# Add a legend for the target stages
-from matplotlib.patches import Patch
-legend_elements = [Patch(facecolor=colors[i], label=f"{df['target'][i]}") for i in range(len(df))]
-ax.legend(handles=legend_elements, title="Target Stage", loc='lower right', frameon=True)
+# Adjust x-axis limits to accommodate text labels
+ax.set_xlim(0.0001, 50)
 
-# Adjust layout to prevent clipping
+# Clean up layout
 plt.tight_layout()
 
 # Save the figure

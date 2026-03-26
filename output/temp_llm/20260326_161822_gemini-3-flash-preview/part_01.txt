@@ -1,0 +1,16 @@
+```python
+OUTPUT_PATH = "output/generated_figures/fig_poisoning_evolution_timeline.png"
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Set academic style
+plt.rcParams['font.family'] = 'serif'
+plt.rcParams['font.serif'] = ['DejaVu Serif']
+
+# Data Points
+data = [
+    {"label": "CGBA", "year": 2024, "category": "Text LLMs"},
+    {"label": "CODEBREAKER", "year": 2024, "category": "Code LLMs"},
+    {"label": "Persistent Backdoors", "year": 2024, "category": "Text LLMs"},
+    {"label

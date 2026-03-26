@@ -1,0 +1,114 @@
+```python
+OUTPUT_PATH = "output/generated_figures/fig_poisoning_evolution_timeline.png"
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Data points for the timeline
+data = [
+    {"label": "CGBA (Text)", "year": 2024, "category": "Text LLMs"},
+    {"label": "CODEBREAKER (Code)", "year": 2024, "category": "Code LLMs"},
+    {"label": "Persistent Backdoors", "year": 2024, "category": "Text LLMs"},
+    {"label": "TrojVLM (Image-to-Text)", "year": 2024, "category": "Vision-Language Models"},
+    {"label": "IAG (Visual Grounding)", "year": 2025, "category": "Vision-Language Models"},
+    {"label": "VisualTrap (GUI Agents)", "year": 2025, "category": "AI Agents"},
+    {"label": "BadVLA (VLA Systems)", "year": 2025, "category": "AI Agents"},
+    {"label": "AutoBackdoor", "year": 2025, "category": "AI Agents"},
+    {"label": "DecepChain (Reasoning)", "year": 2025, "category": "Reasoning Models"},
+    {"label": "Breaking of Thought (BoT)", "year": 2025, "category": "Reasoning Models"},
+    {"label": "SlowBA (Latency)", "year": 2026, "category": "AI Agents"},
+    {"label": "BadTemplate (Infrastructure)", "year": 2026, "category": "Supply Chain"}
+]
+
+# Category color mapping (Academic palette)
+category_colors = {
+    "Text LLMs": "#1f77b4",          # Blue
+    "Code LLMs": "#ff7f0e",          # Orange
+    "Vision-Language Models": "#2ca02c", # Green
+    "AI Agents": "#d62728",          # Red
+    "Reasoning Models": "#9467bd",   # Purple
+    "Supply Chain": "#8c564b"        # Brown
+}
+
+# Setup figure and style
+plt.rcParams['font.family'] = 'serif'
+plt.rcParams['font.size'] = 10
+fig, ax = plt.subplots(figsize=(10, 6), constrained_layout=True)
+
+# Timeline configuration
+# We stagger the labels vertically to avoid overlap
+# Levels alternate between positive and negative heights
+levels = []
+year_counts = {}
+for item in data:
+    y = item['year']
+    year_counts[y] = year_counts.get(y, 0) + 1
+    
+    # Logic for vertical staggering based on count within the year
+    count = year_counts[y]
+    if count == 1: levels.append(1.5)
+    elif count == 2: levels.append(-1.5)
+    elif count == 3: levels.append(3.0)
+    elif count == 4: levels.append(-3.0)
+    elif count == 5: levels.append(4.5)
+    elif count == 6: levels.append(-4.5)
+    else: levels.append(5.5)
+
+# Horizontal spacing within years
+x_coords = []
+year_offsets = {}
+for item in data:
+    y = item['year']
+    total_in_year = sum(1 for d in data if d['year'] == y)
+    idx = year_offsets.get(y, 0)
+    # Spread points across the year width (e.g., 2024.1 to 2024.9)
+    offset = 0.15 + (idx * (0.7 / max(1, total_in_year - 1)) if total_in_year > 1 else 0.35)
+    x_coords.append(y + offset)
+    year_offsets[y] = idx + 1
+
+# Plotting
+ax.axhline(0, color="black", linewidth=1.5, zorder=1)  # Central timeline
+
+for i, item in enumerate(data):
+    color = category_colors[item['category']]
+    x = x_coords[i]
+    level = levels[i]
+    
+    # Draw the vertical stem
+    ax.vlines(x, 0, level, color="grey", linestyle="--", linewidth=0.8, alpha=0.6)
+    # Draw the point on the timeline
+    ax.scatter(x, 0, color=color, s=80, zorder=3, edgecolors='white')
+    # Draw the label
+    ax.text(x, level + (0.2 if level > 0 else -0.4), item['label'], 
+            fontweight='bold', ha='center', va='bottom' if level > 0 else 'top',
+            fontsize=9, bbox=dict(facecolor='white', edgecolor=color, alpha=0.9, boxstyle='round,pad=0.3'))
+
+# Formatting axes
+ax.set_xlim(2023.8, 2027.2)
+ax.set_ylim(-6, 6)
+ax.set_xticks([2024, 2025, 2026])
+ax.set_xticklabels(["2024", "2025", "2026"], fontsize=12, fontweight='bold')
+ax.get_yaxis().set_visible(False)
+
+# Remove spines
+for spine in ["left", "top", "right"]:
+    ax.spines[spine].set_visible(False)
+ax.spines["bottom"].set_position("zero")
+
+# Title and Legend
+plt.title("Evolution of Data and Model Poisoning Attacks (2024–2026)", fontsize=14, pad=20, fontweight='bold')
+
+# Create custom legend
+from matplotlib.lines import Line2D
+legend_elements = [Line2D([0], [0], marker='o', color='w', label=cat,
+                          markerfacecolor=color, markersize=10) 
+                   for cat, color in category_colors.items()]
+ax.legend(handles=legend_elements, loc='upper center', bbox_to_anchor=(0.5, -0.05),
+          ncol=3, frameon=False, fontsize=10)
+
+# Add Caption
+caption_text = "Figure 2: Chronological progression of state-of-the-art backdoor and poisoning attacks, illustrating the shift from text-based models to multimodal systems and autonomous agents."
+fig.text(0.5, -0.15, caption_text, ha='center', fontsize=10, style='italic', wrap=True)
+
+# Save the figure
+plt.savefig(OUTPUT_PATH, dpi=300, bbox_inches

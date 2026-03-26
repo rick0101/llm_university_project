@@ -1,0 +1,6 @@
+```python
+    (3, 5.5, 1.8, 0.5, "Model Poisoning", colors['category'], 10, 'normal', 'black'),
+    (5, 5.8, 1.8, 0.5, "Prompt Injection", colors['category'], 10, 'normal', 'black'),
+    (5, 5.0, 1.8, 0.5, "Jailbreaking", colors['category'], 10, 'normal', 'black'),
+    (5, 4.2, 1.8, 0.5, "Specialized Domain", colors['category'], 10, 'normal', 'black'),
+    (8

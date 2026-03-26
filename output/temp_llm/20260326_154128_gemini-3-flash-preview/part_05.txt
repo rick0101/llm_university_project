@@ -1,0 +1,12 @@
+```python
+Data Poisoning"), (2.6, 6.0, "Model Poisoning")]
+    for x, y, text in sub_training:
+        draw_box(x, y, text, colors['sub'], width=1.4)
+        ax.annotate('', xy=(x, 6.3), xytext=(1.8, 7.2),
+                    arrowprops=dict(arrowstyle='-', color='gray', lw=1.0))
+
+    # Inference-Time Sub-categories
+    sub_inference = [
+        (4.2, 6.0, "Prompt Injection"),
+        (5.8, 6.0, "Jailbreaking"),
+        (7.4, 

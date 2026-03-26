@@ -1,0 +1,14 @@
+```python
+Professional)
+    colors = {
+        'root': '#2C3E50',
+        'training': '#D6EAF8',
+        'inference': '#D5F5E3',
+        'output': '#FCF3CF',
+        'leaf': '#F4F6F7'
+    }
+
+    def draw_box(x, y, width, height, text, color, fontsize=9, fontweight='normal', text_color='black'):
+        rect = patches.FancyBboxPatch((x - width/2, y - height/2), width, height,
+                                     boxstyle="round,pad=0.1", linewidth=1,
+                                     edgecolor='#344

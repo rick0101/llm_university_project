@@ -1,0 +1,119 @@
+```python
+OUTPUT_PATH = "output/generated_figures/fig_rag_indirect_injection_flow.png"
+
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+from matplotlib.path import Path
+
+# Set academic style
+plt.rcParams.update({
+    "font.family": "serif",
+    "font.serif": ["DejaVu Serif"],
+    "font.size": 10,
+    "axes.titlesize": 14,
+    "axes.labelsize": 11,
+})
+
+def draw_flowchart():
+    fig, ax = plt.subplots(figsize=(12, 7))
+    ax.set_xlim(0, 16)
+    ax.set_ylim(0, 10)
+    ax.axis('off')
+
+    # Define professional color palette
+    colors = {
+        'attacker': '#fbb4ae',  # Soft Red
+        'system': '#b3cde3',    # Soft Blue
+        'user': '#ccebc5',      # Soft Green
+        'kb': '#decbe4',        # Soft Purple
+        'outcome': '#fed9a6'    # Soft Orange
+    }
+
+    # Helper function to draw rounded boxes
+    def draw_box(x, y, width, height, text, color, header=None):
+        rect = patches.FancyBboxPatch(
+            (x, y), width, height,
+            boxstyle="round,pad=0.2",
+            linewidth=1.5, edgecolor='#333333', facecolor=color
+        )
+        ax.add_patch(rect)
+        
+        # Add text
+        if header:
+            ax.text(x + width/2, y + height * 0.75, header, 
+                    ha='center', va='center', fontweight='bold', fontsize=11)
+            ax.text(x + width/2, y + height * 0.35, text, 
+                    ha='center', va='center', fontsize=10)
+        else:
+            ax.text(x + width/2, y + height/2, text, 
+                    ha='center', va='center', fontweight='bold', fontsize=11)
+
+    # 1. Attacker Box
+    draw_box(1, 7.5, 3, 1.5, "Malicious Actor", colors['attacker'], "Attacker")
+    
+    # 2. External Knowledge Base Box
+    draw_box(7, 7.5, 3.5, 1.5, "Vector DB / Web Content", colors['kb'], "External Knowledge Base")
+    
+    # 3. Legitimate User Box
+    draw_box(1, 4, 3, 1.5, "End User", colors['user'], "Legitimate User")
+    
+    # 4. RAG System Box
+    draw_box(7, 4, 3.5, 1.5, "Retrieval Engine", colors['system'], "RAG System")
+    
+    # 5. LLM Box
+    draw_box(12.5, 4, 2.5, 1.5, "Generative Model", colors['system'], "LLM")
+    
+    # 6. Malicious Outcome Box
+    draw_box(12.5, 1, 2.5, 1.5, "Payload Execution", colors['outcome'], "Malicious Outcome")
+
+    # Helper function for arrows
+    def draw_arrow(start, end, text="", text_offset=(0, 0.3), connectionstyle="arc3,rad=0"):
+        arrow = patches.FancyArrowPatch(
+            start, end,
+            arrowstyle='-|>',
+            mutation_scale=20,
+            linewidth=1.5,
+            color='#444444',
+            connectionstyle=connectionstyle
+        )
+        ax.add_patch(arrow)
+        if text:
+            mid_x = (start[0] + end[0]) / 2 + text_offset[0]
+            mid_y = (start[1] + end[1]) / 2 + text_offset[1]
+            ax.text(mid_x, mid_y, text, ha='center', va='center', 
+                    fontsize=9, fontstyle='italic', bbox=dict(facecolor='white', alpha=0.7, edgecolor='none'))
+
+    # Draw Connections
+    # Step 1: Poisoning
+    draw_arrow((4.2, 8.25), (6.8, 8.25), "1. Injects Poisoned\nDocument")
+    
+    # Step 2: User Query
+    draw_arrow((4.2, 4.75), (6.8, 4.75), "2. Submits\nQuery")
+    
+    # Step 3: Retrieval (Bi-directional look)
+    draw_arrow((8.75, 5.7), (8.75, 7.3), "3a. Search", connectionstyle="arc3,rad=0.1")
+    draw_arrow((8.75, 7.3), (8.75, 5.7), "3b. Retrieve Poisoned\nContext", connectionstyle="arc3,rad=0.1", text_offset=(1.5, 0))
+    
+    # Step 4: Combined Prompt
+    draw_arrow((10.7, 4.75), (12.3, 4.75), "4. Combined Prompt\n(Query + Poison)")
+    
+    # Step 5: Execution
+    draw_arrow((13.75, 3.8), (13.75, 2.7), "5. Executes Malicious\nInstructions")
+
+    # Add visual cue for "Instruction Confusion"
+    ax.annotate("Instruction\nConfusion", xy=(13.75, 4.75), xytext=(14.5, 6.5),
+                arrowprops=dict(arrowstyle="->", color='red', lw=1),
+                ha='center', color='red', fontweight='bold')
+
+    # Title and Caption
+    plt.title("Mechanism of Indirect Prompt Injection in RAG Systems", pad=20)
+    
+    caption = "Figure 4: The workflow of an indirect prompt injection attack exploiting Retrieval-Augmented Generation (RAG) architectures."
+    fig.text(0.5, 0.05, caption, ha='center', fontsize=11, style='italic')
+
+    plt.tight_layout()
+
+draw_flowchart()
+plt.savefig(OUTPUT_PATH, dpi=300, bbox_inches='tight')
+plt.close()
+```

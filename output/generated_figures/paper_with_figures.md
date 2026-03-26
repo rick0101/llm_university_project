@@ -53,6 +53,11 @@ To bridge this gap, this survey provides a comprehensive, up-to-date analysis of
 The remainder of this survey is organized as follows. Section 2 establishes the background and preliminaries, defining foundational concepts and terminology used throughout the paper. Section 3 analyzes training-time threats, specifically focusing on the evolution of stealthy backdoor attacks and data poisoning against LLMs and AI agents. Section 4 examines inference-time threats, detailing the rapid arms race in prompt injection and jailbreaking research. Section 5 explores adversarial attacks targeted at specialized domains, with a particular focus on code-generating LLMs. Section 6 traces the evolution of output-level vulnerabilities, detailing the progression of LLM hallucination research. Section 7 provides a holistic overview of cross-cutting defenses and mitigation strategies designed to counter the aforementioned threats. Section 8 is dedicated to testing methodologies, covering the benchmarks, tools, and evaluation frameworks essential for rigorous security assessment. Section 9 synthesizes the current state of the field, discussing open challenges and future trajectories. Finally, Section 10 concludes the survey, summarizing key findings and emphasizing the ongoing evolution of the AI threat landscape.
 
 
+
+
+![Figure 1: A systematic taxonomy of LLM vulnerabilities categorized by model lifecycle phases: Training-Time, Inference-Time, and Output-Level.](generated_figures/fig_llm_security_taxonomy.png)
+
+*Figure 1: A systematic taxonomy of LLM vulnerabilities categorized by model lifecycle phases: Training-Time, Inference-Time, and Output-Level.*
 ## Background and Preliminaries
 
 # Background and Preliminaries

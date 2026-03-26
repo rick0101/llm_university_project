@@ -1,0 +1,12 @@
+```python
+color, edgecolor=edgecolor, linewidth=1.5, zorder=3)
+    ax.add_patch(box)
+    ax.text(xy[0], xy[1], text, ha='center', va='center', 
+            fontsize=fontsize, family='serif', 
+            fontweight='bold' if fontsize > 11 else 'normal', zorder=4)
+
+def draw_edge(ax, start, end, color='#7f8c8d'):
+    """Draws a curved or straight arrow between nodes."""
+    ax.annotate('', xy=end, xytext=start,
+                arrowprops=dict(arrowstyle='->', color=color, lw=1.5, 
+                                shrink

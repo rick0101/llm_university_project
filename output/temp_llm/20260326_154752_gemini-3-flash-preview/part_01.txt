@@ -1,0 +1,14 @@
+```python
+family='serif')
+
+    # Remove axes for a clean diagram
+    plt.axis('off')
+
+    # Add the caption below the figure
+    plt.figtext(0.5, 0.02, "Figure 1: A systematic taxonomy of LLM vulnerabilities categorized by model lifecycle phases: Training-Time, Inference-Time, and Output-Level.", 
+                ha='center', fontsize=10, family='serif', style='italic', wrap=True)
+
+    # Save and close
+    plt.savefig(OUTPUT_PATH, dpi=300, bbox_inches='tight')
+    plt.close()
+```

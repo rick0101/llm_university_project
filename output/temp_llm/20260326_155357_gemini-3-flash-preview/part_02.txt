@@ -1,0 +1,13 @@
+```python
+95E', facecolor=color, zorder=2)
+    ax.add_patch(rect)
+    ax.text(x, y, text, ha='center', va='center', fontsize=fontsize, 
+            fontweight=fontweight, color=text_color, wrap=True)
+
+# Define nodes: (x, y, width, height, text, color, fontsize, fontweight, text_color)
+nodes = [
+    # Root
+    (5, 9.2, 3.2, 0.7, "LLM Security Threats", colors['root'], 12, 'bold', 'white'),
+    
+    # Level 1: Lifecycle Phases
+    (2, 7

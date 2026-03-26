@@ -1,0 +1,13 @@
+```python
+7ae60',  # Greenish Blue
+        'output': '#e67e22',     # Orange
+        'leaf': '#ecf0f1',       # Light Grey
+        'text': '#2c3e50'
+    }
+
+    plt.rcParams['font.family'] = 'serif'
+
+    def draw_box(x, y, text, color, width=1.6, height=0.6, fontsize=9, text_color='white'):
+        rect = patches.FancyBboxPatch((x - width/2, y - height/2), width, height,
+                                     boxstyle="round,pad=0.1", linewidth=1,
+                                     edge

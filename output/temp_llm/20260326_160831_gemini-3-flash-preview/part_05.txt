@@ -1,0 +1,13 @@
+```python
+OUTPUT_PATH = "output/generated_figures/fig_llm_security_taxonomy.png"
+
+import matplotlib.pyplot as plt
+from matplotlib.patches import FancyBboxPatch
+import numpy as np
+
+def draw_node(ax, xy, text, width, height, facecolor='#ecf0f1', edgecolor='#2c3e50', fontsize=10, fontweight='normal'):
+    """Draws a rounded rectangle with text centered inside."""
+    # FancyBboxPatch handles the visual box - fontweight is NOT a valid argument here
+    box = FancyBboxPatch(
+        (xy[0] - width/2, xy[1] - height/2), width, height,
+        boxstyle="

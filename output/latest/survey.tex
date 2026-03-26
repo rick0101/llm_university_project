@@ -72,6 +72,15 @@ To bridge this gap, this survey provides a comprehensive, up-to-date analysis of
 \end{enumerate}
 The remainder of this survey is organized as follows. Section 2 establishes the background and preliminaries, defining foundational concepts and terminology used throughout the paper. Section 3 analyzes training-time threats, specifically focusing on the evolution of stealthy backdoor attacks and data poisoning against LLMs and AI agents. Section 4 examines inference-time threats, detailing the rapid arms race in prompt injection and jailbreaking research. Section 5 explores adversarial attacks targeted at specialized domains, with a particular focus on code-generating LLMs. Section 6 traces the evolution of output-level vulnerabilities, detailing the progression of LLM hallucination research. Section 7 provides a holistic overview of cross-cutting defenses and mitigation strategies designed to counter the aforementioned threats. Section 8 is dedicated to testing methodologies, covering the benchmarks, tools, and evaluation frameworks essential for rigorous security assessment. Section 9 synthesizes the current state of the field, discussing open challenges and future trajectories. Finally, Section 10 concludes the survey, summarizing key findings and emphasizing the ongoing evolution of the AI threat landscape.
 
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.8\textwidth]{generated_figures/fig_llm_security_taxonomy.png}
+  \caption{Figure 1: A systematic taxonomy of LLM vulnerabilities categorized by model lifecycle phases: Training-Time, Inference-Time, and Output-Level.}
+  \label{fig:figure_1__a_systematic_taxonom}
+\end{figure}
+
+\textit{Figure 1: A systematic taxonomy of LLM vulnerabilities categorized by model lifecycle phases: Training-Time, Inference-Time, and Output-Level.}
+
 \section{Background and Preliminaries}
 
 This section establishes the foundational concepts necessary for understanding the vulnerabilities of Large Language Models (LLMs) to adversarial attacks, specifically jailbreaking. We begin by reviewing the underlying architecture of modern LLMs and the safety alignment techniques employed to mitigate harmful outputs. Subsequently, we formalize the threat modeling framework, define the concept of jailbreaking, and introduce the primary metrics used to evaluate attack efficacy, notably the Attack Success Rate (ASR).

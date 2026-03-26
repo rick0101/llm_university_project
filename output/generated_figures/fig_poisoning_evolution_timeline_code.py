@@ -5,7 +5,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 
-# Data points provided in the specification
+# Data points for the timeline
 data = [
     {"label": "CGBA (Text)", "year": 2024, "category": "Text LLMs"},
     {"label": "CODEBREAKER (Code)", "year": 2024, "category": "Code LLMs"},
@@ -21,86 +21,87 @@ data = [
     {"label": "BadTemplate (Infrastructure)", "year": 2026, "category": "Supply Chain"}
 ]
 
-# Define category order to illustrate the shift from text to agents/multimodal
-categories = [
-    "Text LLMs", 
-    "Code LLMs", 
-    "Vision-Language Models", 
-    "Reasoning Models", 
-    "AI Agents", 
-    "Supply Chain"
-]
-
-# Mapping categories to y-axis indices
-cat_to_y = {cat: i for i, cat in enumerate(categories)}
+# Category color mapping (Academic Palette)
+category_colors = {
+    "Text LLMs": "#4C72B0",
+    "Code LLMs": "#55A868",
+    "Vision-Language Models": "#C44E52",
+    "AI Agents": "#8172B3",
+    "Reasoning Models": "#CCB974",
+    "Supply Chain": "#64B5CD"
+}
 
 # Setup figure and style
-plt.rcParams.update({
-    'font.family': 'serif',
-    'font.size': 10,
-    'axes.titlesize': 14,
-    'axes.labelsize': 11,
-    'xtick.labelsize': 10,
-    'ytick.labelsize': 10,
-    'legend.fontsize': 10
-})
+plt.rcParams['font.family'] = 'serif'
+plt.rcParams['font.serif'] = ['DejaVu Serif']
+fig, ax = plt.subplots(figsize=(10, 6), constrained_layout=True)
 
-fig, ax = plt.subplots(figsize=(10, 6))
+# Timeline baseline
+ax.axhline(0, color="black", linewidth=1.5, zorder=1)
 
-# Color palette (Academic/Professional)
-colors = plt.cm.get_cmap('Set2', len(categories))
+# Calculate positions to avoid overlap
+# We use a combination of year and a small offset for x, and alternating heights for y
+levels = []
+x_coords = []
+current_year_counts = {}
 
-# Plotting logic
-# We use a dictionary to track how many items are in a specific (year, category) 
-# to apply a small vertical offset for label clarity.
-offset_tracker = {}
+# Define vertical levels to alternate labels above and below the line
+# Levels: [1, -1, 2, -2, 3, -3, ...]
+level_sequence = [1.2, -1.2, 2.4, -2.4, 3.6, -3.6]
 
 for item in data:
-    x = item['year']
-    y_base = cat_to_y[item['category']]
+    year = item['year']
+    count = current_year_counts.get(year, 0)
     
-    # Calculate offset for overlapping points
-    key = (x, y_base)
-    offset_count = offset_tracker.get(key, 0)
-    offset_tracker[key] = offset_count + 1
+    # Add a small horizontal jitter within the year to separate points
+    x_offset = (count - 1.5) * 0.15 if year != 2026 else (count - 0.5) * 0.2
+    x_coords.append(year + x_offset)
     
-    # Apply a small vertical jitter for the label if multiple items exist
-    y_offset = offset_count * 0.25 - 0.1
+    # Assign vertical level
+    level = level_sequence[count % len(level_sequence)]
+    levels.append(level)
     
-    # Plot the point
-    ax.scatter(x, y_base, color=colors(y_base), s=100, edgecolors='black', zorder=3)
-    
-    # Add the label text
-    ax.text(x + 0.05, y_base + y_offset, item['label'], 
-            verticalalignment='center', fontsize=9, fontweight='medium')
+    current_year_counts[year] = count + 1
 
-# Formatting axes
-ax.set_yticks(range(len(categories)))
-ax.set_yticklabels(categories)
+# Plotting
+for i, item in enumerate(data):
+    color = category_colors[item['category']]
+    ax.vlines(x_coords[i], 0, levels[i], color="grey", linestyle="--", linewidth=0.8, alpha=0.6)
+    ax.scatter(x_coords[i], levels[i], color=color, s=100, zorder=3, edgecolors="white")
+    
+    # Label placement
+    va = 'bottom' if levels[i] > 0 else 'top'
+    ax.text(x_coords[i], levels[i] + (0.1 if levels[i] > 0 else -0.1), 
+            item['label'], rotation=0, ha='center', va=va, 
+            fontsize=9, fontweight='bold', bbox=dict(facecolor='white', alpha=0.7, edgecolor='none', pad=1))
 
+# Formatting X-axis
 ax.set_xticks([2024, 2025, 2026])
-ax.set_xlim(2023.5, 2026.8)
-ax.set_ylim(-0.5, len(categories) - 0.5)
+ax.set_xticklabels(["2024", "2025", "2026"], fontsize=12, fontweight='bold')
+ax.set_xlim(2023.5, 2026.5)
 
-# Adding required labels and title
-ax.set_xlabel("Publication Year", fontweight='bold')
-ax.set_ylabel("Target Modality / System Category", fontweight='bold')
-ax.set_title("Evolution of Data and Model Poisoning Attacks (2024–2026)", pad=20)
+# Formatting Y-axis (hide it)
+ax.get_yaxis().set_visible(False)
+for spine in ["left", "top", "right"]:
+    ax.spines[spine].set_visible(False)
 
-# Add a light grid for readability
-ax.grid(axis='x', linestyle='--', alpha=0.4, zorder=0)
-ax.grid(axis='y', linestyle=':', alpha=0.3, zorder=0)
+# Title and Caption
+plt.title("Evolution of Data and Model Poisoning Attacks (2024–2026)", 
+          fontsize=14, pad=20, fontweight='bold')
 
-# Remove top and right spines for a cleaner look
-ax.spines['top'].set_visible(False)
-ax.spines['right'].set_visible(False)
+# Create custom legend
+from matplotlib.lines import Line2D
+legend_elements = [Line2D([0], [0], marker='o', color='w', label=cat,
+                          markerfacecolor=color, markersize=10) 
+                   for cat, color in category_colors.items()]
+ax.legend(handles=legend_elements, loc='upper center', bbox_to_anchor=(0.5, -0.05),
+          ncol=3, frameon=False, fontsize=10)
 
-# Add a subtle background highlight for the years
-for year in [2024, 2025, 2026]:
-    ax.axvspan(year - 0.45, year + 0.45, color='gray', alpha=0.03, zorder=1)
-
-# Adjust layout
-plt.tight_layout()
+# Add caption-like text at the bottom
+plt.figtext(0.5, -0.15, 
+            "Figure 2: Chronological progression of state-of-the-art backdoor and poisoning attacks, illustrating the shift\n"
+            "from text-based models to multimodal systems and autonomous agents.", 
+            ha="center", fontsize=10, style='italic')
 
 # Save the figure
 plt.savefig(OUTPUT_PATH, dpi=300, bbox_inches='tight')

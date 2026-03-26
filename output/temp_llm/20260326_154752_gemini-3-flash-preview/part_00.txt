@@ -1,0 +1,111 @@
+```python
+OUTPUT_PATH = "output/generated_figures/fig_llm_security_taxonomy.png"
+
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+
+def draw_taxonomy():
+    # Set up the figure and axis
+    fig, ax = plt.subplots(figsize=(12, 7))
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 10)
+    ax.axis('off')
+
+    # Style settings
+    plt.rcParams['font.family'] = 'serif'
+    
+    # Color Palette (Academic/Professional)
+    colors = {
+        'root': '#2c3e50',      # Dark Navy
+        'training': '#2980b9',  # Blue
+        'inference': '#27ae60', # Green
+        'output': '#d35400',    # Deep Orange
+        'leaf_t': '#ebf5fb',    # Light Blue
+        'leaf_i': '#eafaf1',    # Light Green
+        'leaf_o': '#fef5e7'     # Light Orange
+    }
+
+    def draw_box(x, y, text, color, width=1.6, height=0.8, fontsize=10, text_color='black', fontweight='normal'):
+        """Helper function to draw a node box with text."""
+        # Create a rounded rectangle
+        rect = patches.FancyBboxPatch(
+            (x - width/2, y - height/2), width, height,
+            boxstyle="round,pad=0.05", linewidth=1.5, 
+            edgecolor=color, facecolor=color if text_color == 'white' else 'white'
+        )
+        if text_color == 'white':
+            rect.set_facecolor(color)
+        
+        ax.add_patch(rect)
+        ax.text(x, y, text, ha='center', va='center', fontsize=fontsize, 
+                color=text_color, fontweight=fontweight, family='serif', wrap=True)
+
+    def connect(p1, p2):
+        """Helper function to draw a line between two points."""
+        ax.plot([p1[0], p2[0]], [p1[1], p2[1]], color='#7f8c8d', lw=1.5, zorder=0)
+
+    # --- Define Node Positions ---
+    # Root
+    root_pos = (5, 9)
+    
+    # Level 1 (Phases)
+    l1_y = 7
+    training_pos = (2, l1_y)
+    inference_pos = (5, l1_y)
+    output_pos = (8, l1_y)
+    
+    # Level 2 (Categories)
+    l2_y = 4.5
+    # Training sub-nodes
+    data_poison_pos = (1, l2_y)
+    model_poison_pos = (3, l2_y)
+    # Inference sub-nodes
+    prompt_inj_pos = (4.2, l2_y)
+    jailbreak_pos = (5.8, l2_y)
+    spec_domain_pos = (7.2, l2_y)
+    # Output sub-nodes
+    intrinsic_pos = (8.5, l2_y)
+    extrinsic_pos = (9.5, l2_y)
+
+    # --- Draw Connections ---
+    # Root to L1
+    for pos in [training_pos, inference_pos, output_pos]:
+        connect((root_pos[0], root_pos[1]-0.4), (pos[0], pos[1]+0.4))
+        
+    # Training to L2
+    for pos in [data_poison_pos, model_poison_pos]:
+        connect((training_pos[0], training_pos[1]-0.4), (pos[0], pos[1]+0.4))
+        
+    # Inference to L2
+    for pos in [prompt_inj_pos, jailbreak_pos, spec_domain_pos]:
+        connect((inference_pos[0], inference_pos[1]-0.4), (pos[0], pos[1]+0.4))
+        
+    # Output to L2
+    for pos in [intrinsic_pos, extrinsic_pos]:
+        connect((output_pos[0], output_pos[1]-0.4), (pos[0], pos[1]+0.4))
+
+    # --- Draw Nodes ---
+    # Root
+    draw_box(root_pos[0], root_pos[1], "LLM Security Threats", colors['root'], width=2.2, text_color='white', fontweight='bold')
+
+    # Level 1
+    draw_box(training_pos[0], training_pos[1], "Training-Time", colors['training'], text_color='white', fontweight='bold')
+    draw_box(inference_pos[0], inference_pos[1], "Inference-Time", colors['inference'], text_color='white', fontweight='bold')
+    draw_box(output_pos[0], output_pos[1], "Output-Level", colors['output'], text_color='white', fontweight='bold')
+
+    # Level 2
+    # Training
+    draw_box(data_poison_pos[0], data_poison_pos[1], "Data Poisoning", colors['training'], width=1.4, height=0.6, fontsize=9)
+    draw_box(model_poison_pos[0], model_poison_pos[1], "Model Poisoning\n(CGBA, TrojVLM,\nBadTemplate)", colors['training'], width=1.8, height=1.0, fontsize=8)
+    
+    # Inference
+    draw_box(prompt_inj_pos[0], prompt_inj_pos[1], "Prompt Injection", colors['inference'], width=1.4, height=0.6, fontsize=9)
+    draw_box(jailbreak_pos[0], jailbreak_pos[1], "Jailbreaking\n(AutoDAN,\nFlipAttack)", colors['inference'], width=1.4, height=1.0, fontsize=8)
+    draw_box(spec_domain_pos[0], spec_domain_pos[1], "Specialized Domain\n(XOXO, INSEC)", colors['inference'], width=1.4, height=1.0, fontsize=8)
+    
+    # Output
+    draw_box(intrinsic_pos[0], intrinsic_pos[1], "Intrinsic\nHallucinations", colors['output'], width=1.4, height=0.8, fontsize=8)
+    draw_box(extrinsic_pos[0], extrinsic_pos[1], "Extrinsic\nHallucinations", colors['output'], width=1.4, height=0.8, fontsize=8)
+
+    # Title and Caption
+    plt.title("Comprehensive Taxonomy of LLM Security Threats", fontsize=16, fontweight='bold', pad=20,

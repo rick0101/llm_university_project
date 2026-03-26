@@ -1,0 +1,97 @@
+```python
+OUTPUT_PATH = "output/generated_figures/fig_rag_indirect_injection_flow.png"
+
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+
+def draw_flowchart():
+    # Set academic style
+    plt.rcParams['font.family'] = 'serif'
+    plt.rcParams['font.size'] = 10
+    
+    fig, ax = plt.subplots(figsize=(10, 7))
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 10)
+    ax.axis('off')
+
+    # Define colors
+    color_attacker = '#f8d7da'  # Light red
+    color_system = '#cfe2ff'    # Light blue
+    color_kb = '#e2e3e5'        # Light grey
+    color_llm = '#d1e7dd'       # Light green
+    edge_color = '#333333'
+
+    # Helper function to draw nodes
+    def draw_node(x, y, text, color, width=2.2, height=1.2):
+        rect = patches.FancyBboxPatch(
+            (x - width/2, y - height/2), width, height,
+            boxstyle="round,pad=0.1", linewidth=1.5,
+            edgecolor=edge_color, facecolor=color
+        )
+        ax.add_patch(rect)
+        ax.text(x, y, text, ha='center', va='center', fontweight='bold', wrap=True)
+
+    # Define Node Positions
+    pos_attacker = (2, 8.5)
+    pos_kb = (8, 8.5)
+    pos_user = (2, 5.5)
+    pos_rag = (5, 5.5)
+    pos_llm = (5, 2.5)
+    pos_output = (8, 2.5)
+
+    # Draw Nodes
+    draw_node(*pos_attacker, "Attacker\n(Adversary)", color_attacker)
+    draw_node(*pos_kb, "External\nKnowledge Base\n(Web/Docs)", color_kb)
+    draw_node(*pos_user, "Legitimate User\n(Querying)", color_system)
+    draw_node(*pos_rag, "RAG System\n(Retrieval Engine)", color_system)
+    draw_node(*pos_llm, "Large Language\nModel (LLM)", color_llm)
+    draw_node(*pos_output, "Malicious\nPayload Execution", color_attacker)
+
+    # Helper function for arrows
+    def draw_arrow(start, end, text="", text_offset=(0, 0.3), connectionstyle="arc3,rad=0"):
+        ax.annotate(
+            text, xy=end, xytext=start,
+            arrowprops=dict(arrowstyle='->', color='#444444', lw=1.5, 
+                            connectionstyle=connectionstyle, shrinkA=35, shrinkB=35),
+            ha='center', va='center', fontsize=9, fontweight='normal'
+        )
+
+    # Draw Connections
+    # 1. Attacker poisons KB
+    draw_arrow(pos_attacker, pos_kb, "1. Injects Poisoned\nDocument")
+    
+    # 2. User queries RAG
+    draw_arrow(pos_user, pos_rag, "2. Submits\nQuery")
+    
+    # 3. RAG retrieves from KB
+    draw_arrow((pos_rag[0]+0.5, pos_rag[1]+0.3), (pos_kb[0]-0.5, pos_kb[1]-0.3), 
+               "3. Retrieval Request", connectionstyle="arc3,rad=-0.1")
+    
+    # 4. KB returns poisoned context
+    draw_arrow((pos_kb[0]-0.5, pos_kb[1]-0.5), (pos_rag[0]+0.5, pos_rag[1]+0.1), 
+               "4. Poisoned Context\nReturned", connectionstyle="arc3,rad=-0.1")
+    
+    # 5. RAG sends combined prompt to LLM
+    draw_arrow(pos_rag, pos_llm, "5. Combined Prompt\n(Query + Poisoned Data)")
+    
+    # 6. LLM executes payload
+    draw_arrow(pos_llm, pos_output, "6. Indirect Injection\nSuccess")
+
+    # Title and Caption
+    plt.title("Mechanism of Indirect Prompt Injection in RAG Systems", 
+              fontsize=14, fontweight='bold', pad=20)
+    
+    fig.text(0.5, 0.05, 
+             "Figure 4: The workflow of an indirect prompt injection attack exploiting Retrieval-Augmented Generation (RAG) architectures.", 
+             ha='center', fontsize=11, style='italic')
+
+    # Adjust layout
+    plt.tight_layout()
+
+# Execute drawing
+draw_flowchart()
+
+# Save the figure
+plt.savefig(OUTPUT_PATH, dpi=300, bbox_inches='tight')
+plt.close()
+```

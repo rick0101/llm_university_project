@@ -1,0 +1,14 @@
+g., XOXO, INSEC)".
+My code:
+```python
+sub_inference = [(4.0, 6.0, "Prompt Injection"), (5.5, 6.0, "Jailbreaking"), (7.0, 6.0, "Specialized Domain")]
+...
+examples = [
+    ...
+    (5.5, 5.0, "AutoDAN,\nFlipAttack", 5.5, 5.7),
+    (7.0, 5.0, "XOXO, INSEC", 7.0, 5.7),
+]
+```
+This matches.
+
+Let's check the `Training-Time` branch: "branches into Data Poisoning and

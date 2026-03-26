@@ -1,0 +1,13 @@
+```python
+        (5.0, 7.5, "Inference-Time"),
+        (8.2, 7.5, "Output-Level")
+    ]
+    for x, y, text in phases:
+        draw_box(x, y, text, colors['phase'], width=1.8)
+        ax.annotate('', xy=(x, 7.8), xytext=(5, 8.9),
+                    arrowprops=dict(arrowstyle='-', color='gray', lw=1.5))
+
+    # 3. Sub-category Nodes (Level 2)
+    # Training-Time Sub-categories
+    sub_training = [
+        (1.0, 6.0, "

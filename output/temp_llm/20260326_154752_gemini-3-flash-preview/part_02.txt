@@ -1,0 +1,19 @@
+```python
+OUTPUT_PATH = "output/generated_figures/fig_llm_security_taxonomy.png"
+
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+
+def draw_taxonomy():
+    # Set up the figure and axis
+    fig, ax = plt.subplots(figsize=(12, 8))
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 10)
+    ax.axis('off')
+
+    # Define colors (Academic Palette)
+    colors = {
+        'root': '#34495e',
+        'training': '#2980b9',
+        'inference': '#27ae60',
+        'output

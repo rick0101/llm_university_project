@@ -1,0 +1,8 @@
+```python
+.5, 2.2, 0.6, "Training-Time", colors['phase'], 11, 'bold', 'black'),
+    (5, 7.5, 2.2, 0.6, "Inference-Time", colors['phase'], 11, 'bold', 'black'),
+    (8, 7.5, 2.2, 0.6, "Output-Level", colors['phase'], 11, 'bold', 'black'),
+
+    # Level 2: Categories
+    (1, 5.5, 1.8, 0.5, "Data Poisoning", colors['category'], 10, 'normal', 'black'),
+    

@@ -1,0 +1,79 @@
+OUTPUT_PATH = "output/generated_figures/fig_llm_security_taxonomy.png"`
+
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+
+# Set academic style parameters
+plt.rcParams['font.family'] = 'serif'
+plt.rcParams['font.serif'] = ['Times New Roman', 'DejaVu Serif']
+plt.rcParams['axes.linewidth'] = 1.0
+
+def draw_taxonomy():
+    # Figure setup
+    fig, ax = plt.subplots(figsize=(12, 7))
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 10)
+    ax.axis('off')
+
+    # Define colors (Academic palette)```python
+    colors = {
+        'root': '#2c3e50',      # Dark Navy
+        'phase': '#2980b9',     # Blue
+        'category': '#34495e',  # Grey-Blue
+        'example_bg': '#f8f9f9',
+        'line': '#7f8c8d'       # Grey
+    }
+
+    def draw_box(x, y, text, color, width=1.6, height=0.6, fontsize=10, text_color='white'):
+        rect = patches.FancyBboxPatch(
+            (x - width/2, y - height/2), width, height,
+            box```python
+style="round,pad=0.1",
+            edgecolor=color, facecolor=color, linewidth=1.5)
+        ax.add_patch(rect)
+        ax.text(x, y, text, ha='center', va='center', fontsize=fontsize, 
+                color=text_color, fontweight='bold' if text_color=='white' else 'normal')
+
+    # 1. Root Node
+    draw_box(5, 9.2, "LLM Security Threats", colors['root'], width=2.5)
+
+    # 2. Phase Nodes (Level 1)
+    phases = [
+        (1.8, 7.5, "Training-Time"),
+        g., XOXO, INSEC)".
+My code:
+```python
+sub_inference = [(4.0, 6.0, "Prompt Injection"), (5.5, 6.0, "Jailbreaking"), (7.0, 6.0, "Specialized Domain")]
+...
+examples = [
+    ...
+    (5.5, 5.0, "AutoDAN,\nFlipAttack", 5.5, 5.7),
+    (7.0, 5.0, "XOXO, INSEC", 7.0, 5.7),
+]
+```
+This matches.
+
+Let's check the `Training-Time` branch: "branches into Data Poisoning and```python
+        (5.0, 7.5, "Inference-Time"),
+        (8.2, 7.5, "Output-Level")
+    ]
+    for x, y, text in phases:
+        draw_box(x, y, text, colors['phase'], width=1.8)
+        ax.annotate('', xy=(x, 7.8), xytext=(5, 8.9),
+                    arrowprops=dict(arrowstyle='-', color='gray', lw=1.5))
+
+    # 3. Sub-category Nodes (Level 2)
+    # Training-Time Sub-categories
+    sub_training = [
+        (1.0, 6.0, "```python
+Data Poisoning"), (2.6, 6.0, "Model Poisoning")]
+    for x, y, text in sub_training:
+        draw_box(x, y, text, colors['sub'], width=1.4)
+        ax.annotate('', xy=(x, 6.3), xytext=(1.8, 7.2),
+                    arrowprops=dict(arrowstyle='-', color='gray', lw=1.0))
+
+    # Inference-Time Sub-categories
+    sub_inference = [
+        (4.2, 6.0, "Prompt Injection"),
+        (5.8, 6.0, "Jailbreaking"),
+        (7.4, 

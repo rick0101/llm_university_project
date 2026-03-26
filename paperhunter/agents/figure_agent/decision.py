@@ -31,13 +31,12 @@ _CODE_CHART_TYPES: set[ChartType] = {
     ChartType.PIE,
     ChartType.VENN,
     ChartType.TABLE,
-}
-
-_IMAGE_CHART_TYPES: set[ChartType] = {
     ChartType.TAXONOMY,
     ChartType.FLOWCHART,
     ChartType.ARCHITECTURE,
 }
+
+_IMAGE_CHART_TYPES: set[ChartType] = set()  # all types rendered via code
 
 # Keywords nei campi description/title che suggeriscono un tipo
 _CODE_KEYWORDS = {

@@ -1498,3 +1498,22 @@ python -m pytest test_image_relevance_filter.py test_figure_extractor_filtering.
 ## License
 
 MIT License
+
+### Evaluation Results: gemma3:4b
+
+**Model:** `gemma3:4b` | **Tests:** 1,890 (15 prompts × 18 attacks × 7 defenses) | **Duration:** 2.7h | **Overall ASR:** 43.1%
+
+| Defense | ASR |
+|---|---|
+| Few-Shot | 57.0% |
+| No-Defense | 57.4% |
+| Paraphrase | 39.6% |
+| Perplexity-Filter | 95.6% |
+| Safety-Prompt | 28.9% |
+| Sandwich | 23.3% |
+| Self-Exam | 0.0% |
+
+**Best defense:** Self-Exam (0.0%) — **Worst defense:** Perplexity-Filter (95.6%)
+
+Charts saved in `output/latest/gemma3_4b_20260326_175111/`.
+

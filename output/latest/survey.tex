@@ -442,6 +442,60 @@ The standard evaluation protocol for backdoor attacks involves a multi-step proc
 
 Key metrics in backdoor evaluation protocols include the Attack Success Rate (ASR) of the trigger and the Clean Data Accuracy (CDA). The ASR measures how reliably the presence of the hidden trigger induces the targeted malicious behavior. Conversely, the CDA measures the model's performance on standard, benign inputs. A highly successful and dangerous backdoor attack achieves a near-100\% ASR while maintaining a CDA that is statistically indistinguishable from a clean, unpoisoned model. This ensures that the backdoor remains stealthy and undetected during standard validation and quality assurance processes. Furthermore, comprehensive backdoor evaluation protocols also test the robustness of the injected backdoors against potential defensive interventions, such as trigger reverse engineering, activation clustering, and model pruning, to determine the persistence and resilience of the threat.
 
+
+\section{Experimental Validation: gemma3:4b}
+
+To empirically validate the theoretical attack and defense taxonomies presented in prior sections, we conducted a systematic jailbreak evaluation campaign against \texttt{gemma3:4b}, a locally deployed large language model served via the Ollama inference framework. The evaluation exhaustively tests every combination of harmful prompts, attack strategies, and defense mechanisms, producing a comprehensive Attack Success Rate (ASR) matrix. A total of 1,890 test cases were executed (15 harmful prompts $\times$ 18 attack strategies $\times$ 7 defense mechanisms), spanning 7 threat categories: Data Poisoning, Disinformation, Exploitation, Malware, Privacy, Prompt Injection, Social Engineering. The complete evaluation required approximately 2.7 hours of inference time.
+
+The attack strategies employed include both classical black-box techniques and recently proposed methods derived from the current literature: AIM, ArtPrompt, AutoDAN, CodeJailbreak, Cognitive-Overload, Context-Shift, DAN, Direct, Emotional, FITD, FlipAttack, GCG-Suffix, Many-Shot, Multi-Turn, Prefix-Injection, Role-Play, Sys-Override, Translation. The defense mechanisms tested are: Few-Shot, No-Defense, Paraphrase, Perplexity-Filter, Safety-Prompt, Sandwich, Self-Exam. This combinatorial design enables fine-grained analysis of which attack--defense pairings expose the greatest model vulnerabilities.
+
+The overall ASR across all configurations was 43.1%. The most effective defense was Self-Exam, achieving an ASR of 0.0%, while Perplexity-Filter exhibited the highest vulnerability with an ASR of 95.6%. These results quantitatively demonstrate that defense effectiveness varies dramatically depending on the strategy employed, reinforcing the need for multi-layered defense architectures.
+
+Figure~\ref{fig:heatmap_asr_gemma3_4b} presents the ASR heatmap across all attack--defense combinations. Each cell represents the proportion of harmful prompts that successfully bypassed the model's safety alignment for that specific pairing.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.85\textwidth]{gemma3_4b_20260326_175111/heatmap_attack_defense.png}
+  \caption{Heatmap of Attack Success Rate (ASR) across all attack--defense combinations for \texttt{gemma3:4b}. Darker cells indicate higher vulnerability.}
+  \label{fig:heatmap_asr_gemma3_4b}
+\end{figure}
+
+Figure~\ref{fig:bar_asr_gemma3_4b} provides a grouped bar chart view of the same data, enabling direct comparison of attack effectiveness under each defense strategy.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.85\textwidth]{gemma3_4b_20260326_175111/bar_attack_defense.png}
+  \caption{Grouped bar chart comparing ASR of each attack strategy under different defense mechanisms for \texttt{gemma3:4b}.}
+  \label{fig:bar_asr_gemma3_4b}
+\end{figure}
+
+Figure~\ref{fig:radar_category_gemma3_4b} illustrates the model's vulnerability profile across threat categories using a radar chart, highlighting which domains of harmful content are most and least effectively defended against.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.7\textwidth]{gemma3_4b_20260326_175111/radar_category.png}
+  \caption{Radar chart of ASR by threat category for \texttt{gemma3:4b}, showing the model's vulnerability profile across different harm domains.}
+  \label{fig:radar_category_gemma3_4b}
+\end{figure}
+
+Figure~\ref{fig:defense_summary_gemma3_4b} summarizes the overall effectiveness of each defense mechanism by aggregating ASR across all attacks and prompt categories.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.75\textwidth]{gemma3_4b_20260326_175111/defense_summary.png}
+  \caption{Overall ASR by defense strategy for \texttt{gemma3:4b}. Lower values indicate more effective defenses.}
+  \label{fig:defense_summary_gemma3_4b}
+\end{figure}
+
+Finally, Figure~\ref{fig:latency_gemma3_4b} presents the response latency distribution across defense strategies. Multi-call defenses exhibit higher latency due to additional API calls, representing a practical trade-off between safety and responsiveness.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.75\textwidth]{gemma3_4b_20260326_175111/latency_boxplot.png}
+  \caption{Response latency boxplot by defense strategy for \texttt{gemma3:4b}. Multi-call defenses incur higher latency as a trade-off for improved safety.}
+  \label{fig:latency_gemma3_4b}
+\end{figure}
+
 \section{Discussion and Open Challenges}
 
 The rapid integration of Large Language Models (LLMs) into software development workflows has undeniably accelerated productivity, but it has also exposed a complex landscape of vulnerabilities. As adversarial attacks on code-generating models become increasingly sophisticated, the research community faces several critical hurdles. This section discusses the primary challenges and open questions that must be addressed to secure the next generation of AI-assisted programming tools, focusing on the delicate balance between utility and security, the emergence of novel threat vectors, and the scalability of defense mechanisms.

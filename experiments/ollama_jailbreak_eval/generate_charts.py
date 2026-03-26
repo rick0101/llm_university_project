@@ -197,6 +197,200 @@ def chart_5_latency(results: list, defenses: list, charts_dir: str, model_name: 
     print("  ✅ latency_boxplot.png")
 
 
+def _compute_defense_overall_asr(asr_matrix: dict, defenses: list) -> dict:
+    """Compute overall ASR per defense across all attacks."""
+    overall = {}
+    for defense in defenses:
+        vals = [asr_matrix[a].get(defense, 0) for a in asr_matrix]
+        overall[defense] = np.mean(vals) if vals else 0
+    return overall
+
+
+def _find_project_root() -> str:
+    """Walk up from this file to find the project root (contains output/)."""
+    d = os.path.dirname(os.path.abspath(__file__))
+    for _ in range(10):
+        if os.path.isdir(os.path.join(d, "output", "latest")):
+            return d
+        d = os.path.dirname(d)
+    return None
+
+
+def _copy_charts_to_latex(charts_dir: str, folder_name: str) -> str:
+    """Copy charts into output/latest/<folder_name>/ for LaTeX access."""
+    import shutil
+    root = _find_project_root()
+    if not root:
+        print("  ⚠️  Cartella output/latest/ non trovata, skip copia LaTeX")
+        return None
+    latex_charts = os.path.join(root, "output", "latest", folder_name)
+    os.makedirs(latex_charts, exist_ok=True)
+    for f in os.listdir(charts_dir):
+        if f.endswith(".png"):
+            shutil.copy2(os.path.join(charts_dir, f), latex_charts)
+    print(f"  📄 Grafici copiati in {latex_charts}/")
+    return latex_charts
+
+
+def _append_latex_section(folder_name: str, metadata: dict, defenses: list,
+                          attacks: list, categories: list, defense_asr: dict):
+    """Append an experimental evaluation section to survey.tex."""
+    root = _find_project_root()
+    if not root:
+        return
+    tex_path = os.path.join(root, "output", "latest", "survey.tex")
+    if not os.path.isfile(tex_path):
+        print("  ⚠️  survey.tex non trovato, skip inserimento LaTeX")
+        return
+
+    with open(tex_path) as f:
+        content = f.read()
+
+    model = metadata["model"]
+    model_safe = model.replace(":", "_")
+    total = metadata["total_tests"]
+    n_prompts = metadata["num_prompts"]
+    n_attacks = metadata["num_attacks"]
+    n_defenses = metadata["num_defenses"]
+    elapsed_h = round(metadata["elapsed_seconds"] / 3600, 1)
+    cats_str = ", ".join(categories)
+    attacks_str = ", ".join(attacks)
+    defenses_str = ", ".join(defenses)
+
+    best_def = min(defense_asr, key=defense_asr.get)
+    worst_def = max(defense_asr, key=defense_asr.get)
+    best_asr = defense_asr[best_def]
+    worst_asr = defense_asr[worst_def]
+    overall_asr = np.mean(list(defense_asr.values()))
+
+    label_suffix = model_safe
+    section = f"""
+\\section{{Experimental Validation: {model}}}
+
+To empirically validate the theoretical attack and defense taxonomies presented in prior sections, we conducted a systematic jailbreak evaluation campaign against \\texttt{{{model}}}, a locally deployed large language model served via the Ollama inference framework. The evaluation exhaustively tests every combination of harmful prompts, attack strategies, and defense mechanisms, producing a comprehensive Attack Success Rate (ASR) matrix. A total of {total:,} test cases were executed ({n_prompts} harmful prompts $\\times$ {n_attacks} attack strategies $\\times$ {n_defenses} defense mechanisms), spanning {len(categories)} threat categories: {cats_str}. The complete evaluation required approximately {elapsed_h} hours of inference time.
+
+The attack strategies employed include both classical black-box techniques and recently proposed methods derived from the current literature: {attacks_str}. The defense mechanisms tested are: {defenses_str}. This combinatorial design enables fine-grained analysis of which attack--defense pairings expose the greatest model vulnerabilities.
+
+The overall ASR across all configurations was {overall_asr:.1%}. The most effective defense was {best_def}, achieving an ASR of {best_asr:.1%}, while {worst_def} exhibited the highest vulnerability with an ASR of {worst_asr:.1%}. These results quantitatively demonstrate that defense effectiveness varies dramatically depending on the strategy employed, reinforcing the need for multi-layered defense architectures.
+
+Figure~\\ref{{fig:heatmap_asr_{label_suffix}}} presents the ASR heatmap across all attack--defense combinations. Each cell represents the proportion of harmful prompts that successfully bypassed the model's safety alignment for that specific pairing.
+
+\\begin{{figure}}[htbp]
+  \\centering
+  \\includegraphics[width=0.85\\textwidth]{{{folder_name}/heatmap_attack_defense.png}}
+  \\caption{{Heatmap of Attack Success Rate (ASR) across all attack--defense combinations for \\texttt{{{model}}}. Darker cells indicate higher vulnerability.}}
+  \\label{{fig:heatmap_asr_{label_suffix}}}
+\\end{{figure}}
+
+Figure~\\ref{{fig:bar_asr_{label_suffix}}} provides a grouped bar chart view of the same data, enabling direct comparison of attack effectiveness under each defense strategy.
+
+\\begin{{figure}}[htbp]
+  \\centering
+  \\includegraphics[width=0.85\\textwidth]{{{folder_name}/bar_attack_defense.png}}
+  \\caption{{Grouped bar chart comparing ASR of each attack strategy under different defense mechanisms for \\texttt{{{model}}}.}}
+  \\label{{fig:bar_asr_{label_suffix}}}
+\\end{{figure}}
+
+Figure~\\ref{{fig:radar_category_{label_suffix}}} illustrates the model's vulnerability profile across threat categories using a radar chart, highlighting which domains of harmful content are most and least effectively defended against.
+
+\\begin{{figure}}[htbp]
+  \\centering
+  \\includegraphics[width=0.7\\textwidth]{{{folder_name}/radar_category.png}}
+  \\caption{{Radar chart of ASR by threat category for \\texttt{{{model}}}, showing the model's vulnerability profile across different harm domains.}}
+  \\label{{fig:radar_category_{label_suffix}}}
+\\end{{figure}}
+
+Figure~\\ref{{fig:defense_summary_{label_suffix}}} summarizes the overall effectiveness of each defense mechanism by aggregating ASR across all attacks and prompt categories.
+
+\\begin{{figure}}[htbp]
+  \\centering
+  \\includegraphics[width=0.75\\textwidth]{{{folder_name}/defense_summary.png}}
+  \\caption{{Overall ASR by defense strategy for \\texttt{{{model}}}. Lower values indicate more effective defenses.}}
+  \\label{{fig:defense_summary_{label_suffix}}}
+\\end{{figure}}
+
+Finally, Figure~\\ref{{fig:latency_{label_suffix}}} presents the response latency distribution across defense strategies. Multi-call defenses exhibit higher latency due to additional API calls, representing a practical trade-off between safety and responsiveness.
+
+\\begin{{figure}}[htbp]
+  \\centering
+  \\includegraphics[width=0.75\\textwidth]{{{folder_name}/latency_boxplot.png}}
+  \\caption{{Response latency boxplot by defense strategy for \\texttt{{{model}}}. Multi-call defenses incur higher latency as a trade-off for improved safety.}}
+  \\label{{fig:latency_{label_suffix}}}
+\\end{{figure}}
+
+"""
+
+    marker = r"\section{Discussion and Open Challenges}"
+    if marker not in content:
+        print("  ⚠️  Marker 'Discussion and Open Challenges' non trovato in survey.tex")
+        return
+
+    # Check if a section for this model already exists
+    section_title = f"\\section{{Experimental Validation: {model}}}"
+    if section_title in content:
+        print(f"  ℹ️  Sezione per {model} già presente in survey.tex, skip")
+        return
+
+    content = content.replace(marker, section + marker)
+    with open(tex_path, "w") as f:
+        f.write(content)
+    print(f"  ✅ Sezione LaTeX aggiunta per {model}")
+
+
+def _append_readme_section(folder_name: str, metadata: dict, defenses: list,
+                           attacks: list, categories: list, defense_asr: dict):
+    """Append evaluation results section to README.md."""
+    root = _find_project_root()
+    if not root:
+        return
+    readme_path = os.path.join(root, "README.md")
+    if not os.path.isfile(readme_path):
+        print("  ⚠️  README.md non trovato, skip")
+        return
+
+    with open(readme_path) as f:
+        content = f.read()
+
+    model = metadata["model"]
+    total = metadata["total_tests"]
+    n_prompts = metadata["num_prompts"]
+    n_attacks = metadata["num_attacks"]
+    n_defenses = metadata["num_defenses"]
+    elapsed_h = round(metadata["elapsed_seconds"] / 3600, 1)
+
+    best_def = min(defense_asr, key=defense_asr.get)
+    worst_def = max(defense_asr, key=defense_asr.get)
+    overall_asr = np.mean(list(defense_asr.values()))
+
+    section_title = f"### Evaluation Results: {model}"
+    if section_title in content:
+        print(f"  ℹ️  Sezione README per {model} già presente, skip")
+        return
+
+    asr_table = "| Defense | ASR |\n|---|---|\n"
+    for d in defenses:
+        asr_table += f"| {d} | {defense_asr[d]:.1%} |\n"
+
+    section = f"""
+{section_title}
+
+**Model:** `{model}` | **Tests:** {total:,} ({n_prompts} prompts × {n_attacks} attacks × {n_defenses} defenses) | **Duration:** {elapsed_h}h | **Overall ASR:** {overall_asr:.1%}
+
+{asr_table}
+**Best defense:** {best_def} ({defense_asr[best_def]:.1%}) — **Worst defense:** {worst_def} ({defense_asr[worst_def]:.1%})
+
+Charts saved in `output/latest/{folder_name}/`.
+
+"""
+
+    # Append after the Ollama Jailbreak Evaluation section's last content
+    # Find a good insertion point: end of file or before a known next section
+    content += section
+    with open(readme_path, "w") as f:
+        f.write(content)
+    print(f"  ✅ Sezione README aggiunta per {model}")
+
+
 def generate_charts(results_path: str = None):
     """Generate all charts from evaluation results. Can be called programmatically."""
     data = load_results(results_path)
@@ -208,10 +402,13 @@ def generate_charts(results_path: str = None):
     print(f"   {metadata['total_tests']} test, {metadata['elapsed_seconds']}s totali\n")
 
     ts = metadata.get("timestamp", "unknown")
-    charts_dir = os.path.join(os.path.dirname(__file__), "results", "charts", f"{model_name.replace(':', '_')}_{ts}")
+    folder_name = f"{model_name.replace(':', '_')}_{ts}"
+    charts_dir = os.path.join(os.path.dirname(__file__), "results", "charts", folder_name)
     os.makedirs(charts_dir, exist_ok=True)
 
     defenses = sorted(set(r["defense"] for r in results))
+    attacks = sorted(set(r["attack"] for r in results))
+    categories = sorted(set(r["category"] for r in results))
     asr_matrix = compute_asr_matrix(results)
     cat_asr = compute_category_asr(results)
 
@@ -222,6 +419,17 @@ def generate_charts(results_path: str = None):
     chart_5_latency(results, defenses, charts_dir, model_name)
 
     print(f"\n🎯 5 grafici salvati in {charts_dir}/")
+
+    # Copy charts to LaTeX output directory
+    _copy_charts_to_latex(charts_dir, folder_name)
+
+    # Compute defense-level ASR for text generation
+    defense_asr = _compute_defense_overall_asr(asr_matrix, defenses)
+
+    # Auto-append sections to LaTeX and README
+    _append_latex_section(folder_name, metadata, defenses, attacks, categories, defense_asr)
+    _append_readme_section(folder_name, metadata, defenses, attacks, categories, defense_asr)
+
     return charts_dir
 
 

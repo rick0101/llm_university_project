@@ -70,7 +70,7 @@ Respond with a valid JSON array of section objects. Each section:
 
 ```json
 [
-  {
+  {{
     "key": "section_key_snake_case",
     "title": "Section Title",
     "description": "Detailed description of what the section should cover (100-300 words). Be specific about which papers, methods, and concepts to include.",
@@ -81,7 +81,7 @@ Respond with a valid JSON array of section objects. Each section:
     "section_type": "body",
     "parent_key": null,
     "subsections": []
-  }ß
+  }}
 ]
 ```
 

@@ -55,9 +55,9 @@ The remainder of this survey is organized as follows. Section 2 establishes the 
 
 
 
-![Figure 1: A systematic taxonomy of LLM vulnerabilities categorized by model lifecycle phases: Training-Time, Inference-Time, and Output-Level.](generated_figures/fig_llm_security_taxonomy.png)
+![Figure 1: A systematic categorization of LLM vulnerabilities divided into training-time threats, inference-time threats, and output-level flaws.](generated_figures/fig_threat_taxonomy.png)
 
-*Figure 1: A systematic taxonomy of LLM vulnerabilities categorized by model lifecycle phases: Training-Time, Inference-Time, and Output-Level.*
+*Figure 1: A systematic categorization of LLM vulnerabilities divided into training-time threats, inference-time threats, and output-level flaws.*
 ## Background and Preliminaries
 
 # Background and Preliminaries
@@ -139,26 +139,21 @@ Finally, novel attack surfaces emerged in the very infrastructure of model deplo
 
 
 
-![Figure 3: Comparison of the minimum percentage of poisoned data required to successfully compromise LLMs and VLMs across different attack frameworks.](generated_figures/fig_poisoning_budgets.png)
+![Figure 3: Comparison of the data poisoning budgets (as a percentage of the training dataset) required by recent state-of-the-art attacks to successfully compromise LLMs and VLMs.](generated_figures/fig_poisoning_budgets.png)
 
-*Figure 3: Comparison of the minimum percentage of poisoned data required to successfully compromise LLMs and VLMs across different attack frameworks.*
+*Figure 3: Comparison of the data poisoning budgets (as a percentage of the training dataset) required by recent state-of-the-art attacks to successfully compromise LLMs and VLMs.*
 
 
-![Figure 2: Chronological progression of state-of-the-art backdoor and poisoning attacks, illustrating the shift from text-based models to multimodal systems and autonomous agents.](generated_figures/fig_poisoning_evolution_timeline.png)
+![Figure 2: Chronological progression of backdoor and poisoning attacks, illustrating the rapid shift from text-based LLM exploits to multimodal VLMs and autonomous agents.](generated_figures/fig_poisoning_timeline.png)
 
-*Figure 2: Chronological progression of state-of-the-art backdoor and poisoning attacks, illustrating the shift from text-based models to multimodal systems and autonomous agents.*
+*Figure 2: Chronological progression of backdoor and poisoning attacks, illustrating the rapid shift from text-based LLM exploits to multimodal VLMs and autonomous agents.*
 ## Inference-Time Threats I: Prompt Injection and Jailbreaking
 
 
 
-![Figure 5: Maximum Attack Success Rates (ASR) reported for various advanced LLM exploits across different modalities and deployment environments.](generated_figures/fig_attack_success_rates.png)
+![Figure 4: Attack Success Rates (ASR) achieved by recent automated and infrastructure-level exploits against state-of-the-art AI systems.](generated_figures/fig_attack_asr_comparison.png)
 
-*Figure 5: Maximum Attack Success Rates (ASR) reported for various advanced LLM exploits across different modalities and deployment environments.*
-
-
-![Figure 4: The workflow of an indirect prompt injection attack exploiting Retrieval-Augmented Generation (RAG) architectures.](generated_figures/fig_rag_indirect_injection_flow.png)
-
-*Figure 4: The workflow of an indirect prompt injection attack exploiting Retrieval-Augmented Generation (RAG) architectures.*
+*Figure 4: Attack Success Rates (ASR) achieved by recent automated and infrastructure-level exploits against state-of-the-art AI systems.*
 # Inference-Time Threats I: Prompt Injection and Jailbreaking
 
 The deployment of Large Language Models (LLMs) in real-world applications has exposed a critical frontier in artificial intelligence security: inference-time threats. Unlike training-time vulnerabilities such as data poisoning or backdoor insertion, inference-time threats exploit the fundamental mechanisms by which a fully trained model processes and responds to user inputs. At the core of these vulnerabilities are prompt injection and jailbreaking. While these terms are sometimes used interchangeably, they represent distinct paradigms of attack. Prompt injection typically involves subverting a model's original instructions by embedding malicious commands within user-provided data, causing the model to execute unintended actions. Jailbreaking, on the other hand, refers to the deliberate crafting of inputs designed to bypass the model's built-in safety guardrails, coercing it into generating restricted, harmful, or unethical content. 
@@ -259,6 +254,11 @@ Addressing this imbalance requires a paradigm shift in how code-generating syste
 However, balancing these two objectives remains an ongoing research challenge. Overly aggressive security constraints or excessive security prompting can confuse the model, degrading its ability to produce functionally complex code or leading to overly defensive, inefficient implementations. Conversely, prioritizing functionality inevitably reopens the door to adversarial exploitation. As code-generating LLMs become more deeply embedded in the software supply chain, developing robust defense mechanisms that do not compromise the utility of the models will be critical to ensuring the security of next-generation software systems.
 
 
+
+
+![Figure 5: Conceptual mapping of code generation paradigms based on their balance of functional correctness and security robustness.](generated_figures/fig_code_security_tradeoff.png)
+
+*Figure 5: Conceptual mapping of code generation paradigms based on their balance of functional correctness and security robustness.*
 ## Output-Level Vulnerabilities: LLM Hallucinations
 
 # Output-Level Vulnerabilities: LLM Hallucinations

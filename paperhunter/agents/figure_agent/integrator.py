@@ -90,9 +90,9 @@ def _find_section_in_markdown(
         Tupla (start_pos, end_pos) o None se non trovata.
     """
     # Trasforma section_key in pattern per il titolo
-    # Usa \w+ per estrarre solo parole alfanumeriche, così "Training-Time"
-    # diventa ["training", "time"] e matcha correttamente con gli heading.
-    key_words = re.findall(r"\w+", section_key.lower())
+    # Sostituisci underscore con spazi prima di estrarre le parole,
+    # così "training_time_threats" diventa ["training", "time", "threats"]
+    key_words = re.findall(r"[a-zA-Z0-9]+", section_key.lower())
 
     # Cerca tutti gli heading
     heading_pattern = re.compile(r"^(#{1,4})\s+(.+)$", re.MULTILINE)
@@ -100,7 +100,7 @@ def _find_section_in_markdown(
 
     for i, match in enumerate(headings):
         heading_text = match.group(2).lower()
-        heading_words = re.findall(r"\w+", heading_text)
+        heading_words = re.findall(r"[a-zA-Z0-9]+", heading_text)
 
         # Match se tutti i keyword della section_key sono nel titolo
         if all(kw in heading_words for kw in key_words):

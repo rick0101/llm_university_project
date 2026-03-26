@@ -2004,7 +2004,7 @@ def cmd_figures(args: argparse.Namespace) -> int:
         plan_figures, save_figure_plan, load_figure_plan, FigurePlan,
     )
     from paperhunter.agents.figure_agent.decision import classify_all
-    from paperhunter.agents.figure_agent.renderer import render_all_code_figures
+    from paperhunter.agents.figure_agent.renderer import render_all_figures
     from paperhunter.agents.figure_agent.integrator import (
         integrate_figures, copy_figures_to_output,
     )
@@ -2091,9 +2091,9 @@ def cmd_figures(args: argparse.Namespace) -> int:
     # ── Step 4: Classify figure types ──
     classify_all(plan.figures)
 
-    # ── Step 5: Render code figures ──
+    # ── Step 5: Generate figures with Gemini Image Generation ──
     if not args.plan_only:
-        rendered = render_all_code_figures(
+        rendered = render_all_figures(
             specs=plan.figures,
             output_dir=output_dir,
             max_iterations=fig_cfg.max_iterations,

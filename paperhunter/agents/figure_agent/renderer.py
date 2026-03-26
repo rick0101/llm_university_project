@@ -1,21 +1,17 @@
-"""FigureAgent — Renderer: esegue codice Python in subprocess e cattura PNG.
+"""FigureAgent — Renderer: genera figure tramite Gemini Image Generation.
 
-Esegue lo script generato da codegen in un subprocess isolato con timeout,
-cattura errori per il retry loop, e verifica che il PNG sia valido.
+Usa gemini-3-pro-image-preview per generare immagini scientifiche direttamente,
+con vision quality check (Gemini Flash) e loop di refinement iterativo.
 
-Miglioramenti:
-- Critic quality gate (analisi statica post-render)
-- Validazione PNG con PIL (contenuto, non solo size)
+Flow: generate image → vision check → refine image (se necessario) → retry.
 """
 
 from __future__ import annotations
 
-import subprocess
-import sys
+import json as _json
 import time
 from pathlib import Path
 
-from paperhunter.agents.figure_agent.codegen import generate_code
 from paperhunter.agents.figure_agent.planner import FigureSpec, FigureType
 from paperhunter.config import settings
 from paperhunter.utils.logging_setup import get_logger
@@ -23,108 +19,46 @@ from paperhunter.utils.logging_setup import get_logger
 logger = get_logger(__name__)
 
 # ---------------------------------------------------------------------------
-# Execution
+# Constants
 # ---------------------------------------------------------------------------
 
-_EXECUTION_TIMEOUT = 60  # secondi
+_IMAGE_MODEL = "gemini-3-pro-image-preview"
 
+_GENERATION_PROMPT = """\
+Generate a high-quality scientific figure for an academic survey paper.
 
-def _execute_code(code: str, timeout: int = _EXECUTION_TIMEOUT) -> tuple[bool, str]:
-    """Esegue codice Python in un subprocess isolato.
+**Figure specification:**
+- Title: {title}
+- Chart type: {chart_type}
+- Description: {description}
+- Caption: {caption}
 
-    Args:
-        code: Codice Python da eseguire.
-        timeout: Timeout in secondi.
+**Data points (if available):**
+{data_points_json}
 
-    Returns:
-        Tupla (success: bool, error_or_output: str).
-    """
-    try:
-        result = subprocess.run(
-            [sys.executable, "-c", code],
-            capture_output=True,
-            text=True,
-            timeout=timeout,
-            cwd=str(Path.cwd()),
-        )
+**Style requirements:**
+- Professional academic style suitable for a peer-reviewed publication
+- Clean, minimalist design with clear labels and legends
+- Use a professional color palette (blues, teals, grays — no neon/bright colors)
+- All text must be clearly readable (no overlapping labels)
+- Include axis labels with units where applicable
+- Title should be concise and placed above the figure
+- High resolution, sharp lines and text
+- White or light background
+- For charts: include grid lines, proper spacing between elements
+- For diagrams/flowcharts: use clean boxes with rounded corners, clear arrows, \
+hierarchical layout with no overlapping elements
 
-        if result.returncode == 0:
-            return True, result.stdout.strip()
+Generate ONLY the image, no text response."""
 
-        error = result.stderr.strip()
-        # Estrai solo l'errore significativo (ultime righe)
-        error_lines = error.split("\n")
-        if len(error_lines) > 10:
-            error = "\n".join(error_lines[-10:])
-        return False, error
+_REFINEMENT_PROMPT = """\
+Modify this scientific figure to fix the following issues:
+{issues}
 
-    except subprocess.TimeoutExpired:
-        return False, f"Execution timed out after {timeout}s"
-    except Exception as e:
-        return False, f"Execution failed: {e}"
+Keep the same data, structure, and overall design. Only fix the listed problems.
+The figure must remain suitable for an academic publication.
 
-
-def _verify_png(path: Path) -> tuple[bool, str]:
-    """Verifica che il file PNG esista, abbia dimensione ragionevole e sia valido.
-
-    Returns:
-        Tupla (valid: bool, reason: str).
-    """
-    if not path.exists():
-        return False, "PNG file does not exist"
-
-    size = path.stat().st_size
-    if size < 1000:
-        return False, f"PNG too small ({size} bytes) — likely corrupted or empty"
-    if size > 50_000_000:
-        return False, f"PNG too large ({size} bytes) — likely runaway rendering"
-
-    # Validazione contenuto con PIL
-    try:
-        from PIL import Image
-        with Image.open(path) as img:
-            img.verify()
-        # verify() chiude il file — riapri per check blank
-        with Image.open(path) as img:
-            extrema = img.convert("RGB").getextrema()
-            # Se tutti i canali hanno min==max, l'immagine è uniforme (blank)
-            if all(lo == hi for lo, hi in extrema):
-                return False, "PNG is a blank/uniform image — no visible content"
-    except ImportError:
-        logger.debug("PIL not available — skipping image content validation")
-    except Exception as e:
-        return False, f"PNG validation failed: {e}"
-
-    return True, "OK"
-
-
-# ---------------------------------------------------------------------------
-# Static quality gate
-# ---------------------------------------------------------------------------
-
-def _static_quality_check(spec: FigureSpec, code: str) -> tuple[bool, str]:
-    """Quality gate rapido basato su analisi statica del codice (no LLM).
-
-    Returns:
-        Tupla (passed: bool, feedback: str con problemi trovati).
-    """
-    from paperhunter.agents.figure_agent.critic import critique_code_only
-    critique = critique_code_only(spec, code)
-
-    if critique.verdict.value == "APPROVED":
-        return True, ""
-
-    feedback = "; ".join(critique.issues) if critique.issues else critique.feedback
-    logger.info(
-        "Figure %s: static critique → NEEDS_REVISION (score=%.2f): %s",
-        spec.figure_id, critique.overall_score, feedback,
-    )
-    return False, feedback
-
-
-# ---------------------------------------------------------------------------
-# Vision quality gate (LLM-based image analysis)
-# ---------------------------------------------------------------------------
+Generate ONLY the corrected image, no text response."""
 
 _VISION_PROMPT = """\
 You are reviewing a rendered scientific figure for an academic survey paper.
@@ -151,18 +85,147 @@ Be strict but fair. Minor cosmetic issues are acceptable. Focus on problems that
 would make the figure unsuitable for publication."""
 
 
-def _vision_quality_check(
-    spec: FigureSpec, png_path: Path,
+# ---------------------------------------------------------------------------
+# PNG verification
+# ---------------------------------------------------------------------------
+
+def _verify_png(path: Path) -> tuple[bool, str]:
+    """Verifica che il file PNG esista, abbia dimensione ragionevole e sia valido."""
+    if not path.exists():
+        return False, "PNG file does not exist"
+
+    size = path.stat().st_size
+    if size < 1000:
+        return False, f"PNG too small ({size} bytes) — likely corrupted or empty"
+    if size > 50_000_000:
+        return False, f"PNG too large ({size} bytes) — likely runaway rendering"
+
+    try:
+        from PIL import Image
+        with Image.open(path) as img:
+            img.verify()
+        with Image.open(path) as img:
+            extrema = img.convert("RGB").getextrema()
+            if all(lo == hi for lo, hi in extrema):
+                return False, "PNG is a blank/uniform image — no visible content"
+    except ImportError:
+        logger.debug("PIL not available — skipping image content validation")
+    except Exception as e:
+        return False, f"PNG validation failed: {e}"
+
+    return True, "OK"
+
+
+# ---------------------------------------------------------------------------
+# Image generation via Gemini
+# ---------------------------------------------------------------------------
+
+def _generate_image(
+    spec: FigureSpec, output_path: Path,
 ) -> tuple[bool, str]:
-    """Controlla la qualità visiva della figura usando Gemini Vision.
+    """Genera un'immagine con gemini-3-pro-image-preview.
 
     Returns:
-        Tupla (passed: bool, feedback: str con problemi trovati).
+        (success, error_message)
     """
-    import json as _json
+    import json
 
     from google import genai
     from google.genai import types
+
+    from paperhunter.utils.llm_factory import _get_api_key
+
+    data_points_json = json.dumps(spec.data_points, indent=2, ensure_ascii=False)
+    if not spec.data_points:
+        data_points_json = "(No pre-extracted data — infer appropriate data from the description)"
+
+    prompt = _GENERATION_PROMPT.format(
+        title=spec.title,
+        chart_type=spec.chart_type.value,
+        description=spec.description,
+        caption=spec.caption or spec.title,
+        data_points_json=data_points_json,
+    )
+
+    try:
+        client = genai.Client(api_key=_get_api_key())
+        response = client.models.generate_content(
+            model=_IMAGE_MODEL,
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                response_modalities=["IMAGE"],
+            ),
+        )
+
+        if not response or not response.candidates:
+            return False, "Empty response from image generation model"
+
+        # Extract image from response parts
+        for part in response.candidates[0].content.parts:
+            if part.inline_data and part.inline_data.mime_type.startswith("image/"):
+                output_path.parent.mkdir(parents=True, exist_ok=True)
+                output_path.write_bytes(part.inline_data.data)
+                return True, ""
+
+        return False, "No image data in model response"
+
+    except Exception as exc:
+        return False, f"Image generation failed: {exc}"
+
+
+def _refine_image(
+    spec: FigureSpec, png_path: Path, issues: str,
+) -> tuple[bool, str]:
+    """Invia l'immagine + feedback a gemini-3-pro-image-preview per il refinement.
+
+    Returns:
+        (success, error_message)
+    """
+    from google import genai
+    from google.genai import types
+
+    from paperhunter.utils.llm_factory import _get_api_key
+
+    prompt = _REFINEMENT_PROMPT.format(issues=issues)
+    image_bytes = png_path.read_bytes()
+    image_part = types.Part.from_bytes(data=image_bytes, mime_type="image/png")
+
+    try:
+        client = genai.Client(api_key=_get_api_key())
+        response = client.models.generate_content(
+            model=_IMAGE_MODEL,
+            contents=[prompt, image_part],
+            config=types.GenerateContentConfig(
+                response_modalities=["IMAGE"],
+            ),
+        )
+
+        if not response or not response.candidates:
+            return False, "Empty response from refinement model"
+
+        for part in response.candidates[0].content.parts:
+            if part.inline_data and part.inline_data.mime_type.startswith("image/"):
+                png_path.write_bytes(part.inline_data.data)
+                return True, ""
+
+        return False, "No image data in refinement response"
+
+    except Exception as exc:
+        return False, f"Image refinement failed: {exc}"
+
+
+# ---------------------------------------------------------------------------
+# Vision quality gate
+# ---------------------------------------------------------------------------
+
+def _vision_quality_check(
+    spec: FigureSpec, png_path: Path,
+) -> tuple[bool, str]:
+    """Controlla la qualità visiva della figura usando Gemini Vision (Flash)."""
+    from google import genai
+    from google.genai import types
+
+    from paperhunter.utils.llm_factory import _get_api_key
 
     prompt = _VISION_PROMPT.format(
         title=spec.title,
@@ -174,8 +237,6 @@ def _vision_quality_check(
     image_part = types.Part.from_bytes(data=png_bytes, mime_type="image/png")
 
     try:
-        from paperhunter.utils.llm_factory import _get_api_key
-
         client = genai.Client(api_key=_get_api_key())
         response = client.models.generate_content(
             model=settings.gemini.flash_model,
@@ -191,7 +252,6 @@ def _vision_quality_check(
             return True, ""
 
         raw = response.text.strip()
-        # Strip markdown fences if present
         if raw.startswith("```"):
             raw = raw.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
 
@@ -212,7 +272,12 @@ def _vision_quality_check(
 
     except Exception as exc:
         logger.warning("Vision check error for %s: %s", spec.figure_id, exc)
-        return True, ""  # non bloccare se il vision check fallisce
+        return True, ""
+
+
+# ---------------------------------------------------------------------------
+# Main render loop
+# ---------------------------------------------------------------------------
 
 def render_figure(
     spec: FigureSpec,
@@ -220,29 +285,24 @@ def render_figure(
     max_iterations: int = 5,
     force_model: str | None = None,
 ) -> tuple[bool, Path | None, str | None]:
-    """Genera e renderizza una code figure con retry automatico.
+    """Genera una figura con Gemini Image Generation e quality check iterativo.
 
-    Flow: codegen → execute → verify PNG → static critic → vision check → retry.
+    Flow: generate image → verify PNG → vision check → refine (se necessario).
 
     Args:
         spec: La specifica della figura da generare.
         output_dir: Directory dove salvare il PNG.
-        max_iterations: Massimo iterazioni codegen → execute (default 3).
-        force_model: Override modello LLM per codegen.
+        max_iterations: Massimo iterazioni generate/refine (default 5).
+        force_model: Non usato (kept for API compatibility).
 
     Returns:
-        Tupla (success, png_path, generated_code).
+        Tupla (success, png_path, None).
     """
-    if spec.figure_type != FigureType.CODE:
-        logger.warning("render_figure called on non-code figure: %s", spec.figure_id)
-        return False, None, None
-
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     output_path = output_dir / f"{spec.figure_id}.png"
 
-    error_feedback = ""
-    last_code = None
+    last_feedback = ""
 
     for iteration in range(1, max_iterations + 1):
         logger.info(
@@ -250,85 +310,77 @@ def render_figure(
             spec.figure_id, iteration, max_iterations,
         )
 
-        # Genera codice
-        code = generate_code(
-            spec=spec,
-            output_path=str(output_path),
-            error_feedback=error_feedback,
-            force_model=force_model,
-        )
-
-        if code is None:
-            logger.error("Figure %s: codegen failed at iteration %d", spec.figure_id, iteration)
-            error_feedback = "Code generation returned None — the LLM did not produce valid Python code."
-            continue
-
-        last_code = code
-
-        # Salva lo script per debug
-        script_path = output_dir / f"{spec.figure_id}_code.py"
-        script_path.write_text(code, encoding="utf-8")
-
-        # Esegui
-        success, output = _execute_code(code)
+        if iteration == 1:
+            # First iteration: generate from scratch
+            logger.info("Generating image for %s with %s...", spec.figure_id, _IMAGE_MODEL)
+            success, error = _generate_image(spec, output_path)
+        else:
+            # Subsequent iterations: refine existing image with feedback
+            logger.info(
+                "Refining image for %s with %s (feedback: %s)...",
+                spec.figure_id, _IMAGE_MODEL, last_feedback[:100],
+            )
+            success, error = _refine_image(spec, output_path, last_feedback)
 
         if not success:
             logger.warning(
-                "Figure %s: execution failed at iteration %d: %s",
-                spec.figure_id, iteration, output[:200],
+                "Figure %s: %s failed at iteration %d: %s",
+                spec.figure_id,
+                "generation" if iteration == 1 else "refinement",
+                iteration, error,
             )
-            error_feedback = output
-            continue
+            last_feedback = error
+            # If refinement fails, try fresh generation on next iteration
+            if iteration > 1:
+                logger.info("Refinement failed, will retry fresh generation")
+                success2, error2 = _generate_image(spec, output_path)
+                if not success2:
+                    continue
+            else:
+                continue
 
-        # Verifica PNG (contenuto + size + PIL validation)
+        # Verify PNG
         png_valid, png_reason = _verify_png(output_path)
         if not png_valid:
             logger.warning("Figure %s: PNG invalid — %s", spec.figure_id, png_reason)
-            error_feedback = f"The script executed but the PNG is invalid: {png_reason}"
+            last_feedback = f"The generated image is invalid: {png_reason}"
             continue
 
-        # Quality gate: analisi statica del codice
-        quality_ok, quality_feedback = _static_quality_check(spec, code)
-        if not quality_ok and iteration < max_iterations:
-            error_feedback = f"Code quality issues: {quality_feedback}"
-            logger.info("Figure %s: quality gate failed, retrying...", spec.figure_id)
-            continue
-
-        # Vision quality gate: LLM analizza il PNG renderizzato
+        # Vision quality check
         vision_ok, vision_feedback = _vision_quality_check(spec, output_path)
         if not vision_ok and iteration < max_iterations:
-            error_feedback = f"Visual issues found in rendered figure: {vision_feedback}"
-            logger.info("Figure %s: vision check failed, retrying...", spec.figure_id)
+            last_feedback = vision_feedback
+            logger.info("Figure %s: vision check failed, refining...", spec.figure_id)
             continue
 
-        # Successo (o ultima iterazione con quality issues non bloccanti)
+        # Success (or last iteration — accept whatever we have)
         size_kb = output_path.stat().st_size / 1024
         logger.info(
-            "Figure %s: rendered successfully (%.1f KB) at iteration %d",
+            "Figure %s: generated successfully (%.1f KB) at iteration %d",
             spec.figure_id, size_kb, iteration,
         )
-        return True, output_path, code
+        return True, output_path, None
 
     logger.error(
         "Figure %s: failed after %d iterations",
         spec.figure_id, max_iterations,
     )
-    return False, None, last_code
+    return False, None, None
 
 
-def render_all_code_figures(
+def render_all_figures(
     specs: list[FigureSpec],
     output_dir: str | Path,
     max_iterations: int = 5,
     force_model: str | None = None,
 ) -> dict[str, tuple[bool, Path | None]]:
-    """Renderizza tutte le code figures in un piano.
+    """Renderizza tutte le figure del piano tramite Gemini Image Generation.
 
     Args:
-        specs: Lista di FigureSpec (filtra automaticamente solo CODE).
+        specs: Lista di FigureSpec.
         output_dir: Directory output per i PNG.
         max_iterations: Massimo iterazioni per figura.
-        force_model: Override modello LLM.
+        force_model: Non usato (kept for API compatibility).
 
     Returns:
         Dict figure_id → (success, png_path).
@@ -336,17 +388,16 @@ def render_all_code_figures(
     from rich.console import Console
     console = Console()
 
-    code_specs = [s for s in specs if s.figure_type == FigureType.CODE]
-    if not code_specs:
-        logger.info("No code figures to render")
+    if not specs:
+        logger.info("No figures to render")
         return {}
 
     results: dict[str, tuple[bool, Path | None]] = {}
-    total = len(code_specs)
+    total = len(specs)
 
-    console.print(f"[bold cyan]🎨 Rendering {total} code figures...[/bold cyan]")
+    console.print(f"[bold cyan]🎨 Generating {total} figures with {_IMAGE_MODEL}...[/bold cyan]")
 
-    for i, spec in enumerate(code_specs, 1):
+    for i, spec in enumerate(specs, 1):
         console.print(f"  [{i}/{total}] {spec.figure_id}: {spec.title}")
         t0 = time.time()
 
@@ -367,7 +418,11 @@ def render_all_code_figures(
 
     succeeded = sum(1 for s, _ in results.values() if s)
     console.print(
-        f"[bold]Rendering complete: {succeeded}/{total} figures successful[/bold]"
+        f"[bold]Generation complete: {succeeded}/{total} figures successful[/bold]"
     )
 
     return results
+
+
+# Backward compatibility alias
+render_all_code_figures = render_all_figures

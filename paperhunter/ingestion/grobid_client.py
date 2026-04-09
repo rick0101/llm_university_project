@@ -406,22 +406,42 @@ class GrobidClient:
             return self._get_text(title_el).strip()
         return ""
 
+    # Pattern per nomi autori invalidi (modelli AI, affiliazioni, token corti)
+    _INVALID_AUTHOR_PATTERNS = [
+        re.compile(r'^(Qwen|Gemini|GPT|Claude|Llama|Mistral)', re.IGNORECASE),
+        re.compile(r'^(Efficient|Ving|Binyuan)$', re.IGNORECASE),
+        re.compile(r'(Labs?|Inc|Corp|University|Institute)\b', re.IGNORECASE),
+        re.compile(r'^(Microsoft|Google|Meta|Apple|Amazon|OpenAI|Anthropic|DeepMind|Nvidia|Intel|IBM|Huawei|Alibaba|Baidu|Tencent)$', re.IGNORECASE),
+        re.compile(r'^\w{1,2}$'),
+    ]
+
     def _extract_authors(self, root: etree._Element) -> list[str]:
-        """Estrae la lista degli autori dal TEI header."""
+        """Estrae la lista degli autori dal TEI header.
+
+        Filtra elementi <orgName>/<affiliation> e nomi invalidi
+        (modelli AI, affiliazioni, token corti).
+        """
         authors = []
         # sourceDesc → biblStruct → analytic → author
         for author_el in root.findall(
             ".//tei:teiHeader//tei:sourceDesc//tei:author", NS
         ):
             persname = author_el.find("tei:persName", NS)
-            if persname is not None:
-                forename_el = persname.find("tei:forename", NS)
-                surname_el = persname.find("tei:surname", NS)
-                forename = forename_el.text.strip() if forename_el is not None and forename_el.text else ""
-                surname = surname_el.text.strip() if surname_el is not None and surname_el.text else ""
-                name = f"{forename} {surname}".strip()
-                if name:
-                    authors.append(name)
+            if persname is None:
+                # Ignora <author> senza <persName> (es. solo <orgName>/<affiliation>)
+                continue
+            forename_el = persname.find("tei:forename", NS)
+            surname_el = persname.find("tei:surname", NS)
+            forename = forename_el.text.strip() if forename_el is not None and forename_el.text else ""
+            surname = surname_el.text.strip() if surname_el is not None and surname_el.text else ""
+            name = f"{forename} {surname}".strip()
+            if not name:
+                continue
+            # Filtra nomi invalidi
+            if any(p.search(name) for p in self._INVALID_AUTHOR_PATTERNS):
+                logger.debug("GROBID autore filtrato come invalido: '%s'", name)
+                continue
+            authors.append(name)
         return authors
 
     def _extract_abstract(self, root: etree._Element) -> str:

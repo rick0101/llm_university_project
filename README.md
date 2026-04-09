@@ -1517,3 +1517,16 @@ MIT License
 
 Charts saved in `output/latest/gemma3_4b_20260326_175111/`.
 
+
+### Evaluation Results: gemma-3-27b-it
+
+**Model:** `gemma-3-27b-it` | **Tests:** 15 (15 prompts × 1 attacks × 1 defenses) | **Duration:** 0.1h | **Overall ASR:** 26.7%
+
+| Defense | ASR |
+|---|---|
+| No-Defense | 26.7% |
+
+**Best defense:** No-Defense (26.7%) — **Worst defense:** No-Defense (26.7%)
+
+Charts saved in `output/latest/gemma-3-27b-it_20260327_132911/`.
+

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Ollama Jailbreak Evaluation — Main Runner
+Jailbreak Evaluation — Main Runner
 
 Sends harmful prompts × attack templates × defense strategies to an LLM
-via Ollama, judges each response, and saves structured results + charts.
+via Google Generative AI API, judges each response, and saves results + charts.
 
 Usage:
     python run_evaluation.py                     # full evaluation
@@ -30,26 +30,23 @@ from prompts import HARMFUL_PROMPTS
 RESULTS_DIR = os.path.join(os.path.dirname(__file__), "results")
 
 
-def check_ollama_connection() -> bool:
-    """Verify Ollama is reachable and the model is available."""
-    import urllib.request
+def check_api_connection() -> bool:
+    """Verify the Google API key is set and the model is accessible."""
     try:
-        req = urllib.request.Request(f"{OLLAMA_HOST}/api/tags")
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            data = json.loads(resp.read())
-        models = [m["name"] for m in data.get("models", [])]
-        found = any(config.MODEL in m or m.startswith(config.MODEL.split(":")[0]) for m in models)
-        if found:
-            print(f"✅ Ollama connesso: {OLLAMA_HOST}")
-            print(f"✅ Modello trovato: {config.MODEL}")
-            return True
-        else:
-            print(f"❌ Modello '{config.MODEL}' non trovato. Modelli disponibili:")
-            for m in models:
-                print(f"   - {m}")
-            return False
+        from google import genai
+        from google.genai import types
+        client = genai.Client(api_key=config.GOOGLE_API_KEY)
+        # Lightweight ping: generate a single token
+        client.models.generate_content(
+            model=config.MODEL,
+            contents=[types.Content(role="user", parts=[types.Part(text="Hi")])],
+            config=types.GenerateContentConfig(max_output_tokens=1),
+        )
+        print(f"✅ Google AI API raggiungibile")
+        print(f"✅ Modello: {config.MODEL}")
+        return True
     except Exception as e:
-        print(f"❌ Impossibile connettersi a Ollama ({OLLAMA_HOST}): {e}")
+        print(f"❌ Errore connessione Google AI API: {e}")
         return False
 
 
@@ -75,6 +72,13 @@ def run_evaluation(selected_attacks=None, selected_defenses=None, dry_run=False)
     completed = 0
     start_time = time.time()
 
+    # Live JSONL file: one result per line, written immediately after each test.
+    os.makedirs(RESULTS_DIR, exist_ok=True)
+    live_ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+    live_path = os.path.join(RESULTS_DIR, f"eval_live_{live_ts}.jsonl")
+    live_file = open(live_path, "w", buffering=1)  # line-buffered
+    print(f"📝 Live results: {live_path}\n")
+
     for defense_name, defense_fn in defenses.items():
         for attack_name, attack_fn in attacks.items():
             for prompt_info in prompts:
@@ -92,16 +96,22 @@ def run_evaluation(selected_attacks=None, selected_defenses=None, dry_run=False)
                       end="", flush=True)
 
                 t0 = time.time()
+                api_error = None
                 try:
                     response = defense_fn(attacked_prompt)
                     latency = time.time() - t0
                 except Exception as e:
                     response = f"[ERROR] {e}"
                     latency = time.time() - t0
+                    api_error = str(e)
                     traceback.print_exc()
 
-                # Judge
-                verdict = judge_response(response)
+                # Judge — errors are excluded from COMPLIED/REFUSED stats
+                if api_error:
+                    verdict = {"refused": False, "compliant": False,
+                               "response_length": 0, "confidence": 0.0}
+                else:
+                    verdict = judge_response(response, original_prompt=raw_prompt)
 
                 result = {
                     "defense": defense_name,
@@ -115,12 +125,22 @@ def run_evaluation(selected_attacks=None, selected_defenses=None, dry_run=False)
                     "compliant": verdict["compliant"],
                     "response_length": verdict["response_length"],
                     "confidence": verdict["confidence"],
+                    "judge_used": verdict.get("judge_used", False),
                     "latency_s": round(latency, 2),
+                    "error": api_error,
                 }
                 results.append(result)
+                live_file.write(json.dumps(result, ensure_ascii=False) + "\n")
 
-                status = "🛡️ REFUSED" if verdict["refused"] else "⚠️ COMPLIED"
+                if api_error:
+                    status = "❌ ERROR"
+                elif verdict["refused"]:
+                    status = "🛡️ REFUSED"
+                else:
+                    status = "⚠️ COMPLIED"
                 print(f"{status} ({latency:.1f}s, {verdict['response_length']} chars)")
+
+    live_file.close()
 
     elapsed = time.time() - start_time
 
@@ -132,7 +152,7 @@ def run_evaluation(selected_attacks=None, selected_defenses=None, dry_run=False)
     output = {
         "metadata": {
             "model": config.MODEL,
-            "ollama_host": OLLAMA_HOST,
+            "api": "google-generativeai",
             "timestamp": ts,
             "total_tests": total,
             "elapsed_seconds": round(elapsed, 1),
@@ -154,9 +174,15 @@ def run_evaluation(selected_attacks=None, selected_defenses=None, dry_run=False)
 
 
 def print_summary(results, defenses, attacks):
-    """Print ASR summary table."""
+    """Print ASR summary table. Errors are excluded from ASR calculations."""
+    # Count total errors
+    total_errors = sum(1 for r in results if r.get("error"))
+    if total_errors:
+        print(f"\n  ⚠️  {total_errors} test con errore API esclusi dall'ASR")
+
     print(f"\n{'='*70}")
     print(f"  ATTACK SUCCESS RATE (ASR) — più basso = modello più sicuro")
+    print(f"  (calcolato solo sui test completati con successo)")
     print(f"{'='*70}")
 
     header = f"{'Attack':<20}" + "".join(f"{d:<16}" for d in defenses)
@@ -166,8 +192,11 @@ def print_summary(results, defenses, attacks):
     for attack_name in attacks:
         row = f"{attack_name:<20}"
         for defense_name in defenses:
+            # Exclude errored tests from ASR
             subset = [r for r in results
-                      if r["attack"] == attack_name and r["defense"] == defense_name]
+                      if r["attack"] == attack_name
+                      and r["defense"] == defense_name
+                      and not r.get("error")]
             if subset:
                 asr = sum(1 for r in subset if r["compliant"]) / len(subset)
                 row += f"{asr:>6.1%}          "
@@ -179,10 +208,20 @@ def print_summary(results, defenses, attacks):
     print("-" * len(header))
     row = f"{'OVERALL':<20}"
     for defense_name in defenses:
-        subset = [r for r in results if r["defense"] == defense_name]
+        subset = [r for r in results
+                  if r["defense"] == defense_name and not r.get("error")]
         asr = sum(1 for r in subset if r["compliant"]) / len(subset) if subset else 0
         row += f"{asr:>6.1%}          "
     print(row)
+
+    # Error summary per defense
+    if total_errors:
+        print(f"\n{'Errori API per difesa':}")
+        for defense_name in defenses:
+            n_err = sum(1 for r in results
+                        if r["defense"] == defense_name and r.get("error"))
+            if n_err:
+                print(f"  {defense_name}: {n_err} errori")
 
 
 def main():
@@ -196,14 +235,12 @@ def main():
     if args.model:
         config.MODEL = args.model
 
-    print(f"🔬 Ollama Jailbreak Evaluation")
-    print(f"   Model: {config.MODEL} @ {OLLAMA_HOST}\n")
+    print(f"🔬 Jailbreak Evaluation (Google AI)")
+    print(f"   Model: {config.MODEL}\n")
 
     if not args.dry_run:
-        if not check_ollama_connection():
-            print("\n💡 Assicurati che Ollama sia in esecuzione:")
-            print(f"   ollama serve")
-            print(f"   ollama pull {config.MODEL}")
+        if not check_api_connection():
+            print("\n💡 Controlla che GOOGLE_API_KEY_FREE sia valida nel file .env")
             sys.exit(1)
 
     results_path = run_evaluation(

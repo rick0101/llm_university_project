@@ -496,6 +496,60 @@ Finally, Figure~\ref{fig:latency_gemma3_4b} presents the response latency distri
   \label{fig:latency_gemma3_4b}
 \end{figure}
 
+
+\section{Experimental Validation: gemma-3-27b-it}
+
+To empirically validate the theoretical attack and defense taxonomies presented in prior sections, we conducted a systematic jailbreak evaluation campaign against \texttt{gemma-3-27b-it}, a locally deployed large language model served via the Ollama inference framework. The evaluation exhaustively tests every combination of harmful prompts, attack strategies, and defense mechanisms, producing a comprehensive Attack Success Rate (ASR) matrix. A total of 15 test cases were executed (15 harmful prompts $\times$ 1 attack strategies $\times$ 1 defense mechanisms), spanning 7 threat categories: Data Poisoning, Disinformation, Exploitation, Malware, Privacy, Prompt Injection, Social Engineering. The complete evaluation required approximately 0.1 hours of inference time.
+
+The attack strategies employed include both classical black-box techniques and recently proposed methods derived from the current literature: Direct. The defense mechanisms tested are: No-Defense. This combinatorial design enables fine-grained analysis of which attack--defense pairings expose the greatest model vulnerabilities.
+
+The overall ASR across all configurations was 26.7%. The most effective defense was No-Defense, achieving an ASR of 26.7%, while No-Defense exhibited the highest vulnerability with an ASR of 26.7%. These results quantitatively demonstrate that defense effectiveness varies dramatically depending on the strategy employed, reinforcing the need for multi-layered defense architectures.
+
+Figure~\ref{fig:heatmap_asr_gemma-3-27b-it} presents the ASR heatmap across all attack--defense combinations. Each cell represents the proportion of harmful prompts that successfully bypassed the model's safety alignment for that specific pairing.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.85\textwidth]{gemma-3-27b-it_20260327_132911/heatmap_attack_defense.png}
+  \caption{Heatmap of Attack Success Rate (ASR) across all attack--defense combinations for \texttt{gemma-3-27b-it}. Darker cells indicate higher vulnerability.}
+  \label{fig:heatmap_asr_gemma-3-27b-it}
+\end{figure}
+
+Figure~\ref{fig:bar_asr_gemma-3-27b-it} provides a grouped bar chart view of the same data, enabling direct comparison of attack effectiveness under each defense strategy.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.85\textwidth]{gemma-3-27b-it_20260327_132911/bar_attack_defense.png}
+  \caption{Grouped bar chart comparing ASR of each attack strategy under different defense mechanisms for \texttt{gemma-3-27b-it}.}
+  \label{fig:bar_asr_gemma-3-27b-it}
+\end{figure}
+
+Figure~\ref{fig:radar_category_gemma-3-27b-it} illustrates the model's vulnerability profile across threat categories using a radar chart, highlighting which domains of harmful content are most and least effectively defended against.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.7\textwidth]{gemma-3-27b-it_20260327_132911/radar_category.png}
+  \caption{Radar chart of ASR by threat category for \texttt{gemma-3-27b-it}, showing the model's vulnerability profile across different harm domains.}
+  \label{fig:radar_category_gemma-3-27b-it}
+\end{figure}
+
+Figure~\ref{fig:defense_summary_gemma-3-27b-it} summarizes the overall effectiveness of each defense mechanism by aggregating ASR across all attacks and prompt categories.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.75\textwidth]{gemma-3-27b-it_20260327_132911/defense_summary.png}
+  \caption{Overall ASR by defense strategy for \texttt{gemma-3-27b-it}. Lower values indicate more effective defenses.}
+  \label{fig:defense_summary_gemma-3-27b-it}
+\end{figure}
+
+Finally, Figure~\ref{fig:latency_gemma-3-27b-it} presents the response latency distribution across defense strategies. Multi-call defenses exhibit higher latency due to additional API calls, representing a practical trade-off between safety and responsiveness.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.75\textwidth]{gemma-3-27b-it_20260327_132911/latency_boxplot.png}
+  \caption{Response latency boxplot by defense strategy for \texttt{gemma-3-27b-it}. Multi-call defenses incur higher latency as a trade-off for improved safety.}
+  \label{fig:latency_gemma-3-27b-it}
+\end{figure}
+
 \section{Discussion and Open Challenges}
 
 The rapid integration of Large Language Models (LLMs) into software development workflows has undeniably accelerated productivity, but it has also exposed a complex landscape of vulnerabilities. As adversarial attacks on code-generating models become increasingly sophisticated, the research community faces several critical hurdles. This section discusses the primary challenges and open questions that must be addressed to secure the next generation of AI-assisted programming tools, focusing on the delicate balance between utility and security, the emergence of novel threat vectors, and the scalability of defense mechanisms.

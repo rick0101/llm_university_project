@@ -38,6 +38,14 @@ logger = get_logger(__name__)
 _YEAR_RE = re.compile(r"\b(20[0-2]\d)\b")
 _FILENAME_YEAR_RE = re.compile(r"(?:^|[_\-\s])?(20[0-2]\d)(?:[_\-\s]|$)")
 
+# Stop-words da ignorare nel cross-check abstract ↔ titolo
+_ABSTRACT_CHECK_STOP_WORDS = frozenset({
+    "a", "an", "the", "of", "in", "on", "for", "to", "and", "or", "with",
+    "by", "from", "at", "is", "are", "was", "were", "be", "been", "this",
+    "that", "it", "its", "as", "but", "not", "how", "what", "which", "via",
+    "large", "language", "model", "models", "based", "using", "towards",
+})
+
 # Alias di normalizzazione venue: chiave in minuscolo → nome canonico
 _VENUE_ALIASES: dict[str, str] = {
     "arxiv": "arXiv",
@@ -131,6 +139,7 @@ class MetadataEnricher:
             paper_dict.get("abstract", ""),
             s2_data,
             grobid_output,
+            paper_title=paper_dict.get("title", ""),
         )
         if abstract:
             paper_dict["abstract"] = abstract
@@ -307,16 +316,25 @@ class MetadataEnricher:
         existing_abstract: str,
         s2_data: Optional[dict],
         grobid_output: Optional[GROBIDOutput],
+        paper_title: str = "",
     ) -> tuple[str, float]:
         """Cascata multi-source per l'abstract.
 
         Returns: (abstract, confidence_contribution)
         """
-        # 1. S2 abstract (tipicamente più pulito)
+        # 1. S2 abstract (tipicamente più pulito) — con cross-check titolo
         if s2_data:
             s2_abstract = s2_data.get("abstract") or ""
             if len(s2_abstract) > 50:
-                return s2_abstract, 0.15
+                title = paper_title or s2_data.get("title") or ""
+                if not title or self._abstract_matches_title(title, s2_abstract):
+                    return s2_abstract, 0.15
+                else:
+                    logger.warning(
+                        "S2 abstract scartato: non corrisponde al titolo '%s'",
+                        title[:80],
+                    )
+                    # Fallthrough ai fallback successivi
 
         # 2. GROBID abstract
         if grobid_output and grobid_output.abstract and len(grobid_output.abstract) > 50:
@@ -337,3 +355,16 @@ class MetadataEnricher:
             return existing_abstract, 0.04
 
         return "", 0.0
+
+    @staticmethod
+    def _abstract_matches_title(title: str, abstract: str) -> bool:
+        """Verifica che l'abstract sia coerente con il titolo del paper."""
+        title_words = set(re.findall(r'[A-Z][a-z]+|[A-Z]{2,}', title))
+        significant = {
+            w for w in title_words
+            if len(w) >= 4 and w.lower() not in _ABSTRACT_CHECK_STOP_WORDS
+        }
+        if not significant:
+            return True  # Niente da controllare
+        matches = sum(1 for w in significant if w.lower() in abstract.lower())
+        return matches / len(significant) >= 0.2  # Almeno 20% overlap

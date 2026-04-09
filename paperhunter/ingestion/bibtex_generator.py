@@ -74,6 +74,31 @@ _CONFERENCE_KEYWORDS = frozenset({
 
 
 # =============================================================================
+# Validazione autori
+# =============================================================================
+
+_INVALID_AUTHOR_PATTERNS = [
+    r'^(Qwen|Gemini|GPT|Claude|Llama|Mistral)',   # Nomi di modelli AI
+    r'^(Efficient|Ving|Binyuan)$',                  # Token isolati sospetti
+    r'(Labs?|Inc|Corp|University|Institute)\b',     # Affiliazioni
+    r'^(Microsoft|Google|Meta|Apple|Amazon|OpenAI|Anthropic|DeepMind|Nvidia|Intel|IBM|Huawei|Alibaba|Baidu|Tencent)$',  # Aziende tech
+    r'^\w{1,2}$',                                    # Nomi troppo corti (1-2 char)
+]
+
+_MAX_AUTHORS = 15
+
+
+def _is_valid_author_name(name: str) -> bool:
+    """Filtra nomi autori palesemente non validi."""
+    if not name or len(name.strip()) < 3:
+        return False
+    for pattern in _INVALID_AUTHOR_PATTERNS:
+        if re.search(pattern, name.strip(), re.IGNORECASE):
+            return False
+    return True
+
+
+# =============================================================================
 # Utility interne
 # =============================================================================
 
@@ -200,6 +225,9 @@ def _is_conference_venue(venue: str) -> bool:
 def _format_authors_bibtex(authors: list[str]) -> str:
     """Formatta la lista di autori per BibTeX (separati da " and ").
 
+    Filtra nomi invalidi (modelli AI, affiliazioni, token corti) e
+    tronca a _MAX_AUTHORS se la lista è sospettamente lunga.
+
     Args:
         authors: Lista di nomi autori.
 
@@ -208,7 +236,22 @@ def _format_authors_bibtex(authors: list[str]) -> str:
     """
     if not authors:
         return "Unknown"
-    return " and ".join(_sanitize_for_bibtex(a) for a in authors)
+
+    # Filtra autori invalidi
+    valid = [a for a in authors if _is_valid_author_name(a)]
+    if not valid:
+        logger.warning("Tutti gli autori filtrati come invalidi: %s", authors[:5])
+        return "Unknown"
+
+    # Tronca se lista sospettamente lunga
+    if len(valid) > _MAX_AUTHORS:
+        logger.warning(
+            "Lista autori troncata da %d a %d (possibile corruzione)",
+            len(valid), _MAX_AUTHORS,
+        )
+        valid = valid[:_MAX_AUTHORS]
+
+    return " and ".join(_sanitize_for_bibtex(a) for a in valid)
 
 
 # =============================================================================
@@ -340,7 +383,16 @@ def _build_bibtex_from_scratch(paper: Paper, key: str) -> str:
     journal = paper.journal or ""
     is_conference = _is_conference_venue(venue) or _is_conference_venue(journal)
 
-    if is_conference:
+    # FASE 3: Se ha arxiv_id ma non DOI → è un preprint, non pubblicato in conferenza
+    if paper.arxiv_id and not paper.doi:
+        entry_type = "misc"
+        is_conference = False
+        if venue or journal:
+            logger.debug(
+                "Paper con arxiv_id senza DOI: forzato @misc (venue ignorata: '%s')",
+                venue or journal,
+            )
+    elif is_conference:
         entry_type = "inproceedings"
     elif journal:
         entry_type = "article"
@@ -378,6 +430,8 @@ def _build_bibtex_from_scratch(paper: Paper, key: str) -> str:
             fields.append(("journal", f"{{{_sanitize_for_bibtex(venue)}}}"))
         elif paper.arxiv_id:
             fields.append(("journal", "{arXiv preprint}"))
+    elif entry_type == "misc" and paper.arxiv_id:
+        fields.append(("howpublished", "{arXiv preprint}"))
 
     # Month (opzionale)
     if paper.month:
@@ -392,10 +446,20 @@ def _build_bibtex_from_scratch(paper: Paper, key: str) -> str:
     if paper.doi:
         fields.append(("doi", f"{{{paper.doi}}}"))
 
-    # ArXiv ID (come eprint)
-    if paper.arxiv_id:
-        fields.append(("eprint", f"{{{paper.arxiv_id}}}"))
-        fields.append(("archiveprefix", "{arXiv}"))
+    # ArXiv ID (come eprint) — FASE 4: fallback da URL + validazione formato
+    arxiv_id = paper.arxiv_id
+    if not arxiv_id and paper.url:
+        m = re.search(r'arxiv\.org/abs/(\d{4}\.\d{4,5})', paper.url)
+        if m:
+            arxiv_id = m.group(1)
+            logger.debug("arxiv_id estratto da URL: %s", arxiv_id)
+    if arxiv_id:
+        # Validazione formato: deve essere YYMM.NNNNN(vN)?
+        if re.match(r'^\d{4}\.\d{4,5}(v\d+)?$', arxiv_id):
+            fields.append(("eprint", f"{{{arxiv_id}}}"))
+            fields.append(("archiveprefix", "{arXiv}"))
+        else:
+            logger.warning("arxiv_id formato invalido, ignorato: %s", arxiv_id)
 
     # URL
     if paper.url and paper.url.strip():
@@ -620,6 +684,60 @@ def _patch_bibtex_field(entry: str, field_name: str, value: str) -> str:
     return entry + f"\n{new_field}"
 
 
+def _warn_suspicious_entries(entries: list[str]) -> None:
+    """Loga warning per entry BibTeX con possibili problemi di qualità.
+
+    Controlla:
+    - Numero autori > _MAX_AUTHORS
+    - Nomi autori che matchano pattern sospetti
+    - @inproceedings senza DOI
+    - arxiv_id presente ma eprint mancante
+    - Abstract assente o troppo corto (< 50 char)
+    - Anno fuori range ragionevole
+    """
+    for entry in entries:
+        key_match = re.search(r'@(\w+)\{([^,]+),', entry)
+        if not key_match:
+            continue
+        entry_type = key_match.group(1).lower()
+        bib_key = key_match.group(2).strip()
+
+        # Autori: numero eccessivo
+        author_match = re.search(r'author\s*=\s*\{([^}]*)\}', entry, re.IGNORECASE)
+        if author_match:
+            author_str = author_match.group(1)
+            author_count = len(author_str.split(" and "))
+            if author_count > _MAX_AUTHORS:
+                logger.warning("[QA] %s: %d autori (possibile corruzione)", bib_key, author_count)
+            # Nomi sospetti
+            for name in author_str.split(" and "):
+                name = name.strip()
+                if not _is_valid_author_name(name):
+                    logger.warning("[QA] %s: autore sospetto '%s'", bib_key, name)
+
+        # @inproceedings senza DOI
+        if entry_type == "inproceedings" and not re.search(r'doi\s*=', entry, re.IGNORECASE):
+            logger.warning("[QA] %s: @inproceedings senza DOI", bib_key)
+
+        # arxiv_id/URL arXiv ma eprint mancante
+        has_arxiv_url = bool(re.search(r'arxiv\.org', entry, re.IGNORECASE))
+        has_eprint = bool(re.search(r'eprint\s*=', entry, re.IGNORECASE))
+        if has_arxiv_url and not has_eprint:
+            logger.warning("[QA] %s: URL arXiv presente ma eprint mancante", bib_key)
+
+        # Abstract assente o troppo corto
+        abs_match = re.search(r'abstract\s*=\s*\{([^}]*)\}', entry, re.IGNORECASE)
+        if not abs_match or len(abs_match.group(1).strip()) < 50:
+            logger.warning("[QA] %s: abstract assente o troppo corto", bib_key)
+
+        # Anno fuori range
+        year_match = re.search(r'year\s*=\s*\{?(\d{4})\}?', entry, re.IGNORECASE)
+        if year_match:
+            year_val = int(year_match.group(1))
+            if year_val < 1990 or year_val > 2035:
+                logger.warning("[QA] %s: anno fuori range (%d)", bib_key, year_val)
+
+
 def save_master_bib(
     entries: list[str],
     output_path: str | Path | None = None,
@@ -664,6 +782,9 @@ def save_master_bib(
 
     # Ordina per chiave
     sorted_entries = sorted(seen_keys.values(), key=lambda e: e.lower())
+
+    # FASE 6: Warning hook — segnala entry sospette prima della scrittura
+    _warn_suspicious_entries(sorted_entries)
 
     # Scrivi file
     header = (

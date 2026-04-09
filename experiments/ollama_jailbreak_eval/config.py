@@ -1,13 +1,23 @@
 """
-Configuration for the Ollama Jailbreak Evaluation.
+Configuration for the Jailbreak Evaluation.
 
-Change OLLAMA_HOST to point to your PC with GPU.
-Change MODEL to match your Ollama model name.
+Uses Google Generative AI API (GOOGLE_API_KEY_FREE from .env) instead of Ollama.
+MODEL must be a valid Google AI model name (e.g. gemma-3-27b-it).
 """
+import os
+from pathlib import Path
 
-# ── Ollama connection ──────────────────────────────────────────────
-OLLAMA_HOST = "http://192.168.1.63:11434"
-MODEL = "gemma3:4b"
+from dotenv import load_dotenv
+
+# Load .env from project root (two levels up from this file)
+load_dotenv(Path(__file__).resolve().parents[2] / ".env")
+
+# ── Google AI configuration ────────────────────────────────────────
+GOOGLE_API_KEY = os.environ["GOOGLE_API_KEY_FREE"]
+MODEL = "gemma-3-27b-it"
+
+# Keep for backwards-compat (used in run_evaluation.py metadata only)
+OLLAMA_HOST = "https://generativelanguage.googleapis.com"
 
 # ── Experiment parameters ──────────────────────────────────────────
 REQUEST_TIMEOUT = 120          # seconds per request

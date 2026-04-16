@@ -78,6 +78,7 @@ class Paper(BaseModel):
     # BibTeX
     bibtex_key: Optional[str] = Field(None, description="Chiave BibTeX (es. Zou_2023_GCG)")
     bibtex_entry: Optional[str] = Field(None, description="Entry BibTeX completa")
+    bibtex_source: Optional[str] = Field(None, description="Provenienza entry BibTeX: 'dblp', 'local', ecc.")
 
     # Ingestion tracking
     pdf_path: Optional[str] = Field(None, description="Percorso locale del PDF")

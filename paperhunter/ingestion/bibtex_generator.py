@@ -37,6 +37,7 @@ from typing import Optional
 
 from paperhunter.models import Paper
 from paperhunter.utils.logging_setup import get_logger
+from paperhunter.ingestion.dblp_lookup import DblpLookup, get_dblp_lookup
 
 logger = get_logger(__name__)
 
@@ -236,9 +237,17 @@ def _format_authors_bibtex(authors: list[str]) -> str:
     """
     if not authors:
         return "Unknown"
+        
+    flat_authors = []
+    for a in authors:
+        parts = re.split(r'\s+and\s+|,', a, flags=re.IGNORECASE)
+        for p in parts:
+            p = p.strip()
+            if p:
+                flat_authors.append(p)
 
     # Filtra autori invalidi
-    valid = [a for a in authors if _is_valid_author_name(a)]
+    valid = [a for a in flat_authors if _is_valid_author_name(a)]
     if not valid:
         logger.warning("Tutti gli autori filtrati come invalidi: %s", authors[:5])
         return "Unknown"
@@ -305,12 +314,9 @@ def generate_bibtex_key(
 def generate_bibtex_entry(paper: Paper) -> str:
     """Genera un'entry BibTeX completa per un paper.
 
-    Se il paper ha già `bibtex_entry` proveniente da Semantic Scholar,
-    lo usa come base ma sostituisce la chiave con quella custom generata
-    da `generate_bibtex_key()`.
-
-    Se non esiste un BibTeX S2, ne genera uno da zero con i metadati
-    disponibili nel Paper.
+    Tenta prima di recuperare l'entry BibTeX ufficiale da DBLP
+    (preferendo pubblicazioni in conferenza/journal). Se non trovata
+    su DBLP, genera l'entry da zero con i metadati disponibili.
 
     Args:
         paper: Paper con metadati (title, authors, year, venue, ecc.).
@@ -331,12 +337,47 @@ def generate_bibtex_entry(paper: Paper) -> str:
         authors=paper.authors,
     )
 
-    # Se S2 ha fornito un BibTeX, sostituisci solo la chiave
-    if paper.bibtex_entry and paper.bibtex_entry.strip():
-        return _replace_bibtex_key(paper.bibtex_entry, key)
+    # --- Tenta lookup DBLP ---
+    dblp_entry = _try_dblp_lookup(paper, key)
+    if dblp_entry is not None:
+        return dblp_entry
 
-    # Altrimenti: genera da zero
+    # --- Fallback: costruisci da zero ---
     return _build_bibtex_from_scratch(paper, key)
+
+
+def _try_dblp_lookup(paper: Paper, key: str) -> str | None:
+    """Tenta di recuperare il BibTeX ufficiale da DBLP.
+
+    Se trovato, sostituisce la chiave DBLP con la chiave custom
+    e marca il paper come proveniente da DBLP.
+
+    Returns:
+        Entry BibTeX con chiave custom, o None se non trovato.
+    """
+    try:
+        dblp = get_dblp_lookup()
+        result = dblp.lookup_bibtex(
+            title=paper.title,
+            authors=paper.authors,
+            year=paper.year,
+            doi=paper.doi,
+        )
+        if result is None:
+            return None
+
+        # Sostituisci la chiave DBLP con la nostra chiave custom
+        entry = _replace_bibtex_key(result.bibtex, key)
+
+        logger.info(
+            "BibTeX DBLP ufficiale per '%s' [%s] (sim=%.2f, tipo=%s)",
+            paper.title[:50], result.dblp_key, result.similarity, result.dblp_type,
+        )
+        return entry
+
+    except Exception as exc:
+        logger.warning("Errore DBLP lookup, fallback a generazione locale: %s", exc)
+        return None
 
 
 def _replace_bibtex_key(bibtex_str: str, new_key: str) -> str:
@@ -485,8 +526,9 @@ def _build_bibtex_from_scratch(paper: Paper, key: str) -> str:
 def enrich_paper_bibtex(paper: Paper) -> Paper:
     """Arricchisce un Paper con bibtex_key e bibtex_entry generati.
 
-    Non sovrascrive se il paper ha già una bibtex_key valida
-    E una bibtex_entry con la chiave corretta.
+    Tenta prima un lookup su DBLP per ottenere l'entry BibTeX ufficiale.
+    Se trovata su DBLP, marca il paper con bibtex_source="dblp" così
+    che ensure_complete_bibtex() non sovrascriva l'entry verificata.
 
     Args:
         paper: Paper da arricchire.
@@ -504,10 +546,19 @@ def enrich_paper_bibtex(paper: Paper) -> Paper:
             authors=paper.authors,
         )
 
-    # Genera/aggiorna l'entry BibTeX
-    # Prima aggiorna il paper con la nuova key (serve a generate_bibtex_entry)
-    temp_paper = Paper(**paper_dict)
-    paper_dict["bibtex_entry"] = generate_bibtex_entry(temp_paper)
+    key = paper_dict["bibtex_key"]
+
+    # --- Tenta DBLP direttamente per tracciare la provenienza ---
+    dblp_entry = _try_dblp_lookup(Paper(**paper_dict), key)
+    if dblp_entry is not None:
+        paper_dict["bibtex_entry"] = dblp_entry
+        paper_dict["bibtex_source"] = "dblp"
+    else:
+        # Fallback: genera da zero
+        paper_dict["bibtex_entry"] = _build_bibtex_from_scratch(
+            Paper(**paper_dict), key,
+        )
+        paper_dict["bibtex_source"] = "local"
 
     result = Paper(**paper_dict)
     return ensure_complete_bibtex(result)
@@ -566,9 +617,9 @@ def validate_bibtex_completeness(entry: str) -> dict[str, str]:
 def ensure_complete_bibtex(paper: Paper) -> Paper:
     """Garantisce che il Paper abbia un'entry BibTeX valida e completa.
 
-    Se `bibtex_entry` è None o vuoto, genera da zero.
-    Completa i campi mancanti o con placeholder usando i dati del Paper.
-    Determina automaticamente il tipo @misc per preprint arXiv.
+    Se l'entry proviene da DBLP (bibtex_source="dblp"), la considera
+    già verificata e non la sovrascrive con @misc. Altrimenti applica
+    le euristiche standard per completare campi mancanti.
 
     Il campo `bibtex_entry` non sarà mai None dopo questa funzione.
 
@@ -595,33 +646,39 @@ def ensure_complete_bibtex(paper: Paper) -> Paper:
 
     entry = paper_dict["bibtex_entry"] or ""
     key = paper_dict["bibtex_key"]
+    is_dblp = paper_dict.get("bibtex_source") == "dblp"
 
     # --- Correggi il tipo se è un preprint arXiv ---
-    venue_str = (paper.venue or paper.journal or "").lower()
-    is_arxiv = (
-        "arxiv" in venue_str
-        or bool(paper.arxiv_id)
-        or "preprint" in venue_str
-    )
-    if is_arxiv and not re.match(r"@misc\{", entry, re.IGNORECASE):
-        # Ricostruisci come @misc
-        entry = _build_misc_bibtex(paper, key)
+    # NON sovrascrivere entry verificate da DBLP: se DBLP dice
+    # @inproceedings, il paper è effettivamente pubblicato in conferenza
+    # anche se ha un arxiv_id.
+    if not is_dblp:
+        venue_str = (paper.venue or paper.journal or "").lower()
+        is_arxiv = (
+            "arxiv" in venue_str
+            or bool(paper.arxiv_id)
+            or "preprint" in venue_str
+        )
+        if is_arxiv and not re.match(r"@misc\{", entry, re.IGNORECASE):
+            entry = _build_misc_bibtex(paper, key)
+        elif not entry.strip():
+            entry = _build_misc_bibtex(paper, key)
+
+        # --- Completa campi critici con placeholder mancanti ---
+        entry = _patch_bibtex_field(entry, "title", paper.title or "Untitled")
+        authors_str = _format_authors_bibtex(paper.authors) if paper.authors else "Anonymous"
+        entry = _patch_bibtex_field(entry, "author", authors_str)
+
+        # Year: prova anche dal bibtex_key (es. "Zou_2023_GCG" → 2023)
+        year_val = paper.year
+        if year_val is None and key:
+            m = re.search(r'_(\d{4})_', key)
+            if m:
+                year_val = int(m.group(1))
+        entry = _patch_bibtex_field(entry, "year", str(year_val) if year_val else "2000")
     elif not entry.strip():
-        # Fallback totale: @misc minimale
+        # Entry DBLP vuota (non dovrebbe succedere): fallback
         entry = _build_misc_bibtex(paper, key)
-
-    # --- Completa campi critici con placeholder mancanti ---
-    entry = _patch_bibtex_field(entry, "title", paper.title or "Untitled")
-    authors_str = _format_authors_bibtex(paper.authors) if paper.authors else "Anonymous"
-    entry = _patch_bibtex_field(entry, "author", authors_str)
-
-    # Year: prova anche dal bibtex_key (es. "Zou_2023_GCG" → 2023)
-    year_val = paper.year
-    if year_val is None and key:
-        m = re.search(r'_(\d{4})_', key)
-        if m:
-            year_val = int(m.group(1))
-    entry = _patch_bibtex_field(entry, "year", str(year_val) if year_val else "2000")
 
     paper_dict["bibtex_entry"] = entry
     return Paper(**paper_dict)

@@ -88,7 +88,7 @@ _TEMPLATE_ACL = r"""\documentclass[11pt,a4paper]{{article}}
 
 {body}
 
-\bibliographystyle{{plainnat}}
+\bibliographystyle{{abbrv}}
 \bibliography{{{bibfile}}}
 
 \end{{document}}
@@ -130,7 +130,6 @@ _TEMPLATE_PLAIN = r"""\documentclass[12pt,a4paper]{{article}}
 \usepackage[T1]{{fontenc}}
 \usepackage[utf8]{{inputenc}}
 \usepackage{{hyperref}}
-\usepackage{{natbib}}
 
 \title{{{title}}}
 \author{{{author}}}
@@ -141,7 +140,7 @@ _TEMPLATE_PLAIN = r"""\documentclass[12pt,a4paper]{{article}}
 
 {body}
 
-\bibliographystyle{{plainnat}}
+\bibliographystyle{{abbrv}}
 \bibliography{{{bibfile}}}
 
 \end{{document}}

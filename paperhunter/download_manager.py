@@ -265,6 +265,7 @@ class Downloader:
                 
                 # Check for success
                 if response.status_code != 200:
+                    logger.debug(f"Direct download HTTP {response.status_code} for {url}")
                     return DownloadResult(
                         success=False,
                         method="direct",
@@ -276,6 +277,7 @@ class Downloader:
                 if "application/pdf" not in content_type.lower():
                     # Check if content starts with PDF magic bytes
                     if not response.content[:4] == b'%PDF':
+                        logger.debug(f"Not a PDF ({content_type}) for {url}")
                         return DownloadResult(
                             success=False,
                             method="direct",
@@ -295,12 +297,14 @@ class Downloader:
                 )
                 
         except httpx.TimeoutException:
+            logger.debug(f"Download timed out for {url}")
             return DownloadResult(
                 success=False,
                 method="direct",
                 error_message="Download timed out"
             )
         except Exception as e:
+            logger.debug(f"Direct download exception for {url}: {e}")
             return DownloadResult(
                 success=False,
                 method="direct",

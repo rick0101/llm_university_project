@@ -119,6 +119,7 @@ def cmd_search(args: argparse.Namespace) -> int:
 
     max_results = args.max_results or settings.max_results_per_source
     download_dir = Path(args.output_dir) if args.output_dir else ensure_download_dir()
+    download_dir.mkdir(parents=True, exist_ok=True)
 
     # Interattivo se mancano keyword
     if not keywords:

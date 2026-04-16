@@ -1256,6 +1256,23 @@ paperhunter search \
     -c 'Solo articoli di ricerca originali che introducono nuove tecniche di data poisoning, model poisoning o backdoor attack su LLM. Escludi tassativamente survey, review, meta-analisi, tutorial, overview e position paper.' \
     -o ./scaricati/Data_and_Model_Poisoning1 -n 5 --date-from 2025-05
 
+# ---- Round 2 (keyword diversi, dal 2024) ----
+
+# — Prompt Injections (round 2) — 57 PDF scaricati
+paperhunter search \
+    -k '"indirect prompt injection" OR "prompt leaking" OR "system prompt extraction" OR "instruction hijacking"' \
+    -c 'Solo articoli di ricerca originali che introducono nuove tecniche, metodi o framework con validazione sperimentale. Escludi tassativamente survey, review, meta-analisi, systematic literature review, tutorial, overview, position paper, editoriali e paper che descrivono solo benchmark o dataset.' \
+    -o ./scaricati/Prompt_injections2 -n 10 --date-from 2024-01 -y
+
+# — Prompt Injections (round 3) — 58 PDF scaricati
+paperhunter search \
+    -k '"prompt injection defense" OR "prompt firewall" OR "LLM input sanitization" OR "prompt guard"' \
+    -c 'Solo articoli di ricerca originali che introducono nuove tecniche, metodi o framework con validazione sperimentale. Escludi tassativamente survey, review, meta-analisi, systematic literature review, tutorial, overview, position paper, editoriali e paper che descrivono solo benchmark o dataset.' \
+    -o ./scaricati/Prompt_injections3 -n 10 --date-from 2024-01 -y
+
+# Risultato Round 2: 436 PDF totali (target raggiunto: ~300)
+# Round 3-4 non eseguiti perché il target è stato ampiamente superato.
+
 # 2. Ingest: PDF → GROBID → S2 → chunking → Qdrant
 paperhunter ingest
 

@@ -47,8 +47,11 @@ logger = get_logger(__name__)
 _DBLP_SEARCH_URL = "https://dblp.org/search/publ/api"
 _DBLP_BIB_URL = "https://dblp.org/rec/{key}.bib"
 
-_REQUEST_TIMEOUT = 15.0
-_MIN_REQUEST_INTERVAL = 1.1  # secondi tra richieste (rispetta fair use DBLP)
+_REQUEST_TIMEOUT = 20.0
+_MIN_REQUEST_INTERVAL = 2.0  # secondi tra richieste (rispetta fair use DBLP)
+_MAX_RETRIES = 3
+_RETRY_BACKOFF = 3.0  # secondi di backoff iniziale (raddoppia ad ogni retry)
+_RATE_LIMIT_COOLDOWN = 30.0  # secondi di attesa dopo un 429
 
 # Soglie di similarità titolo
 _TITLE_SIM_THRESHOLD_WITH_AUTHOR = 0.82
@@ -82,15 +85,27 @@ class DblpResult:
 # Normalizzazione titolo
 # ---------------------------------------------------------------------------
 
+_NOISE_SUFFIX_RE = re.compile(
+    r"\s*(Content Warning|Disclaimer|Note|Abstract|Keywords)\s*[:.].*$",
+    re.IGNORECASE,
+)
+
+
+def _strip_title_noise(title: str) -> str:
+    """Rimuovi metadati appesi al titolo (artefatti di parsing BibTeX)."""
+    return _NOISE_SUFFIX_RE.sub("", title).strip() if title else ""
+
+
 def _normalize_title(title: str) -> str:
     """Normalizza un titolo per il confronto di similarità.
 
     Rimuove accenti, punteggiatura, spazi extra, e converte in lowercase.
-    """
+    Rimuove anche metadati appesi al titolo (Content Warning, ecc.)."""
     if not title:
         return ""
+    text = _strip_title_noise(title)
     # Rimuovi accenti
-    nfkd = unicodedata.normalize("NFKD", title)
+    nfkd = unicodedata.normalize("NFKD", text)
     text = "".join(c for c in nfkd if not unicodedata.combining(c))
     # Lowercase
     text = text.lower()
@@ -99,6 +114,53 @@ def _normalize_title(title: str) -> str:
     # Collassa spazi
     text = re.sub(r"\s+", " ", text).strip()
     return text
+
+
+def _fix_broken_hyphens(title: str) -> str:
+    """Ricomponi parole spezzate da trattini di fine riga.
+
+    Individua pattern come 'STRAT-EGY' dove una parola è stata spezzata
+    a fine riga e le ricompone. Preserva parole composte legittime come
+    'SELF-EXPLORATION' o 'PRE-TRAINING' usando un whitelist di prefissi comuni.
+
+    Usata SOLO come fallback nella ricerca DBLP, mai nella normalizzazione
+    standard per evitare regressioni.
+    """
+    _COMMON_PREFIXES = {
+        "pre", "post", "non", "multi", "co", "anti", "semi", "re", "un",
+        "bi", "tri", "sub", "mid", "neo", "pan", "self", "cross", "over",
+        "under", "out", "well", "fine", "long", "short", "high", "low",
+        "meta", "super", "ultra", "inter", "intra", "auto", "mini", "full",
+        "half", "near", "far", "end",
+        # Abbreviazioni tecniche
+        "llm", "vlm", "nlp", "gpt", "ai", "ml", "dl", "rl", "cv", "nlg",
+        "api", "gui", "rag", "ocr", "pdf", "llms", "vlms",
+        # Parole brevi comuni nelle parole composte
+        "to", "of", "in", "on", "no", "an", "at", "as", "or", "by",
+        "is", "it", "up", "do", "go", "so", "if", "be", "we", "my",
+        "all", "and", "for", "the", "but", "not", "yet", "nor", "off",
+        "own", "out", "new", "old", "big", "top", "end", "run", "day",
+        "red", "one", "two", "way", "key", "set", "use", "get",
+        "box", "hot", "net", "web", "war", "law", "age", "art",
+        "free", "open", "code", "data", "text", "base", "like",
+        "turn", "step", "time", "task", "test", "type", "term",
+        "shot", "tune", "loop", "aware", "based", "level", "scale",
+        "black", "white", "chain", "guided",
+    }
+
+    def _merge_if_broken(match: re.Match) -> str:
+        left, right = match.group(1), match.group(2)
+        # Non mergiare se il lato sinistro è un prefisso comune
+        if left.lower() in _COMMON_PREFIXES:
+            return match.group(0)
+        # Non mergiare se il lato destro è una parola/abbreviazione comune
+        if right.lower() in _COMMON_PREFIXES:
+            return match.group(0)
+        # Merge se un lato è molto corto (≤3 caratteri)
+        if len(left) <= 3 or len(right) <= 3:
+            return left + right
+        return match.group(0)
+    return re.sub(r"(\w+)-(\w+)", _merge_if_broken, title)
 
 
 def _title_similarity(title_a: str, title_b: str) -> float:
@@ -225,6 +287,47 @@ class DblpLookup:
     # API calls
     # ------------------------------------------------------------------
 
+    def _request_with_retry(self, method: str, url: str, **kwargs) -> httpx.Response:
+        """Esegue una richiesta HTTP con retry automatico su errori di connessione.
+
+        Gestisce disconnessioni del server DBLP e 429 Too Many Requests.
+        """
+        last_exc = None
+        for attempt in range(_MAX_RETRIES):
+            self._wait_rate_limit()
+            try:
+                resp = self._client.get(url, **kwargs) if method == "GET" else self._client.request(method, url, **kwargs)
+                if resp.status_code == 429:
+                    logger.debug("DBLP 429 rate limited (attempt %d/%d), waiting %ds", attempt + 1, _MAX_RETRIES, _RATE_LIMIT_COOLDOWN)
+                    self._recreate_client()
+                    time.sleep(_RATE_LIMIT_COOLDOWN)
+                    continue
+                return resp
+            except httpx.RemoteProtocolError as exc:
+                last_exc = exc
+                logger.debug("DBLP connection reset (attempt %d/%d): %s", attempt + 1, _MAX_RETRIES, exc)
+                self._recreate_client()
+                time.sleep(_RETRY_BACKOFF * (2 ** attempt))
+            except httpx.RequestError as exc:
+                last_exc = exc
+                logger.debug("DBLP request error (attempt %d/%d): %s", attempt + 1, _MAX_RETRIES, exc)
+                time.sleep(_RETRY_BACKOFF * (2 ** attempt))
+        if last_exc:
+            raise last_exc
+        raise httpx.RequestError("DBLP max retries exceeded")
+
+    def _recreate_client(self) -> None:
+        """Ricrea il client HTTP (utile dopo disconnessioni)."""
+        try:
+            self._client.close()
+        except Exception:
+            pass
+        self._client = httpx.Client(
+            timeout=_REQUEST_TIMEOUT,
+            follow_redirects=True,
+            headers={"User-Agent": "PaperHunter/2.0 (academic survey tool)"},
+        )
+
     def _search_dblp(self, query: str, max_hits: int = 5) -> list[dict]:
         """Esegue una ricerca sull'API DBLP.
 
@@ -235,9 +338,9 @@ class DblpLookup:
         Returns:
             Lista di hit (dict con info del paper).
         """
-        self._wait_rate_limit()
         try:
-            resp = self._client.get(
+            resp = self._request_with_retry(
+                "GET",
                 _DBLP_SEARCH_URL,
                 params={"q": query, "format": "json", "h": str(max_hits)},
             )
@@ -271,10 +374,9 @@ class DblpLookup:
         Returns:
             Stringa BibTeX o None se errore.
         """
-        self._wait_rate_limit()
         url = _DBLP_BIB_URL.format(key=dblp_key)
         try:
-            resp = self._client.get(url)
+            resp = self._request_with_retry("GET", url)
             resp.raise_for_status()
             bibtex = resp.text.strip()
             if bibtex and bibtex.startswith("@"):
@@ -422,6 +524,14 @@ class DblpLookup:
             self._cache_result(ckey, result)
             return result
 
+        # --- Strategia 4: titolo de-iphenato (artefatti OCR) ---
+        dehyphenated = _fix_broken_hyphens(title)
+        if dehyphenated != title:
+            result = self._try_title_only_lookup(dehyphenated, year)
+            if result:
+                self._cache_result(ckey, result)
+                return result
+
         # Non trovato: cache il miss
         self._cache[ckey] = {"not_found": True, "title": title}
         self._save_cache()
@@ -447,36 +557,46 @@ class DblpLookup:
     def _try_title_author_lookup(
         self, title: str, first_author_surname: str, year: int | None,
     ) -> DblpResult | None:
-        """Cerca su DBLP per titolo + primo autore."""
-        # Usa le prime parole significative del titolo + autore
-        clean_title = re.sub(r"[^\w\s]", " ", title)
-        words = clean_title.split()[:10]
-        query = " ".join(words) + " " + first_author_surname
-        hits = self._search_dblp(query, max_hits=7)
-        if not hits:
-            return None
-        best, sim = self._select_best_hit(
-            hits, title, year, threshold=_TITLE_SIM_THRESHOLD_WITH_AUTHOR,
-        )
-        if best:
-            return self._build_result(best, sim)
+        """Cerca su DBLP per titolo + primo autore.
+
+        Prova prima con 10 parole, poi con 6 se non trova nulla
+        (DBLP usa AND logic, quindi troppe parole possono causare miss).
+        """
+        clean_title = re.sub(r"[^\w\s]", " ", _strip_title_noise(title))
+        all_words = clean_title.split()
+
+        for n_words in (10, 6):
+            words = all_words[:n_words]
+            query = " ".join(words) + " " + first_author_surname
+            hits = self._search_dblp(query, max_hits=7)
+            if hits:
+                best, sim = self._select_best_hit(
+                    hits, title, year, threshold=_TITLE_SIM_THRESHOLD_WITH_AUTHOR,
+                )
+                if best:
+                    return self._build_result(best, sim)
         return None
 
     def _try_title_only_lookup(
         self, title: str, year: int | None,
     ) -> DblpResult | None:
-        """Cerca su DBLP solo per titolo (soglia più alta)."""
-        clean_title = re.sub(r"[^\w\s]", " ", title)
-        words = clean_title.split()[:12]
-        query = " ".join(words)
-        hits = self._search_dblp(query, max_hits=5)
-        if not hits:
-            return None
-        best, sim = self._select_best_hit(
-            hits, title, year, threshold=_TITLE_SIM_THRESHOLD_TITLE_ONLY,
-        )
-        if best:
-            return self._build_result(best, sim)
+        """Cerca su DBLP solo per titolo (soglia più alta).
+
+        Prova con 12 parole, poi 7 se non trova nulla.
+        """
+        clean_title = re.sub(r"[^\w\s]", " ", _strip_title_noise(title))
+        all_words = clean_title.split()
+
+        for n_words in (12, 7):
+            words = all_words[:n_words]
+            query = " ".join(words)
+            hits = self._search_dblp(query, max_hits=5)
+            if hits:
+                best, sim = self._select_best_hit(
+                    hits, title, year, threshold=_TITLE_SIM_THRESHOLD_TITLE_ONLY,
+                )
+                if best:
+                    return self._build_result(best, sim)
         return None
 
     def _build_result(self, hit: dict, similarity: float) -> DblpResult | None:

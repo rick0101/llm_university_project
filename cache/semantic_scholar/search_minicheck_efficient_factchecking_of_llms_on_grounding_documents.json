@@ -1,0 +1,35 @@
+{
+  "paperId": "d0489fd7c5ff833e08969341ae6e5fa1d0e6dd2a",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2404-10774",
+    "ArXiv": "2404.10774",
+    "ACL": "2024.emnlp-main.499",
+    "DOI": "10.48550/arXiv.2404.10774",
+    "CorpusId": 269157443
+  },
+  "title": "MiniCheck: Efficient Fact-Checking of LLMs on Grounding Documents",
+  "venue": "Conference on Empirical Methods in Natural Language Processing",
+  "year": 2024,
+  "citationCount": 209,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.10774, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "46815797",
+      "name": "Liyan Tang"
+    },
+    {
+      "authorId": "46180754",
+      "name": "Philippe Laban"
+    },
+    {
+      "authorId": "1814094",
+      "name": "Greg Durrett"
+    }
+  ],
+  "abstract": "Recognizing if LLM output can be grounded in evidence is central to many tasks in NLP: retrieval-augmented generation, summarization, document-grounded dialogue, and more. Current approaches to this kind of fact-checking are based on verifying each piece of a model generation against potential evidence using an LLM. However, this process can be very computationally expensive, requiring many calls to a model to check a single response. In this work, we show how to build small fact-checking models that have GPT-4-level performance but for 400x lower cost. We do this by constructing synthetic training data with GPT-4, which involves creating realistic yet challenging instances of factual errors via a structured generation procedure. Training on this data teaches models to check each fact in the claim and recognize synthesis of information across sentences. For evaluation, we unify datasets from recent work on fact-checking and grounding LLM generations into a new benchmark, LLM-AggreFact. Our best system MiniCheck-FT5 (770M parameters) outperforms all systems of comparable size and reaches GPT-4 accuracy. We release LLM-AggreFact, code for data synthesis, and models."
+}

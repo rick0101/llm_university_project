@@ -1,0 +1,30 @@
+{
+  "paperId": "ff1ed695b203785b9b44a953bfc3f8b914fcdfd9",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2407-14971",
+    "ArXiv": "2407.14971",
+    "DOI": "10.48550/arXiv.2407.14971",
+    "CorpusId": 271328995
+  },
+  "title": "Sim-CLIP: Unsupervised Siamese Adversarial Fine-Tuning for Robust and Semantically-Rich Vision-Language Models",
+  "venue": "arXiv.org",
+  "year": 2024,
+  "citationCount": 11,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2407.14971, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2197739642",
+      "name": "Md. Zarif Hossain"
+    },
+    {
+      "authorId": "2296643139",
+      "name": "Ahmed Imteaj"
+    }
+  ],
+  "abstract": "Vision-Language Models (VLMs) rely heavily on pretrained vision encoders to support downstream tasks such as image captioning, visual question answering, and zero-shot classification. Despite their strong performance, these encoders remain highly vulnerable to imperceptible adversarial perturbations, which can severely degrade both robustness and semantic quality in multimodal reasoning. In this work, we introduce Sim-CLIP, an unsupervised adversarial fine-tuning framework that enhances the robustness of the CLIP vision encoder while preserving overall semantic representations. Sim-CLIP adopts a Siamese training architecture with a cosine similarity objective and a symmetric stop-gradient mechanism to enforce semantic alignment between clean and adversarial views. This design avoids large-batch contrastive learning and additional momentum encoders, enabling robust training with low computational overhead. We evaluate Sim-CLIP across multiple Vision-Language Models and tasks under both targeted and untargeted adversarial attacks. Experimental results demonstrate that Sim-CLIP consistently outperforms state-of-the-art robust CLIP variants, achieving stronger adversarial robustness while maintaining or improving semantic fidelity. These findings highlight the limitations of existing adversarial defenses and establish Sim-CLIP as an effective and scalable solution for robust vision-language representation learning."
+}

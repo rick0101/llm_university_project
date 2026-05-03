@@ -1,0 +1,38 @@
+{
+  "paperId": "2078b079bfa37cc20fd93ba9e8f202c3d661cb31",
+  "externalIds": {
+    "ArXiv": "2510.13992",
+    "DBLP": "journals/corr/abs-2510-13992",
+    "DOI": "10.48550/arXiv.2510.13992",
+    "CorpusId": 282139218
+  },
+  "title": "Signature in Code Backdoor Detection, how far are we?",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.13992, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2390814589",
+      "name": "Quoc Le"
+    },
+    {
+      "authorId": "1811413300",
+      "name": "Thanh Le-Cong"
+    },
+    {
+      "authorId": "2237800166",
+      "name": "Bach Le"
+    },
+    {
+      "authorId": "2344697738",
+      "name": "Bowen Xu"
+    }
+  ],
+  "abstract": "As Large Language Models (LLMs) become increasingly integrated into software development workflows, they also become prime targets for adversarial attacks. Among these, backdoor attacks are a significant threat, allowing attackers to manipulate model outputs through hidden triggers embedded in training data. Detecting such backdoors remains a challenge, and one promising approach is the use of Spectral Signature defense methods that identify poisoned data by analyzing feature representations through eigenvectors. While some prior works have explored Spectral Signatures for backdoor detection in neural networks, recent studies suggest that these methods may not be optimally effective for code models. In this paper, we revisit the applicability of Spectral Signature-based defenses in the context of backdoor attacks on code models. We systematically evaluate their effectiveness under various attack scenarios and defense configurations, analyzing their strengths and limitations. We found that the widely used setting of Spectral Signature in code backdoor detection is often suboptimal. Hence, we explored the impact of different settings of the key factors. We discovered a new proxy metric that can more accurately estimate the actual performance of Spectral Signature without model retraining after the defense."
+}

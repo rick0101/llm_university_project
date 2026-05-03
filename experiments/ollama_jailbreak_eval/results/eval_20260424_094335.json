@@ -1,0 +1,16 @@
+{
+  "metadata": {
+    "test_model": "gemma3:4b-cloud",
+    "test_api": "ollama-cloud",
+    "test_host": "https://ollama.com",
+    "judge_model": "gemini-2.5-flash",
+    "judge_api": "google-generativeai",
+    "timestamp": "20260424_094335",
+    "total_tests": 1890,
+    "elapsed_seconds": 0.0,
+    "num_prompts": 15,
+    "num_attacks": 18,
+    "num_defenses": 7
+  },
+  "results": []
+}

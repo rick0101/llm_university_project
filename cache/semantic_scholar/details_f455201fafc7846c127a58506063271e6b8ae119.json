@@ -1,0 +1,61 @@
+{
+  "paperId": "f455201fafc7846c127a58506063271e6b8ae119",
+  "externalIds": {
+    "DBLP": "conf/emnlp/LiuYCSRC25",
+    "ArXiv": "2505.24858",
+    "DOI": "10.48550/arXiv.2505.24858",
+    "CorpusId": 279057202
+  },
+  "title": "MetaFaith: Faithful Natural Language Uncertainty Expression in LLMs",
+  "venue": "Conference on Empirical Methods in Natural Language Processing",
+  "year": 2025,
+  "citationCount": 4,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.24858, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-05-30",
+  "journal": {
+    "pages": "29612-29656"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Kaili-May2025MetaFaithFN,\n author = {Gabrielle Kaili-May and Liu and G. Yona and Avi Caciularu and Idan Szpektor and Tim G. J. Rudner and Arman Cohan},\n booktitle = {Conference on Empirical Methods in Natural Language Processing},\n pages = {29612-29656},\n title = {MetaFaith: Faithful Natural Language Uncertainty Expression in LLMs},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2321863767",
+      "name": "Gabrielle Kaili-May"
+    },
+    {
+      "authorId": "2298060311",
+      "name": "Liu"
+    },
+    {
+      "authorId": "36825265",
+      "name": "G. Yona"
+    },
+    {
+      "authorId": "2288816486",
+      "name": "Avi Caciularu"
+    },
+    {
+      "authorId": "1711977",
+      "name": "Idan Szpektor"
+    },
+    {
+      "authorId": "2107677984",
+      "name": "Tim G. J. Rudner"
+    },
+    {
+      "authorId": "2355006955",
+      "name": "Arman Cohan"
+    }
+  ],
+  "abstract": "A critical component in the trustworthiness of LLMs is reliable uncertainty communication, yet LLMs often use assertive language when conveying false claims, leading to over-reliance and eroded trust. We present the first systematic study of $\\textit{faithful confidence calibration}$ of LLMs, benchmarking models'ability to use linguistic expressions of uncertainty that $\\textit{faithfully reflect}$ their intrinsic uncertainty, across a comprehensive array of models, datasets, and prompting strategies. Our results demonstrate that LLMs largely fail at this task, and that existing interventions are insufficient: standard prompt approaches provide only marginal gains, and existing, factuality-based calibration techniques can even harm faithful calibration. To address this critical gap, we introduce MetaFaith, a novel prompt-based calibration approach inspired by human metacognition. We show that MetaFaith robustly improves faithful calibration across diverse models and task domains, enabling up to 61% improvement in faithfulness and achieving an 83% win rate over original generations as judged by humans."
+}

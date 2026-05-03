@@ -1,0 +1,58 @@
+{
+  "paperId": "9d2a35c03db4234f6d55acee93f2528dab20c564",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2512-19215",
+    "ArXiv": "2512.19215",
+    "DOI": "10.48550/arXiv.2512.19215",
+    "CorpusId": 284078554
+  },
+  "title": "Semantically-Equivalent Transformations-Based Backdoor Attacks against Neural Code Models: Characterization and Mitigation",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 0,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2512.19215, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-12-22",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2512.19215"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Ye2025SemanticallyEquivalentTB,\n author = {Junyao Ye and Zhen Li and Xi Tang and Shouhuai Xu and Deqing Zou and Zhongsheng Yuan},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {Semantically-Equivalent Transformations-Based Backdoor Attacks against Neural Code Models: Characterization and Mitigation},\n volume = {abs/2512.19215},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2368409918",
+      "name": "Junyao Ye"
+    },
+    {
+      "authorId": "2128045930",
+      "name": "Zhen Li"
+    },
+    {
+      "authorId": "2368302708",
+      "name": "Xi Tang"
+    },
+    {
+      "authorId": "2242999556",
+      "name": "Shouhuai Xu"
+    },
+    {
+      "authorId": "2238676363",
+      "name": "Deqing Zou"
+    },
+    {
+      "authorId": "2401782721",
+      "name": "Zhongsheng Yuan"
+    }
+  ],
+  "abstract": "Neural code models have been increasingly incorporated into software development processes. However, their susceptibility to backdoor attacks presents a significant security risk. The state-of-the-art understanding focuses on injection-based attacks, which insert anomalous patterns into software code. These attacks can be neutralized by standard sanitization techniques. This status quo may lead to a false sense of security regarding backdoor attacks. In this paper, we introduce a new kind of backdoor attacks, dubbed Semantically-Equivalent Transformation (SET)-based backdoor attacks, which use semantics-preserving low-prevalence code transformations to generate stealthy triggers. We propose a framework to guide the generation of such triggers. Our experiments across five tasks, six languages, and models like CodeBERT, CodeT5, and StarCoder show that SET-based attacks achieve high success rates (often>90%) while preserving model utility. The attack proves highly stealthy, evading state-of-the-art defenses with detection rates on average over 25.13% lower than injection-based counterparts. We evaluate normalization-based countermeasures and find they offer only partial mitigation, confirming the attack's robustness. These results motivate further investigation into scalable defenses tailored to SET-based attacks."
+}

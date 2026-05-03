@@ -365,10 +365,12 @@ def _retrieve_context_for_section(
         Tuple di (chunks, chunk_ids) dove ogni chunk è un dict con
         chunk_id, text, score, metadata.
     """
-    # Lazy init retriever
+    # Lazy init retriever — track if created locally to close it after use
+    _local_retriever = False
     if retriever is None:
         from paperhunter.indexing.hybrid_retriever import HybridRetriever
         retriever = HybridRetriever()
+        _local_retriever = True
 
     # Build category filter
     category_filter = None
@@ -379,31 +381,37 @@ def _retrieve_context_for_section(
     all_results: list[dict] = []
     seen_ids: set[str] = set()
 
-    for query in queries:
-        try:
-            results = retriever.retrieve_multi_collection(
-                query,
-                n_results=top_k_per_query,
-                category_filter=category_filter,
-            )
-            for r in results:
-                rid = r.chunk_id if hasattr(r, "chunk_id") else r.get("chunk_id", "")
-                if rid and rid not in seen_ids:
-                    seen_ids.add(rid)
-                    # Normalize to dict
-                    if hasattr(r, "to_dict"):
-                        all_results.append(r.to_dict())
-                    elif isinstance(r, dict):
-                        all_results.append(r)
-                    else:
-                        all_results.append({
-                            "chunk_id": rid,
-                            "text": getattr(r, "text", str(r)),
-                            "score": getattr(r, "score", 0.0),
-                            "metadata": getattr(r, "metadata", {}),
-                        })
-        except Exception as e:
-            logger.warning(f"Errore retrieval per query '{query[:60]}': {e}")
+    try:
+        for query in queries:
+            try:
+                results = retriever.retrieve_multi_collection(
+                    query,
+                    n_results=top_k_per_query,
+                    category_filter=category_filter,
+                )
+                for r in results:
+                    rid = r.chunk_id if hasattr(r, "chunk_id") else r.get("chunk_id", "")
+                    if rid and rid not in seen_ids:
+                        seen_ids.add(rid)
+                        # Normalize to dict
+                        if hasattr(r, "to_dict"):
+                            all_results.append(r.to_dict())
+                        elif isinstance(r, dict):
+                            all_results.append(r)
+                        else:
+                            all_results.append({
+                                "chunk_id": rid,
+                                "text": getattr(r, "text", str(r)),
+                                "score": getattr(r, "score", 0.0),
+                                "metadata": getattr(r, "metadata", {}),
+                            })
+            except Exception as e:
+                logger.warning(f"Errore retrieval per query '{query[:60]}': {e}")
+    finally:
+        # Release the Qdrant lock immediately so other callers (ReAct tools, figure
+        # search) can open their own client without a "already accessed" conflict.
+        if _local_retriever:
+            retriever.close()
 
     logger.info(
         f"Retrieval per '{outline.title}': {len(all_results)} chunk unici "
@@ -605,6 +613,35 @@ def _format_context_for_prompt(
     parts: list[str] = []
     total_chars = 0
 
+    # v3.6 — Two-Tier Corpus: separa chunk citable vs background-only e
+    # iniettiamo prima la whitelist così il writer la vede sempre.
+    citable_keys: list[str] = []
+    background_keys: list[str] = []
+    seen_keys: set[str] = set()
+    for c in ordered_chunks:
+        meta = c.get("metadata", {}) or {}
+        key = meta.get("bibtex_key") or ""
+        if not key or key in seen_keys:
+            continue
+        seen_keys.add(key)
+        if meta.get("is_citable", False):
+            citable_keys.append(key)
+        else:
+            background_keys.append(key)
+
+    if citable_keys or background_keys:
+        whitelist_block = (
+            "=== CITATION WHITELIST (v3.6) ===\n"
+            "You MAY ONLY cite the following bibtex_keys (CITABLE):\n  "
+            + (", ".join(sorted(citable_keys)) if citable_keys else "(none)")
+            + "\n\nThe following are BACKGROUND-ONLY context — DO NOT cite them, "
+              "but you may paraphrase/synthesize their information:\n  "
+            + (", ".join(sorted(background_keys)) if background_keys else "(none)")
+            + "\n=== END WHITELIST ===\n\n"
+        )
+        parts.append(whitelist_block)
+        total_chars += len(whitelist_block)
+
     for i, chunk in enumerate(ordered_chunks):
         meta = chunk.get("metadata", {})
         bibtex_key = meta.get("bibtex_key", "Unknown")
@@ -614,13 +651,14 @@ def _format_context_for_prompt(
         chunk_id = chunk.get("chunk_id", f"chunk_{i}")
         chunk_type = meta.get("chunk_type", "original")
         text = chunk.get("text", "")
+        citable_tag = "CITABLE" if meta.get("is_citable", False) else "BACKGROUND"
 
         # Tronca testi molto lunghi
         if len(text) > 2000:
             text = text[:2000] + "..."
 
         header = (
-            f"--- Chunk {i + 1} [chunk_id: {chunk_id}] ---\n"
+            f"--- Chunk {i + 1} [chunk_id: {chunk_id}] [{citable_tag}] ---\n"
             f"Paper: [{bibtex_key}] | Category: {category} | "
             f"Year: {year} | Section: {section} | Type: {chunk_type}"
         )
@@ -1529,6 +1567,115 @@ async def _run_react_agent(agent, user_msg: str, max_iterations: int = 7):
         return None
 
 
+def _enforce_citation_whitelist(
+    text: str,
+    whitelist: set[str] | None,
+) -> tuple[str, list[str]]:
+    """Rimuove dal testo le citazioni di paper non in whitelist (v3.6 C3).
+
+    Cerca pattern ``[bibtex_key]`` (con almeno un underscore + cifra, come
+    nelle convenzioni del progetto) e:
+    - se ``bibtex_key`` è nella whitelist → lascia.
+    - altrimenti → rimuove la citazione (mantiene il testo circostante)
+      e logga il caso per audit.
+
+    Se ``whitelist`` è None o vuoto, non fa nulla (back-compat).
+
+    Returns:
+        (clean_text, removed_keys)
+    """
+    if not whitelist:
+        return text, []
+
+    removed: list[str] = []
+
+    def _replace(match: "re.Match[str]") -> str:
+        key = match.group(1)
+        # Heuristic: solo le bibtex-key reali (contengono underscore + cifra)
+        if "_" not in key or not any(c.isdigit() for c in key):
+            return match.group(0)
+        if key in whitelist:
+            return match.group(0)
+        removed.append(key)
+        return ""  # rimuove la citazione (incluse le parentesi)
+
+    cleaned = re.sub(r"\s*\[([^\]\s]+)\]", _replace, text)
+    # Compatta doppi spazi/spazi prima di punteggiatura
+    cleaned = re.sub(r"[ \t]{2,}", " ", cleaned)
+    cleaned = re.sub(r"\s+([,.;:!?])", r"\1", cleaned)
+    return cleaned, removed
+
+
+def _build_citable_keys_from_chunks(chunks: list[dict] | None) -> set[str]:
+    """Estrae i bibtex_keys citable dai chunk recuperati."""
+    if not chunks:
+        return set()
+    out: set[str] = set()
+    for c in chunks:
+        meta = c.get("metadata", {}) or {}
+        if meta.get("is_citable") and meta.get("bibtex_key"):
+            out.add(meta["bibtex_key"])
+    return out
+
+
+_CITABLE_KEYS_CACHE: set[str] | None = None
+
+
+def _load_global_citable_keys() -> set[str]:
+    """Carica (con cache) tutti i bibtex_keys citable dal vector store.
+
+    Usato come whitelist globale quando il writer gira in modalità
+    agentic/prefetch_agentic e non abbiamo i chunk locali.
+    """
+    global _CITABLE_KEYS_CACHE
+    if _CITABLE_KEYS_CACHE is not None:
+        return _CITABLE_KEYS_CACHE
+    try:
+        from paperhunter.indexing.qdrant_store import QdrantStore
+        from qdrant_client.http import models as qmodels
+
+        store = QdrantStore()
+        out: set[str] = set()
+        # Scroll attraverso tutte le collection rilevanti
+        for collection in [
+            store.COLLECTION_CHUNKS,
+            store.COLLECTION_L1,
+        ]:
+            try:
+                offset = None
+                while True:
+                    pts, offset = store.client.scroll(
+                        collection_name=collection,
+                        scroll_filter=qmodels.Filter(
+                            must=[
+                                qmodels.FieldCondition(
+                                    key="is_citable",
+                                    match=qmodels.MatchValue(value=True),
+                                )
+                            ]
+                        ),
+                        with_payload=["bibtex_key"],
+                        with_vectors=False,
+                        limit=512,
+                        offset=offset,
+                    )
+                    for p in pts:
+                        bk = (p.payload or {}).get("bibtex_key")
+                        if bk:
+                            out.add(bk)
+                    if offset is None:
+                        break
+            except Exception as exc:
+                logger.debug("scroll citable_keys fallito su %s: %s", collection, exc)
+        _CITABLE_KEYS_CACHE = out
+        logger.info("Citation whitelist globale caricata: %d bibtex_keys citable", len(out))
+        return out
+    except Exception as exc:
+        logger.warning("Impossibile caricare whitelist globale: %s", exc)
+        _CITABLE_KEYS_CACHE = set()
+        return _CITABLE_KEYS_CACHE
+
+
 def _build_section_result(
     parsed: dict,
     outline: SectionOutline,
@@ -1540,6 +1687,7 @@ def _build_section_result(
     mode: str = "static",
     queries: list[str] | None = None,
     chunk_ids: list[str] | None = None,
+    citable_keys: set[str] | None = None,
 ) -> dict[str, Any]:
     """Costruisce il risultato di una sezione scritta da qualsiasi modalità.
 
@@ -1561,6 +1709,25 @@ def _build_section_result(
         Dict parziale per aggiornamento stato LangGraph.
     """
     section_text = parsed["text"]
+
+    # --- v3.6: enforcement citation whitelist (strict mode) ---
+    if (
+        getattr(settings.agents, "citation_whitelist_strict", False)
+        and citable_keys
+    ):
+        section_text, removed = _enforce_citation_whitelist(section_text, citable_keys)
+        if removed:
+            unique_removed = sorted(set(removed))
+            logger.warning(
+                "Citation whitelist: rimosse %d citazioni non-citable da '%s': %s",
+                len(removed),
+                section_key,
+                unique_removed[:10],
+            )
+            errors.append(
+                f"citation_whitelist: stripped non-citable refs: {unique_removed[:10]}"
+            )
+
     word_count = _count_words(section_text)
     citation_records = [
         CitationRecord(
@@ -1729,6 +1896,7 @@ def write_section(
                 parsed, target_outline, section_key,
                 current_iteration, elapsed, errors,
                 mode="agentic",
+                citable_keys=_load_global_citable_keys(),
             )
         else:
             logger.warning(
@@ -1760,6 +1928,7 @@ def write_section(
                 parsed, target_outline, section_key,
                 current_iteration, elapsed, errors,
                 mode="prefetch_agentic",
+                citable_keys=_load_global_citable_keys(),
             )
         else:
             logger.warning(
@@ -1898,6 +2067,7 @@ def write_section(
         mode="static",
         queries=queries,
         chunk_ids=chunk_ids,
+        citable_keys=_build_citable_keys_from_chunks(chunks),
     )
 
 
@@ -2138,6 +2308,14 @@ def write_all_sections(
     failed_count = 0
 
     for i, section_outline in enumerate(sections_to_write):
+        # Close any Qdrant singleton left open by the previous section's ReAct agent
+        # so that _retrieve_context_for_section() can open its own client cleanly.
+        try:
+            from paperhunter.agents.tools.retrieval_tools import reset_singletons
+            reset_singletons()
+        except Exception:
+            pass
+
         logger.info(
             f"\n{'=' * 60}\n"
             f"Scrittura sezione {i + 1}/{len(sections_to_write)}: "
@@ -2264,16 +2442,13 @@ def write(state: SurveyState) -> dict[str, Any]:
             f"{list(needs_revision.keys())}"
         )
 
-    # Configura retriever e reranker (una volta per tutto il batch)
+    # Configura reranker (una volta per tutto il batch).
+    # HybridRetriever NON viene condiviso: ogni sezione crea il proprio e lo
+    # chiude subito dopo il retrieval, così il lock su qdrant_db viene rilasciato
+    # prima che il ReAct agent apra il suo singleton in retrieval_tools.
     retriever = None
     reranker = None
     graph_builder = None
-
-    try:
-        from paperhunter.indexing.hybrid_retriever import HybridRetriever
-        retriever = HybridRetriever()
-    except Exception as e:
-        logger.warning(f"Impossibile inizializzare HybridRetriever: {e}")
 
     try:
         from paperhunter.indexing.reranker import GeminiReranker

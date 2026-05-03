@@ -1,0 +1,394 @@
+[
+  {
+    "key": "Kumar_2024_LLMs",
+    "title": "AmpleGCG-Plus: A Strong Generative Model of Adversarial Suffixes to Jailbreak LLMs with Higher Success Rates in Fewer Attempts Content Warning: This paper contains potentially offensive and harmful text",
+    "current_type": "inproceedings",
+    "dblp_found": true,
+    "dblp_key": "journals/corr/abs-2410-22143",
+    "dblp_type": "Informal and Other Publications",
+    "similarity": 1.0,
+    "dblp_bib_type": "article"
+  },
+  {
+    "key": "Chen_2024_Rmcbench",
+    "title": "RMCBench: Benchmarking Large Language Models' Resistance to Malicious Code",
+    "current_type": "misc",
+    "dblp_found": true,
+    "dblp_key": "conf/kbse/ChenZ0NLX00Z24",
+    "dblp_type": "Conference and Workshop Papers",
+    "similarity": 0.9664429530201343,
+    "dblp_bib_type": "inproceedings"
+  },
+  {
+    "key": "Du_2024_LLM",
+    "title": "HaloScope: Harnessing Unlabeled LLM Generations for Hallucination Detection",
+    "current_type": "misc",
+    "dblp_found": true,
+    "dblp_key": "conf/nips/DuX024",
+    "dblp_type": "Conference and Workshop Papers",
+    "similarity": 1.0,
+    "dblp_bib_type": "inproceedings"
+  },
+  {
+    "key": "Guo_2024_Redcode",
+    "title": "RedCode: Risky Code Execution and Generation Benchmark for Code Agents",
+    "current_type": "misc",
+    "dblp_found": true,
+    "dblp_key": "conf/nips/GuoLXZZ0SL24",
+    "dblp_type": "Conference and Workshop Papers",
+    "similarity": 1.0,
+    "dblp_bib_type": "inproceedings"
+  },
+  {
+    "key": "Jenko_2024_LLM",
+    "title": "Black-Box Adversarial Attacks on LLM-Based Code Completion",
+    "current_type": "misc",
+    "dblp_found": true,
+    "dblp_key": "conf/icml/JenkoMHVV25",
+    "dblp_type": "Conference and Workshop Papers",
+    "similarity": 1.0,
+    "dblp_bib_type": "inproceedings"
+  },
+  {
+    "key": "Jing_2024_Scale",
+    "title": "On A Scale From 1 to 5: Quantifying Hallucination in Faithfulness Evaluation",
+    "current_type": "misc",
+    "dblp_found": true,
+    "dblp_key": "conf/naacl/JingBG25",
+    "dblp_type": "Conference and Workshop Papers",
+    "similarity": 1.0,
+    "dblp_bib_type": "inproceedings"
+  },
+  {
+    "key": "Li_2025_Iag",
+    "title": "IAG: Input-aware Backdoor Attack on VLM-based Visual Grounding",
+    "current_type": "misc",
+    "dblp_found": true,
+    "dblp_key": "journals/corr/abs-2508-09456",
+    "dblp_type": "Informal and Other Publications",
+    "similarity": 0.9256198347107438,
+    "dblp_bib_type": "article"
+  },
+  {
+    "key": "Li_2026_Slowba",
+    "title": "SlowBA: An efficiency backdoor attack towards VLM-based GUI agents",
+    "current_type": "misc",
+    "dblp_found": true,
+    "dblp_key": "journals/corr/abs-2603-08316",
+    "dblp_type": "Informal and Other Publications",
+    "similarity": 1.0,
+    "dblp_bib_type": "article"
+  },
+  {
+    "key": "Lin_2025_Exploring",
+    "title": "Exploring the Security Threats of Knowledge Base Poisoning in Retrieval-Augmented Code Generation",
+    "current_type": "misc",
+    "dblp_found": true,
+    "dblp_key": "journals/corr/abs-2502-03233",
+    "dblp_type": "Informal and Other Publications",
+    "similarity": 1.0,
+    "dblp_bib_type": "article"
+  },
+  {
+    "key": "Lin_2025_LLMs",
+    "title": "Give LLMs a Security Course: Securing Retrieval-Augmented Code Generation via Knowledge Injection",
+    "current_type": "misc",
+    "dblp_found": true,
+    "dblp_key": "conf/ccs/LinWQCM25",
+    "dblp_type": "Conference and Workshop Papers",
+    "similarity": 1.0,
+    "dblp_bib_type": "inproceedings"
+  },
+  {
+    "key": "Liu_2024_Autodan",
+    "title": "AUTODAN-TURBO: A LIFELONG AGENT FOR STRAT-EGY SELF-EXPLORATION TO JAILBREAK LLMS",
+    "current_type": "misc",
+    "dblp_found": true,
+    "dblp_key": "conf/iclr/LiuLSVMJM00X25",
+    "dblp_type": "Conference and Workshop Papers",
+    "similarity": 0.9936305732484076,
+    "dblp_bib_type": "inproceedings"
+  },
+  {
+    "key": "Liu_2024_Flipattack",
+    "title": "FLIPATTACK: JAILBREAK LLMS VIA FLIPPING",
+    "current_type": "misc",
+    "dblp_found": true,
+    "dblp_key": "conf/icml/0008HXFDMZH25",
+    "dblp_type": "Conference and Workshop Papers",
+    "similarity": 1.0,
+    "dblp_bib_type": "inproceedings"
+  },
+  {
+    "key": "Liu_2025_AI",
+    "title": "\"Your AI, My Shell\": Demystifying Prompt Injection Attacks on Agentic AI Coding Editors",
+    "current_type": "misc",
+    "dblp_found": true,
+    "dblp_key": "journals/corr/abs-2509-22040",
+    "dblp_type": "Informal and Other Publications",
+    "similarity": 0.9431818181818182,
+    "dblp_bib_type": "article"
+  },
+  {
+    "key": "Lyu_2024_Trojvlm",
+    "title": "TrojVLM: Backdoor Attack Against Vision Language Models",
+    "current_type": "misc",
+    "dblp_found": true,
+    "dblp_key": "conf/eccv/LyuPMLC24",
+    "dblp_type": "Conference and Workshop Papers",
+    "similarity": 1.0,
+    "dblp_bib_type": "inproceedings"
+  },
+  {
+    "key": "Mamun_2025_LLMs",
+    "title": "Poison Once, Refuse Forever: Weaponizing Alignment for Injecting Bias in LLMs",
+    "current_type": "misc",
+    "dblp_found": true,
+    "dblp_key": "journals/corr/abs-2508-20333",
+    "dblp_type": "Informal and Other Publications",
+    "similarity": 1.0,
+    "dblp_bib_type": "article"
+  },
+  {
+    "key": "Mo_2025_LLMs",
+    "title": "REDCODER: Automated Multi-Turn Red Teaming for Code LLMs",
+    "current_type": "misc",
+    "dblp_found": true,
+    "dblp_key": "journals/corr/abs-2507-22063",
+    "dblp_type": "Informal and Other Publications",
+    "similarity": 1.0,
+    "dblp_bib_type": "article"
+  },
+  {
+    "key": "Mu_2025_LLM",
+    "title": "Evaluate-and-Purify: Fortifying Code Language Models Against Adversarial Attacks Using LLM-as-a-Judge",
+    "current_type": "misc",
+    "dblp_found": true,
+    "dblp_key": "journals/corr/abs-2504-19730",
+    "dblp_type": "Informal and Other Publications",
+    "similarity": 1.0,
+    "dblp_bib_type": "article"
+  },
+  {
+    "key": "Muntasir_2025_Mocha",
+    "title": "MOCHA: Are Code Language Models Robust Against Multi-Turn Malicious Coding Prompts?",
+    "current_type": "misc",
+    "dblp_found": true,
+    "dblp_key": "conf/emnlp/WahedZNYDWHL25",
+    "dblp_type": "Conference and Workshop Papers",
+    "similarity": 1.0,
+    "dblp_bib_type": "inproceedings"
+  },
+  {
+    "key": "Nie_2024_Secodeplt",
+    "title": "SECODEPLT: A Unified Benchmark for Evaluating the Security Risks and Capabilities of Code Agents",
+    "current_type": "misc",
+    "dblp_found": false
+  },
+  {
+    "key": "Noever_2024_AI",
+    "title": "Hallucinating AI Hijacking Attack: Large Language Models and Malicious Code Recommenders",
+    "current_type": "misc",
+    "dblp_found": true,
+    "dblp_key": "journals/corr/abs-2410-06462",
+    "dblp_type": "Informal and Other Publications",
+    "similarity": 1.0,
+    "dblp_bib_type": "article"
+  },
+  {
+    "key": "Ouyang_2025_LLM",
+    "title": "Smoke and Mirrors: Jailbreaking LLM-based Code Generation via Implicit Malicious Prompts",
+    "current_type": "misc",
+    "dblp_found": true,
+    "dblp_key": "journals/corr/abs-2503-17953",
+    "dblp_type": "Informal and Other Publications",
+    "similarity": 1.0,
+    "dblp_bib_type": "article"
+  },
+  {
+    "key": "Park_2025_LLM",
+    "title": "Steer LLM Latents for Hallucination Detection",
+    "current_type": "misc",
+    "dblp_found": true,
+    "dblp_key": "conf/icml/ParkDY0025",
+    "dblp_type": "Conference and Workshop Papers",
+    "similarity": 1.0,
+    "dblp_bib_type": "inproceedings"
+  },
+  {
+    "key": "Paudel_2025_Hallucinot",
+    "title": "HALLUCINOT: Hallucination Detection Through Context and Common Knowledge Verification",
+    "current_type": "misc",
+    "dblp_found": true,
+    "dblp_key": "journals/corr/abs-2504-07069",
+    "dblp_type": "Informal and Other Publications",
+    "similarity": 1.0,
+    "dblp_bib_type": "article"
+  },
+  {
+    "key": "Rubel_2024_LLM",
+    "title": "Generalized Adversarial Code-Suggestions: Exploiting Contexts of LLM-based Code-Completion",
+    "current_type": "misc",
+    "dblp_found": true,
+    "dblp_key": "conf/asiaccs/RubelNW25",
+    "dblp_type": "Conference and Workshop Papers",
+    "similarity": 1.0,
+    "dblp_bib_type": "inproceedings"
+  },
+  {
+    "key": "Shen_2025_Decepchain",
+    "title": "DECEPCHAIN: INDUCING DECEPTIVE REASONING IN LARGE LANGUAGE MODELS",
+    "current_type": "misc",
+    "dblp_found": true,
+    "dblp_key": "journals/corr/abs-2510-00319",
+    "dblp_type": "Informal and Other Publications",
+    "similarity": 1.0,
+    "dblp_bib_type": "article"
+  },
+  {
+    "key": "Song_2024_Claim",
+    "title": "Claim-Guided Textual Backdoor Attack for Practical Applications",
+    "current_type": "misc",
+    "dblp_found": true,
+    "dblp_key": "conf/naacl/SongKKJS25",
+    "dblp_type": "Conference and Workshop Papers",
+    "similarity": 1.0,
+    "dblp_bib_type": "inproceedings"
+  },
+  {
+    "key": "Storek_2025_AI",
+    "title": "XOXO: Stealthy Cross-Origin Context Poisoning Attacks against AI Coding Assistants",
+    "current_type": "misc",
+    "dblp_found": true,
+    "dblp_key": "journals/corr/abs-2503-14281",
+    "dblp_type": "Informal and Other Publications",
+    "similarity": 1.0,
+    "dblp_bib_type": "article"
+  },
+  {
+    "key": "Tang_2025_Cognibench",
+    "title": "CogniBench: A Legal-inspired Framework and Dataset for Assessing Cognitive Faithfulness of Large Language Models",
+    "current_type": "misc",
+    "dblp_found": true,
+    "dblp_key": "conf/acl/TangLHDLZSX25",
+    "dblp_type": "Conference and Workshop Papers",
+    "similarity": 1.0,
+    "dblp_bib_type": "inproceedings"
+  },
+  {
+    "key": "Thulke_2025_Listen",
+    "title": "Listen to the Context: Towards Faithful Large Language Models for Retrieval Augmented Generation on Climate Questions",
+    "current_type": "misc",
+    "dblp_found": true,
+    "dblp_key": "journals/corr/abs-2505-15633",
+    "dblp_type": "Informal and Other Publications",
+    "similarity": 1.0,
+    "dblp_bib_type": "article"
+  },
+  {
+    "key": "Urlana_2025_LLM",
+    "title": "HalluCounter: Reference-free LLM Hallucination Detection in the Wild!",
+    "current_type": "misc",
+    "dblp_found": true,
+    "dblp_key": "conf/ijcnlp/UrlanaKKGM25",
+    "dblp_type": "Conference and Workshop Papers",
+    "similarity": 1.0,
+    "dblp_bib_type": "inproceedings"
+  },
+  {
+    "key": "Wang_2024_Developing",
+    "title": "Developing a Reliable, Fast, General-Purpose Hallucination Detection and Mitigation Service",
+    "current_type": "misc",
+    "dblp_found": true,
+    "dblp_key": "conf/naacl/WangWMXCX25",
+    "dblp_type": "Conference and Workshop Papers",
+    "similarity": 1.0,
+    "dblp_bib_type": "inproceedings"
+  },
+  {
+    "key": "Wang_2024_LLMs",
+    "title": "Poisoned LangChain: Jailbreak LLMs by LangChain",
+    "current_type": "misc",
+    "dblp_found": true,
+    "dblp_key": "journals/corr/abs-2406-18122",
+    "dblp_type": "Informal and Other Publications",
+    "similarity": 1.0,
+    "dblp_bib_type": "article"
+  },
+  {
+    "key": "Wang_2026_Badtemplate",
+    "title": "BadTemplate: A Training-Free Backdoor Attack via Chat Template Against Large Language Models",
+    "current_type": "misc",
+    "dblp_found": true,
+    "dblp_key": "journals/corr/abs-2602-05401",
+    "dblp_type": "Informal and Other Publications",
+    "similarity": 1.0,
+    "dblp_bib_type": "article"
+  },
+  {
+    "key": "Yan_2024_LLM",
+    "title": "An LLM-Assisted Easy-to-Trigger Backdoor Attack on Code Completion Models: Injecting Disguised Vulnerabilities against Strong Detection",
+    "current_type": "misc",
+    "dblp_found": true,
+    "dblp_key": "conf/uss/YanWDHLKH24",
+    "dblp_type": "Conference and Workshop Papers",
+    "similarity": 1.0,
+    "dblp_bib_type": "inproceedings"
+  },
+  {
+    "key": "Ye_2025_Visualtrap",
+    "title": "VisualTrap: A Stealthy Backdoor Attack on GUI Agents via Visual Grounding Manipulation",
+    "current_type": "misc",
+    "dblp_found": true,
+    "dblp_key": "journals/corr/abs-2507-06899",
+    "dblp_type": "Informal and Other Publications",
+    "similarity": 1.0,
+    "dblp_bib_type": "article"
+  },
+  {
+    "key": "Zhang_2024_Comparative",
+    "title": "A Comparative Analysis of Faithfulness Metrics and Humans in Citation Evaluation",
+    "current_type": "misc",
+    "dblp_found": true,
+    "dblp_key": "journals/corr/abs-2408-12398",
+    "dblp_type": "Informal and Other Publications",
+    "similarity": 1.0,
+    "dblp_bib_type": "article"
+  },
+  {
+    "key": "Zhang_2024_Fine",
+    "title": "Towards Fine-Grained Citation Evaluation in Generated Text: A Comparative Analysis of Faithfulness Metrics",
+    "current_type": "misc",
+    "dblp_found": true,
+    "dblp_key": "conf/inlg/ZhangAYPHK24",
+    "dblp_type": "Conference and Workshop Papers",
+    "similarity": 1.0,
+    "dblp_bib_type": "inproceedings"
+  },
+  {
+    "key": "Zhang_2024_Persistent",
+    "title": "PERSISTENT PRE-TRAINING POISONING OF LLMS",
+    "current_type": "misc",
+    "dblp_found": true,
+    "dblp_key": "conf/iclr/ZhangRECSCTI25",
+    "dblp_type": "Conference and Workshop Papers",
+    "similarity": 1.0,
+    "dblp_bib_type": "inproceedings"
+  },
+  {
+    "key": "Zhou_2025_Badvla",
+    "title": "BadVLA: Towards Backdoor Attacks on Vision-Language-Action Models via Objective-Decoupled Optimization",
+    "current_type": "misc",
+    "dblp_found": true,
+    "dblp_key": "journals/corr/abs-2505-16640",
+    "dblp_type": "Informal and Other Publications",
+    "similarity": 1.0,
+    "dblp_bib_type": "article"
+  },
+  {
+    "key": "Zhu_2025_Think",
+    "title": "To Think or Not to Think: Exploring the Unthinking Vulnerability in Large Reasoning Models",
+    "current_type": "misc",
+    "dblp_found": false
+  }
+]

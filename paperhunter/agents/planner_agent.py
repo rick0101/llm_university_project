@@ -410,18 +410,21 @@ def _load_l2_from_store() -> list[L2Summary]:
         # Scroll all L2 summaries
         all_points = []
         offset = None
-        while True:
-            points, next_offset = store.client.scroll(
-                collection_name=collection,
-                limit=100,
-                offset=offset,
-                with_payload=True,
-                with_vectors=False,
-            )
-            all_points.extend(points)
-            if next_offset is None or not points:
-                break
-            offset = next_offset
+        try:
+            while True:
+                points, next_offset = store.client.scroll(
+                    collection_name=collection,
+                    limit=100,
+                    offset=offset,
+                    with_payload=True,
+                    with_vectors=False,
+                )
+                all_points.extend(points)
+                if next_offset is None or not points:
+                    break
+                offset = next_offset
+        finally:
+            store.close()
 
         l2s: list[L2Summary] = []
         for point in all_points:

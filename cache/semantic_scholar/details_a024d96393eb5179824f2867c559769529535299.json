@@ -1,0 +1,53 @@
+{
+  "paperId": "a024d96393eb5179824f2867c559769529535299",
+  "externalIds": {
+    "ArXiv": "2506.21546",
+    "CorpusId": 280011319
+  },
+  "title": "Counterfactual Segmentation Reasoning: Diagnosing and Mitigating Pixel-Grounding Hallucination",
+  "venue": "",
+  "year": 2025,
+  "citationCount": 2,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2506.21546, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-06-26",
+  "journal": null,
+  "citationStyles": {
+    "bibtex": "@Inproceedings{Li2025CounterfactualSR,\n author = {Xinzhuo Li and A. Juvekar and Xing Liu and Muntasir Wahed and Kiet A. Nguyen and Ismini Lourentzou},\n title = {Counterfactual Segmentation Reasoning: Diagnosing and Mitigating Pixel-Grounding Hallucination},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2336119887",
+      "name": "Xinzhuo Li"
+    },
+    {
+      "authorId": "51935721",
+      "name": "A. Juvekar"
+    },
+    {
+      "authorId": "2358344862",
+      "name": "Xing Liu"
+    },
+    {
+      "authorId": "2004145852",
+      "name": "Muntasir Wahed"
+    },
+    {
+      "authorId": "2299298657",
+      "name": "Kiet A. Nguyen"
+    },
+    {
+      "authorId": "2099420",
+      "name": "Ismini Lourentzou"
+    }
+  ],
+  "abstract": "Segmentation Vision-Language Models (VLMs) have significantly advanced grounded visual understanding, yet they remain prone to pixel-grounding hallucinations, producing masks for incorrect objects or for objects that are entirely absent. Existing evaluations rely almost entirely on text- or label-based perturbations, which check only whether the predicted mask matches the queried label. Such evaluations overlook the spatial footprint and severity of hallucination and therefore fail to reveal vision-driven hallucinations, which are more challenging and more prevalent. To address this gap, we formalize the task of Counterfactual Segmentation Reasoning (CSR), where a model must segment the referenced object in the factual image and abstain in its counterfactual counterpart. To support this task, we curate HalluSegBench, the first large-scale benchmark to diagnose referring and reasoning expression segmentation hallucinations using controlled visual counterfactuals, alongside new evaluation metrics that measure hallucination severity and disentangle vision- and language-driven failure modes. We further introduce RobustSeg, a segmentation VLM trained with counterfactual fine-tuning (CFT) to learn when to segment and when to abstain. Experimental results confirm RobustSeg reduces hallucinations by 30%, while improving segmentation performance on FP-RefCOCO(+/g)."
+}

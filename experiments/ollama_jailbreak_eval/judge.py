@@ -1,7 +1,7 @@
 """
 Judge module — determines whether the model complied with a harmful request.
 
-Primary: LLM-based judge (Google AI) — evaluates request + response semantically.
+Primary: LLM-based judge (Google AI Gemini 2.5 Flash) — evaluates request + response semantically.
 The LLM judge retries indefinitely on any transient error (429, 5xx, network issues)
 so that the regex fallback is never used when a valid prompt+response pair is available.
 Fallback: keyword-based refusal detection (used only when no original_prompt is provided
@@ -136,7 +136,7 @@ def _call_judge_api(original_prompt: str, response: str) -> str:
     while True:
         try:
             result = client.models.generate_content(
-                model=config.MODEL,
+                model=config.JUDGE_MODEL,
                 contents=contents,
                 config=gen_config,
             )

@@ -1,0 +1,276 @@
+{
+  "05aa4f27ba86e37096c4dc9627cc62a8": {
+    "dblp_key": "journals/corr/abs-2410-22143",
+    "bibtex": "@article{DBLP:journals/corr/abs-2410-22143,\n  author       = {Vishal Kumar and\n                  Zeyi Liao and\n                  Jaylen Jones and\n                  Huan Sun},\n  title        = {AmpleGCG-Plus: {A} Strong Generative Model of Adversarial Suffixes\n                  to Jailbreak LLMs with Higher Success Rates in Fewer Attempts},\n  journal      = {CoRR},\n  volume       = {abs/2410.22143},\n  year         = {2024},\n  url          = {https://doi.org/10.48550/arXiv.2410.22143},\n  doi          = {10.48550/ARXIV.2410.22143},\n  eprinttype   = {arXiv},\n  eprint       = {2410.22143}\n}",
+    "dblp_type": "Informal and Other Publications",
+    "title": "AmpleGCG-Plus: A Strong Generative Model of Adversarial Suffixes to Jailbreak LLMs with Higher Success Rates in Fewer Attempts",
+    "similarity": 1.0
+  },
+  "165dd9aadcb2741828015ca5409d2947": {
+    "dblp_key": "conf/kbse/ChenZ0NLX00Z24",
+    "bibtex": "@inproceedings{DBLP:conf/kbse/ChenZ0NLX00Z24,\n  author       = {Jiachi Chen and\n                  Qingyuan Zhong and\n                  Yanlin Wang and\n                  Kaiwen Ning and\n                  Yongkun Liu and\n                  Zenan Xu and\n                  Zhe Zhao and\n                  Ting Chen and\n                  Zibin Zheng},\n  editor       = {Vladimir Filkov and\n                  Baishakhi Ray and\n                  Minghui Zhou},\n  title        = {RMCBench: Benchmarking Large Language Models' Resistance to Malicious\n                  Code},\n  booktitle    = {Proceedings of the 39th {IEEE/ACM} International Conference on Automated\n                  Software Engineering, {ASE} 2024, Sacramento, CA, USA, October 27\n                  - November 1, 2024},\n  pages        = {995--1006},\n  publisher    = {{ACM}},\n  year         = {2024},\n  url          = {https://doi.org/10.1145/3691620.3695480},\n  doi          = {10.1145/3691620.3695480}\n}",
+    "dblp_type": "Conference and Workshop Papers",
+    "title": "RMCBench: Benchmarking Large Language Models&apos; Resistance to Malicious Code",
+    "similarity": 0.9664429530201343
+  },
+  "913121dd1c6235bc55d3f631ac999414": {
+    "dblp_key": "conf/nips/DuX024",
+    "bibtex": "@inproceedings{DBLP:conf/nips/DuX024,\n  author       = {Xuefeng Du and\n                  Chaowei Xiao and\n                  Sharon Li},\n  editor       = {Amir Globersons and\n                  Lester Mackey and\n                  Danielle Belgrave and\n                  Angela Fan and\n                  Ulrich Paquet and\n                  Jakub M. Tomczak and\n                  Cheng Zhang},\n  title        = {HaloScope: Harnessing Unlabeled {LLM} Generations for Hallucination\n                  Detection},\n  booktitle    = {Advances in Neural Information Processing Systems 38: Annual Conference\n                  on Neural Information Processing Systems 2024, NeurIPS 2024, Vancouver,\n                  BC, Canada, December 10 - 15, 2024},\n  year         = {2024},\n  url          = {http://papers.nips.cc/paper\\_files/paper/2024/hash/ba92705991cfbbcedc26e27e833ebbae-Abstract-Conference.html}\n}",
+    "dblp_type": "Conference and Workshop Papers",
+    "title": "HaloScope: Harnessing Unlabeled LLM Generations for Hallucination Detection",
+    "similarity": 1.0
+  },
+  "eabb38823b1b2f97392a109e6feb127e": {
+    "dblp_key": "conf/nips/GuoLXZZ0SL24",
+    "bibtex": "@inproceedings{DBLP:conf/nips/GuoLXZZ0SL24,\n  author       = {Chengquan Guo and\n                  Xun Liu and\n                  Chulin Xie and\n                  Andy Zhou and\n                  Yi Zeng and\n                  Zinan Lin and\n                  Dawn Song and\n                  Bo Li},\n  editor       = {Amir Globersons and\n                  Lester Mackey and\n                  Danielle Belgrave and\n                  Angela Fan and\n                  Ulrich Paquet and\n                  Jakub M. Tomczak and\n                  Cheng Zhang},\n  title        = {RedCode: Risky Code Execution and Generation Benchmark for Code Agents},\n  booktitle    = {Advances in Neural Information Processing Systems 38: Annual Conference\n                  on Neural Information Processing Systems 2024, NeurIPS 2024, Vancouver,\n                  BC, Canada, December 10 - 15, 2024},\n  year         = {2024},\n  url          = {http://papers.nips.cc/paper\\_files/paper/2024/hash/bfd082c452dffb450d5a5202b0419205-Abstract-Datasets\\_and\\_Benchmarks\\_Track.html}\n}",
+    "dblp_type": "Conference and Workshop Papers",
+    "title": "RedCode: Risky Code Execution and Generation Benchmark for Code Agents",
+    "similarity": 1.0
+  },
+  "587b28e5a8e37638fd724c01c1850277": {
+    "dblp_key": "conf/icml/JenkoMHVV25",
+    "bibtex": "@inproceedings{DBLP:conf/icml/JenkoMHVV25,\n  author       = {Slobodan Jenko and\n                  Niels M{\\\"{u}}ndler and\n                  Jingxuan He and\n                  Mark Vero and\n                  Martin T. Vechev},\n  editor       = {Aarti Singh and\n                  Maryam Fazel and\n                  Daniel Hsu and\n                  Simon Lacoste{-}Julien and\n                  Felix Berkenkamp and\n                  Tegan Maharaj and\n                  Kiri Wagstaff and\n                  Jerry Zhu},\n  title        = {Black-Box Adversarial Attacks on LLM-Based Code Completion},\n  booktitle    = {Forty-second International Conference on Machine Learning, {ICML}\n                  2025, Vancouver, BC, Canada, July 13-19, 2025},\n  series       = {Proceedings of Machine Learning Research},\n  publisher    = {{PMLR} / OpenReview.net},\n  year         = {2025},\n  url          = {https://proceedings.mlr.press/v267/jenko25a.html}\n}",
+    "dblp_type": "Conference and Workshop Papers",
+    "title": "Black-Box Adversarial Attacks on LLM-Based Code Completion",
+    "similarity": 1.0
+  },
+  "2b5690a80369875e6243295ad400a930": {
+    "dblp_key": "conf/naacl/JingBG25",
+    "bibtex": "@inproceedings{DBLP:conf/naacl/JingBG25,\n  author       = {Xiaonan Jing and\n                  Srinivas Billa and\n                  Danny Godbout},\n  editor       = {Luis Chiruzzo and\n                  Alan Ritter and\n                  Lu Wang},\n  title        = {On {A} Scale From 1 to 5: Quantifying Hallucination in Faithfulness\n                  Evaluation},\n  booktitle    = {Findings of the Association for Computational Linguistics: {NAACL}\n                  2025, Albuquerque, New Mexico, USA, April 29 - May 4, 2025},\n  series       = {Findings of {ACL}},\n  pages        = {7765--7780},\n  publisher    = {Association for Computational Linguistics},\n  year         = {2025},\n  url          = {https://doi.org/10.18653/v1/2025.findings-naacl.433},\n  doi          = {10.18653/V1/2025.FINDINGS-NAACL.433}\n}",
+    "dblp_type": "Conference and Workshop Papers",
+    "title": "On A Scale From 1 to 5: Quantifying Hallucination in Faithfulness Evaluation",
+    "similarity": 1.0
+  },
+  "15bd0b160d3dd53fe8d6e64f3fad0b83": {
+    "dblp_key": "journals/corr/abs-2508-09456",
+    "bibtex": "@article{DBLP:journals/corr/abs-2508-09456,\n  author       = {Junxian Li and\n                  Beining Xu and\n                  Di Zhang},\n  title        = {{IAG:} Input-aware Backdoor Attack on VLMs for Visual Grounding},\n  journal      = {CoRR},\n  volume       = {abs/2508.09456},\n  year         = {2025},\n  url          = {https://doi.org/10.48550/arXiv.2508.09456},\n  doi          = {10.48550/ARXIV.2508.09456},\n  eprinttype   = {arXiv},\n  eprint       = {2508.09456}\n}",
+    "dblp_type": "Informal and Other Publications",
+    "title": "IAG: Input-aware Backdoor Attack on VLMs for Visual Grounding",
+    "similarity": 0.9256198347107438
+  },
+  "2b130b9e33cad12b283884a1578d081b": {
+    "dblp_key": "journals/corr/abs-2603-08316",
+    "bibtex": "@article{DBLP:journals/corr/abs-2603-08316,\n  author       = {Junxian Li and\n                  Tu Lan and\n                  Haozhen Tan and\n                  Yan Meng and\n                  Haojin Zhu},\n  title        = {SlowBA: An efficiency backdoor attack towards VLM-based {GUI} agents},\n  journal      = {CoRR},\n  volume       = {abs/2603.08316},\n  year         = {2026},\n  url          = {https://doi.org/10.48550/arXiv.2603.08316},\n  doi          = {10.48550/ARXIV.2603.08316},\n  eprinttype   = {arXiv},\n  eprint       = {2603.08316}\n}",
+    "dblp_type": "Informal and Other Publications",
+    "title": "SlowBA: An efficiency backdoor attack towards VLM-based GUI agents",
+    "similarity": 1.0
+  },
+  "66681b1d4e4f2d1ac16f57b0a7f95a41": {
+    "dblp_key": "journals/corr/abs-2502-03233",
+    "bibtex": "@article{DBLP:journals/corr/abs-2502-03233,\n  author       = {Bo Lin and\n                  Shangwen Wang and\n                  Liqian Chen and\n                  Xiaoguang Mao},\n  title        = {Exploring the Security Threats of Knowledge Base Poisoning in Retrieval-Augmented\n                  Code Generation},\n  journal      = {CoRR},\n  volume       = {abs/2502.03233},\n  year         = {2025},\n  url          = {https://doi.org/10.48550/arXiv.2502.03233},\n  doi          = {10.48550/ARXIV.2502.03233},\n  eprinttype   = {arXiv},\n  eprint       = {2502.03233}\n}",
+    "dblp_type": "Informal and Other Publications",
+    "title": "Exploring the Security Threats of Knowledge Base Poisoning in Retrieval-Augmented Code Generation",
+    "similarity": 1.0
+  },
+  "beafcbb7059f64c8b2fc501d7f3cca88": {
+    "dblp_key": "conf/ccs/LinWQCM25",
+    "bibtex": "@inproceedings{DBLP:conf/ccs/LinWQCM25,\n  author       = {Bo Lin and\n                  Shangwen Wang and\n                  Yihao Qin and\n                  Liqian Chen and\n                  Xiaoguang Mao},\n  editor       = {Chun{-}Ying Huang and\n                  Jyh{-}Cheng Chen and\n                  Shiuh{-}Pyng Shieh and\n                  David Lie and\n                  V{\\'{e}}ronique Cortier},\n  title        = {Give LLMs a Security Course: Securing Retrieval-Augmented Code Generation\n                  via Knowledge Injection},\n  booktitle    = {Proceedings of the 2025 {ACM} {SIGSAC} Conference on Computer and\n                  Communications Security, {CCS} 2025, Taipei, Taiwan, October 13-17,\n                  2025},\n  pages        = {3356--3370},\n  publisher    = {{ACM}},\n  year         = {2025},\n  url          = {https://doi.org/10.1145/3719027.3765049},\n  doi          = {10.1145/3719027.3765049}\n}",
+    "dblp_type": "Conference and Workshop Papers",
+    "title": "Give LLMs a Security Course: Securing Retrieval-Augmented Code Generation via Knowledge Injection",
+    "similarity": 1.0
+  },
+  "0b75dfa18b89da53458cd5286efc0fd8": {
+    "dblp_key": "conf/iclr/LiuLSVMJM00X25",
+    "bibtex": "@inproceedings{DBLP:conf/iclr/LiuLSVMJM00X25,\n  author       = {Xiaogeng Liu and\n                  Peiran Li and\n                  G. Edward Suh and\n                  Yevgeniy Vorobeychik and\n                  Zhuoqing Mao and\n                  Somesh Jha and\n                  Patrick McDaniel and\n                  Huan Sun and\n                  Bo Li and\n                  Chaowei Xiao},\n  title        = {AutoDAN-Turbo: {A} Lifelong Agent for Strategy Self-Exploration to\n                  Jailbreak LLMs},\n  booktitle    = {The Thirteenth International Conference on Learning Representations,\n                  {ICLR} 2025, Singapore, April 24-28, 2025},\n  publisher    = {OpenReview.net},\n  year         = {2025},\n  url          = {https://openreview.net/forum?id=bhK7U37VW8}\n}",
+    "dblp_type": "Conference and Workshop Papers",
+    "title": "AutoDAN-Turbo: A Lifelong Agent for Strategy Self-Exploration to Jailbreak LLMs",
+    "similarity": 0.9936305732484076
+  },
+  "27e59f2944733df73563cfe721f289bc": {
+    "dblp_key": "conf/icml/0008HXFDMZH25",
+    "bibtex": "@inproceedings{DBLP:conf/icml/0008HXFDMZH25,\n  author       = {Yue Liu and\n                  Xiaoxin He and\n                  Miao Xiong and\n                  Jinlan Fu and\n                  Shumin Deng and\n                  Yingwei Ma and\n                  Jiaheng Zhang and\n                  Bryan Hooi},\n  editor       = {Aarti Singh and\n                  Maryam Fazel and\n                  Daniel Hsu and\n                  Simon Lacoste{-}Julien and\n                  Felix Berkenkamp and\n                  Tegan Maharaj and\n                  Kiri Wagstaff and\n                  Jerry Zhu},\n  title        = {FlipAttack: Jailbreak LLMs via Flipping},\n  booktitle    = {Forty-second International Conference on Machine Learning, {ICML}\n                  2025, Vancouver, BC, Canada, July 13-19, 2025},\n  series       = {Proceedings of Machine Learning Research},\n  publisher    = {{PMLR} / OpenReview.net},\n  year         = {2025},\n  url          = {https://proceedings.mlr.press/v267/liu25z.html}\n}",
+    "dblp_type": "Conference and Workshop Papers",
+    "title": "FlipAttack: Jailbreak LLMs via Flipping",
+    "similarity": 1.0
+  },
+  "c6a3f78d55765a550a61a047909e17e7": {
+    "dblp_key": "journals/corr/abs-2509-22040",
+    "bibtex": "@article{DBLP:journals/corr/abs-2509-22040,\n  author       = {Yue Liu and\n                  Yanjie Zhao and\n                  Yunbo Lyu and\n                  Ting Zhang and\n                  Haoyu Wang and\n                  David Lo},\n  title        = {\"Your AI, My Shell\": Demystifying Prompt Injection Attacks on Agentic\n                  {AI} Coding Editors},\n  journal      = {CoRR},\n  volume       = {abs/2509.22040},\n  year         = {2025},\n  url          = {https://doi.org/10.48550/arXiv.2509.22040},\n  doi          = {10.48550/ARXIV.2509.22040},\n  eprinttype   = {arXiv},\n  eprint       = {2509.22040}\n}",
+    "dblp_type": "Informal and Other Publications",
+    "title": "&quot;Your AI, My Shell&quot;: Demystifying Prompt Injection Attacks on Agentic AI Coding Editors",
+    "similarity": 0.9431818181818182
+  },
+  "e860d676b22729999badce6a42ba7f79": {
+    "dblp_key": "conf/eccv/LyuPMLC24",
+    "bibtex": "@inproceedings{DBLP:conf/eccv/LyuPMLC24,\n  author       = {Weimin Lyu and\n                  Lu Pang and\n                  Tengfei Ma and\n                  Haibin Ling and\n                  Chao Chen},\n  editor       = {Ales Leonardis and\n                  Elisa Ricci and\n                  Stefan Roth and\n                  Olga Russakovsky and\n                  Torsten Sattler and\n                  G{\\\"{u}}l Varol},\n  title        = {TrojVLM: Backdoor Attack Against Vision Language Models},\n  booktitle    = {Computer Vision - {ECCV} 2024 - 18th European Conference, Milan, Italy,\n                  September 29-October 4, 2024, Proceedings, Part {LXV}},\n  series       = {Lecture Notes in Computer Science},\n  pages        = {467--483},\n  publisher    = {Springer},\n  year         = {2024},\n  url          = {https://doi.org/10.1007/978-3-031-73650-6\\_27},\n  doi          = {10.1007/978-3-031-73650-6\\_27}\n}",
+    "dblp_type": "Conference and Workshop Papers",
+    "title": "TrojVLM: Backdoor Attack Against Vision Language Models",
+    "similarity": 1.0
+  },
+  "104029ab8b9beb2a82138ea6e08e5220": {
+    "dblp_key": "journals/corr/abs-2508-20333",
+    "bibtex": "@article{DBLP:journals/corr/abs-2508-20333,\n  author       = {Md Abdullah Al Mamun and\n                  Ihsen Alouani and\n                  Nael B. Abu{-}Ghazaleh},\n  title        = {Poison Once, Refuse Forever: Weaponizing Alignment for Injecting Bias\n                  in LLMs},\n  journal      = {CoRR},\n  volume       = {abs/2508.20333},\n  year         = {2025},\n  url          = {https://doi.org/10.48550/arXiv.2508.20333},\n  doi          = {10.48550/ARXIV.2508.20333},\n  eprinttype   = {arXiv},\n  eprint       = {2508.20333}\n}",
+    "dblp_type": "Informal and Other Publications",
+    "title": "Poison Once, Refuse Forever: Weaponizing Alignment for Injecting Bias in LLMs",
+    "similarity": 1.0
+  },
+  "d71427e8a80e7cfe4e8831652de3b01e": {
+    "dblp_key": "journals/corr/abs-2507-22063",
+    "bibtex": "@article{DBLP:journals/corr/abs-2507-22063,\n  author       = {Wenjie Jacky Mo and\n                  Qin Liu and\n                  Xiaofei Wen and\n                  Dongwon Jung and\n                  Hadi Askari and\n                  Wenxuan Zhou and\n                  Zhe Zhao and\n                  Muhao Chen},\n  title        = {RedCoder: Automated Multi-Turn Red Teaming for Code LLMs},\n  journal      = {CoRR},\n  volume       = {abs/2507.22063},\n  year         = {2025},\n  url          = {https://doi.org/10.48550/arXiv.2507.22063},\n  doi          = {10.48550/ARXIV.2507.22063},\n  eprinttype   = {arXiv},\n  eprint       = {2507.22063}\n}",
+    "dblp_type": "Informal and Other Publications",
+    "title": "RedCoder: Automated Multi-Turn Red Teaming for Code LLMs",
+    "similarity": 1.0
+  },
+  "90c29b9a497c48eaaa9c47665944c611": {
+    "dblp_key": "journals/corr/abs-2504-19730",
+    "bibtex": "@article{DBLP:journals/corr/abs-2504-19730,\n  author       = {Wenhan Mu and\n                  Ling Xu and\n                  Shuren Pei and\n                  Le Mi and\n                  Huichi Zhou},\n  title        = {Evaluate-and-Purify: Fortifying Code Language Models Against Adversarial\n                  Attacks Using LLM-as-a-Judge},\n  journal      = {CoRR},\n  volume       = {abs/2504.19730},\n  year         = {2025},\n  url          = {https://doi.org/10.48550/arXiv.2504.19730},\n  doi          = {10.48550/ARXIV.2504.19730},\n  eprinttype   = {arXiv},\n  eprint       = {2504.19730}\n}",
+    "dblp_type": "Informal and Other Publications",
+    "title": "Evaluate-and-Purify: Fortifying Code Language Models Against Adversarial Attacks Using LLM-as-a-Judge",
+    "similarity": 1.0
+  },
+  "d203521b753763e0c7b5356319306f04": {
+    "dblp_key": "conf/emnlp/WahedZNYDWHL25",
+    "bibtex": "@inproceedings{DBLP:conf/emnlp/WahedZNYDWHL25,\n  author       = {Muntasir Wahed and\n                  Xiaona Zhou and\n                  Kiet A. Nguyen and\n                  Tianjiao Yu and\n                  Nirav Diwan and\n                  Gang Wang and\n                  Dilek Hakkani{-}T{\\\"{u}}r and\n                  Ismini Lourentzou},\n  editor       = {Christos Christodoulopoulos and\n                  Tanmoy Chakraborty and\n                  Carolyn Rose and\n                  Violet Peng},\n  title        = {{MOCHA:} Are Code Language Models Robust Against Multi-Turn Malicious\n                  Coding Prompts?},\n  booktitle    = {Findings of the Association for Computational Linguistics: {EMNLP}\n                  2025, Suzhou, China, November 4-9, 2025},\n  pages        = {22922--22948},\n  publisher    = {Association for Computational Linguistics},\n  year         = {2025},\n  url          = {https://aclanthology.org/2025.findings-emnlp.1249/}\n}",
+    "dblp_type": "Conference and Workshop Papers",
+    "title": "MOCHA: Are Code Language Models Robust Against Multi-Turn Malicious Coding Prompts?",
+    "similarity": 1.0
+  },
+  "c384b5dd56f2ab1cd17d163ef24b5437": {
+    "not_found": true,
+    "title": "SECODEPLT: A Unified Benchmark for Evaluating the Security Risks and Capabilities of Code Agents"
+  },
+  "cc54f60fa341629e589c3e1953541046": {
+    "dblp_key": "journals/corr/abs-2410-06462",
+    "bibtex": "@article{DBLP:journals/corr/abs-2410-06462,\n  author       = {David Noever and\n                  Forrest McKee},\n  title        = {Hallucinating {AI} Hijacking Attack: Large Language Models and Malicious\n                  Code Recommenders},\n  journal      = {CoRR},\n  volume       = {abs/2410.06462},\n  year         = {2024},\n  url          = {https://doi.org/10.48550/arXiv.2410.06462},\n  doi          = {10.48550/ARXIV.2410.06462},\n  eprinttype   = {arXiv},\n  eprint       = {2410.06462}\n}",
+    "dblp_type": "Informal and Other Publications",
+    "title": "Hallucinating AI Hijacking Attack: Large Language Models and Malicious Code Recommenders",
+    "similarity": 1.0
+  },
+  "c50db653a93990af12d2b6635f4fc25a": {
+    "dblp_key": "journals/corr/abs-2503-17953",
+    "bibtex": "@article{DBLP:journals/corr/abs-2503-17953,\n  author       = {Sheng Ouyang and\n                  Yihao Qin and\n                  Bo Lin and\n                  Liqian Chen and\n                  Xiaoguang Mao and\n                  Shangwen Wang},\n  title        = {Smoke and Mirrors: Jailbreaking LLM-based Code Generation via Implicit\n                  Malicious Prompts},\n  journal      = {CoRR},\n  volume       = {abs/2503.17953},\n  year         = {2025},\n  url          = {https://doi.org/10.48550/arXiv.2503.17953},\n  doi          = {10.48550/ARXIV.2503.17953},\n  eprinttype   = {arXiv},\n  eprint       = {2503.17953}\n}",
+    "dblp_type": "Informal and Other Publications",
+    "title": "Smoke and Mirrors: Jailbreaking LLM-based Code Generation via Implicit Malicious Prompts",
+    "similarity": 1.0
+  },
+  "e749147cd44fc7c4fe6135fde91215ef": {
+    "dblp_key": "conf/icml/ParkDY0025",
+    "bibtex": "@inproceedings{DBLP:conf/icml/ParkDY0025,\n  author       = {Seongheon Park and\n                  Xuefeng Du and\n                  Min{-}Hsuan Yeh and\n                  Haobo Wang and\n                  Yixuan Li},\n  editor       = {Aarti Singh and\n                  Maryam Fazel and\n                  Daniel Hsu and\n                  Simon Lacoste{-}Julien and\n                  Felix Berkenkamp and\n                  Tegan Maharaj and\n                  Kiri Wagstaff and\n                  Jerry Zhu},\n  title        = {Steer {LLM} Latents for Hallucination Detection},\n  booktitle    = {Forty-second International Conference on Machine Learning, {ICML}\n                  2025, Vancouver, BC, Canada, July 13-19, 2025},\n  series       = {Proceedings of Machine Learning Research},\n  publisher    = {{PMLR} / OpenReview.net},\n  year         = {2025},\n  url          = {https://proceedings.mlr.press/v267/park25a.html}\n}",
+    "dblp_type": "Conference and Workshop Papers",
+    "title": "Steer LLM Latents for Hallucination Detection",
+    "similarity": 1.0
+  },
+  "c24f595d202690f29db9f53df9b59c11": {
+    "dblp_key": "journals/corr/abs-2504-07069",
+    "bibtex": "@article{DBLP:journals/corr/abs-2504-07069,\n  author       = {Bibek Paudel and\n                  Alexander Lyzhov and\n                  Preetam Joshi and\n                  Puneet Anand},\n  title        = {HalluciNot: Hallucination Detection Through Context and Common Knowledge\n                  Verification},\n  journal      = {CoRR},\n  volume       = {abs/2504.07069},\n  year         = {2025},\n  url          = {https://doi.org/10.48550/arXiv.2504.07069},\n  doi          = {10.48550/ARXIV.2504.07069},\n  eprinttype   = {arXiv},\n  eprint       = {2504.07069}\n}",
+    "dblp_type": "Informal and Other Publications",
+    "title": "HalluciNot: Hallucination Detection Through Context and Common Knowledge Verification",
+    "similarity": 1.0
+  },
+  "ea94a8748a0e898bd91e455a61d2c105": {
+    "dblp_key": "conf/asiaccs/RubelNW25",
+    "bibtex": "@inproceedings{DBLP:conf/asiaccs/RubelNW25,\n  author       = {Karl Rubel and\n                  Maximilian Noppel and\n                  Christian Wressnegger},\n  title        = {Generalized Adversarial Code-Suggestions: Exploiting Contexts of LLM-based\n                  Code-Completion},\n  booktitle    = {Proceedings of the 20th {ACM} Asia Conference on Computer and Communications\n                  Security, {ASIA} {CCS} 2025, Hanoi, Vietnam, August 25-29, 2025},\n  pages        = {358--374},\n  publisher    = {{ACM}},\n  year         = {2025},\n  url          = {https://doi.org/10.1145/3708821.3733870},\n  doi          = {10.1145/3708821.3733870}\n}",
+    "dblp_type": "Conference and Workshop Papers",
+    "title": "Generalized Adversarial Code-Suggestions: Exploiting Contexts of LLM-based Code-Completion",
+    "similarity": 1.0
+  },
+  "539b9311b4161f879384d8d211b53484": {
+    "dblp_key": "journals/corr/abs-2510-00319",
+    "bibtex": "@article{DBLP:journals/corr/abs-2510-00319,\n  author       = {Wei Shen and\n                  Han Wang and\n                  Haoyu Li and\n                  Huan Zhang},\n  title        = {DecepChain: Inducing Deceptive Reasoning in Large Language Models},\n  journal      = {CoRR},\n  volume       = {abs/2510.00319},\n  year         = {2025},\n  url          = {https://doi.org/10.48550/arXiv.2510.00319},\n  doi          = {10.48550/ARXIV.2510.00319},\n  eprinttype   = {arXiv},\n  eprint       = {2510.00319}\n}",
+    "dblp_type": "Informal and Other Publications",
+    "title": "DecepChain: Inducing Deceptive Reasoning in Large Language Models",
+    "similarity": 1.0
+  },
+  "e8c8f05af21ff673bb2dfa244faf10b2": {
+    "dblp_key": "conf/naacl/SongKKJS25",
+    "bibtex": "@inproceedings{DBLP:conf/naacl/SongKKJS25,\n  author       = {Minkyoo Song and\n                  Hanna Kim and\n                  Jaehan Kim and\n                  Youngjin Jin and\n                  Seungwon Shin},\n  editor       = {Luis Chiruzzo and\n                  Alan Ritter and\n                  Lu Wang},\n  title        = {Claim-Guided Textual Backdoor Attack for Practical Applications},\n  booktitle    = {Findings of the Association for Computational Linguistics: {NAACL}\n                  2025, Albuquerque, New Mexico, USA, April 29 - May 4, 2025},\n  series       = {Findings of {ACL}},\n  pages        = {1145--1159},\n  publisher    = {Association for Computational Linguistics},\n  year         = {2025},\n  url          = {https://doi.org/10.18653/v1/2025.findings-naacl.64},\n  doi          = {10.18653/V1/2025.FINDINGS-NAACL.64}\n}",
+    "dblp_type": "Conference and Workshop Papers",
+    "title": "Claim-Guided Textual Backdoor Attack for Practical Applications",
+    "similarity": 1.0
+  },
+  "d8141b9ecd00bed88588f10a86d0644d": {
+    "dblp_key": "journals/corr/abs-2503-14281",
+    "bibtex": "@article{DBLP:journals/corr/abs-2503-14281,\n  author       = {Adam Storek and\n                  Mukur Gupta and\n                  Noopur Bhatt and\n                  Aditya Gupta and\n                  Janie Kim and\n                  Prashast Srivastava and\n                  Suman Jana},\n  title        = {{XOXO:} Stealthy Cross-Origin Context Poisoning Attacks against {AI}\n                  Coding Assistants},\n  journal      = {CoRR},\n  volume       = {abs/2503.14281},\n  year         = {2025},\n  url          = {https://doi.org/10.48550/arXiv.2503.14281},\n  doi          = {10.48550/ARXIV.2503.14281},\n  eprinttype   = {arXiv},\n  eprint       = {2503.14281}\n}",
+    "dblp_type": "Informal and Other Publications",
+    "title": "XOXO: Stealthy Cross-Origin Context Poisoning Attacks against AI Coding Assistants",
+    "similarity": 1.0
+  },
+  "1b15ecd5727f3595d90d593df04b7242": {
+    "dblp_key": "conf/acl/TangLHDLZSX25",
+    "bibtex": "@inproceedings{DBLP:conf/acl/TangLHDLZSX25,\n  author       = {Xiaqiang Tang and\n                  Jian Li and\n                  Keyu Hu and\n                  Nan Du and\n                  Xiaolong Li and\n                  Xi Zhang and\n                  Weigao Sun and\n                  Sihong Xie},\n  editor       = {Wanxiang Che and\n                  Joyce Nabende and\n                  Ekaterina Shutova and\n                  Mohammad Taher Pilehvar},\n  title        = {CogniBench: {A} Legal-inspired Framework and Dataset for Assessing\n                  Cognitive Faithfulness of Large Language Models},\n  booktitle    = {Proceedings of the 63rd Annual Meeting of the Association for Computational\n                  Linguistics (Volume 1: Long Papers), {ACL} 2025, Vienna, Austria,\n                  July 27 - August 1, 2025},\n  pages        = {21567--21585},\n  publisher    = {Association for Computational Linguistics},\n  year         = {2025},\n  url          = {https://aclanthology.org/2025.acl-long.1046/}\n}",
+    "dblp_type": "Conference and Workshop Papers",
+    "title": "CogniBench: A Legal-inspired Framework and Dataset for Assessing Cognitive Faithfulness of Large Language Models",
+    "similarity": 1.0
+  },
+  "4bf56500998f70e3ef8893e725e3df8b": {
+    "dblp_key": "journals/corr/abs-2505-15633",
+    "bibtex": "@article{DBLP:journals/corr/abs-2505-15633,\n  author       = {David Thulke and\n                  Jakob Kemmler and\n                  Christian Dugast and\n                  Hermann Ney},\n  title        = {Listen to the Context: Towards Faithful Large Language Models for\n                  Retrieval Augmented Generation on Climate Questions},\n  journal      = {CoRR},\n  volume       = {abs/2505.15633},\n  year         = {2025},\n  url          = {https://doi.org/10.48550/arXiv.2505.15633},\n  doi          = {10.48550/ARXIV.2505.15633},\n  eprinttype   = {arXiv},\n  eprint       = {2505.15633}\n}",
+    "dblp_type": "Informal and Other Publications",
+    "title": "Listen to the Context: Towards Faithful Large Language Models for Retrieval Augmented Generation on Climate Questions",
+    "similarity": 1.0
+  },
+  "4b5bc6a210a0e98db66480480a187485": {
+    "dblp_key": "conf/ijcnlp/UrlanaKKGM25",
+    "bibtex": "@inproceedings{DBLP:conf/ijcnlp/UrlanaKKGM25,\n  author       = {Ashok Urlana and\n                  Gopichand Kanumolu and\n                  Charaka Vinayak Kumar and\n                  Bala Mallikarjunarao Garlapati and\n                  Rahul Mishra},\n  editor       = {Kentaro Inui and\n                  Sakriani Sakti and\n                  Haofen Wang and\n                  Derek F. Wong and\n                  Pushpak Bhattacharyya and\n                  Biplab Banerjee and\n                  Asif Ekbal and\n                  Tanmoy Chakraborty and\n                  Dhirendra Pratap Singh},\n  title        = {HalluCounter: Reference-free {LLM} Hallucination Detection in the\n                  Wild!},\n  booktitle    = {Proceedings of the 14th International Joint Conference on Natural\n                  Language Processing and the 4th Conference of the Asia-Pacific Chapter\n                  of the Association for Computational Linguistics, {IJCNLP-AACL} 2025,\n                  Mumbai, India, December 20-24, 2025},\n  pages        = {352--383},\n  publisher    = {The Asian Federation of Natural Language Processing and The Association\n                  for Computational Linguistics},\n  year         = {2025},\n  url          = {https://aclanthology.org/2025.findings-ijcnlp.20/}\n}",
+    "dblp_type": "Conference and Workshop Papers",
+    "title": "HalluCounter: Reference-free LLM Hallucination Detection in the Wild!",
+    "similarity": 1.0
+  },
+  "ad2cca98530b68a77810258c28b20f30": {
+    "dblp_key": "conf/naacl/WangWMXCX25",
+    "bibtex": "@inproceedings{DBLP:conf/naacl/WangWMXCX25,\n  author       = {Song Wang and\n                  Xun Wang and\n                  Jie Mei and\n                  Yujia Xie and\n                  Si{-}Qing Chen and\n                  Wayne Xiong},\n  editor       = {Weizhu Chen and\n                  Yi Yang and\n                  Mohammad Kachuee and\n                  Xue{-}Yong Fu},\n  title        = {Developing a Reliable, Fast, General-Purpose Hallucination Detection\n                  and Mitigation Service},\n  booktitle    = {Proceedings of the 2025 Conference of the Nations of the Americas\n                  Chapter of the Association for Computational Linguistics: Human Language\n                  Technologies, {NAACL} 2025 - Volume 3: Industry Track, Albuquerque,\n                  New Mexico, USA, April 30, 2025},\n  pages        = {971--978},\n  publisher    = {Association for Computational Linguistics},\n  year         = {2025},\n  url          = {https://doi.org/10.18653/v1/2025.naacl-industry.72},\n  doi          = {10.18653/V1/2025.NAACL-INDUSTRY.72}\n}",
+    "dblp_type": "Conference and Workshop Papers",
+    "title": "Developing a Reliable, Fast, General-Purpose Hallucination Detection and Mitigation Service",
+    "similarity": 1.0
+  },
+  "2420a90386f26bca396747fba9f4a558": {
+    "dblp_key": "journals/corr/abs-2406-18122",
+    "bibtex": "@article{DBLP:journals/corr/abs-2406-18122,\n  author       = {Ziqiu Wang and\n                  Jun Liu and\n                  Shengkai Zhang and\n                  Yang Yang},\n  title        = {Poisoned LangChain: Jailbreak LLMs by LangChain},\n  journal      = {CoRR},\n  volume       = {abs/2406.18122},\n  year         = {2024},\n  url          = {https://doi.org/10.48550/arXiv.2406.18122},\n  doi          = {10.48550/ARXIV.2406.18122},\n  eprinttype   = {arXiv},\n  eprint       = {2406.18122}\n}",
+    "dblp_type": "Informal and Other Publications",
+    "title": "Poisoned LangChain: Jailbreak LLMs by LangChain",
+    "similarity": 1.0
+  },
+  "98b094707abaf0b41fab3fb43959d341": {
+    "dblp_key": "journals/corr/abs-2602-05401",
+    "bibtex": "@article{DBLP:journals/corr/abs-2602-05401,\n  author       = {Zihan Wang and\n                  Hongwei Li and\n                  Rui Zhang and\n                  Wenbo Jiang and\n                  Guowen Xu},\n  title        = {BadTemplate: {A} Training-Free Backdoor Attack via Chat Template Against\n                  Large Language Models},\n  journal      = {CoRR},\n  volume       = {abs/2602.05401},\n  year         = {2026},\n  url          = {https://doi.org/10.48550/arXiv.2602.05401},\n  doi          = {10.48550/ARXIV.2602.05401},\n  eprinttype   = {arXiv},\n  eprint       = {2602.05401}\n}",
+    "dblp_type": "Informal and Other Publications",
+    "title": "BadTemplate: A Training-Free Backdoor Attack via Chat Template Against Large Language Models",
+    "similarity": 1.0
+  },
+  "aef1ad48782f2a30d128d4b120f88836": {
+    "dblp_key": "conf/uss/YanWDHLKH24",
+    "bibtex": "@inproceedings{DBLP:conf/uss/YanWDHLKH24,\n  author       = {Shenao Yan and\n                  Shen Wang and\n                  Yue Duan and\n                  Hanbin Hong and\n                  Kiho Lee and\n                  Doowon Kim and\n                  Yuan Hong},\n  editor       = {Davide Balzarotti and\n                  Wenyuan Xu},\n  title        = {An LLM-Assisted Easy-to-Trigger Backdoor Attack on Code Completion\n                  Models: Injecting Disguised Vulnerabilities against Strong Detection},\n  booktitle    = {33rd {USENIX} Security Symposium, {USENIX} Security 2024, Philadelphia,\n                  PA, USA, August 14-16, 2024},\n  publisher    = {{USENIX} Association},\n  year         = {2024},\n  url          = {https://www.usenix.org/conference/usenixsecurity24/presentation/yan}\n}",
+    "dblp_type": "Conference and Workshop Papers",
+    "title": "An LLM-Assisted Easy-to-Trigger Backdoor Attack on Code Completion Models: Injecting Disguised Vulnerabilities against Strong Detection",
+    "similarity": 1.0
+  },
+  "096be902e2dbcec834a9ea1d1ee48da1": {
+    "dblp_key": "journals/corr/abs-2507-06899",
+    "bibtex": "@article{DBLP:journals/corr/abs-2507-06899,\n  author       = {Ziang Ye and\n                  Yang Zhang and\n                  Wentao Shi and\n                  Xiaoyu You and\n                  Fuli Feng and\n                  Tat{-}Seng Chua},\n  title        = {VisualTrap: {A} Stealthy Backdoor Attack on {GUI} Agents via Visual\n                  Grounding Manipulation},\n  journal      = {CoRR},\n  volume       = {abs/2507.06899},\n  year         = {2025},\n  url          = {https://doi.org/10.48550/arXiv.2507.06899},\n  doi          = {10.48550/ARXIV.2507.06899},\n  eprinttype   = {arXiv},\n  eprint       = {2507.06899}\n}",
+    "dblp_type": "Informal and Other Publications",
+    "title": "VisualTrap: A Stealthy Backdoor Attack on GUI Agents via Visual Grounding Manipulation",
+    "similarity": 1.0
+  },
+  "16544f2f7eb180e5d37b7e2707530689": {
+    "dblp_key": "journals/corr/abs-2408-12398",
+    "bibtex": "@article{DBLP:journals/corr/abs-2408-12398,\n  author       = {Weijia Zhang and\n                  Mohammad Aliannejadi and\n                  Jiahuan Pei and\n                  Yifei Yuan and\n                  Jia{-}Hong Huang and\n                  Evangelos Kanoulas},\n  title        = {A Comparative Analysis of Faithfulness Metrics and Humans in Citation\n                  Evaluation},\n  journal      = {CoRR},\n  volume       = {abs/2408.12398},\n  year         = {2024},\n  url          = {https://doi.org/10.48550/arXiv.2408.12398},\n  doi          = {10.48550/ARXIV.2408.12398},\n  eprinttype   = {arXiv},\n  eprint       = {2408.12398}\n}",
+    "dblp_type": "Informal and Other Publications",
+    "title": "A Comparative Analysis of Faithfulness Metrics and Humans in Citation Evaluation",
+    "similarity": 1.0
+  },
+  "2448ffb70c8c1b0d3271dc65269972ee": {
+    "dblp_key": "conf/inlg/ZhangAYPHK24",
+    "bibtex": "@inproceedings{DBLP:conf/inlg/ZhangAYPHK24,\n  author       = {Weijia Zhang and\n                  Mohammad Aliannejadi and\n                  Yifei Yuan and\n                  Jiahuan Pei and\n                  Jia{-}Hong Huang and\n                  Evangelos Kanoulas},\n  editor       = {Saad Mahamood and\n                  Minh Le Nguyen and\n                  Daphne Ippolito},\n  title        = {Towards Fine-Grained Citation Evaluation in Generated Text: {A} Comparative\n                  Analysis of Faithfulness Metrics},\n  booktitle    = {Proceedings of the 17th International Natural Language Generation\n                  Conference, {INLG} 2024, Tokyo, Japan, September 23 - 27, 2024},\n  pages        = {427--439},\n  publisher    = {Association for Computational Linguistics},\n  year         = {2024},\n  url          = {https://doi.org/10.18653/v1/2024.inlg-main.35},\n  doi          = {10.18653/V1/2024.INLG-MAIN.35}\n}",
+    "dblp_type": "Conference and Workshop Papers",
+    "title": "Towards Fine-Grained Citation Evaluation in Generated Text: A Comparative Analysis of Faithfulness Metrics",
+    "similarity": 1.0
+  },
+  "3f1be3567938b344e8c0dd9fae6f81de": {
+    "dblp_key": "conf/iclr/ZhangRECSCTI25",
+    "bibtex": "@inproceedings{DBLP:conf/iclr/ZhangRECSCTI25,\n  author       = {Yiming Zhang and\n                  Javier Rando and\n                  Ivan Evtimov and\n                  Jianfeng Chi and\n                  Eric Michael Smith and\n                  Nicholas Carlini and\n                  Florian Tram{\\`{e}}r and\n                  Daphne Ippolito},\n  title        = {Persistent Pre-training Poisoning of LLMs},\n  booktitle    = {The Thirteenth International Conference on Learning Representations,\n                  {ICLR} 2025, Singapore, April 24-28, 2025},\n  publisher    = {OpenReview.net},\n  year         = {2025},\n  url          = {https://openreview.net/forum?id=eiqrnVaeIw}\n}",
+    "dblp_type": "Conference and Workshop Papers",
+    "title": "Persistent Pre-training Poisoning of LLMs",
+    "similarity": 1.0
+  },
+  "7d87d8227017d5ab2a6882a76b32da8f": {
+    "dblp_key": "journals/corr/abs-2505-16640",
+    "bibtex": "@article{DBLP:journals/corr/abs-2505-16640,\n  author       = {Xueyang Zhou and\n                  Guiyao Tie and\n                  Guowen Zhang and\n                  Hechang Wang and\n                  Pan Zhou and\n                  Lichao Sun},\n  title        = {BadVLA: Towards Backdoor Attacks on Vision-Language-Action Models\n                  via Objective-Decoupled Optimization},\n  journal      = {CoRR},\n  volume       = {abs/2505.16640},\n  year         = {2025},\n  url          = {https://doi.org/10.48550/arXiv.2505.16640},\n  doi          = {10.48550/ARXIV.2505.16640},\n  eprinttype   = {arXiv},\n  eprint       = {2505.16640}\n}",
+    "dblp_type": "Informal and Other Publications",
+    "title": "BadVLA: Towards Backdoor Attacks on Vision-Language-Action Models via Objective-Decoupled Optimization",
+    "similarity": 1.0
+  },
+  "21326f10c37d6d3064382c4e3fe2bd1b": {
+    "not_found": true,
+    "title": "To Think or Not to Think: Exploring the Unthinking Vulnerability in Large Reasoning Models"
+  }
+}

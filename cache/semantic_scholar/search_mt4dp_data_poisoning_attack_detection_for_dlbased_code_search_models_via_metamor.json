@@ -1,0 +1,46 @@
+{
+  "paperId": "59dabd323a75c7aa115c896c4f72a697a0cb601a",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2507-11092",
+    "ArXiv": "2507.11092",
+    "DOI": "10.48550/arXiv.2507.11092",
+    "CorpusId": 280295462
+  },
+  "title": "MT4DP: Data Poisoning Attack Detection for DL-based Code Search Models via Metamorphic Testing",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2507.11092, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2216215440",
+      "name": "Gong Chen"
+    },
+    {
+      "authorId": "2323099842",
+      "name": "Wenjie Liu"
+    },
+    {
+      "authorId": "2321982738",
+      "name": "Xiaoyuan Xie"
+    },
+    {
+      "authorId": "2109925415",
+      "name": "Xunzhu Tang"
+    },
+    {
+      "authorId": "11128727",
+      "name": "Tegawend'e F. Bissyand'e"
+    },
+    {
+      "authorId": "2042705778",
+      "name": "Songqiang Chen"
+    }
+  ],
+  "abstract": "Recently, several studies have indicated that data poisoning attacks pose a severe security threat to deep learning-based (DL-based) code search models. Attackers inject carefully crafted malicious patterns into the training data, misleading the code search model to learn these patterns during training. During the usage of the poisoned code search model for inference, once the malicious pattern is triggered, the model tends to rank the vulnerability code higher. However, existing detection methods for data poisoning attacks on DL-based code search models remain insufficiently effective. To address this critical security issue, we propose MT4DP, a Data Poisoning Attack Detection Framework for DL-based Code Search Models via Metamorphic Testing. MT4DP introduces a novel Semantically Equivalent Metamorphic Relation (SE-MR) designed to detect data poisoning attacks on DL-based code search models. Specifically, MT4DP first identifies the high-frequency words from search queries as potential poisoning targets and takes their corresponding queries as the source queries. For each source query, MT4DP generates two semantically equivalent follow-up queries and retrieves its source ranking list. Then, each source ranking list is re-ranked based on the semantic similarities between its code snippets and the follow-up queries. Finally, variances between the source and re-ranked lists are calculated to reveal violations of the SE-MR and warn the data poisoning attack. Experimental results demonstrate that MT4DP significantly enhances the detection of data poisoning attacks on DL-based code search models, outperforming the best baseline by 191% on average F1 score and 265% on average precision. Our work aims to promote further research into effective techniques for mitigating data poisoning threats on DL-based code search models."
+}

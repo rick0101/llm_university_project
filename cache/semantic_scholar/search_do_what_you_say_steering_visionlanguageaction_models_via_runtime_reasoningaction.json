@@ -1,0 +1,46 @@
+{
+  "paperId": "8af4e4833d4f76b202aff10bef0bb37c5175b8eb",
+  "externalIds": {
+    "ArXiv": "2510.16281",
+    "DBLP": "journals/corr/abs-2510-16281",
+    "DOI": "10.48550/arXiv.2510.16281",
+    "CorpusId": 282210375
+  },
+  "title": "Do What You Say: Steering Vision-Language-Action Models via Runtime Reasoning-Action Alignment Verification",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 5,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.16281, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2334436972",
+      "name": "Yilin Wu"
+    },
+    {
+      "authorId": "2381900879",
+      "name": "Anqi Li"
+    },
+    {
+      "authorId": "145767346",
+      "name": "Tucker Hermans"
+    },
+    {
+      "authorId": "2385785200",
+      "name": "Fabio Ramos"
+    },
+    {
+      "authorId": "2342414600",
+      "name": "Andrea Bajcsy"
+    },
+    {
+      "authorId": "2386622615",
+      "name": "Claudia P'erez-D'Arpino"
+    }
+  ],
+  "abstract": "Reasoning Vision Language Action (VLA) models improve robotic instruction-following by generating step-by-step textual plans before low-level actions, an approach inspired by Chain-of-Thought (CoT) reasoning in language models. Yet even with a correct textual plan, the generated actions can still miss the intended outcomes in the plan, especially in out-of-distribution (OOD) scenarios. We formalize this phenomenon as a lack of embodied CoT faithfulness, and introduce a training-free, runtime policy steering method for reasoning-action alignment. Given a reasoning VLA's intermediate textual plan, our framework samples multiple candidate action sequences from the same model, predicts their outcomes via simulation, and uses a pre-trained Vision-Language Model (VLM) to select the sequence whose outcome best aligns with the VLA's own textual plan. Only executing action sequences that align with the textual reasoning turns our base VLA's natural action diversity from a source of error into a strength, boosting robustness to semantic and visual OOD perturbations and enabling novel behavior composition without costly re-training. We also contribute a reasoning-annotated extension of LIBERO-100, environment variations tailored for OOD evaluation, and demonstrate up to 15% performance gain over prior work on behavior composition tasks and scales with compute and data diversity. Project Website at: https://yilin-wu98.github.io/steering-reasoning-vla/"
+}

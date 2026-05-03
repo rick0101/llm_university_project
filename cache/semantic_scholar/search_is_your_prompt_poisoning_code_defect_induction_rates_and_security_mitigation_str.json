@@ -1,0 +1,50 @@
+{
+  "paperId": "e8d80b989cfe068ff0f486cf6009ceeeb11fc97d",
+  "externalIds": {
+    "ArXiv": "2510.22944",
+    "DBLP": "journals/corr/abs-2510-22944",
+    "DOI": "10.48550/arXiv.2510.22944",
+    "CorpusId": 282389023
+  },
+  "title": "Is Your Prompt Poisoning Code? Defect Induction Rates and Security Mitigation Strategies",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 1,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.22944, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2376738965",
+      "name": "Bin Wang"
+    },
+    {
+      "authorId": "2350172913",
+      "name": "YiLu Zhong"
+    },
+    {
+      "authorId": "2360718184",
+      "name": "Midi Wan"
+    },
+    {
+      "authorId": "2268082405",
+      "name": "Wenjie Yu"
+    },
+    {
+      "authorId": "2269558470",
+      "name": "Yuanbing Ouyang"
+    },
+    {
+      "authorId": "2387873420",
+      "name": "Yenan Huang"
+    },
+    {
+      "authorId": "2389146795",
+      "name": "Hui Li"
+    }
+  ],
+  "abstract": "Large language models (LLMs) have become indispensable for automated code generation, yet the quality and security of their outputs remain a critical concern. Existing studies predominantly concentrate on adversarial attacks or inherent flaws within the models. However, a more prevalent yet underexplored issue concerns how the quality of a benign but poorly formulated prompt affects the security of the generated code. To investigate this, we first propose an evaluation framework for prompt quality encompassing three key dimensions: goal clarity, information completeness, and logical consistency. Based on this framework, we construct and publicly release CWE-BENCH-PYTHON, a large-scale benchmark dataset containing tasks with prompts categorized into four distinct levels of normativity (L0-L3). Extensive experiments on multiple state-of-the-art LLMs reveal a clear correlation: as prompt normativity decreases, the likelihood of generating insecure code consistently and markedly increases. Furthermore, we demonstrate that advanced prompting techniques, such as Chain-of-Thought and Self-Correction, effectively mitigate the security risks introduced by low-quality prompts, substantially improving code safety. Our findings highlight that enhancing the quality of user prompts constitutes a critical and effective strategy for strengthening the security of AI-generated code."
+}

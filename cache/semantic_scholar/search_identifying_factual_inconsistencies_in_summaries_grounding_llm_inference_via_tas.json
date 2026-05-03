@@ -1,0 +1,50 @@
+{
+  "paperId": "60be3610c60cbdb0f786e0ec2c6b0af635f61722",
+  "externalIds": {
+    "DBLP": "conf/emnlp/XuSYXC0L24",
+    "ArXiv": "2402.12821",
+    "DOI": "10.18653/v1/2024.findings-emnlp.857",
+    "CorpusId": 267759530
+  },
+  "title": "Identifying Factual Inconsistencies in Summaries: Grounding LLM Inference via Task Taxonomy",
+  "venue": "Conference on Empirical Methods in Natural Language Processing",
+  "year": 2024,
+  "citationCount": 6,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2402.12821, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2276317005",
+      "name": "Liyan Xu"
+    },
+    {
+      "authorId": "2276323391",
+      "name": "Zhenlin Su"
+    },
+    {
+      "authorId": "2265525656",
+      "name": "Mo Yu"
+    },
+    {
+      "authorId": "2276269291",
+      "name": "Jin Xu"
+    },
+    {
+      "authorId": "2284846539",
+      "name": "Jinho D. Choi"
+    },
+    {
+      "authorId": "2283871195",
+      "name": "Jie Zhou"
+    },
+    {
+      "authorId": "2284839581",
+      "name": "Fei Liu"
+    }
+  ],
+  "abstract": "Factual inconsistencies pose a significant hurdle for the faithful summarization by generative models. While a major direction to enhance inconsistency detection is to derive stronger Natural Language Inference (NLI) models, we propose an orthogonal aspect that underscores the importance of incorporating task-specific taxonomy into the inference. To this end, we consolidate key error types of inconsistent facts in summaries, and incorporate them to facilitate both the zero-shot and supervised paradigms of LLMs. Extensive experiments on ten datasets of five distinct domains suggest that, zero-shot LLM inference could benefit from the explicit solution space depicted by the error type taxonomy, and achieves state-of-the-art performance overall, surpassing specialized non-LLM baselines, as well as recent LLM baselines. We further distill models that fuse the taxonomy into parameters through our designed prompt completions and supervised training strategies, efficiently substituting state-of-the-art zero-shot inference with much larger LLMs."
+}

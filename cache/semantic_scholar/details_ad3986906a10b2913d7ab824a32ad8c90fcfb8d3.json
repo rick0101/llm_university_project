@@ -1,0 +1,38 @@
+{
+  "paperId": "ad3986906a10b2913d7ab824a32ad8c90fcfb8d3",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2403-06675",
+    "ArXiv": "2403.06675",
+    "DOI": "10.1109/ISSREW60843.2023.00060",
+    "CorpusId": 264976277
+  },
+  "title": "Poisoning Programs by Un-Repairing Code: Security Concerns of AI-generated Code",
+  "venue": "2023 IEEE 34th International Symposium on Software Reliability Engineering Workshops (ISSREW)",
+  "year": 2023,
+  "citationCount": 16,
+  "influentialCitationCount": 3,
+  "openAccessPdf": {
+    "url": "",
+    "status": "CLOSED",
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2403.06675, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2023-10-09",
+  "journal": {
+    "name": "2023 IEEE 34th International Symposium on Software Reliability Engineering Workshops (ISSREW)",
+    "pages": "128-131"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Improta2023PoisoningPB,\n author = {Cristina Improta},\n booktitle = {2023 IEEE 34th International Symposium on Software Reliability Engineering Workshops (ISSREW)},\n journal = {2023 IEEE 34th International Symposium on Software Reliability Engineering Workshops (ISSREW)},\n pages = {128-131},\n title = {Poisoning Programs by Un-Repairing Code: Security Concerns of AI-generated Code},\n year = {2023}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "93268228",
+      "name": "Cristina Improta"
+    }
+  ],
+  "abstract": "AI-based code generators have gained a fundamental role in assisting developers in writing software starting from natural language (NL). However, since these large language models are trained on massive volumes of data collected from unreliable online sources (e.g., GitHub, Hugging Face), AI models become an easy target for data poisoning attacks, in which an attacker corrupts the training data by injecting a small amount of poison into it, i.e., astutely crafted malicious samples. In this position paper, we address the security of AI code generators by identifying a novel data poisoning attack that results in the generation of vulnerable code. Next, we devise an extensive evaluation of how these attacks impact state-of-the-art models for code generation. Lastly, we discuss potential solutions to overcome this threat."
+}

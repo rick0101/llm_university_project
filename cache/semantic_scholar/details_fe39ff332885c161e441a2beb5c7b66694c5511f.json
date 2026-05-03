@@ -1,0 +1,47 @@
+{
+  "paperId": "fe39ff332885c161e441a2beb5c7b66694c5511f",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2410-09101",
+    "ArXiv": "2410.09101",
+    "DOI": "10.48550/arXiv.2410.09101",
+    "CorpusId": 273346360
+  },
+  "title": "Data Taggants: Dataset Ownership Verification via Harmless Targeted Data Poisoning",
+  "venue": "International Conference on Learning Representations",
+  "year": 2024,
+  "citationCount": 9,
+  "influentialCitationCount": 1,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.09101, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science",
+    "Mathematics"
+  ],
+  "publicationDate": "2024-10-09",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2410.09101"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Bouaziz2024DataTD,\n author = {Wassim Bouaziz and El-Mahdi El-Mhamdi and Nicolas Usunier},\n booktitle = {International Conference on Learning Representations},\n journal = {ArXiv},\n title = {Data Taggants: Dataset Ownership Verification via Harmless Targeted Data Poisoning},\n volume = {abs/2410.09101},\n year = {2024}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "1791507",
+      "name": "Wassim Bouaziz"
+    },
+    {
+      "authorId": "1412478053",
+      "name": "El-Mahdi El-Mhamdi"
+    },
+    {
+      "authorId": "2306053042",
+      "name": "Nicolas Usunier"
+    }
+  ],
+  "abstract": "Dataset ownership verification, the process of determining if a dataset is used in a model's training data, is necessary for detecting unauthorized data usage and data contamination. Existing approaches, such as backdoor watermarking, rely on inducing a detectable behavior into the trained model on a part of the data distribution. However, these approaches have limitations, as they can be harmful to the model's performances or require unpractical access to the model's internals. Most importantly, previous approaches lack guarantee against false positives. This paper introduces data taggants, a novel non-backdoor dataset ownership verification technique. Our method uses pairs of out-of-distribution samples and random labels as secret keys, and leverages clean-label targeted data poisoning to subtly alter a dataset, so that models trained on it respond to the key samples with the corresponding key labels. The keys are built as to allow for statistical certificates with black-box access only to the model. We validate our approach through comprehensive and realistic experiments on ImageNet1k using ViT and ResNet models with state-of-the-art training recipes. Our findings demonstrate that data taggants can reliably detect models trained on the protected dataset with high confidence, without compromising validation accuracy, and show their superiority over backdoor watermarking. We demonstrate the stealthiness and robustness of our method against various defense mechanisms."
+}

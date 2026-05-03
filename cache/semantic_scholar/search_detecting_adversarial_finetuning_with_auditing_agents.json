@@ -1,0 +1,34 @@
+{
+  "paperId": "d1c978e77f346c3e012dc35d357d8a2d88c7ddfa",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2510-16255",
+    "ArXiv": "2510.16255",
+    "DOI": "10.48550/arXiv.2510.16255",
+    "CorpusId": 282208952
+  },
+  "title": "Detecting Adversarial Fine-tuning with Auditing Agents",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 3,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.16255, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2386603801",
+      "name": "Sarah Egler"
+    },
+    {
+      "authorId": "2297873691",
+      "name": "John Schulman"
+    },
+    {
+      "authorId": "2483738",
+      "name": "Nicholas Carlini"
+    }
+  ],
+  "abstract": "Large Language Model (LLM) providers expose fine-tuning APIs that let end users fine-tune their frontier LLMs. Unfortunately, it has been shown that an adversary with fine-tuning access to an LLM can bypass safeguards. Particularly concerning, such attacks may avoid detection with datasets that are only implicitly harmful. Our work studies robust detection mechanisms for adversarial use of fine-tuning APIs. We introduce the concept of a fine-tuning auditing agent and show it can detect harmful fine-tuning prior to model deployment. We provide our auditing agent with access to the fine-tuning dataset, as well as the fine-tuned and pre-fine-tuned models, and request the agent assigns a risk score for the fine-tuning job. We evaluate our detection approach on a diverse set of eight strong fine-tuning attacks from the literature, along with five benign fine-tuned models, totaling over 1400 independent audits. These attacks are undetectable with basic content moderation on the dataset, highlighting the challenge of the task. With the best set of affordances, our auditing agent achieves a 56.2% detection rate of adversarial fine-tuning at a 1% false positive rate. Most promising, the auditor is able to detect covert cipher attacks that evade safety evaluations and content moderation of the dataset. While benign fine-tuning with unintentional subtle safety degradation remains a challenge, we establish a baseline configuration for further work in this area. We release our auditing agent at https://github.com/safety-research/finetuning-auditor."
+}

@@ -1,0 +1,42 @@
+{
+  "paperId": "543c141807e69f6613f29bcd820661945cc881d5",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2501-13946",
+    "ArXiv": "2501.13946",
+    "DOI": "10.48550/arXiv.2501.13946",
+    "CorpusId": 275906628
+  },
+  "title": "Hallucination Mitigation using Agentic AI Natural Language-Based Frameworks",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 26,
+  "influentialCitationCount": 1,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2501.13946, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-01-19",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2501.13946"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Gosmar2025HallucinationMU,\n author = {Diego Gosmar and Deborah A. Dahl},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {Hallucination Mitigation using Agentic AI Natural Language-Based Frameworks},\n volume = {abs/2501.13946},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2295013568",
+      "name": "Diego Gosmar"
+    },
+    {
+      "authorId": "2313641923",
+      "name": "Deborah A. Dahl"
+    }
+  ],
+  "abstract": "Hallucinations remain a significant challenge in current Generative AI models, undermining trust in AI systems and their reliability. This study investigates how orchestrating multiple specialized Artificial Intelligent Agents can help mitigate such hallucinations, with a focus on systems leveraging Natural Language Processing (NLP) to facilitate seamless agent interactions. To achieve this, we design a pipeline that introduces over three hundred prompts, purposefully crafted to induce hallucinations, into a front-end agent. The outputs are then systematically reviewed and refined by second- and third-level agents, each employing distinct large language models and tailored strategies to detect unverified claims, incorporate explicit disclaimers, and clarify speculative content. Additionally, we introduce a set of novel Key Performance Indicators (KPIs) specifically designed to evaluate hallucination score levels. A dedicated fourth-level AI agent is employed to evaluate these KPIs, providing detailed assessments and ensuring accurate quantification of shifts in hallucination-related behaviors. A core component of this investigation is the use of the OVON (Open Voice Network) framework, which relies on universal NLP-based interfaces to transfer contextual information among agents. Through structured JSON messages, each agent communicates its assessment of the hallucination likelihood and the reasons underlying questionable content, thereby enabling the subsequent stage to refine the text without losing context. The results demonstrate that employing multiple specialized agents capable of interoperating with each other through NLP-based agentic frameworks can yield promising outcomes in hallucination mitigation, ultimately bolstering trust within the AI community."
+}

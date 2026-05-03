@@ -1,0 +1,21 @@
+ is employed...".
+    Source: "Introduced RMCBench...".
+    No mention of SFT. NOT_SUPPORTED.
+
+    Wait, let me re-think Citation 2. "agents are generally easier to compromise...".
+    Source: "revealing that agents are highly vulnerable to natural language prompts and technically buggy code".
+    PARTIALLY_SUPPORTED.
+
+    Wait, I'll check the reasoning for Citation 0 again. "The source text mentions safety alignment strategies and their role in preventing malicious code generation (rejecting unsafe queries), but it does not mention harmonizing behavior with human values and intentions."
+
+    Wait, I'll check the reasoning for Citation 2 again. "The source text confirms that agents are highly vulnerable to natural language prompts, but it does not explicitly state that they are easier to compromise than when using programming language inputs (it mentions they are vulnerable to both)."
+
+    This seems good.
+
+    One last check on Citation 0. "Safety alignment techniques aim to harmonize...".
+    Actually, the source text says "bypasses instruction-following safety filters". "Instruction-following" is related to "intentions".
+    So "harmonize... with human... intentions" is somewhat supported by "instruction-following safety filters".
+    But "human values" is still missing.
+    I'll stick with PARTIALLY_SUPPORTED.
+
+    Wait, I'll check Citation 1 again. "Initially, Supervised Fine-Tuning (SFT) is employed...

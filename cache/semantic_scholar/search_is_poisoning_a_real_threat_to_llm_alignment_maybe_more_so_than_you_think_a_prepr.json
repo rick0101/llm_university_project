@@ -1,0 +1,42 @@
+{
+  "paperId": "196279236ec1fadb02d3348e3e0d640e8d08223b",
+  "externalIds": {
+    "ArXiv": "2406.12091",
+    "DBLP": "journals/corr/abs-2406-12091",
+    "DOI": "10.48550/arXiv.2406.12091",
+    "CorpusId": 270562377
+  },
+  "title": "Is poisoning a real threat to LLM alignment? Maybe more so than you think",
+  "venue": "arXiv.org",
+  "year": 2024,
+  "citationCount": 29,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2406.12091, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2162326000",
+      "name": "Pankayaraj Pathmanathan"
+    },
+    {
+      "authorId": "49081354",
+      "name": "Souradip Chakraborty"
+    },
+    {
+      "authorId": "2284636867",
+      "name": "Xiangyu Liu"
+    },
+    {
+      "authorId": "83158497",
+      "name": "Yongyuan Liang"
+    },
+    {
+      "authorId": "2261325066",
+      "name": "Furong Huang"
+    }
+  ],
+  "abstract": "Recent advancements in Reinforcement Learning with Human Feedback (RLHF) have significantly impacted the alignment of Large Language Models (LLMs). The sensitivity of reinforcement learning algorithms such as Proximal Policy Optimization (PPO) has led to new line work on Direct Policy Optimization (DPO), which treats RLHF in a supervised learning framework. The increased practical use of these RLHF methods warrants an analysis of their vulnerabilities. In this work, we investigate the vulnerabilities of DPO to poisoning attacks under different scenarios and compare the effectiveness of preference poisoning, a first of its kind. We comprehensively analyze DPO's vulnerabilities under different types of attacks, i.e., backdoor and non-backdoor attacks, and different poisoning methods across a wide array of language models, i.e., LLama 7B, Mistral 7B, and Gemma 7B. We find that unlike PPO-based methods, which, when it comes to backdoor attacks, require at least 4\\% of the data to be poisoned to elicit harmful behavior, we exploit the true vulnerabilities of DPO more simply so we can poison the model with only as much as 0.5\\% of the data. We further investigate the potential reasons behind the vulnerability and how well this vulnerability translates into backdoor vs non-backdoor attacks."
+}

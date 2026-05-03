@@ -1,0 +1,58 @@
+{
+  "paperId": "72fc6b4c3de26245abdc1db0c52fd8a50479a715",
+  "externalIds": {
+    "ArXiv": "2511.19299",
+    "DBLP": "journals/corr/abs-2511-19299",
+    "DOI": "10.48550/arXiv.2511.19299",
+    "CorpusId": 283243611
+  },
+  "title": "Open-weight genome language model safeguards: Assessing robustness via adversarial fine-tuning",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 3,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2511.19299, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-11-24",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2511.19299"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Black2025OpenweightGL,\n author = {James R. M. Black and Moritz S. Hanke and Aaron Maiwald and Tina Hernandez-Boussard and Oliver M. Crook and Jaspreet Pannu},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {Open-weight genome language model safeguards: Assessing robustness via adversarial fine-tuning},\n volume = {abs/2511.19299},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2394099791",
+      "name": "James R. M. Black"
+    },
+    {
+      "authorId": "2359793926",
+      "name": "Moritz S. Hanke"
+    },
+    {
+      "authorId": "2387396226",
+      "name": "Aaron Maiwald"
+    },
+    {
+      "authorId": "2278665616",
+      "name": "Tina Hernandez-Boussard"
+    },
+    {
+      "authorId": "2311750251",
+      "name": "Oliver M. Crook"
+    },
+    {
+      "authorId": "2255809090",
+      "name": "Jaspreet Pannu"
+    }
+  ],
+  "abstract": "Novel deep learning architectures are increasingly being applied to biological data, including genetic sequences. These models, referred to as genomic language models (gLMs), have demonstrated impressive predictive and generative capabilities, raising concerns that such models may also enable misuse, for instance via the generation of genomes for human-infecting viruses. These concerns have catalyzed calls for risk mitigation measures. The de facto mitigation of choice is filtering of pretraining data (i.e., removing viral genomic sequences from training datasets) in order to limit gLM performance on virus-related tasks. However, it is not currently known how robust this approach is for securing open-source models that can be fine-tuned using sensitive pathogen data. Here, we evaluate a state-of-the-art gLM, Evo 2, and perform fine-tuning using sequences from 110 harmful human-infecting viruses to assess the rescue of misuse-relevant predictive capabilities. The fine-tuned model exhibited reduced perplexity on unseen viral sequences relative to 1) the pretrained model and 2) a version fine-tuned on bacteriophage sequences. The model fine-tuned on human-infecting viruses also identified immune escape variants from SARS-CoV-2 (achieving an AUROC of 0.6), despite having no exposure to SARS-CoV-2 sequences during fine-tuning. This work demonstrates that data exclusion might be circumvented by fine-tuning approaches that can, to some degree, rescue misuse-relevant capabilities of gLMs. We highlight the need for safety frameworks for gLMs and outline further work needed on evaluations and mitigation measures to enable the safe deployment of gLMs."
+}

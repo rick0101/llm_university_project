@@ -1,0 +1,67 @@
+{
+  "section_key": "background_and_preliminaries",
+  "saved_at": "2026-04-22T21:49:51.125894",
+  "data": {
+    "section_key": "background_and_preliminaries",
+    "title": "2. Background and Preliminaries",
+    "text": "# 2. Background and Preliminaries\n\nThis section provides the foundational concepts necessary to understand the vulnerabilities of Large Language Models (LLMs) and the mechanisms employed to secure them. We outline the underlying architecture of modern LLMs, the techniques used for safety alignment, the prevailing threat models, and key definitions that will be used throughout this survey.\n\n## 2.1 Large Language Model Architecture\n\nModern Large Language Models are predominantly built upon the Transformer architecture, which relies heavily on self-attention mechanisms to process and generate natural language. The training pipeline of an LLM typically begins with a massive pre-training phase, where the model is exposed to vast amounts of unstructured text data. During this phase, the model learns the statistical properties of language by optimizing for next-token prediction\u2014a self-supervised objective that minimizes the cross-entropy loss between the predicted token probabilities and the actual subsequent tokens in the training corpus.\n\nWhile this pre-training endows the model with extensive world knowledge and linguistic capabilities, it also means the model internalizes biases, toxic content, and potentially harmful information present in the training data. Consequently, a base pre-trained model is often unsuitable for direct deployment in user-facing applications, as it lacks an understanding of human values, safety constraints, and conversational norms. This necessitates subsequent fine-tuning phases to align the model's behavior with desired outcomes.\n\n## 2.2 Safety Alignment: RLHF and DPO\n\nThe core challenge of LLM safety alignment lies in the fundamental mismatch between the pre-training objectives, which focus purely on minimizing prediction errors, and the complex, nuanced expectations of human users regarding safety, helpfulness, and compliance [Cheng_2024_LLM]. To bridge this gap, various model alignment strategies are employed to enhance safety capabilities and ensure the model behaves responsibly [Ouyang_2025_LLM].\n\nThe alignment process typically begins with Supervised Fine-Tuning (SFT), where the model is trained on high-quality, human-annotated instruction-response pairs. However, SFT alone is often insufficient for robust safety alignment, as it heavily depends on expensive, high-quality response collections and may not generalize well to unseen adversarial inputs [Liu_2025_Purpcode].\n\nTo achieve more robust alignment, Reinforcement Learning from Human Feedback (RLHF) has become a standard practice [Ouyang_2025_LLM, Liu_2025_Purpcode]. RLHF involves training a separate reward model based on human preference data\u2014where human annotators rank different model responses to the same prompt. The LLM is then optimized using reinforcement learning algorithms, such as Proximal Policy Optimization (PPO), to maximize the expected reward from this model. This allows the LLM to learn complex safety boundaries and human preferences that are difficult to capture through SFT alone.\n\nRecently, Direct Preference Optimization (DPO) has emerged as a powerful alternative to the traditional RLHF framework. Compared to RLHF, which relies on an explicit reward model and complex reinforcement learning loops, DPO provides a more stable and efficient end-to-end optimization path [Yu_2025_LLMs]. The core idea of DPO is to directly transform the optimization objective on a preference dataset into a maximum likelihood estimation problem for the language model itself [Yu_2025_LLMs]. By bypassing the need for a separate reward model, DPO simplifies the alignment pipeline while achieving comparable or superior performance in aligning models to human values and safety guidelines.\n\n## 2.3 Threat Modeling in LLMs\n\nAs LLMs are increasingly integrated into critical applications, understanding the threat landscape is paramount. Threat modeling for LLMs involves identifying potential vulnerabilities, the capabilities of adversaries, and the vectors through which attacks can be executed.\n\nAdversaries interacting with LLMs can generally be categorized based on their access to the target model:\n*   **White-box Access:** The attacker has full knowledge of the target model, including its architecture, weights, and training data. Strong adversarial attacks often leverage this access to compute gradients and craft highly optimized perturbations [Tejedor_2025_Elena].\n*   **Black-box Access:** The attacker can only interact with the model through its API or user interface, providing inputs and observing outputs without access to the underlying parameters. Most real-world attacks against deployed commercial models fall into this category.\n\nThe threat vectors against LLMs are diverse. In the context of code generation and execution, threats include the generation of keyloggers, backdoors, ransomware, and polymorphic viruses [Muntasir_2025_Mocha]. Furthermore, adversaries may attempt to compromise the model during its training phase. For instance, generalized adversarial code-suggestions represent a novel class of attacks derived from neural backdoors, where the adversary poisons the training data [Rubel_2024_LLM]. In these scenarios, the malicious actions or compromised outputs are only triggered in the presence of a specific pattern or context, making them difficult to detect during standard evaluation [Rubel_2024_LLM].\n\n## 2.4 Key Definitions\n\nTo ensure clarity throughout this survey, we define several key terms related to LLM vulnerabilities and safety:\n\n*   **Adversarial Attack:** A deliberate attempt to manipulate an LLM's input to cause it to produce incorrect, unintended, or harmful outputs. These attacks exploit vulnerabilities in the model's learned representations.\n*   **Jailbreak:** A specific type of adversarial attack designed to bypass an LLM's safety alignment and usage policies. Jailbreak prompts are crafted to trick the model into ignoring its safety training and generating restricted content, such as hate speech, malicious code, or instructions for illegal activities.\n*   **Safety Alignment:** The process of fine-tuning an LLM to ensure its outputs adhere to human values, ethical guidelines, and safety constraints. The goal is to prevent the model from generating harmful, biased, or toxic content [Cheng_2024_LLM].\n*   **Utility vs. Safety Trade-off:** A fundamental challenge in LLM development where increasing a model's safety (e.g., by making it more conservative and prone to rejecting prompts) can inadvertently decrease its utility (its ability to provide helpful and accurate responses to benign queries). Ideal models strive to achieve both high utility and high safety, minimizing the rejection of safe prompts while effectively blocking malicious ones [Muntasir_2025_Mocha].\n*   **Data Poisoning:** An attack vector where an adversary injects malicious or manipulated data into the training dataset of an LLM. The objective is to compromise the model's behavior, often by embedding backdoors that can be exploited later [Rubel_2024_LLM].\n*   **Red Teaming:** The practice of rigorously testing an LLM by actively attempting to find vulnerabilities, jailbreaks, and failure modes. This proactive approach is crucial for identifying weaknesses in safety alignment before a model is deployed.\n\nBy establishing this background on LLM architecture, alignment techniques like RLHF and DPO, and the prevailing threat models, we lay the groundwork for a deeper exploration of specific adversarial attacks and defense mechanisms in the subsequent sections.",
+    "citations": [
+      {
+        "bibtex_key": "Cheng_2024_LLM",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Ouyang_2025_LLM",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Liu_2025_Purpcode",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Yu_2025_LLMs",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Tejedor_2025_Elena",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Muntasir_2025_Mocha",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Rubel_2024_LLM",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Ouyang_2025_LLM, Liu_2025_Purpcode",
+        "claim": "(auto-detected from text)",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      }
+    ],
+    "word_count": 1048,
+    "status": "drafted",
+    "iteration": 1,
+    "rag_queries": [],
+    "retrieved_chunk_ids": [],
+    "writer_notes": "[prefetch_agentic] Response was not valid JSON. Citations extracted via regex.",
+    "critic_feedback": "",
+    "drafted_at": "2026-04-22T21:49:51.123919"
+  }
+}

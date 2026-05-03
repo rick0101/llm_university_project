@@ -213,6 +213,14 @@ class QdrantStore:
         "paper_id": models.PayloadSchemaType.KEYWORD,
         "year": models.PayloadSchemaType.INTEGER,
         "month": models.PayloadSchemaType.INTEGER,
+        # v3.6 — Two-Tier Corpus + tassonomia (filtri server-side)
+        "is_citable": models.PayloadSchemaType.BOOL,
+        "citation_tier": models.PayloadSchemaType.KEYWORD,
+        "attack_vector": models.PayloadSchemaType.KEYWORD,
+        "defense_type": models.PayloadSchemaType.KEYWORD,
+        "target_models": models.PayloadSchemaType.KEYWORD,
+        "evaluation_metrics": models.PayloadSchemaType.KEYWORD,
+        "datasets": models.PayloadSchemaType.KEYWORD,
     }
 
     def __init__(

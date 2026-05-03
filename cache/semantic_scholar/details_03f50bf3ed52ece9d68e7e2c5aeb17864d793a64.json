@@ -1,0 +1,46 @@
+{
+  "paperId": "03f50bf3ed52ece9d68e7e2c5aeb17864d793a64",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2510-00047",
+    "ArXiv": "2510.00047",
+    "DOI": "10.48550/arXiv.2510.00047",
+    "CorpusId": 281705799
+  },
+  "title": "Explanation-Driven Counterfactual Testing for Faithfulness in Vision-Language Model Explanations",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 4,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.00047, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-09-27",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2510.00047"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Ding2025ExplanationDrivenCT,\n author = {Sihao Ding and Santosh Vasa and Aditi Ramadwar},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {Explanation-Driven Counterfactual Testing for Faithfulness in Vision-Language Model Explanations},\n volume = {abs/2510.00047},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2351046452",
+      "name": "Sihao Ding"
+    },
+    {
+      "authorId": "2373442371",
+      "name": "Santosh Vasa"
+    },
+    {
+      "authorId": "2373443068",
+      "name": "Aditi Ramadwar"
+    }
+  ],
+  "abstract": "Vision-Language Models (VLMs) often produce fluent Natural Language Explanations (NLEs) that sound convincing but may not reflect the causal factors driving predictions. This mismatch of plausibility and faithfulness poses technical and governance risks. We introduce Explanation-Driven Counterfactual Testing (EDCT), a fully automated verification procedure for a target VLM that treats the model's own explanation as a falsifiable hypothesis. Given an image-question pair, EDCT: (1) obtains the model's answer and NLE, (2) parses the NLE into testable visual concepts, (3) generates targeted counterfactual edits via generative inpainting, and (4) computes a Counterfactual Consistency Score (CCS) using LLM-assisted analysis of changes in both answers and explanations. Across 120 curated OK-VQA examples and multiple VLMs, EDCT uncovers substantial faithfulness gaps and provides regulator-aligned audit artifacts indicating when cited concepts fail causal tests."
+}

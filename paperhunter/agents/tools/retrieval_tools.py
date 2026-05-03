@@ -39,6 +39,7 @@ Uso come FunctionTool per il ReAct Agent::
 
 from __future__ import annotations
 
+import os
 import time
 from typing import Optional
 
@@ -47,6 +48,25 @@ from llama_index.core.tools import FunctionTool
 from paperhunter.utils.logging_setup import get_logger
 
 logger = get_logger(__name__)
+
+
+# ============================================================================
+# Test mode: "summaries-only" — il writer attinge SOLO ai riassunti L1/L1.5/L2
+# ============================================================================
+
+_SUMMARIES_ONLY_ENV = "PAPERHUNTER_WRITER_SUMMARIES_ONLY"
+
+
+def _summaries_only_enabled() -> bool:
+    """Verifica se la modalità ``summaries-only`` è attiva via env var.
+
+    Quando ``PAPERHUNTER_WRITER_SUMMARIES_ONLY=1`` il writer (e i suoi tool
+    di retrieval) prelevano contenuto SOLO dalle collezioni di riassunti
+    (``l1_summaries``, ``l1_5_summaries``, ``l2_summaries``) anziché dai
+    chunk full-text dei paper. Modalità di test per confronto qualitativo.
+    """
+    val = os.environ.get(_SUMMARIES_ONLY_ENV, "").strip().lower()
+    return val in {"1", "true", "yes", "on"}
 
 
 # ============================================================================
@@ -365,6 +385,50 @@ def search_vector_database(
         if filter_parts:
             where_filter = filter_parts
 
+        # ── Modalità summaries-only ──────────────────────────────────────
+        if _summaries_only_enabled():
+            from paperhunter.config import settings as _s
+            cols = [
+                _s.qdrant.collection_l1_summaries,
+                _s.qdrant.collection_l1_5_summaries,
+                _s.qdrant.collection_l2_summaries,
+            ]
+            merged: list[dict] = []
+            for col in cols:
+                try:
+                    if not store.client.collection_exists(col):
+                        continue
+                    # L2 summary non hanno year_min utilizzabile (year=0):
+                    # escludi il filtro 'year' per L2 per evitare 0 risultati.
+                    wf = where_filter
+                    if col == _s.qdrant.collection_l2_summaries and wf and "year" in wf:
+                        wf = {k: v for k, v in wf.items() if k != "year"}
+                    sub = store.query(
+                        query_text=query,
+                        n_results=top_k,
+                        where_filter=wf,
+                        collection_name=col,
+                    )
+                    for r in sub:
+                        meta = r.setdefault("metadata", {})
+                        meta["source_collection"] = col
+                    merged.extend(sub)
+                except Exception as e:
+                    logger.warning(
+                        f"[tool] search_vector_database (summaries-only): "
+                        f"errore collection '{col}': {e}"
+                    )
+            # Ordina per score e tronca
+            merged.sort(key=lambda r: r.get("score", 0.0), reverse=True)
+            results = merged[:top_k]
+            elapsed = time.time() - t0
+            logger.info(
+                f"[tool] search_vector_database (SUMMARIES-ONLY): "
+                f"{len(results)} risultati da {len(cols)} collezioni "
+                f"in {elapsed:.2f}s"
+            )
+            return _format_qdrant_results(results)
+
         results = store.query(
             query_text=query,
             n_results=top_k,
@@ -434,6 +498,19 @@ def search_keyword_index(
         f"[tool] search_keyword_index: query={query!r}, "
         f"top_k={top_k}, category={category}"
     )
+
+    if _summaries_only_enabled():
+        logger.info(
+            "[tool] search_keyword_index: SUMMARIES-ONLY mode → "
+            "BM25 disabilitato (indicizza i chunk full-text). "
+            "Indirizza l'agente verso search_vector_database."
+        )
+        return (
+            "(BM25 keyword search is DISABLED in summaries-only test mode. "
+            "All content must come from L1/L1.5/L2 summaries — please use "
+            "search_vector_database instead, which is now wired to the "
+            "summary collections.)"
+        )
 
     try:
         bm25 = _get_bm25_index()
@@ -519,6 +596,17 @@ def search_graph_communities(
     logger.info(
         f"[tool] search_graph_communities: topic={topic!r}, top_k={top_k}"
     )
+
+    if _summaries_only_enabled():
+        logger.info(
+            "[tool] search_graph_communities: SUMMARIES-ONLY mode → "
+            "graph community search disabilitato."
+        )
+        return (
+            "(Graph community search is DISABLED in summaries-only test mode. "
+            "Use search_vector_database to retrieve content from L1/L1.5/L2 "
+            "summary collections.)"
+        )
 
     try:
         store = _get_qdrant_store()

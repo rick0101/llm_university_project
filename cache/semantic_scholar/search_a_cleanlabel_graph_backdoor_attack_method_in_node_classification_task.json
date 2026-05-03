@@ -1,0 +1,38 @@
+{
+  "paperId": "d98f2a729467e3b554e34688104e6ae3bfc8aa1c",
+  "externalIds": {
+    "DBLP": "journals/kbs/XingXBY24",
+    "ArXiv": "2401.00163",
+    "DOI": "10.48550/arXiv.2401.00163",
+    "CorpusId": 266693814
+  },
+  "title": "A clean-label graph backdoor attack method in node classification task",
+  "venue": "Knowledge-Based Systems",
+  "year": 2023,
+  "citationCount": 22,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2401.00163, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2277243415",
+      "name": "Xiaogang Xing"
+    },
+    {
+      "authorId": "2277425929",
+      "name": "Ming Xu"
+    },
+    {
+      "authorId": "2277578899",
+      "name": "Yujing Bai"
+    },
+    {
+      "authorId": "2277690657",
+      "name": "Dongdong Yang"
+    }
+  ],
+  "abstract": "Backdoor attacks in the traditional graph neural networks (GNNs) field are easily detectable due to the dilemma of confusing labels. To explore the backdoor vulnerability of GNNs and create a more stealthy backdoor attack method, a clean-label graph backdoor attack method(CGBA) in the node classification task is proposed in this paper. Differently from existing backdoor attack methods, CGBA requires neither modification of node labels nor graph structure. Specifically, to solve the problem of inconsistency between the contents and labels of the samples, CGBA selects poisoning samples in a specific target class and uses the label of sample as the target label (i.e., clean-label) after injecting triggers into the target samples. To guarantee the similarity of neighboring nodes, the raw features of the nodes are elaborately picked as triggers to further improve the concealment of the triggers. Extensive experiments results show the effectiveness of our method. When the poisoning rate is 0.04, CGBA can achieve an average attack success rate of 87.8%, 98.9%, 89.1%, and 98.5%, respectively."
+}

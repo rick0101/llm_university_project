@@ -1,0 +1,34 @@
+{
+  "paperId": "369ef28581e3241218b807a811e8ef22879f6eb3",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2602-01137",
+    "ArXiv": "2602.01137",
+    "DOI": "10.48550/arXiv.2602.01137",
+    "CorpusId": 285271133
+  },
+  "title": "Self-Generative Adversarial Fine-Tuning for Large Language Models",
+  "venue": "arXiv.org",
+  "year": 2026,
+  "citationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2602.01137, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2215504028",
+      "name": "Shiguang Wu"
+    },
+    {
+      "authorId": "2285183856",
+      "name": "Yaqing Wang"
+    },
+    {
+      "authorId": "2249763971",
+      "name": "Quanming Yao"
+    }
+  ],
+  "abstract": "Fine-tuning large language models (LLMs) for alignment typically relies on supervised fine-tuning or reinforcement learning from human feedback, both limited by the cost and scarcity of high-quality annotations. Recent self-play and synthetic data approaches reduce this dependence but often rely on heuristic assumptions or ungrounded self-evaluation, which can cause bias accumulation and performance drift. In this paper, we propose Self-Generative Adversarial LLM (SGALM), a unified fine-tuning framework that formulates alignment as a generative adversarial game within a single LLM. SGALM jointly evolves generation and discrimination capabilities without external reward models. Theoretical and empirical results demonstrate that SGALM achieves state-of-the-art performance, serves as an effective alignment algorithm and a robust synthetic data engine."
+}

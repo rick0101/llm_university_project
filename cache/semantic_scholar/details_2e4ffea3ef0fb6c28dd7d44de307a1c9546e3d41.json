@@ -1,0 +1,58 @@
+{
+  "paperId": "2e4ffea3ef0fb6c28dd7d44de307a1c9546e3d41",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2411-16746",
+    "ArXiv": "2411.16746",
+    "DOI": "10.48550/arXiv.2411.16746",
+    "CorpusId": 274280621
+  },
+  "title": "LoBAM: LoRA-Based Backdoor Attack on Model Merging",
+  "venue": "arXiv.org",
+  "year": 2024,
+  "citationCount": 9,
+  "influentialCitationCount": 1,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2411.16746, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2024-11-23",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2411.16746"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Yin2024LoBAMLB,\n author = {Ming Yin and Jingyang Zhang and Jingwei Sun and Minghong Fang and Hai Li and Yiran Chen},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {LoBAM: LoRA-Based Backdoor Attack on Model Merging},\n volume = {abs/2411.16746},\n year = {2024}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2284685643",
+      "name": "Ming Yin"
+    },
+    {
+      "authorId": "2316444865",
+      "name": "Jingyang Zhang"
+    },
+    {
+      "authorId": "2156016815",
+      "name": "Jingwei Sun"
+    },
+    {
+      "authorId": "2256437881",
+      "name": "Minghong Fang"
+    },
+    {
+      "authorId": "2273576775",
+      "name": "Hai Li"
+    },
+    {
+      "authorId": "2253812527",
+      "name": "Yiran Chen"
+    }
+  ],
+  "abstract": "Model merging is an emerging technique that integrates multiple models fine-tuned on different tasks to create a versatile model that excels in multiple domains. This scheme, in the meantime, may open up backdoor attack opportunities where one single malicious model can jeopardize the integrity of the merged model. Existing works try to demonstrate the risk of such attacks by assuming substantial computational resources, focusing on cases where the attacker can fully fine-tune the pre-trained model. Such an assumption, however, may not be feasible given the increasing size of machine learning models. In practice where resources are limited and the attacker can only employ techniques like Low-Rank Adaptation (LoRA) to produce the malicious model, it remains unclear whether the attack can still work and pose threats. In this work, we first identify that the attack efficacy is significantly diminished when using LoRA for fine-tuning. Then, we propose LoBAM, a method that yields high attack success rate with minimal training resources. The key idea of LoBAM is to amplify the malicious weights in an intelligent way that effectively enhances the attack efficacy. We demonstrate that our design can lead to improved attack success rate through extensive empirical experiments across various model merging scenarios. Moreover, we show that our method is highly stealthy and is difficult to detect and defend against."
+}

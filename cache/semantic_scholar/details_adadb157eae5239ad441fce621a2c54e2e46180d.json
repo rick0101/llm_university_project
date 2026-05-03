@@ -1,0 +1,46 @@
+{
+  "paperId": "adadb157eae5239ad441fce621a2c54e2e46180d",
+  "externalIds": {
+    "ArXiv": "2601.04201",
+    "DBLP": "journals/corr/abs-2601-04201",
+    "DOI": "10.48550/arXiv.2601.04201",
+    "CorpusId": 284544363
+  },
+  "title": "Collective Narrative Grounding: Community-Coordinated Data Contributions to Improve Local AI Systems",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 1,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2601.04201, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-12-05",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2601.04201"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Gao2025CollectiveNG,\n author = {Zihan Gao and Mohsin Y. K. Yousufi and Jacob Thebault-Spieker},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {Collective Narrative Grounding: Community-Coordinated Data Contributions to Improve Local AI Systems},\n volume = {abs/2601.04201},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2299118099",
+      "name": "Zihan Gao"
+    },
+    {
+      "authorId": "2149351350",
+      "name": "Mohsin Y. K. Yousufi"
+    },
+    {
+      "authorId": "2299057404",
+      "name": "Jacob Thebault-Spieker"
+    }
+  ],
+  "abstract": "Large language model (LLM) question-answering systems often fail on community-specific queries, creating\"knowledge blind spots\"that marginalize local voices and reinforce epistemic injustice. We present Collective Narrative Grounding, a participatory protocol that transforms community stories into structured narrative units and integrates them into AI systems under community governance. Learning from three participatory mapping workshops with N=24 community members, we designed elicitation methods and a schema that retain narrative richness while enabling entity, time, and place extraction, validation, and provenance control. To scope the problem, we audit a county-level benchmark of 14,782 local information QA pairs, where factual gaps, cultural misunderstandings, geographic confusions, and temporal misalignments account for 76.7% of errors. On a participatory QA set derived from our workshops, a state-of-the-art LLM answered fewer than 21% of questions correctly without added context, underscoring the need for local grounding. The missing facts often appear in the collected narratives, suggesting a direct path to closing the dominant error modes for narrative items. Beyond the protocol and pilot, we articulate key design tensions, such as representation and power, governance and control, and privacy and consent, providing concrete requirements for retrieval-first, provenance-visible, locally governed QA systems. Together, our taxonomy, protocol, and participatory evaluation offer a rigorous foundation for building community-grounded AI that better answers local questions."
+}

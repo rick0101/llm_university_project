@@ -1,0 +1,301 @@
+{
+  "node": "plan",
+  "timestamp": "20260423_133542",
+  "state": {
+    "l2_summaries": [],
+    "outline": [
+      {
+        "key": "abstract",
+        "title": "Abstract",
+        "description": "This section will provide a concise summary of the comprehensive survey on Large Language Model (LLM) security. It will outline the rapid evolution of threat vectors from 2023 to 2026, highlighting the transition from simple prompt-based exploits to deep architectural vulnerabilities, including data poisoning, adversarial attacks, prompt injection, and hallucinations. The abstract will summarize the survey's contribution in systematizing these threats, evaluating testing methodologies, and proposing cross-cutting defenses for emerging paradigms like autonomous agents and Large Reasoning Models (LRMs).",
+        "target_length_words": 300,
+        "key_topics": [
+          "LLM Security",
+          "Threat Landscape",
+          "Vulnerability Evolution",
+          "Autonomous Agents",
+          "Reasoning Models"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 0,
+        "section_type": "abstract",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "introduction",
+        "title": "1. Introduction",
+        "description": "This section establishes the motivation, scope, and contributions of the survey. It will introduce the rapid and sophisticated evolution of the LLM security landscape between 2023 and 2026. The introduction will outline how threats have transitioned from basic text-based jailbreaks to complex, multi-turn, and agentic vulnerabilities. It will define the scope of the survey, covering training-time threats (data/model poisoning), inference-time threats (adversarial attacks, prompt injection), and reliability issues (hallucinations). Finally, it will summarize the paper's core contributions, including a novel taxonomy of threats targeting Large Reasoning Models (LRMs) and autonomous agents.",
+        "target_length_words": 1000,
+        "key_topics": [
+          "Survey Motivation",
+          "Threat Taxonomy",
+          "Evolution of LLM Threats",
+          "Scope and Contributions"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 1,
+        "section_type": "introduction",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "background_and_preliminaries",
+        "title": "2. Background and Preliminaries",
+        "description": "This section provides the foundational knowledge required to understand LLM security vulnerabilities. It will define key terminology (e.g., Jailbreak, Prompt Injection, Attack Success Rate, Safety Alignment). It will briefly overview LLM architectures, including the emergence of Multimodal LLMs (MLLMs) and Reasoning LLMs (RLLMs). The section will detail standard safety alignment processes such as Reinforcement Learning from Human Feedback (RLHF) and Direct Preference Optimization (DPO). Finally, it will establish a comprehensive threat model, distinguishing between white-box and black-box access, and categorizing threats into training-time (poisoning) and inference-time (injection, adversarial inputs) vectors.",
+        "target_length_words": 1200,
+        "key_topics": [
+          "LLM Architecture",
+          "Safety Alignment (RLHF/DPO)",
+          "Threat Modeling",
+          "Terminology Definitions",
+          "Reasoning LLMs (RLLMs)"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "Prompt Injection"
+        ],
+        "order": 2,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "data_and_model_poisoning",
+        "title": "3. Training-Time Threats: Data and Model Poisoning",
+        "description": "This section explores the 2023-2026 evolution of data and model poisoning. It will begin with early vulnerabilities in standard alignment techniques, demonstrating how RLHF and DPO are fragile to label-flipping in preference datasets [Baumgartner_2024_RLHF, Kusaka_2025_LLM]. It will cover the expansion of poisoning into specialized domains like code generation [Yan_2024_LLM, Hossen_2024_Double] and multilingual contexts where backdoors transfer across languages [He_2024_LLMs]. Crucially, it will analyze the 2025 paradigm shift towards 'behavioral' and 'reasoning' poisoning, detailing how attackers target the internal logic of Large Reasoning Models (LRMs) to hijack the Chain-of-Thought (CoT) process and induce deceptive reasoning [Zhu_2025_Think, Shen_2025_Decepchain].",
+        "target_length_words": 1800,
+        "key_topics": [
+          "RLHF/DPO Vulnerabilities",
+          "Label-Flipping Attacks",
+          "Multilingual Backdoors",
+          "Reasoning Poisoning",
+          "Chain-of-Thought Hijacking"
+        ],
+        "related_categories": [
+          "Data and Model Poisoning"
+        ],
+        "order": 3,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "adversarial_attacks",
+        "title": "4. Inference-Time Threats I: Adversarial Attacks and Deep Vulnerabilities",
+        "description": "This section traces the trajectory of adversarial attacks from 2023 to 2026, moving beyond simple prompts to deep architectural exploits. It will start with foundational 2023 work on targeted data poisoning in code generators via 'reverse code repair' [Improta_2023_AI]. It will then detail 2024 advancements in white-box analysis, explaining how attackers measure backdoor triggers in neuron activations and embeddings [Cheng_2024_Unit, Hussain_2024_Measuring, Nguyen_2024_Pbp]. The section will also cover interaction-based vulnerabilities exploiting multi-turn conversational histories [Hao_2024_Exploring] and 'context-shifting' strategies that bypass guardrails using expert programming contexts [Noever_2024_AI]. Finally, it will address 2025 threats against the model supply chain and autonomous agents, including ReAct framework control-flow hijacking.",
+        "target_length_words": 1800,
+        "key_topics": [
+          "White-box Analysis",
+          "Neuron Activation Triggers",
+          "Multi-turn Vulnerabilities",
+          "Context-shifting",
+          "ReAct Framework Hijacking"
+        ],
+        "related_categories": [
+          "Adversarial Attacks"
+        ],
+        "order": 4,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "prompt_injection_and_jailbreaking",
+        "title": "5. Inference-Time Threats II: Prompt Injection and Jailbreaking",
+        "description": "This section details the rapid evolution of prompt injection (PI) and jailbreaks. It will cover the 2024 discovery of structural and formatting vulnerabilities, highlighting exploits like FlipAttack [Liu_2024_Flipattack] and AutoDan [Liu_2024_Autodan] that leverage the autoregressive nature of LLMs. It will discuss automated black-box generation frameworks using evolutionary algorithms [Zhao_2024_SQL]. The section will emphasize the 2025 paradigm shift from simple chatbots to autonomous agentic systems, investigating Indirect Prompt Injection (IPI) in multi-modal environments, web navigation, and coding editors [Shi_2025_LLM, Wang_2025_Webinject, Johnson_2025_LLM]. Finally, it will analyze emerging vulnerabilities in Reasoning LLMs (RLLMs) related to their internal CoT processes [Cui_2025_LLM, Cui_2025_LLMs].",
+        "target_length_words": 1800,
+        "key_topics": [
+          "Structural Vulnerabilities",
+          "Evolutionary Algorithms",
+          "Indirect Prompt Injection (IPI)",
+          "Agentic Systems",
+          "RLLM Jailbreaks"
+        ],
+        "related_categories": [
+          "Prompt Injection"
+        ],
+        "order": 5,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "llm_hallucinations",
+        "title": "6. Model Reliability: Hallucinations and Factual Inconsistencies",
+        "description": "This section analyzes the 2024-2026 landscape of LLM hallucinations, transitioning from basic detection to mechanistic auditing. It will discuss 2024 foundational work on visual hallucinations in MLLMs, specifically the 'language prior' problem where models ignore visual inputs [Wang_2024_Mllm, Xing_2024_Mitigating]. It will highlight the 2025 shift towards efficiency, demonstrating how specialized small-scale models (3.8B to 8B parameters) can match or exceed GPT-4 in hallucination detection and grounding [Ivry_2025_Paladin, Yaron_2025_GPT, Paudel_2025_Hallucinot]. The section will also explore the expansion into multilingual contexts [Islam_2025_LLMs, Tang_2025_Mitigating] and domain-specific grounding in critical areas like climate science [Thulke_2025_Listen] and healthcare.",
+        "target_length_words": 1800,
+        "key_topics": [
+          "Visual Hallucinations",
+          "Language Prior Problem",
+          "Small-scale Specialized Models",
+          "Multilingual Hallucinations",
+          "Domain-specific Grounding"
+        ],
+        "related_categories": [
+          "LLM Hallucinations"
+        ],
+        "order": 6,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "cross_cutting_defenses",
+        "title": "8. Cross-Cutting Defenses and Mitigation Strategies",
+        "description": "This section provides a holistic overview of mitigation strategies across all discussed threat vectors. It will trace the maturation of defenses from simple prompt engineering to internal architectural safeguards. Topics will include robust safety alignment techniques to counter label-flipping, the implementation of guardrails and perplexity filters against structural prompt injections, and strategies to mitigate the 'language prior' in MLLMs [Xing_2024_Mitigating]. It will also address cutting-edge defenses designed to protect the Chain-of-Thought (CoT) in Reasoning LLMs and mechanisms to secure the ReAct framework in autonomous agents against control-flow hijacking and Indirect Prompt Injection (IPI).",
+        "target_length_words": 1600,
+        "key_topics": [
+          "Robust Safety Alignment",
+          "Guardrails and Perplexity Filters",
+          "MLLM Mitigation Strategies",
+          "CoT Protection",
+          "Agentic Defense Mechanisms"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 7,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "testing_methodologies_and_evaluation",
+        "title": "7. Testing Methodologies and Evaluation",
+        "description": "This mandatory section synthesizes evaluation frameworks, benchmarks, datasets, and metrics across all threat categories. It will detail the rise of Natural Language Inference (NLI) as a dominant paradigm for checking factual consistency in hallucinations [Jing_2024_Scale, Zhang_2024_Comparative]. It will discuss the standardization of Attack Success Rate (ASR) for evaluating prompt injection and jailbreaks [Liu_2024_Autodan]. Furthermore, it will cover white-box analysis tools and metrics used to measure backdoor triggers in neuron activations and embeddings [Cheng_2024_Unit, Hussain_2024_Measuring]. The section will critically evaluate the limitations of current static benchmarks and the necessity for dynamic, multi-turn evaluation frameworks for autonomous agents.",
+        "target_length_words": 1500,
+        "key_topics": [
+          "Natural Language Inference (NLI)",
+          "Attack Success Rate (ASR)",
+          "White-box Analysis Tools",
+          "Dynamic Evaluation Frameworks",
+          "Benchmarking Limitations"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 8,
+        "section_type": "testing",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "discussion_and_open_challenges",
+        "title": "9. Discussion and Open Challenges",
+        "description": "This section identifies critical gaps, limitations, and future directions in the field of LLM security. It will discuss the inherent tension between advancing model capabilities (e.g., autonomous agents, Large Reasoning Models) and the expanding attack surface these capabilities create. Key open challenges to be addressed include the difficulty of securing the open-source model supply chain, the theoretical limits of defending against behavioral poisoning in complex reasoning tasks, and the lack of robust, scalable defenses against multi-turn, context-shifting adversarial attacks. It will propose future research directions focused on verifiable reasoning and secure-by-design agentic architectures.",
+        "target_length_words": 1000,
+        "key_topics": [
+          "Capability vs. Security Trade-off",
+          "Supply Chain Vulnerabilities",
+          "Limits of Alignment",
+          "Verifiable Reasoning",
+          "Future Research Directions"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 9,
+        "section_type": "discussion",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "conclusion",
+        "title": "10. Conclusion",
+        "description": "This section synthesizes the core findings of the survey. It will reiterate the rapid evolution of LLM threats from simple prompt exploits to deep architectural and agentic vulnerabilities. The conclusion will emphasize that as LLMs transition from passive chatbots to autonomous, reasoning-capable agents, security paradigms must shift from post-hoc filtering to intrinsic, architectural robustness. It will provide final practical recommendations for researchers, developers, and policymakers to foster a more secure LLM ecosystem.",
+        "target_length_words": 500,
+        "key_topics": [
+          "Summary of Findings",
+          "Paradigm Shift in Security",
+          "Architectural Robustness",
+          "Practical Recommendations"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 10,
+        "section_type": "conclusion",
+        "parent_key": null,
+        "subsections": []
+      }
+    ],
+    "sections": {},
+    "verification_results": {},
+    "bibliography": [],
+    "provenance": [],
+    "final_paper": "",
+    "version_info": {
+      "version_number": "1.0",
+      "timestamp": "2026-04-23T13:32:27.764849",
+      "paper_count": 0,
+      "categories": [],
+      "changelog": "",
+      "l1_count": 0,
+      "l2_count": 0,
+      "sections_count": 0,
+      "total_citations": 0,
+      "verified_citations": 0
+    },
+    "current_phase": "planning",
+    "current_section_key": "",
+    "iteration_count": 0,
+    "errors": [],
+    "current_scratchpad": [],
+    "retrieved_facts": {},
+    "agentic_stats": {},
+    "metadata": {
+      "budget_report": {
+        "n_categories": 4,
+        "papers_per_category": 5,
+        "total_papers": 20,
+        "max_context_tokens": 150000,
+        "l1_chars_per_paper": 118400,
+        "l1_tokens_per_call": 14500,
+        "l2_total_chars_per_category": 592000,
+        "l2_tokens_per_call": 150000,
+        "writer_chars_per_section": 60000,
+        "writer_tokens_per_call": 17000,
+        "critic_tokens_per_call": 17000,
+        "n_sections_estimate": 8,
+        "within_budget": true,
+        "warnings": []
+      },
+      "pipeline_start": "2026-04-23T13:32:27.764845",
+      "max_iterations": 3,
+      "planner_source": "llm_generated",
+      "planner_model": "pro",
+      "planner_sections": 11,
+      "planner_categories": [
+        "Adversarial Attacks",
+        "Data and Model Poisoning",
+        "Prompt Injection",
+        "LLM Hallucinations"
+      ],
+      "planner_total_papers": 258
+    }
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "paperId": "65fb348291de709a379a3f0d00b48726a1a674d2",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2401-16635",
+    "ArXiv": "2401.16635",
+    "DOI": "10.48550/arXiv.2401.16635",
+    "CorpusId": 267320613
+  },
+  "title": "Improving Reinforcement Learning from Human Feedback with Efficient Reward Model Ensemble",
+  "venue": "arXiv.org",
+  "year": 2024,
+  "citationCount": 43,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2401.16635, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2211163649",
+      "name": "Shun Zhang"
+    },
+    {
+      "authorId": "2111329651",
+      "name": "Zhenfang Chen"
+    },
+    {
+      "authorId": "2261356954",
+      "name": "Sunli Chen"
+    },
+    {
+      "authorId": "2258763085",
+      "name": "Yikang Shen"
+    },
+    {
+      "authorId": "2281903865",
+      "name": "Zhiqing Sun"
+    },
+    {
+      "authorId": "2280331955",
+      "name": "Chuang Gan"
+    }
+  ],
+  "abstract": "Reinforcement Learning from Human Feedback (RLHF) is a widely adopted approach for aligning large language models with human values. However, RLHF relies on a reward model that is trained with a limited amount of human preference data, which could lead to inaccurate predictions. As a result, RLHF may produce outputs that are misaligned with human values. To mitigate this issue, we contribute a reward ensemble method that allows the reward model to make more accurate predictions. As using an ensemble of large language model-based reward models can be computationally and resource-expensive, we explore efficient ensemble methods including linear-layer ensemble and LoRA-based ensemble. Empirically, we run Best-of-$n$ and Proximal Policy Optimization with our ensembled reward models, and verify that our ensemble methods help improve the alignment performance of RLHF outputs."
+}

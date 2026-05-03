@@ -1,0 +1,97 @@
+{
+  "section_key": "data_and_model_poisoning",
+  "saved_at": "2026-04-24T13:43:40.587761",
+  "data": {
+    "section_key": "data_and_model_poisoning",
+    "title": "Data and Model Poisoning",
+    "text": "**1. Introduction to Data and Model Poisoning**\n\nMachine learning models are fundamentally reliant on the data they are trained on. This inherent dependence introduces a critical vulnerability: if the training data or the training process itself is compromised, the resulting model cannot be trusted. Data poisoning and model poisoning represent a class of adversarial attacks that exploit this vulnerability, aiming to manipulate the behavior of a machine learning system by interfering with its training phase. Unlike evasion attacks, which occur during inference and attempt to fool a trained model with crafted inputs, poisoning attacks are proactive, embedding vulnerabilities deep within the model's parameters long before it is deployed.\n\nData poisoning typically involves an adversary injecting malicious samples into the training dataset. This can be done to achieve two primary objectives: availability attacks (or untargeted poisoning), which aim to degrade the overall accuracy and performance of the model, rendering it useless; and integrity attacks (or targeted poisoning, often referred to as backdoor or Trojan attacks), which aim to cause the model to misclassify specific inputs or exhibit specific behaviors only when a predefined \"trigger\" is present, while maintaining normal performance on benign inputs.\n\nModel poisoning extends this concept, particularly in distributed training paradigms like Federated Learning (FL). Instead of merely altering the raw training data, an attacker directly manipulates the model updates (e.g., gradients or weights) sent to a central server. This allows for more potent and stealthy attacks, as the adversary has direct access to the optimization process and can craft updates specifically designed to bypass anomaly detection mechanisms. As machine learning systems become increasingly ubiquitous and are deployed in safety-critical domains, understanding and mitigating the threats posed by data and model poisoning is of paramount importance.\n\n**2. The Evolution of Backdoor Attacks: From Visible Triggers to Stealthy Injections**\n\nThe study of backdoor attacks has evolved significantly from its early iterations. Initially, backdoor attacks relied on overt, visible triggers\u2014such as a distinct pattern of pixels in an image or a specific, nonsensical word in a text document. During training, the attacker would associate this trigger with a target label. At inference time, the presence of the trigger would force the model to output the attacker's desired prediction. However, these early methods were often easily detectable by human inspection or simple data sanitization techniques.\n\nRecent research has shifted towards developing advanced, stealthy backdoor attacks that eliminate the need for explicit, artificial input manipulations or obvious label alterations. For instance, the works of [Song_2024_Claim] and [Xing_2023_Clean] focus on clean-label backdoor attacks. In a clean-label setting, the attacker does not change the labels of the poisoned data; instead, they subtly perturb the input features such that the data still appears benign and correctly labeled to a human observer, but the model learns to associate a hidden trigger with the target class. This makes the poisoned data exceedingly difficult to filter out using standard quality control measures.\n\nThe landscape of backdoor attacks continues to diversify across various modalities and architectures. A broad spectrum of novel backdoor and data poisoning attacks has been explored in recent literature, demonstrating the pervasive nature of this threat [Li_2026_Slowba, Zhong_2025_Backdoor, Lyu_2024_Trojvlm, Ye_2025_Visualtrap, Li_2025_Iag, Liu_2025_Natural, Zhou_2025_Goal, Zhou_2025_Badvla, Zhang_2025_Tokenswap]. These studies encompass attacks on vision-language models, natural language processing systems, and reinforcement learning agents, highlighting that any system that learns from data is potentially susceptible to malicious manipulation. The sophistication of these attacks lies in their ability to exploit the complex, high-dimensional feature spaces of deep neural networks, hiding malicious logic in regions of the parameter space that are rarely activated by benign inputs.\n\n**3. Poisoning and Backdoors in Large Language Models (LLMs)**\n\nThe advent of Large Language Models (LLMs) has dramatically altered the threat landscape for data and model poisoning. LLMs are trained on massive, uncurated datasets scraped from the internet, making it practically impossible to thoroughly vet every training example. Furthermore, the standard pipeline for deploying LLMs involves pretraining on a vast corpus followed by instruction fine-tuning or alignment (e.g., Reinforcement Learning from Human Feedback, RLHF) to tailor the model to specific tasks or safety guidelines. Attackers can exploit vulnerabilities at multiple stages of this pipeline.\n\nDuring the pretraining phase, attackers can execute data poisoning by injecting malicious content into the web pages or repositories that are likely to be scraped by model developers. [Souly_2025_Poisoning] illustrates a particularly insidious form of this: a Denial-of-Service (DoS) backdoor injected during pretraining. By poisoning a small fraction of the pretraining data, the attacker can cause the LLM to fail or produce degraded outputs when presented with specific triggers, effectively rendering the model unavailable for certain tasks or users.\n\n{{FIGURE:Souly_2025_Poisoning:attack_diagram}}\n\nThe threat extends beyond the initial pretraining phase into the supply chain of model development. [Tsai_2025_Beyond] demonstrates a two-stage supply chain attack targeting LLMs used for code generation. In this scenario, an attacker generates malicious code and commits it to public repositories like GitHub. When these repositories are subsequently used to train or fine-tune code-generation models, the models inadvertently learn to reproduce the malicious code or vulnerabilities, propagating the attack to downstream users who rely on the LLM for software development.\n\n{{FIGURE:Tsai_2025_Beyond:attack_diagram}}\n\nInstruction fine-tuning, a critical step for making LLMs useful and safe, is also highly susceptible to poisoning. [Raghuram_2024_Study] systematically investigates the vulnerabilities of LLMs to backdoor attacks during this phase. Their research highlights how the efficacy of the attack is heavily influenced by the characteristics of the trigger used, demonstrating that even subtle manipulations in the fine-tuning data can lead to significant behavioral changes in the final model.\n\nTo further exacerbate the issue, attackers are increasingly automating the poisoning process. [Li_2025_LLM] proposes an automated pipeline for executing backdoor attacks via poisoned fine-tuning. This approach utilizes an LLM agent to reason about the target model and generate structured prompt templates that serve as highly effective, stealthy triggers. By leveraging the reasoning capabilities of LLMs to attack other LLMs, adversaries can scale their poisoning campaigns and create more robust backdoors.\n\n{{FIGURE:Li_2025_LLM:attack_diagram}}\n\nBeyond traditional backdoors that alter the model's output to a specific target, poisoning can also be used to manipulate the model's alignment and safety guardrails. [Mamun_2025_LLMs] introduces Subversive Alignment Injection (SAI), a novel poisoning attack that exploits LLM alignment via malicious LoRA (Low-Rank Adaptation) adapters. SAI induces targeted refusal on benign topics, effectively causing the model to censor itself or exhibit bias. This demonstrates that poisoning can be used not just to make a model say something malicious, but also to prevent it from saying something benign, undermining the utility and neutrality of the AI system.\n\n**4. Model Poisoning in Federated Learning and Distributed Systems**\n\nFederated Learning (FL) was designed to enhance privacy by allowing multiple clients to collaboratively train a global model without sharing their raw local data. Instead, clients compute model updates (gradients or weights) locally and send only these updates to a central server for aggregation. While this architecture provides significant privacy benefits, it introduces a severe vulnerability to model poisoning attacks. Because the central server cannot inspect the clients' raw data, it is exceedingly difficult to verify the integrity of the incoming model updates.\n\nIn a federated setting, a malicious client (or a group of colluding clients) can craft poisoned model updates designed to inject a backdoor or degrade the global model's performance. Unlike data poisoning, where the attacker's influence is limited by the learning algorithm's optimization process, model poisoning allows the attacker to directly manipulate the model parameters. This direct access makes model poisoning in FL significantly more potent than traditional data poisoning.\n\nRecent research has explored the nuances of model poisoning in complex distributed environments. [Cai_2025_Graph] focuses on the vulnerability of Federated Fine-Tuning (FFT) in Internet of Agents (IoA) systems. Their work explores how attackers can exploit the structural dependencies and communication patterns within these multi-agent systems to execute advanced model poisoning attacks. By strategically selecting which agents to compromise and how to craft their updates, attackers can maximize the impact of the poison on the global model while minimizing the risk of detection.\n\nThe challenge of securing distributed training environments is further highlighted by [Zhao_2026_Protegofed] and [Kuchler_2025_Architectural], who investigate advanced backdoor vulnerabilities and defense mechanisms in LLMs trained across distributed nodes. The sheer scale of LLMs and the complexity of their distributed training pipelines create numerous attack vectors. Attackers can exploit asynchronous updates, heterogeneous client data distributions, and the high dimensionality of the model parameters to hide their malicious updates. Defending against these attacks requires robust aggregation rules that can identify and filter out anomalous updates without degrading the model's performance on benign, non-IID (Independent and Identically Distributed) client data.\n\n**5. Defenses Against Data and Model Poisoning**\n\nAs the sophistication of data and model poisoning attacks increases, so too must the defenses designed to thwart them. Defending against these threats is a complex challenge that requires a multi-layered approach, encompassing data sanitization, robust training algorithms, anomaly detection, and post-training model inspection.\n\nOne primary line of defense is data sanitization, which aims to identify and remove poisoned samples from the training dataset before the model is trained. This can involve statistical techniques to detect outliers, clustering methods to identify anomalous data distributions, or leveraging trusted, clean datasets to filter the untrusted data. However, as clean-label attacks [Song_2024_Claim, Xing_2023_Clean] become more prevalent, traditional data sanitization methods are increasingly ineffective, as the poisoned data is designed to be statistically indistinguishable from benign data.\n\nIn the context of Federated Learning, defenses primarily focus on robust aggregation algorithms. Instead of simply averaging the model updates from all clients (e.g., Federated Averaging), robust aggregation methods attempt to identify and down-weight or discard updates that deviate significantly from the norm. Techniques such as coordinate-wise median, trimmed mean, and clustering-based aggregation have been proposed to mitigate the impact of malicious clients. However, sophisticated attackers can often bypass these defenses by crafting updates that are only marginally different from benign updates but still contain the malicious payload.\n\nPost-training model inspection and backdoor detection represent another critical defense layer. These techniques aim to determine whether a trained model contains a hidden backdoor, even if the training data or process is unavailable. [Vartak_2025_Debugcn] explores a novel approach to defending against backdoor attacks in deep neural networks by analyzing the model's architecture and static weights. Their research investigates the application of Graph Convolutional Networks (GCNs) to detect Trojans. By representing the neural network as a graph and analyzing the connectivity and weight distributions, the GCN can identify the structural anomalies introduced by the backdoor, providing a powerful tool for auditing models before deployment.\n\nOther post-training defenses involve trigger synthesis, where defenders attempt to reverse-engineer the hidden trigger by optimizing an input pattern that causes the model to misclassify a set of clean images to a specific target class. If such a pattern can be found and is exceptionally small or localized, it strongly suggests the presence of a backdoor.\n\n**Conclusion**\n\nData and model poisoning represent a profound threat to the security and reliability of machine learning systems. From stealthy clean-label attacks in traditional computer vision models to sophisticated supply chain and alignment poisoning in Large Language Models, adversaries are continually developing new methods to compromise AI systems at their foundation. The distributed nature of modern training paradigms, such as Federated Learning, further exacerbates these vulnerabilities by expanding the attack surface and limiting the defender's visibility. Addressing these challenges requires ongoing research into robust training methodologies, advanced anomaly detection, and comprehensive model auditing techniques. As AI continues to integrate into critical infrastructure, ensuring the integrity of the data and the training process is not merely an academic concern, but a fundamental requirement for safe and trustworthy artificial intelligence.",
+    "citations": [
+      {
+        "bibtex_key": "Song_2024_Claim",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Xing_2023_Clean",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Souly_2025_Poisoning",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Tsai_2025_Beyond",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Raghuram_2024_Study",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Li_2025_LLM",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Mamun_2025_LLMs",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Cai_2025_Graph",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Zhao_2026_Protegofed",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Kuchler_2025_Architectural",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Vartak_2025_Debugcn",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Song_2024_Claim, Xing_2023_Clean",
+        "claim": "(auto-detected from text)",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Li_2026_Slowba, Zhong_2025_Backdoor, Lyu_2024_Trojvlm, Ye_2025_Visualtrap, Li_2025_Iag, Liu_2025_Natural, Zhou_2025_Goal, Zhou_2025_Badvla, Zhang_2025_Tokenswap",
+        "claim": "(auto-detected from text)",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      }
+    ],
+    "word_count": 1930,
+    "status": "drafted",
+    "iteration": 1,
+    "rag_queries": [],
+    "retrieved_chunk_ids": [],
+    "writer_notes": "[prefetch_agentic] Response was not valid JSON. Citations extracted via regex.",
+    "critic_feedback": "",
+    "drafted_at": "2026-04-24T13:43:40.586365"
+  }
+}

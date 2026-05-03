@@ -1,0 +1,24 @@
+{
+  "paperId": "ab61343b8574907a4583730834f07467ebf0ec08",
+  "externalIds": {
+    "ArXiv": "2604.13308",
+    "CorpusId": 287479811
+  },
+  "title": "Threat Modeling and Attack Surface Analysis of IoT-Enabled Controlled Environment Agriculture Systems",
+  "venue": "",
+  "year": 2026,
+  "citationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.13308, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2428627145",
+      "name": "Andrii Vakhnovskyi"
+    }
+  ],
+  "abstract": "The United States designates Food and Agriculture as one of sixteen critical infrastructure sectors, yet no mandatory cybersecurity requirements exist for agricultural operations and no formal threat model has been published for Controlled Environment Agriculture (CEA) systems. This paper presents the first comprehensive threat model for IoT-enabled CEA, applying STRIDE analysis, MITRE ATT&CK for ICS mapping, and IEC 62443 zone-and-conduit decomposition to a production platform deployed across 30+ commercial facilities in 8 U.S. climate zones. We enumerate 123 unique threats across 25 data-flow-diagram elements spanning 15 communication protocols, 10 of which operate with zero authentication or encryption by design. We identify five novel attack classes unique to AI-driven CEA: stealth destabilization of neural-network-tuned PID controllers, baseline drift poisoning of anomaly detectors, cross-facility propagation via federated transfer learning, adversarial agronomic schedules that exploit crop biology rather than computational models, and reward poisoning of reinforcement-learning energy optimizers. Physical impact analysis quantifies crop loss timelines from minutes (aeroponics) to days, including worker safety hazards from CO2 injection manipulation. A survey of 10 commercial CEA vendors reveals only one CVE ever issued, zero bug bounty programs, and zero IEC 62443 certifications. We propose a defense-in-depth countermeasure framework and recommend Security Level 2 as a minimum baseline."
+}

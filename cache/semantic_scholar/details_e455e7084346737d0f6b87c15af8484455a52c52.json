@@ -1,0 +1,49 @@
+{
+  "paperId": "e455e7084346737d0f6b87c15af8484455a52c52",
+  "externalIds": {
+    "ArXiv": "2604.12138",
+    "CorpusId": 287436322
+  },
+  "title": "Beyond Factual Grounding: The Case for Opinion-Aware Retrieval-Augmented Generation",
+  "venue": "",
+  "year": 2026,
+  "citationCount": 0,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.12138, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2026-04-13",
+  "journal": null,
+  "citationStyles": {
+    "bibtex": "@Inproceedings{Agrawal2026BeyondFG,\n author = {Aditya Agrawal and Alwarappan Nakkiran and Darshan Fofadiya and Alex Karlsson and Harsha Aduri},\n title = {Beyond Factual Grounding: The Case for Opinion-Aware Retrieval-Augmented Generation},\n year = {2026}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2237427018",
+      "name": "Aditya Agrawal"
+    },
+    {
+      "authorId": "2353069286",
+      "name": "Alwarappan Nakkiran"
+    },
+    {
+      "authorId": "2121339589",
+      "name": "Darshan Fofadiya"
+    },
+    {
+      "authorId": "2429935221",
+      "name": "Alex Karlsson"
+    },
+    {
+      "authorId": "2429467373",
+      "name": "Harsha Aduri"
+    }
+  ],
+  "abstract": "RAG systems have transformed how LLMs access external knowledge, but we find that current implementations exhibit a bias toward factual, objective content, as evidenced by existing benchmarks and datasets that prioritize objective retrieval. This factual bias - treating opinions and diverse perspectives as noise rather than information to be synthesized - limits RAG systems in real-world scenarios involving subjective content, from social media discussions to product reviews. Beyond technical limitations, this bias poses risks to transparent and accountable AI: echo chamber effects that amplify dominant viewpoints, systematic underrepresentation of minority voices, and potential opinion manipulation through biased information synthesis. We formalize this limitation through the lens of uncertainty: factual queries involve epistemic uncertainty reducible through evidence, while opinion queries involve aleatoric uncertainty reflecting genuine heterogeneity in human perspectives. This distinction implies that factual RAG should minimize posterior entropy, whereas opinion-aware RAG must preserve it. Building on this theoretical foundation, we present an Opinion-Aware RAG architecture featuring LLM-based opinion extraction, entity-linked opinion graphs, and opinion-enriched document indexing. We evaluate our approach on e-commerce seller forum data, comparing an Opinion-Enriched knowledge base against a traditional baseline. Experiments demonstrate substantial improvements in retrieval diversity: +26.8% sentiment diversity, +42.7% entity match rate, and +31.6% author demographic coverage on entity-matched documents. Our results provide empirical evidence that treating subjectivity as a first-class citizen yields measurably more representative retrieval-a first step toward opinion-aware RAG. Future work includes joint optimization of retrieval and generation for distributional fidelity."
+}

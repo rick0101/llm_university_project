@@ -1,0 +1,58 @@
+{
+  "paperId": "c463fb53f3f45d5e085551b1711656406a1562b5",
+  "externalIds": {
+    "ArXiv": "2512.24562",
+    "DBLP": "journals/corr/abs-2512-24562",
+    "DOI": "10.48550/arXiv.2512.24562",
+    "CorpusId": 284350187
+  },
+  "title": "HaluNet: Multi-Granular Uncertainty Modeling for Efficient Hallucination Detection in LLM Question Answering",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 3,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2512.24562, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-12-31",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2512.24562"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Tong2025HaluNetMU,\n author = {Chaodong Tong and Qi Zhang and Jiayang Gao and Lei Jiang and Yanbing Liu and Nannan Sun},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {HaluNet: Multi-Granular Uncertainty Modeling for Efficient Hallucination Detection in LLM Question Answering},\n volume = {abs/2512.24562},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "1453622226",
+      "name": "Chaodong Tong"
+    },
+    {
+      "authorId": "2381589597",
+      "name": "Qi Zhang"
+    },
+    {
+      "authorId": "2373914742",
+      "name": "Jiayang Gao"
+    },
+    {
+      "authorId": "2399103283",
+      "name": "Lei Jiang"
+    },
+    {
+      "authorId": "2401909663",
+      "name": "Yanbing Liu"
+    },
+    {
+      "authorId": "2341442192",
+      "name": "Nannan Sun"
+    }
+  ],
+  "abstract": "Large Language Models (LLMs) excel at question answering (QA) but often generate hallucinations, including factual errors or fabricated content. Detecting hallucinations from internal uncertainty signals is attractive due to its scalability and independence from external resources. Existing methods often aim to accurately capture a single type of uncertainty while overlooking the complementarity among different sources, particularly between token-level probability uncertainty and the uncertainty conveyed by internal semantic representations, which provide complementary views on model reliability. We present \\textbf{HaluNet}, a lightweight and trainable neural framework that integrates multi granular token level uncertainties by combining semantic embeddings with probabilistic confidence and distributional uncertainty. Its multi branch architecture adaptively fuses what the model knows with the uncertainty expressed in its outputs, enabling efficient one pass hallucination detection. Experiments on SQuAD, TriviaQA, and Natural Questions show that HaluNet delivers strong detection performance and favorable computational efficiency, with or without access to context, highlighting its potential for real time hallucination detection in LLM based QA systems."
+}

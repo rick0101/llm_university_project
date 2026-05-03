@@ -1,0 +1,70 @@
+{
+  "paperId": "fd64260ee3edd8b983abc4df429fadd767f09da3",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2512-00591",
+    "ArXiv": "2512.00591",
+    "DOI": "10.48550/arXiv.2512.00591",
+    "CorpusId": 283448940
+  },
+  "title": "TrojanLoC: LLM-based Framework for RTL Trojan Localization",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 3,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2512.00591, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-11-29",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2512.00591"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Xiao2025TrojanLoCLF,\n author = {W. Xiao and Zeng Wang and Minghao Shao and Raghu vamshi Hemadri and Ozgur Sinanoglu and Muhammad Shafique and J. Knechtel and Siddharth Garg and Ramesh Karri},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {TrojanLoC: LLM-based Framework for RTL Trojan Localization},\n volume = {abs/2512.00591},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2333872800",
+      "name": "W. Xiao"
+    },
+    {
+      "authorId": "2215988074",
+      "name": "Zeng Wang"
+    },
+    {
+      "authorId": "2284694862",
+      "name": "Minghao Shao"
+    },
+    {
+      "authorId": "151423731",
+      "name": "Raghu vamshi Hemadri"
+    },
+    {
+      "authorId": "2253600910",
+      "name": "Ozgur Sinanoglu"
+    },
+    {
+      "authorId": "2350632298",
+      "name": "Muhammad Shafique"
+    },
+    {
+      "authorId": "1978598",
+      "name": "J. Knechtel"
+    },
+    {
+      "authorId": "2288078909",
+      "name": "Siddharth Garg"
+    },
+    {
+      "authorId": "2270779547",
+      "name": "Ramesh Karri"
+    }
+  ],
+  "abstract": "Hardware Trojans (HT s) are a persistent threat to integrated circuits, especially when inserted at the register-transfer level (RTL). Existing methods typically first convert the design into a graph, such as a gate-level netlist or an RTL-derived dataflow graph (DFG), and then use a graph neural network (GNN ) to obtain an embedding of that graph, which (i) loses compact RTL semantics, (ii) relies on shallow GNNs with limited receptive field, and (iii) is largely restricted to coarse, module-level binary HT detection. We propose TrojanLoC, an LLM-based framework for RTL-level HT localization. We use an RTL-finetuned LLM to derive module-level and line-level embeddings directly from RTL code, capturing both global design context and local semantics. Next, we train task-specific classifiers on these embeddings to perform module-level Trojan detection, type prediction, and fine-grained line-level localization. We also introduce TrojanInS, a large synthetic dataset of RTL designs with systematically injected Trojans from four effect-based categories, each accompanied by precise line-level annotations. Our experiments show that TrojanLoC achieves strong module-level performance, reaching 0.99 F1-score for Trojan detection, up to 0.68 higher than baseline, and 0.84 macro-F1 for Trojan-type classification. At the line level, TrojanLoc further achieves up to 0.93 macro-F1, enabling fine-grained localization of Trojan-relevant RTL lines"
+}

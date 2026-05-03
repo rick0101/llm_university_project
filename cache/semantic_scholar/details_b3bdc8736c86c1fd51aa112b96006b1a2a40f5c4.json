@@ -1,0 +1,49 @@
+{
+  "paperId": "b3bdc8736c86c1fd51aa112b96006b1a2a40f5c4",
+  "externalIds": {
+    "DBLP": "conf/asiaccs/AkhoundaliHRG25",
+    "ArXiv": "2505.20186",
+    "DOI": "10.1145/3708821.3736220",
+    "CorpusId": 278910833
+  },
+  "title": "Eradicating the Unseen: Detecting, Exploiting, and Remediating a Path Traversal Vulnerability across GitHub",
+  "venue": "ACM Asia Conference on Computer and Communications Security",
+  "year": 2025,
+  "citationCount": 1,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.20186, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-05-26",
+  "journal": {
+    "name": "Proceedings of the 20th ACM Asia Conference on Computer and Communications Security"
+  },
+  "citationStyles": {
+    "bibtex": "@Book{Akhoundali2025EradicatingTU,\n author = {Jafar Akhoundali and Hamidreza Hamidi and Kristian F. D. Rietveld and Olga Gadyatskaya},\n booktitle = {ACM Asia Conference on Computer and Communications Security},\n journal = {Proceedings of the 20th ACM Asia Conference on Computer and Communications Security},\n title = {Eradicating the Unseen: Detecting, Exploiting, and Remediating a Path Traversal Vulnerability across GitHub},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2310717596",
+      "name": "Jafar Akhoundali"
+    },
+    {
+      "authorId": "2363571045",
+      "name": "Hamidreza Hamidi"
+    },
+    {
+      "authorId": "2288174180",
+      "name": "Kristian F. D. Rietveld"
+    },
+    {
+      "authorId": "2292056209",
+      "name": "Olga Gadyatskaya"
+    }
+  ],
+  "abstract": "Vulnerabilities in open-source software can cause cascading effects in the modern digital ecosystem. It is especially worrying if these vulnerabilities repeat across many projects, as once the adversaries find one of them, they can scale up the attack very easily. Unfortunately, since developers frequently reuse code from their own or external code resources, some nearly identical vulnerabilities exist across many open-source projects. We conducted a study to examine the prevalence of a particular vulnerable code pattern that enables path traversal attacks (CWE-22) across open-source GitHub projects. To handle this study at the GitHub scale, we developed an automated pipeline that scans GitHub for the targeted vulnerable pattern, confirms the vulnerability by first running a static analysis and then exploiting the vulnerability in the context of the studied project, assesses its impact by calculating the CVSS score, generates a patch using GPT-4, and reports the vulnerability to the maintainers. Using our pipeline, we identified 1,756 vulnerable open-source projects, some of which are very influential. For many of the affected projects, the vulnerability is critical (CVSS score higher than 9.0), as it can be exploited remotely without any privileges and critically impact the confidentiality and availability of the system. We have responsibly disclosed the vulnerability to the maintainers, and 14% of the reported vulnerabilities have been remediated. We also investigated the root causes of the vulnerable code pattern and assessed the side effects of the large number of copies of this vulnerable pattern that seem to have poisoned several popular LLMs. Our study highlights the urgent need to help secure the open-source ecosystem by leveraging scalable automated vulnerability management solutions and raising awareness among developers."
+}

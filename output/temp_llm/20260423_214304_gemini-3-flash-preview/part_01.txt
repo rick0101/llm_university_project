@@ -1,0 +1,17 @@
+```json
+  {
+    "citation_index": 3,
+    "bibtex_key": "Pathmanathan_2024_LLM",
+    "status": "SUPPORTED",
+    "confidence": 1.0,
+    "reasoning": "The source text explicitly mentions that the DPO score-based (DPOS) method can successfully poison a model with only 0.5% poisoned data and that it outperforms random poisoning and prior PPO-based attacks."
+  },
+  {
+    "citation_index": 4,
+    "bibtex_key": "Dutta_2025_RLHF",
+    "status": "SUPPORTED",
+    "confidence": 1.0,
+    "reasoning": "The source confirms the GREAT framework uses latent-space embedding analysis and k-means clustering to select 'medoid' triggers for grammatical realism and generalization."
+  }
+]
+```

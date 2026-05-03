@@ -1,0 +1,30 @@
+{
+  "paperId": "e28888b6dd2130d86a6eeadc5c4af40751137a0b",
+  "externalIds": {
+    "DBLP": "conf/bigdataconf/ZhouL24",
+    "ArXiv": "2604.14114",
+    "DOI": "10.1109/BigData62323.2024.10825602",
+    "CorpusId": 274889721
+  },
+  "title": "ID and Graph View Contrastive Learning with Multi-View Attention Fusion for Sequential Recommendation",
+  "venue": "BigData Congress [Services Society]",
+  "year": 2024,
+  "citationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": "CLOSED",
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.14114, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2305315493",
+      "name": "Xiaofan Zhou"
+    },
+    {
+      "authorId": "2390558214",
+      "name": "Kyumin Lee"
+    }
+  ],
+  "abstract": "Sequential recommendation has become an increasingly prominent subject both in academia and industrial sectors, particularly within the e-commerce domain. Its primary aim is to extract user preference from a user’s historical item list and predict the subsequent items that the user might purchase based on that history. Recent trends show a surge in the application of using contrastive learning and graph-based neural network to extract more expressive representation from user’s historical item list, where graph contains information of relationship between nodes while ID based representation contains more specific information. However, limited work has explored on multi-view contrastive learning, especially, between the ID and graph to further improve quality of user and item representation learning when only interaction data is available without auxiliary information. To fill the gap, in this study, we propose a novel framework called MultiView Contrastive learning for sequential recommendation (MVCrec). This framework is designed to combine information from both sequential/ID and graph views. It incorporates three facets of contrastive learning: one for sequential view, another one for graph view and the other one for cross-view. To leverage the representations derived from the contrastive learning, we propose a multi-view attention fusion module, which integrates both global and local attentions and measures how likely a target user will purchase a target item. Comprehensive experiments demonstrate the superiority of our model over 11 state-of-the-art baselines, as evidenced by its performance on five real-world benchmark datasets. Our model achieves improvements of up to 14.44% in NDCG@10 and up to 9.22% in HitRatio@10 compared to the best baseline. Our code and datasets are available at https://github.com/sword-Lz/MMCrec."
+}

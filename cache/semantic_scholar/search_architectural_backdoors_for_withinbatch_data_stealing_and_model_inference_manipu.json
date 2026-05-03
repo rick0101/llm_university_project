@@ -1,0 +1,38 @@
+{
+  "paperId": "69110c52715aa08d841310fbaca37dd51c73d9ec",
+  "externalIds": {
+    "ArXiv": "2505.18323",
+    "DBLP": "journals/corr/abs-2505-18323",
+    "DOI": "10.48550/arXiv.2505.18323",
+    "CorpusId": 278905021
+  },
+  "title": "Architectural Backdoors for Within-Batch Data Stealing and Model Inference Manipulation",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 2,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.18323, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2368632584",
+      "name": "Nicolas Küchler"
+    },
+    {
+      "authorId": "2057223381",
+      "name": "I. Petrov"
+    },
+    {
+      "authorId": "2363495772",
+      "name": "Conrad Grobler"
+    },
+    {
+      "authorId": "47473421",
+      "name": "Ilia Shumailov"
+    }
+  ],
+  "abstract": "For nearly a decade the academic community has investigated backdoors in neural networks, primarily focusing on classification tasks where adversaries manipulate the model prediction. While demonstrably malicious, the immediate real-world impact of such prediction-altering attacks has remained unclear. In this paper we introduce a novel and significantly more potent class of backdoors that builds upon recent advancements in architectural backdoors. We demonstrate how these backdoors can be specifically engineered to exploit batched inference, a common technique for hardware utilization, enabling large-scale user data manipulation and theft. By targeting the batching process, these architectural backdoors facilitate information leakage between concurrent user requests and allow attackers to fully control model responses directed at other users within the same batch. In other words, an attacker who can change the model architecture can set and steal model inputs and outputs of other users within the same batch. We show that such attacks are not only feasible but also alarmingly effective, can be readily injected into prevalent model architectures, (e.g. Transformers), and represent a truly malicious threat to user privacy and system integrity. Critically, to counteract this new class of vulnerabilities, we propose a deterministic mitigation strategy that provides formal guarantees against this new attack vector, unlike prior work that relied on LLMs to find the backdoors. Our mitigation strategy employs a novel Information Flow Control mechanism that analyzes the model graph and proves non-interference between different user inputs within the same batch. Using our mitigation strategy we perform a large scale analysis of models hosted through Hugging Face and find over 200 models that introduce (unintended) information leakage between batch entries due to the use of dynamic quantization."
+}

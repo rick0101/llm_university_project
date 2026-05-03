@@ -1,0 +1,44 @@
+{
+  "paperId": "a40f6cda4b576ed01d4f631ba9cd3c8ffe427965",
+  "externalIds": {
+    "ArXiv": "2404.18567",
+    "CorpusId": 269449221
+  },
+  "title": "Double Backdoored: Converting Code Large Language Model Backdoors to Traditional Malware via Adversarial Instruction Tuning Attacks",
+  "venue": "",
+  "year": 2024,
+  "citationCount": 2,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.18567, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "95079774",
+      "name": "Md. Imran Hossen"
+    },
+    {
+      "authorId": "2151349056",
+      "name": "Sai Venkatesh Chilukoti"
+    },
+    {
+      "authorId": "2269735189",
+      "name": "Liqun Shan"
+    },
+    {
+      "authorId": "2266846789",
+      "name": "Sheng Chen"
+    },
+    {
+      "authorId": "2394933026",
+      "name": "Yinzhi Cao"
+    },
+    {
+      "authorId": "2480490",
+      "name": "X. Hei"
+    }
+  ],
+  "abstract": "Instruction-tuned Large Language Models designed for coding tasks are increasingly employed as AI coding assistants. However, the cybersecurity vulnerabilities and implications arising from the widespread integration of these models are not yet fully understood due to limited research in this domain. This work investigates novel techniques for transitioning backdoors from the AI/ML domain to traditional computer malware, shedding light on the critical intersection of AI and cyber/software security. To explore this intersection, we present MalInstructCoder, a framework designed to comprehensively assess the cybersecurity vulnerabilities of instruction-tuned Code LLMs. MalInstructCoder introduces an automated data poisoning pipeline to inject malicious code snippets into benign code, poisoning instruction fine-tuning data while maintaining functional validity. It presents two practical adversarial instruction tuning attacks with real-world security implications: the clean prompt poisoning attack and the backdoor attack. These attacks aim to manipulate Code LLMs to generate code incorporating malicious or harmful functionality under specific attack scenarios while preserving intended functionality. We conduct a comprehensive investigation into the exploitability of the code-specific instruction tuning process involving three state-of-the-art Code LLMs: CodeLlama, DeepSeek-Coder, and StarCoder2. Our findings reveal that these models are highly vulnerable to our attacks. Specifically, the clean prompt poisoning attack achieves the ASR@1 ranging from over 75% to 86% by poisoning only 1% (162 samples) of the instruction fine-tuning dataset. Similarly, the backdoor attack achieves the ASR@1 ranging from 76% to 86% with a 0.5% poisoning rate. Our study sheds light on the critical cybersecurity risks posed by instruction-tuned Code LLMs and highlights the urgent need for robust defense mechanisms."
+}

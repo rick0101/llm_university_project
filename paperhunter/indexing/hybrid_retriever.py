@@ -574,11 +574,25 @@ class HybridRetriever:
         store = self._get_qdrant_store()
 
         if collections is None:
-            collections = [
-                store.COLLECTION_CHUNKS,
-                store.COLLECTION_L1,
-                store.COLLECTION_L2,
-            ]
+            # Test mode: ``PAPERHUNTER_WRITER_SUMMARIES_ONLY=1`` instrada
+            # il retrieval ibrido SOLO sulle collezioni di riassunti
+            # (L1, L1.5, L2), escludendo i chunk full-text dei paper.
+            import os as _os
+            _summaries_only = _os.environ.get(
+                "PAPERHUNTER_WRITER_SUMMARIES_ONLY", ""
+            ).strip().lower() in {"1", "true", "yes", "on"}
+            if _summaries_only:
+                collections = [
+                    store.COLLECTION_L1,
+                    store.COLLECTION_L1_5,
+                    store.COLLECTION_L2,
+                ]
+            else:
+                collections = [
+                    store.COLLECTION_CHUNKS,
+                    store.COLLECTION_L1,
+                    store.COLLECTION_L2,
+                ]
 
         final_n = n_results if n_results is not None else self._top_k_final
 

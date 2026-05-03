@@ -1,0 +1,49 @@
+{
+  "paperId": "f089eee707ae82e1486159f1c5628ce07ace629b",
+  "externalIds": {
+    "ArXiv": "2603.16475",
+    "CorpusId": 286584291
+  },
+  "title": "Breaking the Chain: A Causal Analysis of LLM Faithfulness to Intermediate Structures",
+  "venue": "",
+  "year": 2026,
+  "citationCount": 0,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2603.16475, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2026-03-17",
+  "journal": null,
+  "citationStyles": {
+    "bibtex": "@Inproceedings{Somov2026BreakingTC,\n author = {Oleg Somov and Mikhail Chaichuk and Mikhail G. Seleznyov and Alexander Panchenko and Elena Tutubalina},\n title = {Breaking the Chain: A Causal Analysis of LLM Faithfulness to Intermediate Structures},\n year = {2026}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2204672164",
+      "name": "Oleg Somov"
+    },
+    {
+      "authorId": "2315494605",
+      "name": "Mikhail Chaichuk"
+    },
+    {
+      "authorId": "2373186128",
+      "name": "Mikhail G. Seleznyov"
+    },
+    {
+      "authorId": "2253459158",
+      "name": "Alexander Panchenko"
+    },
+    {
+      "authorId": "2360173475",
+      "name": "Elena Tutubalina"
+    }
+  ],
+  "abstract": "Schema-guided reasoning pipelines ask LLMs to produce explicit intermediate structures -- rubrics, checklists, verification queries -- before committing to a final decision. But do these structures causally determine the output, or merely accompany it? We introduce a causal evaluation protocol that makes this directly measurable: by selecting tasks where a deterministic function maps intermediate structures to decisions, every controlled edit implies a unique correct output. Across eight models and three benchmarks, models appear self-consistent with their own intermediate structures but fail to update predictions after intervention in up to 60% of cases -- revealing that apparent faithfulness is fragile once the intermediate structure changes. When derivation of the final decision from the structure is delegated to an external tool, this fragility largely disappears; however, prompts which ask to prioritize the intermediate structure over the original input do not materially close the gap. Overall, intermediate structures in schema-guided pipelines function as influential context rather than stable causal mediators."
+}

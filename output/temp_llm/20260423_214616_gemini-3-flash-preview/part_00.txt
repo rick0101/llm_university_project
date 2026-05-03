@@ -1,0 +1,24 @@
+```json
+[
+  {
+    "citation_index": 0,
+    "bibtex_key": "Wang_2024_Developing",
+    "status": "NOT_SUPPORTED",
+    "confidence": 0.9,
+    "reasoning": "The source text mentions 'intrinsic hallucinations' and defines them as outputs contradicting the source document, but it does not mention 'extrinsic hallucinations' or a 'widely adopted taxonomy' categorizing hallucinations into these two types."
+  },
+  {
+    "citation_index": 1,
+    "bibtex_key": "Urlana_2025_LLM",
+    "status": "SUPPORTED",
+    "confidence": 0.95,
+    "reasoning": "The source explicitly introduces HalluCounter as a 'reference-free hallucination detection (RFHD) method' and describes how it extracts NLI features from 'Query-Response (Q-R) pairs'."
+  },
+  {
+    "citation_index": 2,
+    "bibtex_key": "Tang_2025_Cognibench",
+    "status": "SUPPORTED",
+    "confidence": 0.95,
+    "reasoning": "The source confirms that CogniDet is an '8B-parameter hallucination detection model' and that it was fine-tuned on 'CogniBench-L', which was created using an 'automated annotation pipeline'."
+  },
+  {

@@ -741,8 +741,8 @@ def _complete_with_continuation(
 _MIN_CALL_INTERVAL = 5.0  # secondi
 
 # Fallback model when primary Pro model returns 503 for too long
-_FALLBACK_PRO_MODEL = "gemini-2.5-pro"
-_FALLBACK_AFTER_MAX_DELAY_HITS = 3  # switch after 3 retries at max_delay cap
+_FALLBACK_PRO_MODEL = "gemini-3-flash-preview"  # Flash fallback quando Pro è sovraccarico
+_FALLBACK_AFTER_MAX_DELAY_HITS = 1  # switch after 1 retry at max_delay cap
 _last_llm_call_time = 0.0
 _call_time_lock = threading.Lock()
 
@@ -943,7 +943,9 @@ def _llm_call_autonomous(
             )
             transient_keywords = (
                 "503", "500", "504", "overloaded", "temporarily",
-                "deadline", "unavailable",
+                "deadline", "unavailable", "disconnected", "connection",
+                "reset by peer", "broken pipe", "eof",
+                "timed out", "timeout", "time out",
             )
             is_quota = any(kw in error_str for kw in quota_keywords)
             is_transient = any(kw in error_str for kw in transient_keywords)
@@ -969,11 +971,11 @@ def _llm_call_autonomous(
                 else:
                     at_max_delay_hits = 0
 
-                # Fallback: after N retries stuck at max_delay, try gemini-2.5-pro
+                # Fallback: dopo N retry al cap, passa a Flash (sia per errori transient che quota)
                 if (
                     at_max_delay_hits >= _FALLBACK_AFTER_MAX_DELAY_HITS
                     and not using_fallback
-                    and is_transient
+                    and (is_transient or is_quota)
                     and original_model
                     and original_model != _FALLBACK_PRO_MODEL
                 ):

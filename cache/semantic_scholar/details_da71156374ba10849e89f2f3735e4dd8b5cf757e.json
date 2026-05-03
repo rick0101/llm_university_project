@@ -1,0 +1,45 @@
+{
+  "paperId": "da71156374ba10849e89f2f3735e4dd8b5cf757e",
+  "externalIds": {
+    "ArXiv": "2604.14137",
+    "CorpusId": 287480743
+  },
+  "title": "From Feelings to Metrics: Understanding and Formalizing How Users Vibe-Test LLMs",
+  "venue": "",
+  "year": 2026,
+  "citationCount": 0,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.14137, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2026-04-15",
+  "journal": null,
+  "citationStyles": {
+    "bibtex": "@Inproceedings{Itzhak2026FromFT,\n author = {Itay Itzhak and Eliya Habba and Gabriel Stanovsky and Yonatan Belinkov},\n title = {From Feelings to Metrics: Understanding and Formalizing How Users Vibe-Test LLMs},\n year = {2026}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2126506416",
+      "name": "Itay Itzhak"
+    },
+    {
+      "authorId": "2216605450",
+      "name": "Eliya Habba"
+    },
+    {
+      "authorId": "2320522147",
+      "name": "Gabriel Stanovsky"
+    },
+    {
+      "authorId": "2346327043",
+      "name": "Yonatan Belinkov"
+    }
+  ],
+  "abstract": "Evaluating LLMs is challenging, as benchmark scores often fail to capture models'real-world usefulness. Instead, users often rely on ``vibe-testing'': informal experience-based evaluation, such as comparing models on coding tasks related to their own workflow. While prevalent, vibe-testing is often too ad hoc and unstructured to analyze or reproduce at scale. In this work, we study how vibe-testing works in practice and then formalize it to support systematic analysis. We first analyze two empirical resources: (1) a survey of user evaluation practices, and (2) a collection of in-the-wild model comparison reports from blogs and social media. Based on these resources, we formalize vibe-testing as a two-part process: users personalize both what they test and how they judge responses. We then introduce a proof-of-concept evaluation pipeline that follows this formulation by generating personalized prompts and comparing model outputs using user-aware subjective criteria. In experiments on coding benchmarks, we find that combining personalized prompts and user-aware evaluation can change which model is preferred, reflecting the role of vibe-testing in practice. These findings suggest that formalized vibe-testing can serve as a useful approach for bridging benchmark scores and real-world experience."
+}

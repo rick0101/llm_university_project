@@ -1,0 +1,34 @@
+{
+  "paperId": "eaf0ba6d2bedda383891ebe1b1e8a679ee924dff",
+  "externalIds": {
+    "ArXiv": "2510.26941",
+    "DBLP": "journals/corr/abs-2510-26941",
+    "DOI": "10.1109/GCAIoT68269.2025.11275542",
+    "CorpusId": 282719047
+  },
+  "title": "LLM-based Multi-class Attack Analysis and Mitigation Framework in IoT/IIoT Networks",
+  "venue": "Global Conference on Artificial Intelligence and Internet of Things",
+  "year": 2025,
+  "citationCount": 2,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.26941, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2390200959",
+      "name": "Seif Ikbarieh"
+    },
+    {
+      "authorId": "2297760217",
+      "name": "Maanak Gupta"
+    },
+    {
+      "authorId": "2199962443",
+      "name": "Elmahedi Mahalal"
+    }
+  ],
+  "abstract": "The Internet of Things has expanded rapidly, transforming communication and operations across industries but also increasing the attack surface and security breaches. Artificial Intelligence plays a key role in securing IoT, enabling attack detection, attack behavior analysis, and mitigation suggestion. Despite advancements, evaluations remain purely qualitative, and the lack of a standardized, objective benchmark for quantitatively measuring AI-based attack analysis and mitigation hinders consistent assessment of model effectiveness. In this work, we propose a hybrid framework combining Machine Learning (ML) for multi-class attack detection with Large Language Models (LLMs) for attack behavior analysis and mitigation suggestion. After benchmarking several ML and Deep Learning (DL) classifiers on the Edge-IIoTset and CICIoT2023 datasets, we applied structured role-play prompt engineering with Retrieval-Augmented Generation (RAG) to guide ChatGPT-o3 and DeepSeek-R1 in producing detailed, context-aware responses. We introduce novel evaluation metrics for quantitative assessment to guide us and an ensemble of judge LLMs, namely ChatGPT-4o, DeepSeekV3, Mixtral 8x7B Instruct, Gemini 2.5 Flash, Meta Llama 4, TII Falcon H1 34B Instruct, xAI Grok 3, and Claude 4 Sonnet, to independently evaluate the responses. Results show that Random Forest has the best detection model, and ChatGPT03 outperformed DeepSeek-R1 in attack analysis and mitigation."
+}

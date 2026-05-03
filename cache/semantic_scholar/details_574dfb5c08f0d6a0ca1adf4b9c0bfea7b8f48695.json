@@ -1,0 +1,54 @@
+{
+  "paperId": "574dfb5c08f0d6a0ca1adf4b9c0bfea7b8f48695",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2502-08586",
+    "ArXiv": "2502.08586",
+    "DOI": "10.48550/arXiv.2502.08586",
+    "CorpusId": 276287337
+  },
+  "title": "Commercial LLM Agents Are Already Vulnerable to Simple Yet Dangerous Attacks",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 45,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2502.08586, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-02-12",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2502.08586"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Li2025CommercialLA,\n author = {Ang Li and Ying Zhou and Vethavikashini Chithrra Raghuram and Tom Goldstein and Micah Goldblum},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {Commercial LLM Agents Are Already Vulnerable to Simple Yet Dangerous Attacks},\n volume = {abs/2502.08586},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2345194507",
+      "name": "Ang Li"
+    },
+    {
+      "authorId": "2118861530",
+      "name": "Ying Zhou"
+    },
+    {
+      "authorId": "2311372553",
+      "name": "Vethavikashini Chithrra Raghuram"
+    },
+    {
+      "authorId": "2306981546",
+      "name": "Tom Goldstein"
+    },
+    {
+      "authorId": "121592562",
+      "name": "Micah Goldblum"
+    }
+  ],
+  "abstract": "A high volume of recent ML security literature focuses on attacks against aligned large language models (LLMs). These attacks may extract private information or coerce the model into producing harmful outputs. In real-world deployments, LLMs are often part of a larger agentic pipeline including memory systems, retrieval, web access, and API calling. Such additional components introduce vulnerabilities that make these LLM-powered agents much easier to attack than isolated LLMs, yet relatively little work focuses on the security of LLM agents. In this paper, we analyze security and privacy vulnerabilities that are unique to LLM agents. We first provide a taxonomy of attacks categorized by threat actors, objectives, entry points, attacker observability, attack strategies, and inherent vulnerabilities of agent pipelines. We then conduct a series of illustrative attacks on popular open-source and commercial agents, demonstrating the immediate practical implications of their vulnerabilities. Notably, our attacks are trivial to implement and require no understanding of machine learning."
+}

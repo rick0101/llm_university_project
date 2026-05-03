@@ -1,0 +1,49 @@
+{
+  "paperId": "a17ec1f7a73d3ba63e9a37cfd0bbb634d5acf525",
+  "externalIds": {
+    "ArXiv": "2604.13153",
+    "CorpusId": 287479598
+  },
+  "title": "PatchPoison: Poisoning Multi-View Datasets to Degrade 3D Reconstruction",
+  "venue": "",
+  "year": 2026,
+  "citationCount": 0,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.13153, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2026-04-14",
+  "journal": null,
+  "citationStyles": {
+    "bibtex": "@Inproceedings{Wadekar2026PatchPoisonPM,\n author = {Prajas Wadekar and Venkata Sai Pranav Bachina and Kunal Bhosikar and Ankit Gangwal and Charu Sharma},\n title = {PatchPoison: Poisoning Multi-View Datasets to Degrade 3D Reconstruction},\n year = {2026}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2429656292",
+      "name": "Prajas Wadekar"
+    },
+    {
+      "authorId": "2305481583",
+      "name": "Venkata Sai Pranav Bachina"
+    },
+    {
+      "authorId": "2387867637",
+      "name": "Kunal Bhosikar"
+    },
+    {
+      "authorId": "23678006",
+      "name": "Ankit Gangwal"
+    },
+    {
+      "authorId": "2351165275",
+      "name": "Charu Sharma"
+    }
+  ],
+  "abstract": "3D Gaussian Splatting (3DGS) has recently enabled highly photorealistic 3D reconstruction from casually captured multi-view images. However, this accessibility raises a privacy concern: publicly available images or videos can be exploited to reconstruct detailed 3D models of scenes or objects without the owner's consent. We present PatchPoison, a lightweight dataset-poisoning method that prevents unauthorized 3D reconstruction. Unlike global perturbations, PatchPoison injects a small high-frequency adversarial patch, a structured checkerboard, into the periphery of each image in a multi-view dataset. The patch is designed to corrupt the feature-matching stage of Structure-from-Motion (SfM) pipelines such as COLMAP by introducing spurious correspondences that systematically misalign estimated camera poses. Consequently, downstream 3DGS optimization diverges from the correct scene geometry. On the NeRF-Synthetic benchmark, inserting a 12 X 12 pixel patch increases reconstruction error by 6.8x in LPIPS, while the poisoned images remain unobtrusive to human viewers. PatchPoison requires no pipeline modifications, offering a practical,\"drop-in\"preprocessing step for content creators to protect their multi-view data."
+}

@@ -1,0 +1,54 @@
+{
+  "paperId": "35c25a00d86f67b4c8997c20c4e71bc4e9529aa4",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2509-15154",
+    "ArXiv": "2509.15154",
+    "DOI": "10.48550/arXiv.2509.15154",
+    "CorpusId": 281394725
+  },
+  "title": "MedFact-R1: Towards Factual Medical Reasoning via Pseudo-Label Augmentation",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 1,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2509.15154, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-09-18",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2509.15154"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Li2025MedFactR1TF,\n author = {Ge Li and Rongyu Chen and Bin Li and Linlin Yang and Guodong Ding},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {MedFact-R1: Towards Factual Medical Reasoning via Pseudo-Label Augmentation},\n volume = {abs/2509.15154},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2403770383",
+      "name": "Ge Li"
+    },
+    {
+      "authorId": "2249940320",
+      "name": "Rongyu Chen"
+    },
+    {
+      "authorId": "2329387943",
+      "name": "Bin Li"
+    },
+    {
+      "authorId": "2355474647",
+      "name": "Linlin Yang"
+    },
+    {
+      "authorId": "2290733271",
+      "name": "Guodong Ding"
+    }
+  ],
+  "abstract": "Ensuring factual consistency and reliable reasoning remains a critical challenge for medical vision-language models. We introduce MEDFACT-R1, a two-stage framework that integrates external knowledge grounding with reinforcement learning to improve the factual medical reasoning. The first stage uses pseudo-label supervised fine-tuning (SFT) to incorporate external factual expertise; while the second stage applies Group Relative Policy Optimization (GRPO) with four tailored factual reward signals to encourage self-consistent reasoning. Across three public medical QA benchmarks, MEDFACT-R1 delivers up to 22.5% absolute improvement in factual accuracy over previous state-of-the-art methods. Ablation studies highlight the necessity of pseudo-label SFT cold start and validate the contribution of each GRPO reward, underscoring the synergy between knowledge grounding and RL-driven reasoning for trustworthy medical AI. Codes are released at https://github.com/Garfieldgengliang/MEDFACT-R1."
+}

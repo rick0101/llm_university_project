@@ -1,0 +1,79 @@
+{
+  "section_key": "background",
+  "saved_at": "2026-04-24T13:26:57.946826",
+  "data": {
+    "section_key": "background",
+    "title": "Background",
+    "text": "# Background\n\nThe rapid proliferation and integration of Large Language Models (LLMs) into critical infrastructure, software development workflows, and autonomous agentic systems have fundamentally altered the modern cybersecurity landscape. While the underlying Transformer architecture has enabled unprecedented capabilities in natural language understanding, reasoning, and code generation, it has simultaneously introduced a novel class of attack vectors. Traditional software security paradigms, which primarily focus on deterministic flaws such as buffer overflows or SQL injections, are insufficient for addressing the probabilistic and opaque nature of neural networks. To fully contextualize the emerging threats and defense mechanisms in this domain, it is essential to understand the foundational vulnerabilities across the LLM lifecycle\u2014ranging from inference-time prompt manipulation to structural weight poisoning and the risks associated with AI-assisted code generation.\n\n## The Inference Threat Landscape: Prompt Injection and Jailbreaking\n\nAt the most accessible layer of the LLM attack surface is the inference stage, where users interact directly with the model via natural language prompts. Because LLMs process instructions and data through the same input channel, they are inherently susceptible to prompt injection and jailbreaking attacks. These techniques aim to bypass the safety alignments and Reinforcement Learning from Human Feedback (RLHF) guardrails established during the model's training phase, coercing the system into generating restricted, harmful, or unintended outputs.\n\nThe complexity of these attacks has evolved significantly, necessitating comprehensive taxonomies to categorize and mitigate them. Recent large-scale analyses have systematically mapped this threat landscape. For instance, Pathade et al. developed an extensive taxonomy comprising over 1,400 distinct jailbreak prompts, categorizing them by specific attack vectors [Pathade_2025_LLMs]. Their research highlights several dominant strategies: \"roleplay\" attacks (such as the infamous \"DAN\" or Do Anything Now prompts) that force the model to adopt an unrestricted persona; \"logic traps\" that create hypothetical or paradoxical scenarios to confuse the model's ethical boundaries; \"encoding\" techniques that obfuscate malicious intent using Base64, ciphers, or obscure languages; and \"multi-turn dialogues\" that gradually erode the model's alignment over a sustained conversation. Furthermore, their systematic susceptibility analysis across state-of-the-art models, including GPT-4, Claude 2, and Mistral 7B, underscores that even the most advanced proprietary models remain vulnerable to sophisticated linguistic manipulation [Pathade_2025_LLMs].\n\n{{FIGURE:Pathade_2025_LLMs:attack_diagram}}\n\nBuilding upon this, Maloyan et al. proposed a novel three-dimensional taxonomy that categorizes prompt injection attacks not just by their linguistic structure, but by their operational mechanics: delivery vector, attack modality, and propagation behavior [Maloyan_2026_Prompt]. The delivery vector distinguishes between direct attacks (where the user inputs the malicious prompt) and indirect attacks (where the LLM ingests a malicious prompt hidden in an external source, such as a webpage or a document). Attack modality accounts for the rising threat of multimodal LLMs, where injections can be embedded within images or audio files. Finally, propagation behavior examines how an injected payload might spread, which is particularly critical in multi-agent systems where a compromised LLM might autonomously generate prompts to infect other interconnected models. Through a meta-analysis of 78 studies spanning from 2021 to 2026, Maloyan et al. demonstrated the persistent high success rates of these attacks and the corresponding limitations of current heuristic and semantic defense mechanisms [Maloyan_2026_Prompt].\n\n{{FIGURE:Maloyan_2026_Prompt:taxonomy_chart}}\n\n## Vulnerabilities in AI-Assisted Code Generation\n\nBeyond natural language interactions, LLMs have become deeply embedded in software engineering. Code LLMs are now routinely used for code completion, refactoring, and automated debugging. However, this reliance introduces severe security implications, as models trained on vast, uncurated repositories of open-source code often internalize and reproduce historical vulnerabilities. \n\nThe phenomenon of \"vibe coding\"\u2014a term used to describe informal development workflows where developers rely heavily on AI-generated code without rigorous security auditing or formal verification\u2014has exacerbated these risks. Thang et al. explored the intrinsic security awareness of code LLMs, highlighting how the convenience of AI-assisted development often supersedes secure coding practices [Thang_2026_LLM]. When developers accept LLM outputs based purely on functional correctness (the \"vibe\") rather than structural security, they inadvertently introduce critical flaws into production environments. Mitigating the risks of vibe coding requires enhancing the intrinsic security awareness of the models themselves, ensuring they default to secure design patterns even when prompted ambiguously [Thang_2026_LLM].\n\nTo systematically evaluate and address these risks, researchers have developed specialized frameworks and benchmarks. Wang et al. established a quantifiable, three-dimensional framework to evaluate \"prompt normativity\" as a functional requirement for secure code generation [Wang_2025_Prompt]. Their framework assesses prompts based on Goal Clarity, Information Completeness, and Logical Consistency. They demonstrated that ambiguous or incomplete prompts significantly increase the likelihood of an LLM generating vulnerable code. To support this, they released CWE-BENCH-PYTHON, a large-scale benchmark designed to test how varying levels of prompt normativity impact the manifestation of Common Weakness Enumerations (CWEs) in Python code [Wang_2025_Prompt].\n\nSimilarly, Nie et al. introduced SECODEPLT, a massive benchmark comprising 5.9k samples that cover 44 distinct CWE-based risk categories across multiple programming languages, including Python, C/C++, and Java [Nie_2025_Secodeplt]. SECODEPLT utilizes a sophisticated two-stage data creation pipeline that balances the high quality of manual seed generation with the scalability of automated data synthesis. By evaluating models across diverse languages and vulnerability types, SECODEPLT provides a critical tool for measuring the true security posture of code LLMs, revealing that models often struggle with memory safety in C/C++ and injection flaws in web-oriented languages like Java and Python [Nie_2025_Secodeplt].\n\n{{FIGURE:Nie_2025_Secodeplt:comparison_table}}\n\n## Structural and Weight-Level Attacks: Backdoors and Malware\n\nWhile prompt injection and insecure code generation represent significant application-layer threats, the most insidious vulnerabilities reside at the structural level of the models themselves. As the open-source AI community embraces the sharing of model weights and fine-tuned checkpoints via platforms like Hugging Face, adversaries have shifted their focus toward poisoning the models directly. \n\nDistributed training environments, such as Federated Learning, are particularly susceptible to these structural attacks. Zhao et al. investigated advanced backdoor vulnerabilities within these decentralized frameworks [Zhao_2026_Protegofed]. In a distributed setup, malicious actors can participate in the training process and introduce subtle, stealthy backdoors into the global model by submitting poisoned gradient updates. These backdoors remain dormant during normal operation but can be triggered by specific, attacker-defined inputs, causing the model to output malicious payloads or bypass safety filters. The systemic nature of these threats in distributed environments necessitates robust defense pipelines capable of detecting and filtering anomalous updates before they corrupt the central model [Zhao_2026_Protegofed].\n\n{{FIGURE:Zhao_2026_Protegofed:defense_pipeline}}\n\nEven more alarming is the conceptualization of the LLM itself as a malware vector. Tejedor et al. pioneered this area of research by introducing H-Elena, the first demonstrated self-replicating virus embedded directly into the weights of an LLM via fine-tuning [Tejedor_2025_Elena]. In this paradigm, the model checkpoint is not merely a passive file containing neural network parameters; it acts as an active carrier of malware. When a victim downloads and deploys the compromised H-Elena checkpoint, the model functions normally for standard tasks, evading standard detection. However, when triggered, the embedded virus can manipulate the model's outputs to generate malicious code, exfiltrate data, or even attempt to replicate its poisoned weights into other models fine-tuned on the same system. This research fundamentally redefines the threat model for AI supply chains, proving that neural network weights can serve as a highly obfuscated execution environment for self-replicating threats [Tejedor_2025_Elena].\n\nFurthermore, the generative capabilities of LLMs are being weaponized to enhance traditional malware. Akil et al. designed and implemented LLMalMorph, a semi-automated framework that leverages the natural language and code comprehension skills of LLMs to perform source-code level malware transformation [Akil_2025_Llmalmorph]. Traditional malware obfuscation relies on rigid, rule-based techniques that modern static analysis tools can often detect. LLMalMorph, however, introduces specialized code transformation strategies\u2014such as semantic-preserving logic rewriting and variable semantic mutation\u2014without requiring resource-intensive fine-tuning. By dynamically mutating the malware's source code while preserving its malicious functionality, LLMs can generate infinite, highly evasive variants of known malware, rendering signature-based detection systems obsolete [Akil_2025_Llmalmorph].\n\n{{FIGURE:Akil_2025_Llmalmorph:architecture_diagram}}\n\n## Conclusion\n\nThe background of Large Language Model security is characterized by a rapidly escalating arms race between capability and vulnerability. As models grow in size and are granted increasing autonomy over code execution and system interactions, the attack surface expands exponentially. From the linguistic manipulation of prompt injections [Pathade_2025_LLMs, Maloyan_2026_Prompt] to the systemic risks of AI-assisted \"vibe coding\" [Thang_2026_LLM, Wang_2025_Prompt, Nie_2025_Secodeplt], the application layer remains highly porous. Concurrently, the structural integrity of the models is under threat from advanced backdoor injections [Zhao_2026_Protegofed], weight-embedded viruses [Tejedor_2025_Elena], and AI-driven malware mutation [Akil_2025_Llmalmorph]. Understanding these foundational vectors is critical for developing the next generation of robust, intrinsically secure AI systems and establishing comprehensive defense-in-depth strategies across the entire machine learning lifecycle.",
+    "citations": [
+      {
+        "bibtex_key": "Pathade_2025_LLMs",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Maloyan_2026_Prompt",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Thang_2026_LLM",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Wang_2025_Prompt",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Nie_2025_Secodeplt",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Zhao_2026_Protegofed",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Tejedor_2025_Elena",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Akil_2025_Llmalmorph",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Thang_2026_LLM, Wang_2025_Prompt, Nie_2025_Secodeplt",
+        "claim": "(auto-detected from text)",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Pathade_2025_LLMs, Maloyan_2026_Prompt",
+        "claim": "(auto-detected from text)",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      }
+    ],
+    "word_count": 1401,
+    "status": "drafted",
+    "iteration": 1,
+    "rag_queries": [],
+    "retrieved_chunk_ids": [],
+    "writer_notes": "[prefetch_agentic] Response was not valid JSON. Citations extracted via regex.",
+    "critic_feedback": "",
+    "drafted_at": "2026-04-24T13:26:57.945236"
+  }
+}

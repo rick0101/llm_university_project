@@ -1,0 +1,42 @@
+{
+  "paperId": "1bde12d99a445c08aaebd3ef5d7f3bf3b3754893",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2410-19427",
+    "ArXiv": "2410.19427",
+    "DOI": "10.48550/arXiv.2410.19427",
+    "CorpusId": 273638271
+  },
+  "title": "Expose Before You Defend: Unifying and Enhancing Backdoor Defenses via Exposed Models",
+  "venue": "arXiv.org",
+  "year": 2024,
+  "citationCount": 2,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.19427, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2278578217",
+      "name": "Yige Li"
+    },
+    {
+      "authorId": "1753845931",
+      "name": "Hanxun Huang"
+    },
+    {
+      "authorId": "2327911880",
+      "name": "Jiaming Zhang"
+    },
+    {
+      "authorId": "2267387052",
+      "name": "Xingjun Ma"
+    },
+    {
+      "authorId": "2259536780",
+      "name": "Yu-Gang Jiang"
+    }
+  ],
+  "abstract": "Backdoor attacks covertly implant triggers into deep neural networks (DNNs) by poisoning a small portion of the training data with pre-designed backdoor triggers. This vulnerability is exacerbated in the era of large models, where extensive (pre-)training on web-crawled datasets is susceptible to compromise. In this paper, we introduce a novel two-step defense framework named Expose Before You Defend (EBYD). EBYD unifies existing backdoor defense methods into a comprehensive defense system with enhanced performance. Specifically, EBYD first exposes the backdoor functionality in the backdoored model through a model preprocessing step called backdoor exposure, and then applies detection and removal methods to the exposed model to identify and eliminate the backdoor features. In the first step of backdoor exposure, we propose a novel technique called Clean Unlearning (CUL), which proactively unlearns clean features from the backdoored model to reveal the hidden backdoor features. We also explore various model editing/modification techniques for backdoor exposure, including fine-tuning, model sparsification, and weight perturbation. Using EBYD, we conduct extensive experiments on 10 image attacks and 6 text attacks across 2 vision datasets (CIFAR-10 and an ImageNet subset) and 4 language datasets (SST-2, IMDB, Twitter, and AG's News). The results demonstrate the importance of backdoor exposure for backdoor defense, showing that the exposed models can significantly benefit a range of downstream defense tasks, including backdoor label detection, backdoor trigger recovery, backdoor model detection, and backdoor removal. We hope our work could inspire more research in developing advanced defense frameworks with exposed models. Our code is available at: https://github.com/bboylyg/Expose-Before-You-Defend."
+}

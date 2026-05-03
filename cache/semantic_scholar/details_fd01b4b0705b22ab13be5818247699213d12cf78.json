@@ -1,0 +1,54 @@
+{
+  "paperId": "fd01b4b0705b22ab13be5818247699213d12cf78",
+  "externalIds": {
+    "ArXiv": "2501.08152",
+    "DBLP": "journals/corr/abs-2501-08152",
+    "DOI": "10.1109/ICASSP49660.2025.10888330",
+    "CorpusId": 275516016
+  },
+  "title": "Energy Backdoor Attack to Deep Neural Networks",
+  "venue": "IEEE International Conference on Acoustics, Speech, and Signal Processing",
+  "year": 2025,
+  "citationCount": 2,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2501.08152, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-01-14",
+  "journal": {
+    "name": "ICASSP 2025 - 2025 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)",
+    "pages": "1-5"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Meftah2025EnergyBA,\n author = {H. Meftah and W. Hamidouche and Sid Ahmed Fezza and Olivier D'eforges and Kassem Kallas},\n booktitle = {IEEE International Conference on Acoustics, Speech, and Signal Processing},\n journal = {ICASSP 2025 - 2025 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)},\n pages = {1-5},\n title = {Energy Backdoor Attack to Deep Neural Networks},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2183483709",
+      "name": "H. Meftah"
+    },
+    {
+      "authorId": "1931304",
+      "name": "W. Hamidouche"
+    },
+    {
+      "authorId": "2657624",
+      "name": "Sid Ahmed Fezza"
+    },
+    {
+      "authorId": "2340019654",
+      "name": "Olivier D'eforges"
+    },
+    {
+      "authorId": "3192444",
+      "name": "Kassem Kallas"
+    }
+  ],
+  "abstract": "The rise of deep learning (DL) has increased computing complexity and energy use, prompting the adoption of application specific integrated circuits (ASICs) for energy-efficient edge and mobile deployment. However, recent studies have demonstrated the vulnerability of these accelerators to energy attacks. Despite the development of various inference time energy attacks in prior research, backdoor energy attacks remain unexplored. In this paper, we design an innovative energy backdoor attack against deep neural networks (DNNs) operating on sparsity-based accelerators. Our attack is carried out in two distinct phases: backdoor injection and backdoor stealthiness. Experimental results using ResNet-18 and MobileNet-V2 models trained on CIFAR-10 and Tiny ImageNet datasets show the effectiveness of our proposed attack in increasing energy consumption on trigger samples while preserving the model’s performance for clean/regular inputs. This demonstrates the vulnerability of DNNs to energy backdoor attacks. The source code of our attack is available at: https://github.com/hbrachemi/energybackdoor."
+}

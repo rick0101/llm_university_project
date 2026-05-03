@@ -1,0 +1,38 @@
+{
+  "paperId": "d9f198541267870ae71087f120ea543ebc38d1c6",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2402-12336",
+    "ArXiv": "2402.12336",
+    "DOI": "10.48550/arXiv.2402.12336",
+    "CorpusId": 267750414
+  },
+  "title": "Robust CLIP: Unsupervised Adversarial Fine-Tuning of Vision Embeddings for Robust Large Vision-Language Models",
+  "venue": "International Conference on Machine Learning",
+  "year": 2024,
+  "citationCount": 109,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2402.12336, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2232781936",
+      "name": "Christian Schlarmann"
+    },
+    {
+      "authorId": "51231332",
+      "name": "N. Singh"
+    },
+    {
+      "authorId": "39171784",
+      "name": "Francesco Croce"
+    },
+    {
+      "authorId": "2268308768",
+      "name": "Matthias Hein"
+    }
+  ],
+  "abstract": "Multi-modal foundation models like OpenFlamingo, LLaVA, and GPT-4 are increasingly used for various real-world tasks. Prior work has shown that these models are highly vulnerable to adversarial attacks on the vision modality. These attacks can be leveraged to spread fake information or defraud users, and thus pose a significant risk, which makes the robustness of large multi-modal foundation models a pressing problem. The CLIP model, or one of its variants, is used as a frozen vision encoder in many large vision-language models (LVLMs), e.g. LLaVA and OpenFlamingo. We propose an unsupervised adversarial fine-tuning scheme to obtain a robust CLIP vision encoder, which yields robustness on all vision down-stream tasks (LVLMs, zero-shot classification) that rely on CLIP. In particular, we show that stealth-attacks on users of LVLMs by a malicious third party providing manipulated images are no longer possible once one replaces the original CLIP model with our robust one. No retraining or fine-tuning of the down-stream LVLMs is required. The code and robust models are available at https://github.com/chs20/RobustVLM"
+}

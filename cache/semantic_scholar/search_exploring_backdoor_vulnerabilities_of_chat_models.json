@@ -1,0 +1,34 @@
+{
+  "paperId": "f840fdcd9e95bba5476030c000d82a172e984181",
+  "externalIds": {
+    "ArXiv": "2404.02406",
+    "DBLP": "conf/coling/YangHL25",
+    "DOI": "10.48550/arXiv.2404.02406",
+    "CorpusId": 268876048
+  },
+  "title": "Exploring Backdoor Vulnerabilities of Chat Models",
+  "venue": "International Conference on Computational Linguistics",
+  "year": 2024,
+  "citationCount": 17,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.02406, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2354266351",
+      "name": "Yunzhuo Hao"
+    },
+    {
+      "authorId": "2120801160",
+      "name": "Wenkai Yang"
+    },
+    {
+      "authorId": "2149202150",
+      "name": "Yankai Lin"
+    }
+  ],
+  "abstract": "Recent researches have shown that Large Language Models (LLMs) are susceptible to a security threat known as Backdoor Attack. The backdoored model will behave well in normal cases but exhibit malicious behaviours on inputs inserted with a specific backdoor trigger. Current backdoor studies on LLMs predominantly focus on instruction-tuned LLMs, while neglecting another realistic scenario where LLMs are fine-tuned on multi-turn conversational data to be chat models. Chat models are extensively adopted across various real-world scenarios, thus the security of chat models deserves increasing attention. Unfortunately, we point out that the flexible multi-turn interaction format instead increases the flexibility of trigger designs and amplifies the vulnerability of chat models to backdoor attacks. In this work, we reveal and achieve a novel backdoor attacking method on chat models by distributing multiple trigger scenarios across user inputs in different rounds, and making the backdoor be triggered only when all trigger scenarios have appeared in the historical conversations. Experimental results demonstrate that our method can achieve high attack success rates (e.g., over 90% ASR on Vicuna-7B) while successfully maintaining the normal capabilities of chat models on providing helpful responses to benign user requests. Also, the backdoor can not be easily removed by the downstream re-alignment, highlighting the importance of continued research and attention to the security concerns of chat models. Warning: This paper may contain toxic content."
+}

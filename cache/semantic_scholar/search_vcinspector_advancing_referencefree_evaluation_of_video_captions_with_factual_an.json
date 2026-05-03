@@ -1,0 +1,32 @@
+{
+  "paperId": "ad99b625d853a2febe10cf8ad4fb7358fa6aac1b",
+  "externalIds": {
+    "ArXiv": "2509.16538",
+    "CorpusId": 281420410
+  },
+  "title": "VC-Inspector: Advancing Reference-free Evaluation of Video Captions with Factual Analy",
+  "venue": "",
+  "year": 2025,
+  "citationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2509.16538, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "50425406",
+      "name": "Shubhashis Roy Dipta"
+    },
+    {
+      "authorId": "27555915",
+      "name": "Tz-Ying Wu"
+    },
+    {
+      "authorId": "2296785047",
+      "name": "Subarna Tripathi"
+    }
+  ],
+  "abstract": "We propose VC-Inspector, a lightweight, open-source large multimodal model (LMM) for reference-free evaluation of video captions, with a focus on factual accuracy. Unlike existing metrics that suffer from limited context handling, weak factuality assessment, or reliance on proprietary services, VC-Inspector offers a reproducible, fact-aware alternative that aligns closely with human judgments. To enable robust training and interpretable evaluation, we introduce a systematic approach for generating captions with controllable errors, paired with graded quality scores and explanatory annotations. Experiments show that VC-Inspector achieves state-of-the-art correlation with human judgments, generalizing across diverse domains (e.g., VATEX-Eval, Flickr8K-Expert, and Flickr8K-CF benchmarks) and revealing the potential for caption improvement."
+}

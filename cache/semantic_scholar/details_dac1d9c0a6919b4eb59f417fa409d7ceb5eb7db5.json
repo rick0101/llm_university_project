@@ -1,0 +1,50 @@
+{
+  "paperId": "dac1d9c0a6919b4eb59f417fa409d7ceb5eb7db5",
+  "externalIds": {
+    "ArXiv": "2501.09446",
+    "DBLP": "journals/corr/abs-2501-09446",
+    "DOI": "10.48550/arXiv.2501.09446",
+    "CorpusId": 275570248
+  },
+  "title": "Double Visual Defense: Adversarial Pre-training and Instruction Tuning for Improving Vision-Language Model Robustness",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 6,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2501.09446, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-01-16",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2501.09446"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Wang2025DoubleVD,\n author = {Zeyu Wang and Cihang Xie and Brian R. Bartoldson and B. Kailkhura},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {Double Visual Defense: Adversarial Pre-training and Instruction Tuning for Improving Vision-Language Model Robustness},\n volume = {abs/2501.09446},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2256986120",
+      "name": "Zeyu Wang"
+    },
+    {
+      "authorId": "2239227247",
+      "name": "Cihang Xie"
+    },
+    {
+      "authorId": "41053241",
+      "name": "Brian R. Bartoldson"
+    },
+    {
+      "authorId": "1749353",
+      "name": "B. Kailkhura"
+    }
+  ],
+  "abstract": "This paper investigates the robustness of vision-language models against adversarial visual perturbations and introduces a novel ``double visual defense\"to enhance this robustness. Unlike previous approaches that resort to lightweight adversarial fine-tuning of a pre-trained CLIP model, we perform large-scale adversarial vision-language pre-training from scratch using web-scale data. We then strengthen the defense by incorporating adversarial visual instruction tuning. The resulting models from each stage, $\\Delta$CLIP and $\\Delta^2$LLaVA, show substantially enhanced zero-shot robustness and set a new state-of-the-art in adversarial defense for vision-language models. For example, the adversarial robustness of $\\Delta$CLIP surpasses that of the previous best models on ImageNet-1k by ~20%. %For example, $\\Delta$CLIP surpasses the previous best models on ImageNet-1k by ~20% in terms of adversarial robustness. Similarly, compared to prior art, $\\Delta^2$LLaVA brings a ~30% robustness improvement to image captioning task and a ~20% robustness improvement to visual question answering task. Furthermore, our models exhibit stronger zero-shot recognition capability, fewer hallucinations, and superior reasoning performance compared to baselines. Our project page is https://doublevisualdefense.github.io/."
+}

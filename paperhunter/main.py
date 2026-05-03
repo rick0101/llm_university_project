@@ -1565,25 +1565,9 @@ def cmd_export(args: argparse.Namespace) -> int:
     output_dir.mkdir(parents=True, exist_ok=True)
     errors = 0
 
-    # LaTeX
-    if args.latex or (not args.latex and not args.bib_only):
-        try:
-            from paperhunter.postprocessing import export_latex, print_export_summary
-            template = args.template or settings.output.latex_template
-            tex_path = export_latex(
-                md_content, output_path=output_dir / "survey.tex",
-                bib_file=args.bib_file, template=template,
-                title=args.title, author=args.author,
-                copy_bib=True,
-                bib_source_path=version_dir / args.bib_file if version_dir else None,
-            )
-            logger.info(f"LaTeX: {tex_path}")
-            print_export_summary(tex_path.read_text(encoding="utf-8"), output_path=tex_path)
-        except Exception as e:
-            logger.error(f"Errore LaTeX: {e}")
-            errors += 1
-
-    # BibTeX filtrato
+    # ── Step 1: BibTeX filtrato (PRIMA della sanitization LaTeX, così che
+    # _sanitize_latex possa rimuovere le \cite{} con chiavi non presenti) ──
+    bib_generated_path: Path | None = None
     if args.bib_only or (not args.latex and not args.bib_only):
         try:
             from paperhunter.postprocessing import generate_final_bib
@@ -1596,11 +1580,48 @@ def cmd_export(args: argparse.Namespace) -> int:
                     survey_text=md_content,
                 )
                 if bib_path:
+                    bib_generated_path = Path(bib_path)
                     logger.info(f"BibTeX: {bib_path} ({bib_report.get('total_filtered', 0)} entry)")
             else:
                 logger.warning("Nessuna citazione trovata nel survey.")
         except Exception as e:
             logger.error(f"Errore BibTeX: {e}")
+            errors += 1
+
+    # ── Step 2: LaTeX ──
+    if args.latex or (not args.latex and not args.bib_only):
+        try:
+            from paperhunter.postprocessing import export_latex, print_export_summary
+            template = args.template or settings.output.latex_template
+
+            # Auto-detect bib_file: usa references_final se è stato generato
+            # o se esiste già in output_dir, altrimenti fallback all'arg.
+            requested_bib = args.bib_file or "references.bib"
+            requested_stem = Path(requested_bib).stem
+            final_bib = output_dir / "references_final.bib"
+            if bib_generated_path is not None and bib_generated_path.exists():
+                effective_bib_stem = bib_generated_path.stem
+                effective_bib_source = bib_generated_path
+            elif final_bib.exists():
+                effective_bib_stem = "references_final"
+                effective_bib_source = final_bib
+            else:
+                effective_bib_stem = requested_stem
+                effective_bib_source = (
+                    version_dir / requested_bib if version_dir else None
+                )
+
+            tex_path = export_latex(
+                md_content, output_path=output_dir / "survey.tex",
+                bib_file=effective_bib_stem, template=template,
+                title=args.title, author=args.author,
+                copy_bib=True,
+                bib_source_path=effective_bib_source,
+            )
+            logger.info(f"LaTeX: {tex_path} (bib={effective_bib_stem})")
+            print_export_summary(tex_path.read_text(encoding="utf-8"), output_path=tex_path)
+        except Exception as e:
+            logger.error(f"Errore LaTeX: {e}")
             errors += 1
 
     return 0 if errors == 0 else 1

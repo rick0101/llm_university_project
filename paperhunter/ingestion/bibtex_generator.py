@@ -553,12 +553,39 @@ def enrich_paper_bibtex(paper: Paper) -> Paper:
     if dblp_entry is not None:
         paper_dict["bibtex_entry"] = dblp_entry
         paper_dict["bibtex_source"] = "dblp"
+        # v3.6 — Citability: DBLP-verified ⇒ citable di default
+        paper_dict["dblp_verified"] = True
+        paper_dict["is_citable"] = True
+        paper_dict["citation_tier"] = "dblp"
     else:
         # Fallback: genera da zero
         paper_dict["bibtex_entry"] = _build_bibtex_from_scratch(
             Paper(**paper_dict), key,
         )
         paper_dict["bibtex_source"] = "local"
+        paper_dict["dblp_verified"] = False
+
+        # v3.6 — Tier "s2_high_conf" opt-in: paper non DBLP ma con molte citazioni S2
+        try:
+            from paperhunter.config import settings as _settings
+            cit_cfg = _settings.citability
+        except Exception:
+            cit_cfg = None
+
+        cit_count = paper_dict.get("citation_count") or 0
+        if (
+            cit_cfg is not None
+            and cit_cfg.allow_s2_high_conf
+            and isinstance(cit_count, int)
+            and cit_count >= cit_cfg.s2_min_citation_count
+        ):
+            paper_dict["is_citable"] = True
+            paper_dict["citation_tier"] = "s2_high_conf"
+        else:
+            paper_dict["is_citable"] = False
+            # arXiv preprint vs uncited context
+            arxiv_id = paper_dict.get("arxiv_id")
+            paper_dict["citation_tier"] = "preprint" if arxiv_id else "uncited_context"
 
     result = Paper(**paper_dict)
     return ensure_complete_bibtex(result)
@@ -798,19 +825,29 @@ def _warn_suspicious_entries(entries: list[str]) -> None:
 def save_master_bib(
     entries: list[str],
     output_path: str | Path | None = None,
+    papers: list[Paper] | None = None,
 ) -> Path:
     """Salva tutte le entry BibTeX in un file .bib cumulativo.
 
     Rimuove entry duplicate (per chiave), ordina alfabeticamente per chiave,
     e aggiunge un header informativo.
 
+    v3.6 — Two-Tier Corpus:
+      Se ``papers`` è fornito, le entry vengono filtrate mantenendo solo
+      i paper con ``is_citable=True``. Le entry escluse possono essere
+      salvate in un file parallelo ``references_uncited.bib`` per audit
+      (controllato da ``settings.citability.write_uncited_audit_bib``).
+
     Args:
-        entries: Lista di entry BibTeX (stringhe).
+        entries: Lista di entry BibTeX (stringhe). Se ``papers`` è fornito
+                 questo argomento può essere lasciato vuoto: le entry verranno
+                 estratte dai Paper.
         output_path: Percorso del file .bib di output.
                      Default: `output/references.bib`.
+        papers: Opzionale, lista di Paper per applicare il filtro citability.
 
     Returns:
-        Path del file .bib salvato.
+        Path del file .bib salvato (citable).
     """
     from paperhunter.config import settings
 
@@ -821,34 +858,65 @@ def save_master_bib(
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    # Filtra entry vuote
-    valid_entries = [e.strip() for e in entries if e and e.strip()]
+    # --- v3.6: split citable vs uncited usando i Paper, se forniti ---
+    citable_entries: list[str] = []
+    uncited_entries: list[str] = []
+    if papers is not None:
+        for p in papers:
+            entry = (p.bibtex_entry or "").strip()
+            if not entry:
+                continue
+            if getattr(p, "is_citable", False):
+                citable_entries.append(entry)
+            else:
+                uncited_entries.append(entry)
+        # Concatena anche eventuali stringhe "extra" passate via `entries`
+        # (tutte considerate citable per backward-compat se nessun Paper match).
+        if entries:
+            known_keys = {
+                m.group(1).strip()
+                for e in citable_entries + uncited_entries
+                if (m := re.search(r'@\w+\{([^,]+),', e))
+            }
+            for e in entries:
+                if not e or not e.strip():
+                    continue
+                m = re.search(r'@\w+\{([^,]+),', e)
+                if m and m.group(1).strip() in known_keys:
+                    continue
+                citable_entries.append(e.strip())
+        valid_entries = citable_entries
+    else:
+        # Backward-compat: filtra solo entry vuote
+        valid_entries = [e.strip() for e in entries if e and e.strip()]
 
     # Deduplica per chiave BibTeX
-    seen_keys: dict[str, str] = {}
-    for entry in valid_entries:
-        key_match = re.search(r'@\w+\{([^,]+),', entry)
-        if key_match:
-            bib_key = key_match.group(1).strip()
-            if bib_key not in seen_keys:
-                seen_keys[bib_key] = entry
+    def _dedupe(lst: list[str]) -> list[str]:
+        seen: dict[str, str] = {}
+        for entry in lst:
+            key_match = re.search(r'@\w+\{([^,]+),', entry)
+            if key_match:
+                bib_key = key_match.group(1).strip()
+                if bib_key not in seen:
+                    seen[bib_key] = entry
+                else:
+                    logger.debug("BibTeX duplicato, skip: %s", bib_key)
             else:
-                logger.debug("BibTeX duplicato, skip: %s", bib_key)
-        else:
-            logger.warning("Entry BibTeX senza chiave valida, skip: %s", entry[:60])
+                logger.warning("Entry BibTeX senza chiave valida, skip: %s", entry[:60])
+        return sorted(seen.values(), key=lambda e: e.lower())
 
-    # Ordina per chiave
-    sorted_entries = sorted(seen_keys.values(), key=lambda e: e.lower())
+    sorted_entries = _dedupe(valid_entries)
 
     # FASE 6: Warning hook — segnala entry sospette prima della scrittura
     _warn_suspicious_entries(sorted_entries)
 
-    # Scrivi file
+    # Scrivi file principale (citable)
     header = (
         "% ==========================================================================\n"
-        "% LLM Security Survey — Riferimenti Bibliografici\n"
-        "% Generato automaticamente da PaperHunter v2.0\n"
-        f"% Totale entry: {len(sorted_entries)}\n"
+        "% LLM Security Survey — Riferimenti Bibliografici (CITABLE)\n"
+        "% Generato automaticamente da PaperHunter v3.6\n"
+        f"% Totale entry citable: {len(sorted_entries)}\n"
+        "% Solo paper verificati su DBLP (o S2 high-conf se abilitato).\n"
         "% ==========================================================================\n"
         "\n"
     )
@@ -859,7 +927,35 @@ def save_master_bib(
             f.write(entry)
             f.write("\n\n")
 
-    logger.info("Master .bib salvato: %s (%d entry)", output_path, len(sorted_entries))
+    logger.info("Master .bib salvato: %s (%d entry citable)", output_path, len(sorted_entries))
+
+    # --- Audit file: paper non citable usati solo come contesto ---
+    try:
+        cit_cfg = settings.citability
+    except Exception:
+        cit_cfg = None
+    if uncited_entries and cit_cfg is not None and cit_cfg.write_uncited_audit_bib:
+        audit_path = output_path.with_name("references_uncited.bib")
+        sorted_uncited = _dedupe(uncited_entries)
+        audit_header = (
+            "% ==========================================================================\n"
+            "% LLM Security Survey — Riferimenti UNCITED (audit only)\n"
+            "% Paper ingeriti per il contesto ma NON citabili nel survey.\n"
+            f"% Totale entry: {len(sorted_uncited)}\n"
+            "% ==========================================================================\n"
+            "\n"
+        )
+        with open(audit_path, "w", encoding="utf-8") as f:
+            f.write(audit_header)
+            for entry in sorted_uncited:
+                f.write(entry)
+                f.write("\n\n")
+        logger.info(
+            "Audit .bib salvato: %s (%d entry uncited)",
+            audit_path,
+            len(sorted_uncited),
+        )
+
     return output_path
 
 

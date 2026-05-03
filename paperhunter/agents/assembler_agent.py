@@ -417,6 +417,10 @@ def assemble_document(
     # Ordina le sezioni secondo l'outline
     sorted_outline = sorted(outline, key=lambda x: x.order)
 
+    # Rinumera i titoli body in base all'ordine fisico (skippa abstract).
+    # Evita inconsistenze tipo "8. Cross-Cutting" che appare prima di "7. Testing".
+    sorted_outline = _renumber_outline_titles(sorted_outline)
+
     # Costruisci il documento
     parts: list[str] = []
 
@@ -459,7 +463,8 @@ def assemble_document(
             draft = sections[key]
             heading_level = "##" if not o.parent_key else "###"
             parts.append(f"\n{heading_level} {o.title}\n")
-            parts.append(draft.text.strip())
+            cleaned = _clean_section_text(draft.text, o.title, base_level=heading_level)
+            parts.append(cleaned)
             parts.append("")
         else:
             # Sezione mancante: placeholder
@@ -1213,6 +1218,134 @@ def _slugify(text: str) -> str:
     slug = re.sub(r'[\s_]+', '-', slug)
     slug = slug.strip('-')
     return slug
+
+
+def _renumber_outline_titles(outline: list) -> list:
+    """Rinumera i titoli body in base all'ordine fisico.
+
+    Esempio: se l'outline ha "8. Cross-Cutting" prima di "7. Testing",
+    li rinomina rispettivamente in "7. Cross-Cutting" e "8. Testing".
+    Lascia inalterati: abstract, introduction (sempre n.1), conclusion.
+    Le sotto-sezioni (parent_key set) ereditano il prefisso del padre.
+    """
+    NUMBER_RE = re.compile(r"^(\d+)(\.\d+)?\.?\s+(.+)$")
+
+    # Mappa parent.key → nuovo numero "N"
+    parent_new_num: dict[str, int] = {}
+    n = 0
+    skip_keys = {"abstract"}
+
+    new_outline = []
+    for o in outline:
+        if o.section_type in ("abstract",) or o.key in skip_keys:
+            new_outline.append(o)
+            continue
+
+        title = o.title
+        # Solo titoli che iniziano con un numero esplicito
+        m = NUMBER_RE.match(title)
+
+        if not o.parent_key:
+            n += 1
+            if m:
+                rest = m.group(3)
+                new_title = f"{n}. {rest}"
+            else:
+                new_title = title
+            parent_new_num[o.key] = n
+            try:
+                o.title = new_title
+            except Exception:
+                pass
+            new_outline.append(o)
+        else:
+            # Sub-section: rinumera con prefisso padre.M
+            parent_n = parent_new_num.get(o.parent_key)
+            if parent_n is not None and m and m.group(2):
+                # m.group(2) è ".X"
+                rest = m.group(3)
+                new_title = f"{parent_n}{m.group(2)} {rest}"
+                try:
+                    o.title = new_title
+                except Exception:
+                    pass
+            new_outline.append(o)
+
+    return new_outline
+
+
+def _clean_section_text(text: str, expected_title: str, *, base_level: str = "##") -> str:
+    """Pulisce il testo di una sezione body prodotta dal Writer.
+
+    Rimuove il titolo iniziale duplicato (writer ripete il proprio H1/H2/bold)
+    e normalizza i livelli heading interni:
+    - ``## sub`` o ``# sub`` (interni) → demoted di un livello
+    - ``**N.X Title**`` su riga propria → ``### N.X Title``
+    - ``**Title**`` su riga propria che assomiglia a un heading → ``### Title``
+
+    Args:
+        text: Testo Markdown grezzo del draft.
+        expected_title: Titolo che l'assembler ha già scritto come heading.
+        base_level: ``"##"`` se la sezione è top-level, ``"###"`` se sub-section.
+    """
+    if not text:
+        return ""
+
+    text = text.strip()
+
+    # --- 1. Rimuovi heading duplicato all'inizio ---
+    # Estrai una "firma" del titolo atteso (lowercased, senza numerazione)
+    expected_norm = re.sub(r"^\d+(\.\d+)*\.?\s*", "", expected_title).strip().lower()
+
+    lines = text.split("\n")
+    # Skippa fino a 3 righe vuote/heading duplicate
+    drop_until = 0
+    for idx in range(min(6, len(lines))):
+        line = lines[idx].strip()
+        if not line:
+            drop_until = idx + 1
+            continue
+        m = re.match(r"^(#{1,3}\s+|\*\*)(.+?)(\*\*)?\s*$", line)
+        if m:
+            cand = re.sub(r"^\d+(\.\d+)*\.?\s*", "", m.group(2)).strip().lower().rstrip("*")
+            if cand and (cand == expected_norm or
+                         (len(expected_norm) >= 8 and cand.startswith(expected_norm[:20])) or
+                         (len(cand) >= 8 and expected_norm.startswith(cand[:20]))):
+                drop_until = idx + 1
+                continue
+        break
+    if drop_until:
+        lines = lines[drop_until:]
+
+    # --- 2. Demote heading interni ---
+    # Se base è "##", i ## interni diventano ###, gli # diventano ###
+    # Se base è "###", i ### interni diventano ####, gli ## diventano ####
+    target_sub = "###" if base_level == "##" else "####"
+    target_subsub = "####" if base_level == "##" else "#####"
+
+    out_lines: list[str] = []
+    for line in lines:
+        m = re.match(r"^(#{1,3})\s+(.+)$", line)
+        if m:
+            n_hash = len(m.group(1))
+            title = m.group(2).strip()
+            if n_hash == 1 or n_hash == 2:
+                line = f"{target_sub} {title}"
+            elif n_hash == 3:
+                line = f"{target_subsub} {title}"
+        else:
+            # **N.X Title** su riga propria → heading
+            mb = re.match(r"^\*\*(\d+(?:\.\d+)+\s+[^*]+?)\*\*\s*$", line)
+            if mb:
+                line = f"{target_sub} {mb.group(1).strip()}"
+            else:
+                # **Title** su riga propria (Title plausibile, niente punto finale)
+                mb2 = re.match(r"^\*\*([A-Z][A-Za-z0-9][^*\n]{2,80})\*\*\s*$", line)
+                if mb2 and not mb2.group(1).rstrip().endswith((".", ":", ",")):
+                    line = f"{target_sub} {mb2.group(1).strip()}"
+        out_lines.append(line)
+
+    return "\n".join(out_lines).strip()
 
 
 def _print_assembly_report(

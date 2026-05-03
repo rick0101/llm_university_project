@@ -1,0 +1,50 @@
+{
+  "paperId": "d2626d990c9b2a2ffc4de76b266b4653e36fffc4",
+  "externalIds": {
+    "ArXiv": "2410.11779",
+    "DBLP": "journals/corr/abs-2410-11779",
+    "DOI": "10.48550/arXiv.2410.11779",
+    "CorpusId": 273351334
+  },
+  "title": "MLLM can see? Dynamic Correction Decoding for Hallucination Mitigation",
+  "venue": "International Conference on Learning Representations",
+  "year": 2024,
+  "citationCount": 72,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.11779, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2279862515",
+      "name": "Chenxi Wang"
+    },
+    {
+      "authorId": "2143735911",
+      "name": "Xiang Chen"
+    },
+    {
+      "authorId": "2153010067",
+      "name": "Ningyu Zhang"
+    },
+    {
+      "authorId": "2064522174",
+      "name": "Bo Tian"
+    },
+    {
+      "authorId": "2326503114",
+      "name": "Haoming Xu"
+    },
+    {
+      "authorId": "152931849",
+      "name": "Shumin Deng"
+    },
+    {
+      "authorId": "2144200945",
+      "name": "Huajun Chen"
+    }
+  ],
+  "abstract": "Multimodal Large Language Models (MLLMs) frequently exhibit hallucination phenomena, but the underlying reasons remain poorly understood. In this paper, we present an empirical analysis and find that, although MLLMs incorrectly generate the objects in the final output, they are actually able to recognize visual objects in the preceding layers. We speculate that this may be due to the strong knowledge priors of the language model suppressing the visual information, leading to hallucinations. Motivated by this, we propose a novel dynamic correction decoding method for MLLMs DeCo, which adaptively selects the appropriate preceding layers and proportionally integrates knowledge into the final layer to adjust the output logits. Note that DeCo is model agnostic and can be seamlessly incorporated with various classic decoding strategies and applied to different MLLMs. We evaluate DeCo on widely-used benchmarks, demonstrating that it can reduce hallucination rates by a large margin compared to baselines, highlighting its potential to mitigate hallucinations. Code is available at https://github.com/zjunlp/DeCo."
+}

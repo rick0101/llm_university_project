@@ -1,0 +1,58 @@
+{
+  "paperId": "6c032b85deb3fb59acbe204f4446f06c8241cf50",
+  "externalIds": {
+    "ArXiv": "2510.11246",
+    "DBLP": "journals/corr/abs-2510-11246",
+    "DOI": "10.48550/arXiv.2510.11246",
+    "CorpusId": 282057461
+  },
+  "title": "Collaborative Shadows: Distributed Backdoor Attacks in LLM-Based Multi-Agent Systems",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 0,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.11246, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-10-13",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2510.11246"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Zhu2025CollaborativeSD,\n author = {Pengyu Zhu and Lijun Li and Yaxing Lyu and Li Sun and S. Su and Jing Shao},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {Collaborative Shadows: Distributed Backdoor Attacks in LLM-Based Multi-Agent Systems},\n volume = {abs/2510.11246},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2346624185",
+      "name": "Pengyu Zhu"
+    },
+    {
+      "authorId": "2280261471",
+      "name": "Lijun Li"
+    },
+    {
+      "authorId": "2408546261",
+      "name": "Yaxing Lyu"
+    },
+    {
+      "authorId": "2385501405",
+      "name": "Li Sun"
+    },
+    {
+      "authorId": "2150496984",
+      "name": "S. Su"
+    },
+    {
+      "authorId": "2348500083",
+      "name": "Jing Shao"
+    }
+  ],
+  "abstract": "LLM-based multi-agent systems (MAS) demonstrate increasing integration into next-generation applications, but their safety in backdoor attacks remains largely underexplored. However, existing research has focused exclusively on single-agent backdoor attacks, overlooking the novel attack surfaces introduced by agent collaboration in MAS. To bridge this gap, we present the first Distributed Backdoor Attack tailored to MAS. We decompose the backdoor into multiple distributed attack primitives that are embedded within MAS tools. These primitives remain dormant individually but collectively activate only when agents collaborate in a specific sequence, thereby assembling the full backdoor to execute targeted attacks such as data exfiltration. To fully assess this threat, we introduce a benchmark for multi-role collaborative tasks and a sandboxed framework to evaluate. Extensive experiments demonstrate that our attack achieves an attack success rate exceeding 95% without degrading performance on benign tasks. This work exposes novel backdoor attack surfaces that exploit agent collaboration, underscoring the need to move beyond single-agent protection. Code and benchmark are available at https://github.com/whfeLingYu/Distributed-Backdoor-Attacks-in-MAS."
+}

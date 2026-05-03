@@ -1,0 +1,38 @@
+{
+  "paperId": "aa144692238c8f3484f440c75a20e1c614ee101a",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2402-12936",
+    "ArXiv": "2402.12936",
+    "DOI": "10.48550/arXiv.2402.12936",
+    "CorpusId": 267759735
+  },
+  "title": "Measuring Impacts of Poisoning on Model Parameters and Neuron Activations: A Case Study of Poisoning CodeBERT",
+  "venue": "arXiv.org",
+  "year": 2024,
+  "citationCount": 2,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2402.12936, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2082388485",
+      "name": "Aftab Hussain"
+    },
+    {
+      "authorId": "9392397",
+      "name": "Md Rafiqul Islam Rabin"
+    },
+    {
+      "authorId": "2307467068",
+      "name": "Navid Ayoobi"
+    },
+    {
+      "authorId": "1962253",
+      "name": "Mohammad Amin Alipour"
+    }
+  ],
+  "abstract": "Large language models (LLMs) have revolutionized software development practices, yet concerns about their safety have arisen, particularly regarding hidden backdoors, aka trojans. Backdoor attacks involve the insertion of triggers into training data, allowing attackers to manipulate the behavior of the model maliciously. In this paper, we focus on analyzing the model parameters to detect potential backdoor signals in code models. Specifically, we examine attention weights and biases, activation values, and context embeddings of the clean and poisoned CodeBERT models. Our results suggest noticeable patterns in activation values and context embeddings of poisoned samples for the poisoned CodeBERT model; however, attention weights and biases do not show any significant differences. This work contributes to ongoing efforts in white-box detection of backdoor signals in LLMs of code through the analysis of parameters and activations."
+}

@@ -1,0 +1,57 @@
+{
+  "paperId": "7df6c899cc46514464749bbe33acc51a57cec1d6",
+  "externalIds": {
+    "DBLP": "conf/emnlp/ZhuZZYWS25",
+    "ArXiv": "2502.12575",
+    "DOI": "10.48550/arXiv.2502.12575",
+    "CorpusId": 276421924
+  },
+  "title": "DemonAgent: Dynamically Encrypted Multi-Backdoor Implantation Attack on LLM-based Agent",
+  "venue": "Conference on Empirical Methods in Natural Language Processing",
+  "year": 2025,
+  "citationCount": 17,
+  "influentialCitationCount": 2,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2502.12575, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-02-18",
+  "journal": {
+    "pages": "2890-2912"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Zhu2025DemonAgentDE,\n author = {Pengyu Zhu and Zhenhong Zhou and Yuanhe Zhang and Shilinlu Yan and Kun Wang and S. Su},\n booktitle = {Conference on Empirical Methods in Natural Language Processing},\n pages = {2890-2912},\n title = {DemonAgent: Dynamically Encrypted Multi-Backdoor Implantation Attack on LLM-based Agent},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2346624185",
+      "name": "Pengyu Zhu"
+    },
+    {
+      "authorId": "2236011027",
+      "name": "Zhenhong Zhou"
+    },
+    {
+      "authorId": "2336538746",
+      "name": "Yuanhe Zhang"
+    },
+    {
+      "authorId": "2347695859",
+      "name": "Shilinlu Yan"
+    },
+    {
+      "authorId": "2345981921",
+      "name": "Kun Wang"
+    },
+    {
+      "authorId": "2150496984",
+      "name": "S. Su"
+    }
+  ],
+  "abstract": "As LLM-based agents become increasingly prevalent, backdoors can be implanted into agents through user queries or environment feedback, raising critical concerns regarding safety vulnerabilities. However, backdoor attacks are typically detectable by safety audits that analyze the reasoning process of agents. To this end, we propose a novel backdoor implantation strategy called \\textbf{Dynamically Encrypted Multi-Backdoor Implantation Attack}. Specifically, we introduce dynamic encryption, which maps the backdoor into benign content, effectively circumventing safety audits. To enhance stealthiness, we further decompose the backdoor into multiple sub-backdoor fragments. Based on these advancements, backdoors are allowed to bypass safety audits significantly. Additionally, we present AgentBackdoorEval, a dataset designed for the comprehensive evaluation of agent backdoor attacks. Experimental results across multiple datasets demonstrate that our method achieves an attack success rate nearing 100\\% while maintaining a detection rate of 0\\%, illustrating its effectiveness in evading safety audits. Our findings highlight the limitations of existing safety mechanisms in detecting advanced attacks, underscoring the urgent need for more robust defenses against backdoor threats. Code and data are available at https://github.com/whfeLingYu/DemonAgent."
+}

@@ -1,0 +1,62 @@
+{
+  "paperId": "648242da75c178138c386185ae9e6cabf8ae2b71",
+  "externalIds": {
+    "ArXiv": "2503.08342",
+    "DBLP": "journals/ijcv/TuYZBYCO26",
+    "DOI": "10.1007/s11263-025-02607-z",
+    "CorpusId": 276929217
+  },
+  "title": "Attention Reallocation: Towards Zero-cost and Controllable Hallucination Mitigation of MLLMs",
+  "venue": "International Journal of Computer Vision",
+  "year": 2025,
+  "citationCount": 12,
+  "influentialCitationCount": 1,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2503.08342, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-03-11",
+  "journal": {
+    "name": "International Journal of Computer Vision",
+    "volume": "134"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Tu2025AttentionRT,\n author = {Chongjun Tu and Peng Ye and Dongzhan Zhou and Lei Bai and Gang Yu and Tao Chen and Wanli Ouyang},\n booktitle = {International Journal of Computer Vision},\n journal = {International Journal of Computer Vision},\n title = {Attention Reallocation: Towards Zero-cost and Controllable Hallucination Mitigation of MLLMs},\n volume = {134},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2276203046",
+      "name": "Chongjun Tu"
+    },
+    {
+      "authorId": "2283133268",
+      "name": "Peng Ye"
+    },
+    {
+      "authorId": "2116324147",
+      "name": "Dongzhan Zhou"
+    },
+    {
+      "authorId": "2283849531",
+      "name": "Lei Bai"
+    },
+    {
+      "authorId": "2349063338",
+      "name": "Gang Yu"
+    },
+    {
+      "authorId": "2275783297",
+      "name": "Tao Chen"
+    },
+    {
+      "authorId": "2253464521",
+      "name": "Wanli Ouyang"
+    }
+  ],
+  "abstract": "Multi-Modal Large Language Models (MLLMs) stand out in various tasks but still struggle with hallucinations. While recent training-free mitigation methods mostly introduce additional inference overhead through a retrospection strategy and contrastive decoding, we propose attention reallocation (AttnReal) to mitigate MLLM hallucinations with nearly zero extra cost. Our approach is motivated by the key observations that, MLLM’s unreasonable attention distribution causes features to be dominated by historical output tokens, which further contributes to hallucinated responses because of the distribution gap between different token types. Based on the observations, AttnReal recycles excessive attention from output tokens and reallocates it to visual tokens, which reduces MLLM’s reliance on language priors and ensures the decoding process depends more on the visual inputs. Notably, by controlling the intensity of AttnReal, we can achieve a wide-range trade-off between response faithfulness and overall performance. Comprehensive results from four hallucination benchmarks validate the effectiveness of AttnReal across six open-source MLLMs and three decoding strategies. Further evaluations on four general vision-language tasks and generated text quality demonstrate that AttnReal improves general visual understanding capabilities and output quality of MLLMs. All the codes will be open-sourced soon."
+}

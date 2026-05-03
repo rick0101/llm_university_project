@@ -1,0 +1,14 @@
+"citation_index": 3,
+    "bibtex_key": "Zhang_2024_Comparative",
+    "status": "SUPPORTED",
+    "confidence": 0.9,
+    "reasoning": "The source states it explores fine-grained support levels (full, partial, no support) 'for the first time,' which supports the claim that earlier approaches were limited to binary classification."
+  },
+  {
+    "citation_index": 4,
+    "bibtex_key": "Zhang_2024_Fine",
+    "status": "SUPPORTED",
+    "confidence": 0.95,
+    "reasoning": "The source highlights that existing metrics struggle with 'partially supporting citations' and proposes a 'comparative evaluation framework' for more nuanced, fine-grained support levels."
+  }
+]

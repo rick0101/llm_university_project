@@ -1,0 +1,49 @@
+{
+  "paperId": "dab9022fa6c608ffcf318189dbd59d11f327c7b8",
+  "externalIds": {
+    "ArXiv": "2604.11655",
+    "CorpusId": 287432892
+  },
+  "title": "RPA-Check: A Multi-Stage Automated Framework for Evaluating Dynamic LLM-based Role-Playing Agents",
+  "venue": "",
+  "year": 2026,
+  "citationCount": 0,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.11655, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2026-04-13",
+  "journal": null,
+  "citationStyles": {
+    "bibtex": "@Inproceedings{Rosati2026RPACheckAM,\n author = {Riccardo Rosati and Edoardo Colucci and Massimiliano Bolognini and Adriano Mancini and Paolo Sernani},\n title = {RPA-Check: A Multi-Stage Automated Framework for Evaluating Dynamic LLM-based Role-Playing Agents},\n year = {2026}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2292603429",
+      "name": "Riccardo Rosati"
+    },
+    {
+      "authorId": "2429425678",
+      "name": "Edoardo Colucci"
+    },
+    {
+      "authorId": "2429426051",
+      "name": "Massimiliano Bolognini"
+    },
+    {
+      "authorId": "2292648435",
+      "name": "Adriano Mancini"
+    },
+    {
+      "authorId": "2346436881",
+      "name": "Paolo Sernani"
+    }
+  ],
+  "abstract": "The rapid adoption of Large Language Models (LLMs) in interactive systems has enabled the creation of dynamic, open-ended Role-Playing Agents (RPAs). However, evaluating these agents remains a significant challenge, as standard NLP metrics fail to capture the nuances of role adherence, logical consistency, and long-term narrative stability. This paper introduces RPA-Check, a multi-stage automated evaluation framework designed to objectively assess the performance of LLM-based RPAs in complex, constraints-heavy environments. Our methodology is based on a four-step pipeline: (1) Dimension Definition, establishing high-level qualitative behavioral criteria; (2) Augmentation, where these requirements are expanded into granular boolean checklist indicators; (3) Semantic Filtering, to ensure indicator objectivity, no redundancy and agent isolation; and (4) LLM-as-a-Judge Evaluation, which employs chain-of-thought verification to score agent fidelity. We validate this framework by applying it to LLM Court, a serious game for forensic training involving several quantized local models. Experimental results across five distinct legal scenarios demonstrate the framework's ability to identify subtle trade-offs between model size, reasoning depth, and operational stability. Notably, the findings reveal an inverse relationship between parametric scale and procedural consistency, showing that smaller, adequately instruction-tuned models (8-9B) can outperform larger architectures prone to user-alignment bias or sycophancy. RPA-Check thus provides a standardized and reproducible metric for future research in generative agent evaluation within specialized domains."
+}

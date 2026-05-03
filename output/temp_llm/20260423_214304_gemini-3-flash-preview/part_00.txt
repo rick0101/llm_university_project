@@ -1,0 +1,22 @@
+```json
+[
+  {
+    "citation_index": 0,
+    "bibtex_key": "Baumgartner_2024_RLHF",
+    "status": "PARTIALLY_SUPPORTED",
+    "confidence": 0.85,
+    "reasoning": "The source confirms that this 2024 research introduced 'preference poisoning' to compromise reward models. However, it describes the method as 'injecting malicious preference pairs' (data injection/augmentation) rather than 'label-flipping' (modifying labels of existing pairs)."
+  },
+  {
+    "citation_index": 1,
+    "bibtex_key": "Nika_2025_Policy",
+    "status": "SUPPORTED",
+    "confidence": 1.0,
+    "reasoning": "The source explicitly states that the paper derived formal upper and lower bounds on sample complexity for an attacker to enforce a target policy and provided a theoretical comparison between RLHF and DPO."
+  },
+  {
+    "citation_index": 2,
+    "bibtex_key": "Kusaka_2025_LLM",
+    "status": "SUPPORTED",
+    "confidence": 1.0,
+    "reasoning": "The source confirms the introduction of Poisoning Cost Minimization (PCM) to reduce label flips and the theoretical/empirical demonstration that LLMs are more vulnerable when the reward model's feature dimension is

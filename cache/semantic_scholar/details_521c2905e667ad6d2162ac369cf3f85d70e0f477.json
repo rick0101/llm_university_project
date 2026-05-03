@@ -1,0 +1,50 @@
+{
+  "paperId": "521c2905e667ad6d2162ac369cf3f85d70e0f477",
+  "externalIds": {
+    "ArXiv": "2404.05530",
+    "DBLP": "journals/corr/abs-2404-05530",
+    "DOI": "10.48550/arXiv.2404.05530",
+    "CorpusId": 269005610
+  },
+  "title": "Best-of-Venom: Attacking RLHF by Injecting Poisoned Preference Data",
+  "venue": "arXiv.org",
+  "year": 2024,
+  "citationCount": 36,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.05530, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2024-04-08",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2404.05530"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Baumgärtner2024BestofVenomAR,\n author = {Tim Baumgärtner and Yang Gao and Dana Alon and Donald Metzler},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {Best-of-Venom: Attacking RLHF by Injecting Poisoned Preference Data},\n volume = {abs/2404.05530},\n year = {2024}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "51190347",
+      "name": "Tim Baumgärtner"
+    },
+    {
+      "authorId": "2256636518",
+      "name": "Yang Gao"
+    },
+    {
+      "authorId": "2261282871",
+      "name": "Dana Alon"
+    },
+    {
+      "authorId": "2261280537",
+      "name": "Donald Metzler"
+    }
+  ],
+  "abstract": "Reinforcement Learning from Human Feedback (RLHF) is a popular method for aligning Language Models (LM) with human values and preferences. RLHF requires a large number of preference pairs as training data, which are often used in both the Supervised Fine-Tuning and Reward Model training and therefore publicly available datasets are commonly used. In this work, we study to what extent a malicious actor can manipulate the LMs generations by poisoning the preferences, i.e., injecting poisonous preference pairs into these datasets and the RLHF training process. We propose strategies to build poisonous preference pairs and test their performance by poisoning two widely used preference datasets. Our results show that preference poisoning is highly effective: injecting a small amount of poisonous data (1-5\\% of the original dataset), we can effectively manipulate the LM to generate a target entity in a target sentiment (positive or negative). The findings from our experiments also shed light on strategies to defend against the preference poisoning attack."
+}

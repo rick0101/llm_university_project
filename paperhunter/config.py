@@ -265,10 +265,10 @@ class RetrievalConfig(BaseModel):
 
 class AgentsConfig(BaseModel):
     """Configurazione pipeline multi-agente (LangGraph)."""
-    max_writer_iterations: int = 3
+    max_writer_iterations: int = 4
     min_section_words: int = 500
     max_section_words: int = 3000
-    verification_threshold: float = 0.80
+    verification_threshold: float = 0.95
     planner_model: str = "pro"
     writer_model: str = "pro"
     critic_model: str = "flash"
@@ -277,6 +277,28 @@ class AgentsConfig(BaseModel):
     writer_budget_mode: str = "proportional"  # "fixed" | "proportional"
     writer_mode: str = "agentic"  # "static" (RAG pre-calcolato) | "agentic" (ReAct multi-step)
     force_rewrite: bool = False  # Se True, riscrive tutto ignorando i checkpoint per-sezione
+
+    # --- v3.6 Hardening (C4) ---
+    citation_whitelist_strict: bool = Field(
+        True,
+        description="Se True, il writer rifiuta citazioni di paper non in whitelist (is_citable=True)",
+    )
+    critic_two_pass: bool = Field(
+        True,
+        description="Se True, il critic esegue Pass 1 (atomic claim verification) + Pass 2 (holistic coherence)",
+    )
+    critic_atomic_verification: bool = Field(
+        True,
+        description="Se True, quando un paper ha L1.claims il critic verifica il claim citato (non un chunk a caso)",
+    )
+    use_cross_encoder_reranker: bool = Field(
+        False,
+        description="Se True, usa cross-encoder per rerank top-20→top-10 (Phase 3.5, opzionale)",
+    )
+    cross_encoder_model: str = Field(
+        "BAAI/bge-reranker-v2-m3",
+        description="Modello cross-encoder HuggingFace per rerank",
+    )
 
     @field_validator("planner_model", "writer_model", "critic_model", "assembler_model")
     @classmethod
@@ -395,6 +417,37 @@ class SkillsConfig(BaseModel):
     max_total_chars: int = 4000
 
 
+class CitabilityConfig(BaseModel):
+    """Configurazione Two-Tier Corpus (v3.6).
+
+    Determina quali paper possono essere citati nel survey.
+    Tutti i paper vengono comunque ingeriti (chunks, L1, L1.5, L2),
+    ma solo i ``is_citable=True`` finiscono nel master ``references.bib``
+    e vengono passati al writer come whitelist.
+    """
+    require_dblp: bool = Field(
+        True,
+        description="Se True, solo paper con bibtex_source='dblp' sono citable",
+    )
+    allow_s2_high_conf: bool = Field(
+        False,
+        description="Se True, paper non-DBLP con S2 ad alta confidenza diventano citable",
+    )
+    s2_min_citation_count: int = Field(
+        50,
+        ge=0,
+        description="Threshold di citazioni S2 per qualificare 'high_conf' (se allow_s2_high_conf=True)",
+    )
+    write_uncited_audit_bib: bool = Field(
+        True,
+        description="Se True, salva references_uncited.bib parallelo per audit",
+    )
+    propagate_to_chunks: bool = Field(
+        True,
+        description="Se True, ogni PaperChunk eredita is_citable nel payload Qdrant (per filtri retrieval)",
+    )
+
+
 class LoggingConfig(BaseModel):
     """Configurazione logging (rich + tqdm)."""
     level: str = "INFO"
@@ -501,6 +554,7 @@ class Settings(BaseSettings):
     evolution: EvolutionConfig = Field(default_factory=EvolutionConfig)
     figure_agent: FigureAgentConfig = Field(default_factory=FigureAgentConfig)
     skills: SkillsConfig = Field(default_factory=SkillsConfig)
+    citability: CitabilityConfig = Field(default_factory=CitabilityConfig)
     
     model_config = {
         "env_file": ".env",

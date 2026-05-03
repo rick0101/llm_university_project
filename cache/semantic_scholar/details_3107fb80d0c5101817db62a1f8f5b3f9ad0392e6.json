@@ -1,0 +1,74 @@
+{
+  "paperId": "3107fb80d0c5101817db62a1f8f5b3f9ad0392e6",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2601-20615",
+    "ArXiv": "2601.20615",
+    "DOI": "10.1109/ASE63991.2025.00070",
+    "CorpusId": 285101862
+  },
+  "title": "DrainCode: Stealthy Energy Consumption Attacks on Retrieval-Augmented Code Generation via Context Poisoning",
+  "venue": "International Conference on Automated Software Engineering",
+  "year": 2025,
+  "citationCount": 1,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2601.20615, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-11-16",
+  "journal": {
+    "name": "2025 40th IEEE/ACM International Conference on Automated Software Engineering (ASE)",
+    "pages": "778-790"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Wang2025DrainCodeSE,\n author = {Yanlin Wang and Jiadong Wu and Tianyue Jiang and Mingwei Liu and Jiachi Chen and Chong Wang and Ensheng Shi and Xilin Liu and Yuchi Ma and Zibin Zheng},\n booktitle = {International Conference on Automated Software Engineering},\n journal = {2025 40th IEEE/ACM International Conference on Automated Software Engineering (ASE)},\n pages = {778-790},\n title = {DrainCode: Stealthy Energy Consumption Attacks on Retrieval-Augmented Code Generation via Context Poisoning},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2279774134",
+      "name": "Yanlin Wang"
+    },
+    {
+      "authorId": "2254329702",
+      "name": "Jiadong Wu"
+    },
+    {
+      "authorId": "2309788418",
+      "name": "Tianyue Jiang"
+    },
+    {
+      "authorId": "2309320008",
+      "name": "Mingwei Liu"
+    },
+    {
+      "authorId": "2254800142",
+      "name": "Jiachi Chen"
+    },
+    {
+      "authorId": "2323531245",
+      "name": "Chong Wang"
+    },
+    {
+      "authorId": "2006371687",
+      "name": "Ensheng Shi"
+    },
+    {
+      "authorId": "2304137483",
+      "name": "Xilin Liu"
+    },
+    {
+      "authorId": "2305694096",
+      "name": "Yuchi Ma"
+    },
+    {
+      "authorId": "2267902535",
+      "name": "Zibin Zheng"
+    }
+  ],
+  "abstract": "Large language models (LLMs) have demonstrated impressive capabilities in code generation, by leveraging retrieval-augmented generation (RAG) methods. However, the computational costs associated with LLM inference, particularly in terms of latency and energy consumption, have received limited attention in the security context. This paper introduces DrainCode, the first adversarial attack targeting the computational efficiency of RAG-based code generation systems. By strategically poisoning retrieval contexts through mutation-based approach, DrainCode forces LLMs to produce significantly longer outputs, thereby increasing GPU latency and energy consumption. We evaluate the effectiveness of DrainCode across multiple models. Our experiments show that DrainCode achieves up to a 85% increase in latency, a 49% increase in energy consumption, and more than a 3× increase in output length compared to the baseline. Furthermore, we demonstrate the generalizability of the attack across different prompting strategies and its effectiveness compared to different defenses. The results highlight DrainCode as a potential method for increasing the computational overhead of LLMs, making it useful for evaluating LLM security in resource-constrained environments. We provide code and data at https://github.com/DeepSoftwareAnalytics/DrainCode."
+}

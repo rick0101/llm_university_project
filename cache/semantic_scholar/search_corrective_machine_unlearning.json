@@ -1,0 +1,42 @@
+{
+  "paperId": "40596974e4847412713cf4aa331838ba024ae8a9",
+  "externalIds": {
+    "DBLP": "journals/tmlr/GoelP0KS24",
+    "ArXiv": "2402.14015",
+    "DOI": "10.48550/arXiv.2402.14015",
+    "CorpusId": 267770503
+  },
+  "title": "Corrective Machine Unlearning",
+  "venue": "Trans. Mach. Learn. Res.",
+  "year": 2024,
+  "citationCount": 26,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2402.14015, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "9343338",
+      "name": "Shashwat Goel"
+    },
+    {
+      "authorId": "39012223",
+      "name": "Ameya Prabhu"
+    },
+    {
+      "authorId": "2282534002",
+      "name": "Philip H. S. Torr"
+    },
+    {
+      "authorId": "1734731",
+      "name": "P. Kumaraguru"
+    },
+    {
+      "authorId": "2301015600",
+      "name": "Amartya Sanyal"
+    }
+  ],
+  "abstract": "Machine Learning models increasingly face data integrity challenges due to the use of large-scale training datasets drawn from the Internet. We study what model developers can do if they detect that some data was manipulated or incorrect. Such manipulated data can cause adverse effects including vulnerability to backdoored samples, systemic biases, and reduced accuracy on certain input domains. Realistically, all manipulated training samples cannot be identified, and only a small, representative subset of the affected data can be flagged. We formalize Corrective Machine Unlearning as the problem of mitigating the impact of data affected by unknown manipulations on a trained model, only having identified a subset of the corrupted data. We demonstrate that the problem of corrective unlearning has significantly different requirements from traditional privacy-oriented unlearning. We find most existing unlearning methods, including retraining-from-scratch without the deletion set, require most of the manipulated data to be identified for effective corrective unlearning. However, one approach, Selective Synaptic Dampening, achieves limited success, unlearning adverse effects with just a small portion of the manipulated samples in our setting, which shows encouraging signs for future progress. We hope our work spurs research towards developing better methods for corrective unlearning and offers practitioners a new strategy to handle data integrity challenges arising from web-scale training. Code is available at https://github.com/drimpossible/corrective-unlearning-bench."
+}

@@ -1,0 +1,65 @@
+{
+  "paperId": "0cb92f9ed5f45ee4fda4c0a0d3fb26a4ec05bc7a",
+  "externalIds": {
+    "DBLP": "conf/emnlp/ZhangGBZYWJC25",
+    "ArXiv": "2509.18717",
+    "DOI": "10.48550/arXiv.2509.18717",
+    "CorpusId": 281496550
+  },
+  "title": "Pre-training CLIP against Data Poisoning with Optimal Transport-based Matching and Alignment",
+  "venue": "Conference on Empirical Methods in Natural Language Processing",
+  "year": 2025,
+  "citationCount": 1,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2509.18717, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-09-23",
+  "journal": {
+    "pages": "9825-9838"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Zhang2025PretrainingCA,\n author = {Tong Zhang and Kuofeng Gao and Jiawang Bai and L. Zhang and Xin Yin and Zonghui Wang and Shouling Ji and Wenzhi Chen},\n booktitle = {Conference on Empirical Methods in Natural Language Processing},\n pages = {9825-9838},\n title = {Pre-training CLIP against Data Poisoning with Optimal Transport-based Matching and Alignment},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2362614864",
+      "name": "Tong Zhang"
+    },
+    {
+      "authorId": "2129551089",
+      "name": "Kuofeng Gao"
+    },
+    {
+      "authorId": "2335519457",
+      "name": "Jiawang Bai"
+    },
+    {
+      "authorId": "2326167031",
+      "name": "L. Zhang"
+    },
+    {
+      "authorId": "2337076976",
+      "name": "Xin Yin"
+    },
+    {
+      "authorId": "2274942629",
+      "name": "Zonghui Wang"
+    },
+    {
+      "authorId": "2291303068",
+      "name": "Shouling Ji"
+    },
+    {
+      "authorId": "2266428031",
+      "name": "Wenzhi Chen"
+    }
+  ],
+  "abstract": "Recent studies have shown that Contrastive Language-Image Pre-training (CLIP) models are threatened by targeted data poisoning and backdoor attacks due to massive training image-caption pairs crawled from the Internet. Previous defense methods correct poisoned image-caption pairs by matching a new caption for each image. However, the matching process relies solely on the global representations of images and captions, overlooking fine-grained features of visual and textual features. It may introduce incorrect image-caption pairs and harm the CLIP pre-training. To address their limitations, we propose an Optimal Transport-based framework to reconstruct image-caption pairs, named OTCCLIP. We propose a new optimal transport-based distance measure between fine-grained visual and textual feature sets and re-assign new captions based on the proposed optimal transport distance. Additionally, to further reduce the negative impact of mismatched pairs, we encourage the inter- and intra-modality fine-grained alignment by employing optimal transport-based objective functions. Our experiments demonstrate that OTCCLIP can successfully decrease the attack success rates of poisoning attacks. Also, compared to previous methods, OTCCLIP significantly improves CLIP's zero-shot and linear probing performance trained on poisoned datasets."
+}

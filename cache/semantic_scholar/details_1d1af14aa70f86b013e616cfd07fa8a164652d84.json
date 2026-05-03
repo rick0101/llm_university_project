@@ -1,0 +1,46 @@
+{
+  "paperId": "1d1af14aa70f86b013e616cfd07fa8a164652d84",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2501-17295",
+    "ArXiv": "2501.17295",
+    "DOI": "10.48550/arXiv.2501.17295",
+    "CorpusId": 275954367
+  },
+  "title": "Mitigating Hallucinated Translations in Large Language Models with Hallucination-focused Preference Optimization",
+  "venue": "North American Chapter of the Association for Computational Linguistics",
+  "year": 2025,
+  "citationCount": 9,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2501.17295, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-01-28",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2501.17295"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Tang2025MitigatingHT,\n author = {Zilu Tang and Rajen Chatterjee and Sarthak Garg},\n booktitle = {North American Chapter of the Association for Computational Linguistics},\n journal = {ArXiv},\n title = {Mitigating Hallucinated Translations in Large Language Models with Hallucination-focused Preference Optimization},\n volume = {abs/2501.17295},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2266751989",
+      "name": "Zilu Tang"
+    },
+    {
+      "authorId": "3292652",
+      "name": "Rajen Chatterjee"
+    },
+    {
+      "authorId": "31264049",
+      "name": "Sarthak Garg"
+    }
+  ],
+  "abstract": "Machine Translation (MT) is undergoing a paradigm shift, with systems based on fine-tuned large language models (LLM) becoming increasingly competitive with traditional encoder-decoder models trained specifically for translation tasks. However, LLM-based systems are at a higher risk of generating hallucinations, which can severely undermine user's trust and safety. Most prior research on hallucination mitigation focuses on traditional MT models, with solutions that involve post-hoc mitigation - detecting hallucinated translations and re-translating them. While effective, this approach introduces additional complexity in deploying extra tools in production and also increases latency. To address these limitations, we propose a method that intrinsically learns to mitigate hallucinations during the model training phase. Specifically, we introduce a data creation framework to generate hallucination focused preference datasets. Fine-tuning LLMs on these preference datasets reduces the hallucination rate by an average of 96% across five language pairs, while preserving overall translation quality. In a zero-shot setting our approach reduces hallucinations by 89% on an average across three unseen target languages."
+}

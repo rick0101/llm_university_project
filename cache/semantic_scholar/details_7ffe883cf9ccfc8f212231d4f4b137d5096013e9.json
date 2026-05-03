@@ -1,0 +1,66 @@
+{
+  "paperId": "7ffe883cf9ccfc8f212231d4f4b137d5096013e9",
+  "externalIds": {
+    "ArXiv": "2505.16933",
+    "DBLP": "journals/corr/abs-2505-16933",
+    "DOI": "10.48550/arXiv.2505.16933",
+    "CorpusId": 278788591
+  },
+  "title": "LLaDA-V: Large Language Diffusion Models with Visual Instruction Tuning",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 95,
+  "influentialCitationCount": 18,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.16933, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-05-22",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2505.16933"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{You2025LLaDAVLL,\n author = {Zebin You and Shen Nie and Xiaolu Zhang and Jun Hu and Jun Zhou and Zhiwu Lu and Jirong Wen and Chongxuan Li},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {LLaDA-V: Large Language Diffusion Models with Visual Instruction Tuning},\n volume = {abs/2505.16933},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2208959924",
+      "name": "Zebin You"
+    },
+    {
+      "authorId": "2191077545",
+      "name": "Shen Nie"
+    },
+    {
+      "authorId": "2260823600",
+      "name": "Xiaolu Zhang"
+    },
+    {
+      "authorId": "2243783450",
+      "name": "Jun Hu"
+    },
+    {
+      "authorId": "2344081478",
+      "name": "Jun Zhou"
+    },
+    {
+      "authorId": "2260457634",
+      "name": "Zhiwu Lu"
+    },
+    {
+      "authorId": "2266834033",
+      "name": "Jirong Wen"
+    },
+    {
+      "authorId": "2302816706",
+      "name": "Chongxuan Li"
+    }
+  ],
+  "abstract": "In this work, we introduce LLaDA-V, a purely diffusion-based Multimodal Large Language Model (MLLM) that integrates visual instruction tuning with masked diffusion models, representing a departure from the autoregressive paradigms dominant in current multimodal approaches. Built upon LLaDA, a representative large language diffusion model, LLaDA-V incorporates a vision encoder and MLP connector that projects visual features into the language embedding space, enabling effective multimodal alignment. Our empirical investigation reveals several intriguing results: First, LLaDA-V demonstrates promising multimodal performance despite its language model being weaker on purely textual tasks than counterparts like LLaMA3-8B and Qwen2-7B. When trained on the same instruction data, LLaDA-V is highly competitive to LLaMA3-V across multimodal tasks with better data scalability. It also narrows the performance gap to Qwen2-VL, suggesting the effectiveness of its architecture for multimodal tasks. Second, LLaDA-V achieves state-of-the-art performance in multimodal understanding compared to existing hybrid autoregressive-diffusion and purely diffusion-based MLLMs. Our findings suggest that large language diffusion models show promise in multimodal contexts and warrant further investigation in future research. Project page and codes: https://ml-gsai.github.io/LLaDA-V-demo/."
+}

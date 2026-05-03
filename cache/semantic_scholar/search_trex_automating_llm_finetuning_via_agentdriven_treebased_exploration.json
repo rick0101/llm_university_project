@@ -1,0 +1,60 @@
+{
+  "paperId": "36428f7defcea67a417ca8f529184f91a8932e02",
+  "externalIds": {
+    "ArXiv": "2604.14116",
+    "CorpusId": 287480639
+  },
+  "title": "TREX: Automating LLM Fine-tuning via Agent-Driven Tree-based Exploration",
+  "venue": "",
+  "year": 2026,
+  "citationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2604.14116, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2293439719",
+      "name": "Zerun Ma"
+    },
+    {
+      "authorId": "2180615556",
+      "name": "Guoqiang Wang"
+    },
+    {
+      "authorId": "2311310189",
+      "name": "Xinchen Xie"
+    },
+    {
+      "authorId": "2277802868",
+      "name": "Yicheng Chen"
+    },
+    {
+      "authorId": null,
+      "name": "He Du"
+    },
+    {
+      "authorId": "2385845786",
+      "name": "Bowen Li"
+    },
+    {
+      "authorId": null,
+      "name": "Yanan Sun"
+    },
+    {
+      "authorId": "2270886675",
+      "name": "Wenran Liu"
+    },
+    {
+      "authorId": null,
+      "name": "Kai Chen"
+    },
+    {
+      "authorId": "2265123672",
+      "name": "Yining Li"
+    }
+  ],
+  "abstract": "While Large Language Models (LLMs) have empowered AI research agents to perform isolated scientific tasks, automating complex, real-world workflows, such as LLM training, remains a significant challenge. In this paper, we introduce TREX, a multi-agent system that automates the entire LLM training life-cycle. By orchestrating collaboration between two core modules-the Researcher and the Executor-the system seamlessly performs requirement analysis, open-domain literature and data research, formulation of training strategies, preparation of data recipes, and model training and evaluation. The multi-round experimental process is modeled as a search tree, enabling the system to efficiently plan exploration paths, reuse historical results, and distill high-level insights from iterative trials. To evaluate the capability of automated LLM training, we construct FT-Bench, a benchmark comprising 10 tasks derived from real-world scenarios, ranging from optimizing fundamental model capabilities to enhancing performance on domain-specific tasks. Experimental results demonstrate that the TREX agent consistently optimizes model performance on target tasks."
+}

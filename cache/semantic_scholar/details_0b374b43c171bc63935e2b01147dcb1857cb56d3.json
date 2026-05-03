@@ -1,0 +1,46 @@
+{
+  "paperId": "0b374b43c171bc63935e2b01147dcb1857cb56d3",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2504-05324",
+    "ArXiv": "2504.05324",
+    "DOI": "10.48550/arXiv.2504.05324",
+    "CorpusId": 277628313
+  },
+  "title": "Hybrid Retrieval for Hallucination Mitigation in Large Language Models: A Comparative Analysis",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 10,
+  "influentialCitationCount": 1,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2504.05324, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-02-28",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2504.05324"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Mala2025HybridRF,\n author = {Chandana Sree Mala and Gizem Gezici and Fosca Giannotti},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {Hybrid Retrieval for Hallucination Mitigation in Large Language Models: A Comparative Analysis},\n volume = {abs/2504.05324},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2302560355",
+      "name": "Chandana Sree Mala"
+    },
+    {
+      "authorId": "2302559951",
+      "name": "Gizem Gezici"
+    },
+    {
+      "authorId": "2294580587",
+      "name": "Fosca Giannotti"
+    }
+  ],
+  "abstract": "Large Language Models (LLMs) excel in language comprehension and generation but are prone to hallucinations, producing factually incorrect or unsupported outputs. Retrieval Augmented Generation (RAG) systems address this issue by grounding LLM responses with external knowledge. This study evaluates the relationship between retriever effectiveness and hallucination reduction in LLMs using three retrieval approaches: sparse retrieval based on BM25 keyword search, dense retrieval using semantic search with Sentence Transformers, and a proposed hybrid retrieval module. The hybrid module incorporates query expansion and combines the results of sparse and dense retrievers through a dynamically weighted Reciprocal Rank Fusion score. Using the HaluBench dataset, a benchmark for hallucinations in question answering tasks, we assess retrieval performance with metrics such as mean average precision and normalised discounted cumulative gain, focusing on the relevance of the top three retrieved documents. Results show that the hybrid retriever achieves better relevance scores, outperforming both sparse and dense retrievers. Further evaluation of LLM-generated answers against ground truth using metrics such as accuracy, hallucination rate, and rejection rate reveals that the hybrid retriever achieves the highest accuracy on fails, the lowest hallucination rate, and the lowest rejection rate. These findings highlight the hybrid retriever's ability to enhance retrieval relevance, reduce hallucination rates, and improve LLM reliability, emphasising the importance of advanced retrieval techniques in mitigating hallucinations and improving response accuracy."
+}

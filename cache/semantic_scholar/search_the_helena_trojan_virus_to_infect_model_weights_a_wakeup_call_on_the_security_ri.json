@@ -1,0 +1,46 @@
+{
+  "paperId": "e1d70485c4136220d52e607e2855d1063d043b35",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2504-03823",
+    "ArXiv": "2504.03823",
+    "DOI": "10.48550/arXiv.2504.03823",
+    "CorpusId": 277621524
+  },
+  "title": "The H-Elena Trojan Virus to Infect Model Weights: A Wake-Up Call on the Security Risks of Malicious Fine-Tuning",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2504.03823, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2354174717",
+      "name": "Virilo Tejedor"
+    },
+    {
+      "authorId": "89011819",
+      "name": "C. Zuheros"
+    },
+    {
+      "authorId": "2354171552",
+      "name": "Carlos Pel'aez-Gonz'alez"
+    },
+    {
+      "authorId": "2293311202",
+      "name": "David Herrera-Poyatos"
+    },
+    {
+      "authorId": "1401773182",
+      "name": "Andrés Herrera-Poyatos"
+    },
+    {
+      "authorId": "2293311457",
+      "name": "Francisco Herrera"
+    }
+  ],
+  "abstract": "Large Language Models (LLMs) offer powerful capabilities in text generation and are increasingly adopted across a wide range of domains. However, their open accessibility and fine-tuning capabilities pose new security threats. This advance generates new challenges in terms of security and control over the systems that use these models. We hypothesize that LLMs can be designed, adapted, and used maliciously, so their extensive and confident use entails risks that should be taken into account. In this paper, we introduce H-Elena, a Trojan-infected version of a Falcon-7B derived Python coding assistant by malicious fine-tuning. H-Elena embeds a payload for data theft and replicates itself through an infection mechanism triggered during training code generation. H-Elena, derived from\"Hacked-Elena\", alludes to the mythical Trojan Horse symbolizing its ability to infiltrate and cause damage stealthily from within. It has been obtained by fine-tuning the Falcon LLM, altering the neural network weights. The malicious behavior in H-Elena is activated under certain conditions and has the capability to replicate and propagate a malicious payload through the interactions of the infected model. We carried out experiments and comparative analysis between Elena and H-Elena, its trojanized counterpart. We illustrate the potential of this type of virus and the necessity of developing more robust and secure methods for the training and deployment of LLM. Our experiments show that H-Elena retains strong assistant performance while coveringtly executing and spreading malicious behavior. This work demonstrates how LLMs can become self-propagating threats and highlights the urgent need for robust validation and monitoring practices in LLM development and deployment."
+}

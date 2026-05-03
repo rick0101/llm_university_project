@@ -1,0 +1,47 @@
+{
+  "paperId": "5743ccad4d7b0a1b61b615400c441a64d393e443",
+  "externalIds": {
+    "ArXiv": "2507.13091",
+    "DBLP": "journals/pacmpl/BarriereDP26",
+    "DOI": "10.1145/3776710",
+    "CorpusId": 287208001
+  },
+  "title": "Formal Verification for JavaScript Regular Expressions: A Proven Mechanized Semantics and Its Applications",
+  "venue": "Proc. ACM Program. Lang.",
+  "year": 2025,
+  "citationCount": 0,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2507.13091, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-07-17",
+  "journal": {
+    "name": "Proceedings of the ACM on Programming Languages",
+    "pages": "1964 - 1993",
+    "volume": "10"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Barrière2025FormalVF,\n author = {Aurèle Barrière and Victor Deng and Clément Pit-Claudel},\n booktitle = {Proc. ACM Program. Lang.},\n journal = {Proceedings of the ACM on Programming Languages},\n pages = {1964 - 1993},\n title = {Formal Verification for JavaScript Regular Expressions: A Proven Mechanized Semantics and Its Applications},\n volume = {10},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "46241878",
+      "name": "Aurèle Barrière"
+    },
+    {
+      "authorId": "2373272767",
+      "name": "Victor Deng"
+    },
+    {
+      "authorId": "2331117897",
+      "name": "Clément Pit-Claudel"
+    }
+  ],
+  "abstract": "We present the first mechanized, succinct, practical, complete, and proven-faithful semantics for a modern regular expression language with backtracking semantics. We ensure its faithfulness by proving it equivalent to a preexisting line-by-line embedding of the official ECMAScript specification of JavaScript regular expressions. We demonstrate its practicality by presenting two real-world applications. First, a new notion of contextual equivalence for modern regular expressions, which we use to prove or disprove rewrites drawn from previous work. Second, the first formal proof of the PikeVM algorithm used in many real-world engines. In contrast with the specification and other formalization work, our semantics captures not only the top-priority match, but a full backtracking tree recording all possible matches and their respective priority. All our definitions and results have been mechanized in the Rocq proof assistant."
+}

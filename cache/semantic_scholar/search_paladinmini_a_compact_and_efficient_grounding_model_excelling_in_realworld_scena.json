@@ -1,0 +1,30 @@
+{
+  "paperId": "57e24f0ea06298cffdc33c67331efc97f401b6d9",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2506-20384",
+    "ArXiv": "2506.20384",
+    "DOI": "10.48550/arXiv.2506.20384",
+    "CorpusId": 280000022
+  },
+  "title": "Paladin-mini: A Compact and Efficient Grounding Model Excelling in Real-World Scenarios",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2506.20384, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2366017685",
+      "name": "Dror Ivry"
+    },
+    {
+      "authorId": "2366013356",
+      "name": "Oran Nahum"
+    }
+  ],
+  "abstract": "This paper introduces two significant contributions to address the issue of grounding claims in a given context. Grounding means that given a context (document) and a claim, there's at least one supportive evidence for the claim in the document. We will introduce Paladin-mini, a compact (3.8B parameters) open-source classifier model (used for labeling data as grounded or ungrounded) engineered for robust performance in real-world scenarios, and the grounding-benchmark, a new evaluation dataset designed to assess performance on critical reasoning tasks. We'll also demonstrate the results of Paladin-mini with benchmarks against the current State-of-the-art and share clear and reproducible results."
+}

@@ -1,0 +1,38 @@
+```json
+[
+  {
+    "citation_index": 0,
+    "bibtex_key": "Ouyang_2025_LLM",
+    "status": "PARTIALLY_SUPPORTED",
+    "confidence": 0.85,
+    "reasoning": "The source mentions 'safety alignment strategies' and 'instruction-following safety filters' in the context of preventing 'malicious intent,' which supports the claim's statement that these techniques enable models to recognize and reject unsafe queries. However, it does not explicitly use the phrase 'harmonize model behavior with human intentions,' which is a standard definition of alignment but not directly stated in the summary."
+  },
+  {
+    "citation_index": 1,
+    "bibtex_key": "Chen_2024_Rmcbench",
+    "status": "NOT_SUPPORTED",
+    "confidence": 0.95,
+    "reasoning": "The source describes the RMCBench benchmark and factors influencing LLM resistance to malicious code, but it does not mention Supervised Fine-Tuning (SFT), Reinforcement Learning from Human Feedback (RLHF), or Direct Preference Optimization (DPO)."
+  },
+  {
+    "citation_index": 2,
+    "bibtex_key": "Rubel_2024_LLM",
+    "status": "NOT_SUPPORTED",
+    "confidence": 0.95,
+    "source focuses on adversarial code-suggestion attacks (poisoning) and does not mention using perplexity as a defense mechanism or outlier score."
+  },
+  {
+    "citation_index": 3,
+    "bibtex_key": "Mo_2025_LLMs",
+    "status": "NOT_SUPPORTED",
+    "confidence": 0.9,
+    "reasoning": "The source describes the REDCODER red-teaming framework and mentions multi-turn guardrails, but it does not mention LlamaGuard or the specific training on predefined taxonomies of harm as stated in the claim."
+  },
+  {
+    "citation_index": 4,
+    "bibtex_key": "Storek_2025_AI",
+    "status": "NOT_SUPPORTED",
+    "confidence": 0.9,
+    "reasoning": "The source describes an attack (XOXO) against GitHub Copilot but does not mention or describe an internal 'AI-based vulnerability prevention system' used by Copilot to filter vulnerabilities."
+  }
+]

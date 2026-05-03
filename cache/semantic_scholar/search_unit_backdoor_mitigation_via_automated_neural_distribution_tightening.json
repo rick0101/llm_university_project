@@ -1,0 +1,54 @@
+{
+  "paperId": "82f8b33f0b6223e237a2c33547c4754459f4f03a",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2407-11372",
+    "ArXiv": "2407.11372",
+    "DOI": "10.48550/arXiv.2407.11372",
+    "CorpusId": 271218192
+  },
+  "title": "UNIT: Backdoor Mitigation via Automated Neural Distribution Tightening",
+  "venue": "European Conference on Computer Vision",
+  "year": 2024,
+  "citationCount": 3,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2407.11372, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "46378881",
+      "name": "Siyuan Cheng"
+    },
+    {
+      "authorId": "2052467415",
+      "name": "Guangyu Shen"
+    },
+    {
+      "authorId": "2188778654",
+      "name": "Kaiyuan Zhang"
+    },
+    {
+      "authorId": "48927894",
+      "name": "Guanhong Tao"
+    },
+    {
+      "authorId": "2072528961",
+      "name": "Shengwei An"
+    },
+    {
+      "authorId": "2152927940",
+      "name": "Hanxi Guo"
+    },
+    {
+      "authorId": "2268169217",
+      "name": "Shiqing Ma"
+    },
+    {
+      "authorId": "2156004395",
+      "name": "Xiangyu Zhang"
+    }
+  ],
+  "abstract": "Deep neural networks (DNNs) have demonstrated effectiveness in various fields. However, DNNs are vulnerable to backdoor attacks, which inject a unique pattern, called trigger, into the input to cause misclassification to an attack-chosen target label. While existing works have proposed various methods to mitigate backdoor effects in poisoned models, they tend to be less effective against recent advanced attacks. In this paper, we introduce a novel post-training defense technique UNIT that can effectively eliminate backdoor effects for a variety of attacks. In specific, UNIT approximates a unique and tight activation distribution for each neuron in the model. It then proactively dispels substantially large activation values that exceed the approximated boundaries. Our experimental results demonstrate that UNIT outperforms 7 popular defense methods against 14 existing backdoor attacks, including 2 advanced attacks, using only 5\\% of clean training data. UNIT is also cost efficient. The code is accessible at https://github.com/Megum1/UNIT."
+}

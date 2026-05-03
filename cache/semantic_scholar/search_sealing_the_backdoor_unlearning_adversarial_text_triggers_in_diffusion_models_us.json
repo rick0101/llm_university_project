@@ -1,0 +1,42 @@
+{
+  "paperId": "629b5ed422752e7d2a16e7a2d6346db1f6ab8b78",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2508-18235",
+    "ArXiv": "2508.18235",
+    "DOI": "10.48550/arXiv.2508.18235",
+    "CorpusId": 280710305
+  },
+  "title": "Sealing The Backdoor: Unlearning Adversarial Text Triggers In Diffusion Models Using Knowledge Distillation",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2508.18235, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2357964554",
+      "name": "Ashwath Vaithinathan Aravindan"
+    },
+    {
+      "authorId": "2357970711",
+      "name": "Abha Jha"
+    },
+    {
+      "authorId": "2357970510",
+      "name": "Matthew Salaway"
+    },
+    {
+      "authorId": "2280750800",
+      "name": "A. S. Bhide"
+    },
+    {
+      "authorId": "2182422040",
+      "name": "D. Yaldiz"
+    }
+  ],
+  "abstract": "Text-to-image diffusion models have revolutionized generative AI, but their vulnerability to backdoor attacks poses significant security risks. Adversaries can inject imperceptible textual triggers into training data, causing models to generate manipulated outputs. Although text-based backdoor defenses in classification models are well-explored, generative models lack effective mitigation techniques against. We address this by selectively erasing the model's learned associations between adversarial text triggers and poisoned outputs, while preserving overall generation quality. Our approach, Self-Knowledge Distillation with Cross-Attention Guidance (SKD-CAG), uses knowledge distillation to guide the model in correcting responses to poisoned prompts while maintaining image quality by exploiting the fact that the backdoored model still produces clean outputs in the absence of triggers. Using the cross-attention mechanism, SKD-CAG neutralizes backdoor influences at the attention level, ensuring the targeted removal of adversarial effects. Extensive experiments show that our method outperforms existing approaches, achieving removal accuracy 100\\% for pixel backdoors and 93\\% for style-based attacks, without sacrificing robustness or image fidelity. Our findings highlight targeted unlearning as a promising defense to secure generative models. Code and model weights can be found at https://github.com/Mystic-Slice/Sealing-The-Backdoor ."
+}

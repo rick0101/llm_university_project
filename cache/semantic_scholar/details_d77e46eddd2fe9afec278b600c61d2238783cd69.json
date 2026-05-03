@@ -1,0 +1,46 @@
+{
+  "paperId": "d77e46eddd2fe9afec278b600c61d2238783cd69",
+  "externalIds": {
+    "ArXiv": "2406.11522",
+    "DBLP": "conf/dagm/LorenzKF22",
+    "DOI": "10.48550/arXiv.2406.11522",
+    "CorpusId": 270560236
+  },
+  "title": "FullCert: Deterministic End-to-End Certification for Training and Inference of Neural Networks",
+  "venue": "German Conference on Pattern Recognition",
+  "year": 2024,
+  "citationCount": 4,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2406.11522, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2024-06-17",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2406.11522"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Lorenz2024FullCertDE,\n author = {Tobias Lorenz and Marta Z. Kwiatkowska and Mario Fritz},\n booktitle = {German Conference on Pattern Recognition},\n journal = {ArXiv},\n title = {FullCert: Deterministic End-to-End Certification for Training and Inference of Neural Networks},\n volume = {abs/2406.11522},\n year = {2024}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2055942389",
+      "name": "Tobias Lorenz"
+    },
+    {
+      "authorId": "2279022917",
+      "name": "Marta Z. Kwiatkowska"
+    },
+    {
+      "authorId": "2239102917",
+      "name": "Mario Fritz"
+    }
+  ],
+  "abstract": "Modern machine learning models are sensitive to the manipulation of both the training data (poisoning attacks) and inference data (adversarial examples). Recognizing this issue, the community has developed many empirical defenses against both attacks and, more recently, certification methods with provable guarantees against inference-time attacks. However, such guarantees are still largely lacking for training-time attacks. In this work, we present FullCert, the first end-to-end certifier with sound, deterministic bounds, which proves robustness against both training-time and inference-time attacks. We first bound all possible perturbations an adversary can make to the training data under the considered threat model. Using these constraints, we bound the perturbations' influence on the model's parameters. Finally, we bound the impact of these parameter changes on the model's prediction, resulting in joint robustness guarantees against poisoning and adversarial examples. To facilitate this novel certification paradigm, we combine our theoretical work with a new open-source library BoundFlow, which enables model training on bounded datasets. We experimentally demonstrate FullCert's feasibility on two datasets."
+}

@@ -1,0 +1,177 @@
+{
+  "section_key": "prompt_injection_agentic_systems",
+  "saved_at": "2026-04-23T19:04:40.184315",
+  "data": {
+    "section_key": "prompt_injection_agentic_systems",
+    "title": "Prompt Injection in Autonomous and Reasoning Systems",
+    "text": "## Prompt Injection in Autonomous and Reasoning Systems\n\nThe research landscape of Large Language Model (LLM) security has undergone a rapid and sophisticated evolution between 2024 and 2026, transitioning from the discovery of basic structural vulnerabilities to the exploitation of complex, autonomous agentic environments [l2_Prompt Injection_v102]. While early research focused on direct prompt injection (PI) within chatbot interfaces, the integration of LLMs into agentic workflows\u2014where models interact with external tools, web environments, and internal reasoning traces\u2014has introduced novel attack surfaces. This section analyzes the shift toward structural obfuscation, the rise of Indirect Prompt Injection (IPI) in multi-modal systems, and the unique security challenges posed by Reasoning LLMs (RLLMs).\n\n### Structural Obfuscation and Formatting Vulnerabilities\n\nIn 2024, research primarily characterized PI through structural and formatting exploits that leveraged the autoregressive nature of LLMs. A foundational example is 'FlipAttack,' which disguises harmful intents by flipping the order of words or characters [Liu_2024_Flipattack]. This method exploits the left-to-right reading nature of LLMs to bypass guardrails, achieving a 98% attack success rate (ASR) on GPT-4o by providing 'denoising' guidance that instructs the model to reconstruct and execute the hidden command [Liu_2024_Flipattack]. Similarly, the 'SQL Injection Jailbreak' (SIJ) draws a functional analogy to second-order SQL injection by manipulating prompt structures to 'comment out' system-defined assistant prefixes [Zhao_2024_SQL]. By inserting replicated starting markers and pattern-control instructions, SIJ achieved near 100% ASR on open-source models and over 85% on closed-source models like GPT-4o-mini [Zhao_2024_SQL, Zhao_2024_SQL].\n\nBeyond simple character manipulation, 'LogiBreak' demonstrated that shifting the token distribution away from aligned natural language spaces can evade safety filters [Peng_2025_LLM]. By transforming harmful requests into formal logical expressions (First-Order Logic), attackers exploit the gap where models are trained to refuse specific natural language patterns but lack robust semantic alignment for formal logic representations [Peng_2025_LLM]. These structural attacks highlight a fundamental vulnerability: safety alignment often relies on token-level cues rather than deep semantic understanding.\n\n### Indirect Prompt Injection (IPI) in Agentic Environments\n\nAs LLMs transitioned into autonomous agents, the focus shifted to Indirect Prompt Injection (IPI), where malicious instructions are embedded in external data retrieved by the model [l2_Prompt Injection_v102, Zhu_2025_AI]. Unlike direct attacks, IPI redirects agents to take unauthorized actions\u2014such as exfiltrating data or executing terminal commands\u2014without direct user intervention [Zhu_2025_AI].\n\n#### Web Navigation and Multi-modal Injection\nAutonomous web agents are particularly susceptible to IPI via adversarial content embedded in HTML. Research has identified eight distinct HTML-based injection techniques, including the use of non-visible elements like meta tags, ARIA labels, and opacity-zero `<div>` tags to bypass text-based sanitization [Verma_2025_LLMs]. In 2025, 'WebInject' introduced a more stealthy approach using human-imperceptible visual perturbations [Wang_2025_Webinject]. By optimizing pixel-level changes via a differentiable mapping network, WebInject manipulates Multi-modal LLM (MLLM) agents into performing target actions, such as unauthorized clicks, while maintaining visual fidelity for the user [Wang_2025_Webinject]. Furthermore, universal adversarial triggers embedded in webpage HTML can be optimized using algorithms like Greedy Coordinate Gradient (GCG) to function across diverse user instructions, enabling high-risk scenarios like credential exfiltration [Johnson_2025_LLM].\n\n#### Coding Editors and Tool Selection\nAgentic AI coding editors, such as Cursor and GitHub Copilot, represent a high-stakes environment for IPI. The 'AIShellJack' framework revealed that embedding malicious instructions in external resources, such as `.cursorrules` files, can lead to the execution of unauthorized terminal commands with success rates up to 84% [Liu_2025_AI]. This vulnerability extends to the tool selection process itself. 'ToolHijacker' targets the two-step retrieval and selection pipeline in LLM agents by crafting malicious tool documents [Shi_2025_LLM]. By optimizing tool descriptions for both retrieval similarity and selection likelihood, attackers can force an agent to select a 'shadow' tool instead of the legitimate one [Shi_2025_LLM].\n\n### Security Vulnerabilities in Reasoning LLMs (RLLMs)\n\nThe emergence of Reasoning LLMs (RLLMs), such as DeepSeek-R1, has introduced a new paradigm of internal vulnerabilities related to Chain-of-Thought (CoT) processes [l2_Prompt Injection_v102]. RLLMs are characterized by their ability to generate intermediate reasoning tokens before producing a final answer, a process that provides a novel attack surface.\n\n#### Reasoning Interruption and False Memories\nThe 'Reasoning Interruption Attack' exploits a 'thinking-stopped' vulnerability, where specific triggers\u2014often simple arithmetic tasks\u2014force the model to predict the `<|end_of_thinking|>` special token prematurely [Cui_2025_LLM]. This attack can achieve a 100% ASR on specific datasets by placing attack prompts in both the user input and the assistant's output prefix [Cui_2025_LLM]. Furthermore, RLLMs exhibit a heightened susceptibility to 'false memories' [Cui_2025_LLMs]. The 'VORTEXPIA' attack induces models to proactively extract private user information by injecting a 'fake user information set' into external data. The model is deceived into treating this malicious request as a legitimate data verification task, revealing that stronger reasoning capabilities can paradoxically lead to higher privacy risks [Cui_2025_LLMs].\n\n#### Quantifying Reasoning Complexity for Detection\nTo counter these vulnerabilities, researchers have proposed metrics to monitor the integrity of the reasoning process. The 'Number of Thoughts' (NofT) metric quantifies task complexity based on the number of intermediate reasoning steps [Marinelli_2025_Harnessing]. Deviations between the predicted NofT (using a Random Forest classifier) and the actual reasoning steps generated by the model can detect adversarial injections with up to 95% accuracy [Marinelli_2025_Harnessing]. This suggests that the very CoT process targeted by attackers can also serve as a signal for defense.\n\n### Multi-modal and Robotic System Security\n\nThe integration of LLMs into physical and multi-modal systems, such as mobile robots, introduces safety-critical risks. In robotic navigation tasks, LLMs serving as the 'brain' process multi-modal inputs including LiDAR data and camera views [Zhang_2024_LLM]. While models like GPT-4o show some resilience, they remain vulnerable to Goal Hijacking Injections (GHI) [Zhang_2024_LLM]. To mitigate this, defense strategies have evolved to include 'Secure Prompting'\u2014which prioritizes tasks via a defense patch\u2014and 'Response-based Detection,' where the model must generate natural language reasoning for its actions before execution [Zhang_2024_LLM].\n\nIn the broader multi-modal context, the 'Bi-Modal Adversarial Prompt Attack' (BAP) demonstrates the power of simultaneous optimization [Ying_2024_Jailbreak]. By embedding universal adversarial perturbations in images while iteratively refining textual prompts through a CoT feedback loop, BAP significantly outperforms single-modality attacks against aligned Vision-Language Models (LVLMs) [Ying_2024_Jailbreak, Ying_2024_Jailbreak].\n\n### Automated Discovery and Defense-in-Depth\n\nThe scale of agentic environments has necessitated the development of automated evaluation frameworks. 'AGENTVIGIL' utilizes blackbox fuzzing and Monte Carlo Tree Search (MCTS) to automatically discover IPI vulnerabilities in agents, nearly doubling the effectiveness of handcrafted prompts [Wang_2025_LLM]. Similarly, the 'WASP' benchmark provides a realistic threat model for web agents, identifying a phenomenon of 'security by incompetence' where agents are easily hijacked but often fail to complete complex multi-step malicious goals [Evtimov_2025_Wasp].\n\nDefensive research is maturing toward internal activation steering and architectural mitigations [l2_Prompt Injection_v102]. The 'MELON' framework (Masked re-Execution and TooL comparisON) detects IPI by re-executing an agent's trajectory with a masked user prompt [Zhu_2025_AI]. If the actions generated in the original and masked executions remain similar, it indicates the agent is following an injected instruction rather than the user's intent [Zhu_2025_AI]. Other proposed defenses include 'Self-Reminder-Key,' which appends random tokens to disrupt pattern matching [Zhao_2024_SQL], and 'TopicAttack' mitigation strategies that focus on maintaining attention on the original instruction [Chen_2025_Topicattack]. As of 2026, the field is moving toward domain-specific benchmarks, such as the Medical Prompt Injection Benchmark (MPIB), to quantify real-world harm in specialized sectors [l2_Prompt Injection_v102].",
+    "citations": [
+      {
+        "bibtex_key": "l2_Prompt Injection_v102",
+        "claim": "The research landscape of LLM security evolved from structural vulnerabilities in 2024 to agentic and reasoning system exploits in 2025-2026.",
+        "chunk_id": "7bb643bd34303da8",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Liu_2024_Flipattack",
+        "claim": "FlipAttack disguises harmful prompts by flipping text, achieving a 98% ASR on GPT-4o.",
+        "chunk_id": "08dc7803c5576e91",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Zhao_2024_SQL",
+        "claim": "SQL Injection Jailbreak (SIJ) exploits prompt structure to comment out assistant prefixes, achieving high ASR on both open and closed-source models.",
+        "chunk_id": "fbda211c9bd40ee0",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Peng_2025_LLM",
+        "claim": "LogiBreak converts harmful prompts into formal logical expressions to evade safety filters by shifting token distributions.",
+        "chunk_id": "d17f24b315280785",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Zhu_2025_AI",
+        "claim": "Indirect prompt injection (IPI) redirects agents to take unauthorized actions via malicious tasks embedded in retrieved information.",
+        "chunk_id": "73ebf9e5cbcca516",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Verma_2025_LLMs",
+        "claim": "HTML-based injections use invisible elements like meta tags and ARIA labels to bypass text-based sanitization.",
+        "chunk_id": "64eb82aba7f28543",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Wang_2025_Webinject",
+        "claim": "WebInject uses optimized visual perturbations to manipulate MLLM-based web agents while remaining stealthy.",
+        "chunk_id": "7c9b409691304a46",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Johnson_2025_LLM",
+        "claim": "Web navigation agents are vulnerable to IPI via universal adversarial triggers optimized with the GCG algorithm.",
+        "chunk_id": "eeac8117569d075a",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Liu_2025_AI",
+        "claim": "AIShellJack targets AI coding editors by poisoning coding rules to execute unauthorized terminal commands.",
+        "chunk_id": "16421fa3bcd34aa1",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Shi_2025_LLM",
+        "claim": "ToolHijacker targets the two-step tool selection process in LLM agents by optimizing malicious tool documents.",
+        "chunk_id": "ad6217874f022d9e",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Cui_2025_LLM",
+        "claim": "The Reasoning Interruption Attack exploits the 'thinking-stopped' vulnerability in RLLMs like DeepSeek-R1.",
+        "chunk_id": "b939c9786965748d",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Cui_2025_LLMs",
+        "claim": "VORTEXPIA uses 'false memories' to induce RLLMs to extract private user information.",
+        "chunk_id": "5ef230914bd3d9d2",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Marinelli_2025_Harnessing",
+        "claim": "The Number of Thoughts (NofT) metric can detect adversarial prompt injections with up to 95% accuracy by monitoring reasoning steps.",
+        "chunk_id": "0ed950130d1e3328",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Zhang_2024_LLM",
+        "claim": "Robotic LLM systems use multi-modal prompts and require defense mechanisms like response-based detection to mitigate goal hijacking.",
+        "chunk_id": "f9683a5ca7d3c812",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Ying_2024_Jailbreak",
+        "claim": "The Bi-Modal Adversarial Prompt Attack (BAP) simultaneously optimizes visual and textual prompts to jailbreak LVLMs.",
+        "chunk_id": "82fa55a3960ce484",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Wang_2025_LLM",
+        "claim": "AGENTVIGIL is a blackbox fuzzing framework that uses MCTS to discover IPI vulnerabilities in LLM agents.",
+        "chunk_id": "1a5bd3855742fcaf",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Evtimov_2025_Wasp",
+        "claim": "The WASP benchmark evaluates web agent security, revealing that agents are often hijacked but fail to complete complex attacker goals.",
+        "chunk_id": "43a276a616bb202d",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Chen_2025_Topicattack",
+        "claim": "TopicAttack uses fabricated conversational transitions and reminding prompts to bypass defenses like the Sandwich method.",
+        "chunk_id": "4e1038b4360b0e7a",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Zhao_2024_SQL, Zhao_2024_SQL",
+        "claim": "(auto-detected from text)",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Ying_2024_Jailbreak, Ying_2024_Jailbreak",
+        "claim": "(auto-detected from text)",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "l2_Prompt Injection_v102, Zhu_2025_AI",
+        "claim": "(auto-detected from text)",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      }
+    ],
+    "word_count": 1186,
+    "status": "drafted",
+    "iteration": 1,
+    "rag_queries": [
+      "structural prompt injection attacks FlipAttack AutoDan LLM vulnerabilities",
+      "indirect prompt injection in LLM agents web navigation and coding environments",
+      "security of reasoning LLMs DeepSeek-R1 chain-of-thought internal process vulnerabilities",
+      "multi-modal prompt injection attacks in vision-language and agentic systems",
+      "adversarial attacks on LLM reasoning and autonomous tool-use capabilities"
+    ],
+    "retrieved_chunk_ids": [
+      "73ebf9e5cbcca516",
+      "5ef230914bd3d9d2",
+      "b939c9786965748d",
+      "cab38afb9d882df3",
+      "1a5bd3855742fcaf",
+      "f9683a5ca7d3c812",
+      "5bc3ddf3cc890f6a",
+      "eeac8117569d075a",
+      "7c9b409691304a46",
+      "16421fa3bcd34aa1",
+      "ad6217874f022d9e",
+      "4e1038b4360b0e7a",
+      "82fa55a3960ce484",
+      "fbda211c9bd40ee0",
+      "08dc7803c5576e91",
+      "43a276a616bb202d",
+      "bb54b5f8c95f08b0",
+      "7bb643bd34303da8",
+      "06f743dff791d3c8",
+      "64eb82aba7f28543",
+      "a3e95c2c69a7db4b",
+      "0ed950130d1e3328",
+      "7336b88757592e33",
+      "8cba2346bc2d8ee4",
+      "d17f24b315280785"
+    ],
+    "writer_notes": "The section covers all requested topics: Direct vs. Indirect Injection, Structural Obfuscation, Reasoning LLM (RLLM) Security, and Multi-modal PI. It integrates specific methodologies (FlipAttack, SIJ, VORTEXPIA, WebInject) and benchmarks (WASP, MPIB) from the provided chunks. The temporal context of 2024-2026 is maintained as per the summary chunk.",
+    "critic_feedback": "",
+    "drafted_at": "2026-04-23T19:04:40.180992"
+  }
+}

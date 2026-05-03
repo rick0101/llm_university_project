@@ -1,0 +1,62 @@
+{
+  "paperId": "145d75cf73f5c803f58f3110ad7488ebd3099254",
+  "externalIds": {
+    "ArXiv": "2410.20136",
+    "DBLP": "journals/corr/abs-2410-20136",
+    "DOI": "10.48550/arXiv.2410.20136",
+    "CorpusId": 273654937
+  },
+  "title": "CodePurify: Defend Backdoor Attacks on Neural Code Models via Entropy-based Purification",
+  "venue": "arXiv.org",
+  "year": 2024,
+  "citationCount": 3,
+  "influentialCitationCount": 1,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.20136, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2024-10-26",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2410.20136"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Mu2024CodePurifyDB,\n author = {Fangwen Mu and Junjie Wang and Zhuohao Yu and Lin Shi and Song Wang and Mingyang Li and Qing Wang},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {CodePurify: Defend Backdoor Attacks on Neural Code Models via Entropy-based Purification},\n volume = {abs/2410.20136},\n year = {2024}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "1994579604",
+      "name": "Fangwen Mu"
+    },
+    {
+      "authorId": "2266137310",
+      "name": "Junjie Wang"
+    },
+    {
+      "authorId": "2259613131",
+      "name": "Zhuohao Yu"
+    },
+    {
+      "authorId": "2305416699",
+      "name": "Lin Shi"
+    },
+    {
+      "authorId": "2259571951",
+      "name": "Song Wang"
+    },
+    {
+      "authorId": "1390521993",
+      "name": "Mingyang Li"
+    },
+    {
+      "authorId": "2157214565",
+      "name": "Qing Wang"
+    }
+  ],
+  "abstract": "Neural code models have found widespread success in tasks pertaining to code intelligence, yet they are vulnerable to backdoor attacks, where an adversary can manipulate the victim model's behavior by inserting triggers into the source code. Recent studies indicate that advanced backdoor attacks can achieve nearly 100% attack success rates on many software engineering tasks. However, effective defense techniques against such attacks remain insufficiently explored. In this study, we propose CodePurify, a novel defense against backdoor attacks on code models through entropy-based purification. Entropy-based purification involves the process of precisely detecting and eliminating the possible triggers in the source code while preserving its semantic information. Within this process, CodePurify first develops a confidence-driven entropy-based measurement to determine whether a code snippet is poisoned and, if so, locates the triggers. Subsequently, it purifies the code by substituting the triggers with benign tokens using a masked language model. We extensively evaluate CodePurify against four advanced backdoor attacks across three representative tasks and two popular code models. The results show that CodePurify significantly outperforms four commonly used defense baselines, improving average defense performance by at least 40%, 40%, and 12% across the three tasks, respectively. These findings highlight the potential of CodePurify to serve as a robust defense against backdoor attacks on neural code models."
+}

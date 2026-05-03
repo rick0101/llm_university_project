@@ -1,0 +1,41 @@
+{
+  "paperId": "1b91eb76741575565f717e9ffaba5e5957ee233a",
+  "externalIds": {
+    "ArXiv": "2406.07778",
+    "CorpusId": 270391904
+  },
+  "title": "A Study of Backdoors in Instruction Fine-tuned Language Models",
+  "venue": "",
+  "year": 2024,
+  "citationCount": 5,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2406.07778, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2024-06-12",
+  "journal": null,
+  "citationStyles": {
+    "bibtex": "@Inproceedings{Raghuram2024ASO,\n author = {Jayaram Raghuram and G. Kesidis and David J. Miller},\n title = {A Study of Backdoors in Instruction Fine-tuned Language Models},\n year = {2024}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "12998514",
+      "name": "Jayaram Raghuram"
+    },
+    {
+      "authorId": "1809899",
+      "name": "G. Kesidis"
+    },
+    {
+      "authorId": "2193181337",
+      "name": "David J. Miller"
+    }
+  ],
+  "abstract": "Backdoor data poisoning, inserted within instruction examples used to fine-tune a foundation Large Language Model (LLM) for downstream tasks (\\textit{e.g.,} sentiment prediction), is a serious security concern due to the evasive nature of such attacks. The poisoning is usually in the form of a (seemingly innocuous) trigger word or phrase inserted into a very small fraction of the fine-tuning samples from a target class. Such backdoor attacks can: alter response sentiment, violate censorship, over-refuse (invoke censorship for legitimate queries), inject false content, or trigger nonsense responses (hallucinations). In this work we investigate the efficacy of instruction fine-tuning backdoor attacks as attack\"hyperparameters\"are varied under a variety of scenarios, considering: the trigger location in the poisoned examples; robustness to change in the trigger location, partial triggers, and synonym substitutions at test time; attack transfer from one (fine-tuning) domain to a related test domain; and clean-label vs. dirty-label poisoning. Based on our observations, we propose and evaluate two defenses against these attacks: i) a \\textit{during-fine-tuning defense} based on word-frequency counts that assumes the (possibly poisoned) fine-tuning dataset is available and identifies the backdoor trigger tokens; and ii) a \\textit{post-fine-tuning defense} based on downstream clean fine-tuning of the backdoored LLM with a small defense dataset. Finally, we provide a brief survey of related work on backdoor attacks and defenses."
+}

@@ -1,0 +1,50 @@
+{
+  "paperId": "c61dabdc00e7f1364bc95f4619bf71ad47d567f5",
+  "externalIds": {
+    "ArXiv": "2505.21425",
+    "DBLP": "conf/seke/JinL0025",
+    "DOI": "10.18293/SEKE2025-018",
+    "CorpusId": 278910543
+  },
+  "title": "GUARD:Dual-Agent based Backdoor Defense on Chain-of-Thought in Neural Code Generation",
+  "venue": "International Conference on Software Engineering and Knowledge Engineering",
+  "year": 2025,
+  "citationCount": 3,
+  "influentialCitationCount": 1,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.21425, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-05-27",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2505.21425"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Jin2025GUARDDualAgentBB,\n author = {Naizhu Jin and Zhong Li and Tian Zhang and Qingkai Zeng},\n booktitle = {International Conference on Software Engineering and Knowledge Engineering},\n journal = {ArXiv},\n title = {GUARD:Dual-Agent based Backdoor Defense on Chain-of-Thought in Neural Code Generation},\n volume = {abs/2505.21425},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2334474802",
+      "name": "Naizhu Jin"
+    },
+    {
+      "authorId": "2334563710",
+      "name": "Zhong Li"
+    },
+    {
+      "authorId": "2335191432",
+      "name": "Tian Zhang"
+    },
+    {
+      "authorId": "2357692255",
+      "name": "Qingkai Zeng"
+    }
+  ],
+  "abstract": "With the widespread application of large language models in code generation, recent studies demonstrate that employing additional Chain-of-Thought generation models can significantly enhance code generation performance by providing explicit reasoning steps. However, as external components, CoT models are particularly vulnerable to backdoor attacks, which existing defense mechanisms often fail to detect effectively. To address this challenge, we propose GUARD, a novel dual-agent defense framework specifically designed to counter CoT backdoor attacks in neural code generation. GUARD integrates two core components: GUARD-Judge, which identifies suspicious CoT steps and potential triggers through comprehensive analysis, and GUARD-Repair, which employs a retrieval-augmented generation approach to regenerate secure CoT steps for identified anomalies. Experimental results show that GUARD effectively mitigates attacks while maintaining generation quality, advancing secure code generation systems."
+}

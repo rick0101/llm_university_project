@@ -1,0 +1,22 @@
+```json
+[
+  {
+    "citation_index": 0,
+    "bibtex_key": "Muntasir_2025_Mocha",
+    "status": "SUPPORTED",
+    "confidence": 0.95,
+    "reasoning": "The source explicitly introduces the MOCHA benchmark to evaluate jailbreaking strategies and proposes the 'Code Decomposition Attack' specifically designed to evade standard safety filters, supporting the claim about the evolution of adversarial threats."
+  },
+  {
+    "citation_index": 1,
+    "bibtex_key": "Mo_2025_LLMs",
+    "status": "SUPPORTED",
+    "confidence": 0.95,
+    "reasoning": "The source describes REDCODER, an automated multi-turn red-teaming framework, and demonstrates that state-of-the-art models are susceptible to these iterative adversarial interactions."
+  },
+  {
+    "citation_index": 2,
+    "bibtex_key": "Rubel_2024_LLM",
+    "status": "PARTIALLY_SUPPORTED",
+    "confidence": 0.7,
+    "reasoning": "The source confirms that data poisoning attacks can be executed during fine-tuning to manipulate specific outputs using trigger patterns (minimal injections). However, it does not explicitly mention Parameter-Efficient Fine-Tuning (PEFT) or state that the shift toward PEFT is the cause of these new

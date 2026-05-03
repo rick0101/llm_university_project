@@ -1,0 +1,38 @@
+{
+  "paperId": "48b23225d036b8aa306dfcfa9c35cfc4195e4bd1",
+  "externalIds": {
+    "ArXiv": "2410.15926",
+    "DBLP": "conf/nips/XingLLL24",
+    "DOI": "10.48550/arXiv.2410.15926",
+    "CorpusId": 273502310
+  },
+  "title": "Mitigating Object Hallucination via Concentric Causal Attention",
+  "venue": "Neural Information Processing Systems",
+  "year": 2024,
+  "citationCount": 59,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2410.15926, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2326482972",
+      "name": "Yun Xing"
+    },
+    {
+      "authorId": "2326987892",
+      "name": "Yiheng Li"
+    },
+    {
+      "authorId": "2311508734",
+      "name": "Ivan Laptev"
+    },
+    {
+      "authorId": "2265618411",
+      "name": "Shijian Lu"
+    }
+  ],
+  "abstract": "Recent Large Vision Language Models (LVLMs) present remarkable zero-shot conversational and reasoning capabilities given multimodal queries. Nevertheless, they suffer from object hallucination, a phenomenon where LVLMs are prone to generate textual responses not factually aligned with image inputs. Our pilot study reveals that object hallucination is closely tied with Rotary Position Encoding (RoPE), a widely adopted positional dependency modeling design in existing LVLMs. Due to the long-term decay in RoPE, LVLMs tend to hallucinate more when relevant visual cues are distant from instruction tokens in the multimodal input sequence. Additionally, we observe a similar effect when reversing the sequential order of visual tokens during multimodal alignment. Our tests indicate that long-term decay in RoPE poses challenges to LVLMs while capturing visual-instruction interactions across long distances. We propose Concentric Causal Attention (CCA), a simple yet effective positional alignment strategy that mitigates the impact of RoPE long-term decay in LVLMs by naturally reducing relative distance between visual and instruction tokens. With CCA, visual tokens can better interact with instruction tokens, thereby enhancing model's perception capability and alleviating object hallucination. Without bells and whistles, our positional alignment method surpasses existing hallucination mitigation strategies by large margins on multiple object hallucination benchmarks."
+}

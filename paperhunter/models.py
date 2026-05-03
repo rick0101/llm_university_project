@@ -91,6 +91,17 @@ class Paper(BaseModel):
     metadata_confidence: float = Field(0.0, ge=0.0, le=1.0, description="Affidabilità stimata dei metadati (0.0-1.0)")
     year_source: Optional[str] = Field(None, description="Fonte da cui è stato estratto l'anno (es. 's2_publication_date', 'grobid', 'filename')")
 
+    # --- Citability (v3.6 Two-Tier Corpus) ---
+    # Un paper è "citable" se il writer può inserire [bibtex_key] nel survey.
+    # Tutti i paper vengono comunque ingeriti per alimentare retrieval/L1/L1.5/L2,
+    # ma solo i citable finiscono nel master .bib.
+    is_citable: bool = Field(False, description="Se True, il writer può citare questo paper nel survey")
+    dblp_verified: bool = Field(False, description="Entry BibTeX verificata su DBLP")
+    citation_tier: str = Field(
+        "uncited_context",
+        description="Tier di citabilità: 'dblp', 's2_high_conf', 'preprint', 'uncited_context'",
+    )
+
     class Config:
         use_enum_values = True
 
@@ -165,6 +176,18 @@ class PaperChunk(BaseModel):
     image_path: Optional[str] = Field(None, description="Percorso relativo all'immagine estratta (solo per Figure_Description)")
     venue: Optional[str] = Field(None, description="Venue/journal del paper di origine (es. NeurIPS, ACL, arXiv)")
 
+    # --- Citability passthrough (v3.6) ---
+    is_citable: bool = Field(False, description="Se True, questo paper può essere citato dal writer")
+    citation_tier: str = Field("uncited_context", description="Tier: dblp | s2_high_conf | preprint | uncited_context")
+
+    # --- Tassonomia di dominio (v3.6, popolata per L1 chunks) ---
+    attack_vector: list[str] = Field(default_factory=list, description="Vettori d'attacco (vocabolario controllato)")
+    defense_type: list[str] = Field(default_factory=list, description="Tipi di difesa (vocabolario controllato)")
+    target_models: list[str] = Field(default_factory=list, description="Modelli target testati")
+    evaluation_metrics: list[str] = Field(default_factory=list, description="Metriche di valutazione")
+    datasets: list[str] = Field(default_factory=list, description="Dataset/benchmark usati")
+    threat_model: Optional[str] = Field(None, description="Modello di minaccia (testo libero)")
+
     # Embedding (opzionale, calcolato separatamente)
     embedding: Optional[list[float]] = Field(None, exclude=True, description="Vettore embedding")
 
@@ -182,12 +205,40 @@ class PaperChunk(BaseModel):
             "chunk_index": self.chunk_index,
             "image_path": self.image_path or "",
             "venue": self.venue or "",
+            # Citability (v3.6)
+            "is_citable": self.is_citable,
+            "citation_tier": self.citation_tier,
+            # Tassonomia (v3.6) — payload filterable in Qdrant
+            "attack_vector": list(self.attack_vector),
+            "defense_type": list(self.defense_type),
+            "target_models": list(self.target_models),
+            "evaluation_metrics": list(self.evaluation_metrics),
+            "datasets": list(self.datasets),
+            "threat_model": self.threat_model or "",
         }
 
 
 # ============================================================================
 # Summarization (L1 e L2)
 # ============================================================================
+
+class ClaimAtomic(BaseModel):
+    """Claim atomico fact-checkabile estratto da un paper.
+
+    Ogni claim è una singola affermazione verificabile (numerica o
+    metodologica) che il critic può confrontare individualmente con
+    i chunk sorgente. Permette verifica chirurgica vs paragrafi interi.
+    """
+    text: str = Field(..., description="Testo del claim in una frase atomica")
+    claim_type: Literal["empirical", "methodological", "theoretical"] = Field(
+        "empirical",
+        description="empirical (risultato numerico), methodological (come funziona), theoretical (proprietà formale)",
+    )
+    evidence_chunk_ids: list[str] = Field(
+        default_factory=list,
+        description="ID dei chunk del paper sorgente che supportano il claim",
+    )
+
 
 class L1Summary(BaseModel):
     """Summary L1 — singolo paper.
@@ -215,6 +266,43 @@ class L1Summary(BaseModel):
     )
     results_summary: str = Field("", description="Risultati quantitativi principali")
     limitations: str = Field("", description="Limiti dichiarati o impliciti")
+
+    # --- Tassonomia di dominio (v3.6 — vocabolari controllati) ---
+    threat_model: str = Field("", description="Chi attacca cosa (es. 'external attacker, black-box LLM API')")
+    attack_vector: list[str] = Field(
+        default_factory=list,
+        description="Vettori d'attacco da vocabolario controllato (taxonomy.ATTACK_VECTORS)",
+    )
+    defense_type: list[str] = Field(
+        default_factory=list,
+        description="Tipi di difesa da vocabolario controllato (taxonomy.DEFENSE_TYPES)",
+    )
+    target_models: list[str] = Field(
+        default_factory=list,
+        description="Modelli LLM testati (es. ['gpt-4', 'llama-2-7b'])",
+    )
+    evaluation_metrics: list[str] = Field(
+        default_factory=list,
+        description="Metriche di valutazione (es. ['ASR', 'BLEU', 'F1'])",
+    )
+    datasets: list[str] = Field(
+        default_factory=list,
+        description="Dataset/benchmark usati (es. ['AdvBench', 'HarmBench'])",
+    )
+    subcategory_freeform: str = Field(
+        "",
+        description="Sotto-categoria libera quando il vocabolario non copre il caso",
+    )
+
+    # --- Atomic claims (v3.6 — verifica chirurgica) ---
+    claims: list[ClaimAtomic] = Field(
+        default_factory=list,
+        description="Claim atomici fact-checkabili individualmente dal critic",
+    )
+
+    # --- Citability passthrough (v3.6) ---
+    is_citable: bool = Field(False, description="Se True, paper citable dal writer")
+    citation_tier: str = Field("uncited_context", description="Tier di citabilità")
 
     l1_char_count: Optional[int] = Field(
         None,
@@ -254,6 +342,10 @@ class L1_5Summary(BaseModel):
     key_findings: str = Field("", description="Risultati principali aggregati")
     testing_overview: str = Field("", description="Panoramica delle metodologie di testing")
     temporal_span: str = Field("", description="Range temporale (es. '2022-2025')")
+    citable_paper_ids: list[str] = Field(
+        default_factory=list,
+        description="Subset di paper_ids che sono is_citable=True (utile al writer)",
+    )
     generated_at: str = Field("", description="Timestamp ISO di generazione")
     model_used: Optional[str] = Field(None, description="Modello Gemini usato (flash/pro)")
 
@@ -276,6 +368,11 @@ class L2Summary(BaseModel):
     methodological_convergences: str = Field("", description="Convergenze e divergenze metodologiche")
     testing_overview: str = Field("", description="Panoramica delle testing methodologies più usate")
     synthesis: str = Field("", description="Sintesi complessiva della categoria")
+
+    citable_paper_ids: list[str] = Field(
+        default_factory=list,
+        description="Subset di paper_ids che sono is_citable=True (whitelist per writer)",
+    )
 
     invalidated: bool = Field(False, description="Se il summary è stato invalidato da nuovi paper")
     generated_at: Optional[datetime] = Field(None, description="Timestamp di generazione")

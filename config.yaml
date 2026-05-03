@@ -118,7 +118,8 @@ clustering:
 # Usa Gemini Flash Vision per generare descrizioni semantiche delle figure,
 # che vengono poi indicizzate in Qdrant come vettori testuali.
 figure_extraction:
-  enabled: true                 # Abilita/disabilita estrazione figure
+  # Da usare solo su richiesta — disabilitato per velocizzare l'ingestion
+  enabled: false                # Abilita/disabilita estrazione figure
   vision_model: "gemini-3-flash-preview"  # Modello con supporto Vision multimodale
   min_width: 150                # Larghezza minima immagine (pixel) — esclude icone
   min_height: 150               # Altezza minima immagine (pixel) — esclude loghi
@@ -144,10 +145,10 @@ retrieval:
 
 # --- Agentic Writing Pipeline ---
 agents:
-  max_writer_iterations: 3                     # Max iterazioni writer↔critic per sezione
+  max_writer_iterations: 4                     # Max iterazioni writer↔critic per sezione (v3.6: 3→4)
   min_section_words: 500                       # Minimo parole per sezione
   max_section_words: 3000                      # Massimo parole per sezione
-  verification_threshold: 0.80                 # % citazioni supportate per passare
+  verification_threshold: 0.95                 # % citazioni supportate per passare (v3.6: 0.80→0.95)
   planner_model: "pro"                         # Modello per il Planner (pro raccomandato)
   writer_model: "pro"                          # Modello per il Writer
   critic_model: "flash"                        # Modello per il Critic (flash sufficiente)
@@ -155,6 +156,12 @@ agents:
   writer_max_context_chars: 60000              # Max chars contesto per singola sezione writer
   writer_budget_mode: "proportional"           # "fixed" | "proportional" (divide budget per N sezioni)
   writer_mode: "prefetch_agentic"               # "static" | "agentic" | "prefetch_agentic" (pre-fetch + ReAct leggero)
+  # --- v3.6 Hardening (C4) ---
+  citation_whitelist_strict: true              # Writer rifiuta citazioni di paper non citable
+  critic_two_pass: true                        # Critic Pass 1 (atomic) + Pass 2 (holistic coherence)
+  critic_atomic_verification: true             # Verifica claim atomici quando disponibili in L1
+  use_cross_encoder_reranker: false            # Opzionale: cross-encoder per rerank top-20→10
+  cross_encoder_model: "BAAI/bge-reranker-v2-m3"
 
 # --- Output & Post-processing ---
 output:
@@ -223,7 +230,8 @@ image_filtering:
   skip_last_page: true                   # Penalizza immagini dall'ultima pagina (copyright)
   relevance_threshold: 0.5               # Soglia punteggio combinato [0.0, 1.0]
   # --- Filtro Embedding Multimodale (Stage 2) ---
-  embedding_filter_enabled: true         # Abilita filtro via embedding multimodale
+  # Da usare solo su richiesta — disabilitato per velocizzare l'ingestion
+  embedding_filter_enabled: false  # Abilita filtro via embedding multimodale
   embedding_similarity_threshold: 0.3    # Soglia coseno minima vs riferimenti scientifici
 
 # --- Logging ---
@@ -259,3 +267,14 @@ skills:
   enabled: true                                      # Abilita skill persistenti nei prompt
   skills_dir: "./data/skills"                        # Directory file .md skill
   max_total_chars: 4000                              # Lunghezza massima totale skill
+
+# --- Citability / Two-Tier Corpus (v3.6) ---
+# Determina quali paper possono essere citati nel survey.
+# Tutti i paper vengono ingeriti per alimentare retrieval/L1/L1.5/L2,
+# ma solo `is_citable=True` finiscono in references.bib e nella whitelist writer.
+citability:
+  require_dblp: true                                 # Solo paper bibtex_source='dblp' sono citable
+  allow_s2_high_conf: false                          # Permetti S2 ad alta confidenza come citable
+  s2_min_citation_count: 50                          # Citazioni S2 minime per 'high_conf'
+  write_uncited_audit_bib: true                      # Salva references_uncited.bib parallelo
+  propagate_to_chunks: true                          # is_citable nei payload Qdrant per filtri

@@ -1,0 +1,65 @@
+{
+  "paperId": "5e7ba486300aca27f6103dbcbeaac940e7edf5c3",
+  "externalIds": {
+    "ArXiv": "2406.12221",
+    "DBLP": "conf/acl/WenLLJG0LHHZ025",
+    "DOI": "10.18653/v1/2025.findings-acl.271",
+    "CorpusId": 270562515
+  },
+  "title": "On-Policy Self-Alignment with Fine-grained Knowledge Feedback for Hallucination Mitigation",
+  "venue": "Annual Meeting of the Association for Computational Linguistics",
+  "year": 2024,
+  "citationCount": 7,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2406.12221, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2024-06-18",
+  "journal": {
+    "pages": "5215-5231"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Wen2024OnPolicySW,\n author = {Xueru Wen and Xinyu Lu and Xinyan Guan and Yaojie Lu and Hongyu Lin and Ben He and Xianpei Han and Le Sun},\n booktitle = {Annual Meeting of the Association for Computational Linguistics},\n pages = {5215-5231},\n title = {On-Policy Self-Alignment with Fine-grained Knowledge Feedback for Hallucination Mitigation},\n year = {2024}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2307891676",
+      "name": "Xueru Wen"
+    },
+    {
+      "authorId": "50085043",
+      "name": "Xinyu Lu"
+    },
+    {
+      "authorId": "2189374700",
+      "name": "Xinyan Guan"
+    },
+    {
+      "authorId": "1831434",
+      "name": "Yaojie Lu"
+    },
+    {
+      "authorId": "2116455765",
+      "name": "Hongyu Lin"
+    },
+    {
+      "authorId": "2304906129",
+      "name": "Ben He"
+    },
+    {
+      "authorId": "2118233348",
+      "name": "Xianpei Han"
+    },
+    {
+      "authorId": "2110832778",
+      "name": "Le Sun"
+    }
+  ],
+  "abstract": "Hallucination occurs when large language models exhibit behavior that deviates from the boundaries of their knowledge during response generation. To address this critical issue, previous learning-based methods attempt to finetune models but are limited by off-policy sampling and coarse-grained feedback. In this paper, we present \\textit{\\b{R}einforcement \\b{L}earning \\b{f}or \\b{H}allucination} (RLFH), an on-policy self-alignment approach that enables LLMs to actively explore their knowledge boundaries and self-correct generation behavior through fine-grained feedback signals. RLFH introduces a self-assessment framework where the policy serves as its own judge. Through this framework, responses are automatically decomposed into atomic facts and their truthfulness and informativeness are assessed against external knowledge sources. The resulting fine-grained feedback at the statement level are then converted into token-level dense reward signals. This enables online reinforcement learning to achieve precise and timely optimization without human intervention. Comprehensive evaluations on HotpotQA, SQuADv2, and Biography benchmarks validate RLFH's effectiveness in hallucination mitigation."
+}

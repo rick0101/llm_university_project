@@ -1,0 +1,42 @@
+{
+  "paperId": "04763614563d8036ecf6277db0bb11305bc47ef4",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2502-20246",
+    "ArXiv": "2502.20246",
+    "DOI": "10.48550/arXiv.2502.20246",
+    "CorpusId": 276647506
+  },
+  "title": "Beyond Natural Language Perplexity: Detecting Dead Code Poisoning in Code Generation Datasets",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 1,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2502.20246, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2400074398",
+      "name": "C. Tsai"
+    },
+    {
+      "authorId": "2110721439",
+      "name": "Chi Yu"
+    },
+    {
+      "authorId": "2333508931",
+      "name": "Ying Lin"
+    },
+    {
+      "authorId": "2347551594",
+      "name": "Yusung Wu"
+    },
+    {
+      "authorId": "2347581810",
+      "name": "Weibin Lee"
+    }
+  ],
+  "abstract": "The increasing adoption of large language models (LLMs) for code-related tasks has raised concerns about the security of their training datasets. One critical threat is dead code poisoning, where syntactically valid but functionally redundant code is injected into training data to manipulate model behavior. Such attacks can degrade the performance of neural code search systems, leading to biased or insecure code suggestions. Existing detection methods, such as token-level perplexity analysis, fail to effectively identify dead code due to the structural and contextual characteristics of programming languages. In this paper, we propose DePA (Dead Code Perplexity Analysis), a novel line-level detection and cleansing method tailored to the structural properties of code. DePA computes line-level perplexity by leveraging the contextual relationships between code lines and identifies anomalous lines by comparing their perplexity to the overall distribution within the file. Our experiments on benchmark datasets demonstrate that DePA significantly outperforms existing methods, achieving 0.14-0.19 improvement in detection F1-score and a 44-65% increase in poisoned segment localization precision. Furthermore, DePA enhances detection speed by 0.62-23x, making it practical for large-scale dataset cleansing. Overall, by addressing the unique challenges of dead code poisoning, DePA provides a robust and efficient solution for safeguarding the integrity of code generation model training datasets."
+}

@@ -1,0 +1,17 @@
+threats."
+  },
+  {
+    "citation_index": 3,
+    "bibtex_key": "Li_2024_Exploratory",
+    "status": "NOT_SUPPORTED",
+    "confidence": 0.85,
+    "reasoning": "The source focuses on using fine-tuning (including PEFT like LoRA and IA3) to improve the security of code generation by training on vulnerability-fixing commits. It does not discuss data-cleaning pipelines or filtering harmful samples as a future priority; rather, it focuses on improving the model's intrinsic ability to generate secure code."
+  },
+  {
+    "citation_index": 4,
+    "bibtex_key": "Storek_2025_AI",
+    "status": "NOT_SUPPORTED",
+    "confidence": 0.9,
+    "reasoning": "The source describes a new attack vector (Cross-Origin Context Poisoning) and an algorithm for finding adversarial transformations (GCGS). It does not mention 'origin separation' or 'model interpretability' as potential mitigation strategies."
+  }
+]

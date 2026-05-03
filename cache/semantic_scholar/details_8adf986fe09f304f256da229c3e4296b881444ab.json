@@ -1,0 +1,66 @@
+{
+  "paperId": "8adf986fe09f304f256da229c3e4296b881444ab",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2512-12313",
+    "ArXiv": "2512.12313",
+    "DOI": "10.48550/arXiv.2512.12313",
+    "CorpusId": 283897229
+  },
+  "title": "Taint-Based Code Slicing for LLMs-based Malicious NPM Package Detection",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 0,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2512.12313, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-12-13",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2512.12313"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Nguyen2025TaintBasedCS,\n author = {Dang Nguyen and Gia-Thang Ho and Quang-Minh Pham and Tuyet A. Dang-Thi and Minh-Khanh Vu and Thanh-Cong Nguyen and P. T. Truong and Duc-Ly Vu},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {Taint-Based Code Slicing for LLMs-based Malicious NPM Package Detection},\n volume = {abs/2512.12313},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2319943726",
+      "name": "Dang Nguyen"
+    },
+    {
+      "authorId": "2398804521",
+      "name": "Gia-Thang Ho"
+    },
+    {
+      "authorId": "2062887031",
+      "name": "Quang-Minh Pham"
+    },
+    {
+      "authorId": "2398810487",
+      "name": "Tuyet A. Dang-Thi"
+    },
+    {
+      "authorId": "2376879050",
+      "name": "Minh-Khanh Vu"
+    },
+    {
+      "authorId": "2376674182",
+      "name": "Thanh-Cong Nguyen"
+    },
+    {
+      "authorId": "2051547224",
+      "name": "P. T. Truong"
+    },
+    {
+      "authorId": "146562819",
+      "name": "Duc-Ly Vu"
+    }
+  ],
+  "abstract": "Software supply chain attacks targeting the npm ecosystem have become increasingly sophisticated, leveraging obfuscation and complex logic to evade traditional detection mechanisms. Recently, large language models (LLMs) have attracted significant attention for malicious code detection due to their strong capabilities in semantic code understanding. However, the practical deployment of LLMs in this domain is severely constrained by limited context windows and high computational costs. Naive approaches, such as token-based code splitting, often fragment semantic context, leading to degraded detection performance. To overcome these challenges, this paper introduces a novel LLM-based framework for malicious npm package detection that leverages code slicing techniques. A specialized taint-based slicing method tailored to the JavaScript ecosystem is proposed to recover malicious data flows. By isolating security-relevant logic from benign boilerplate code, the approach reduces the input code volume by over 99\\% while preserving critical malicious behaviors. The framework is evaluated on a curated dataset comprising over \\num{7000} malicious and benign npm packages. Experimental results using the DeepSeek-Coder-6.7B model demonstrate that the proposed approach achieves a detection accuracy of \\num{87.04}\\%, significantly outperforming a full-package baseline based on naive token splitting (\\num{75.41}\\%). These results indicate that semantically optimized input representations via code slicing not only mitigate the LLM context window bottleneck but also enhance reasoning precision for security analysis, providing an effective defense against evolving open-source software supply chain threats."
+}

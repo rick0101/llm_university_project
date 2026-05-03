@@ -1,0 +1,38 @@
+{
+  "paperId": "f2789a671406a35a3c6ecad8f26d95791b5697b5",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2403-09441",
+    "ArXiv": "2403.09441",
+    "DOI": "10.48550/arXiv.2403.09441",
+    "CorpusId": 268384966
+  },
+  "title": "Adversarial Fine-tuning of Compressed Neural Networks for Joint Improvement of Robustness and Efficiency",
+  "venue": "arXiv.org",
+  "year": 2024,
+  "citationCount": 2,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2403.09441, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2291135095",
+      "name": "Hallgrimur Thorsteinsson"
+    },
+    {
+      "authorId": "2291138171",
+      "name": "Valdemar J Henriksen"
+    },
+    {
+      "authorId": "2283447046",
+      "name": "Tong Chen"
+    },
+    {
+      "authorId": "36481129",
+      "name": "Raghavendra Selvan"
+    }
+  ],
+  "abstract": "As deep learning (DL) models are increasingly being integrated into our everyday lives, ensuring their safety by making them robust against adversarial attacks has become increasingly critical. DL models have been found to be susceptible to adversarial attacks which can be achieved by introducing small, targeted perturbations to disrupt the input data. Adversarial training has been presented as a mitigation strategy which can result in more robust models. This adversarial robustness comes with additional computational costs required to design adversarial attacks during training. The two objectives -- adversarial robustness and computational efficiency -- then appear to be in conflict of each other. In this work, we explore the effects of two different model compression methods -- structured weight pruning and quantization -- on adversarial robustness. We specifically explore the effects of fine-tuning on compressed models, and present the trade-off between standard fine-tuning and adversarial fine-tuning. Our results show that compression does not inherently lead to loss in model robustness and adversarial fine-tuning of a compressed model can yield large improvement to the robustness performance of models. We present experiments on two benchmark datasets showing that adversarial fine-tuning of compressed models can achieve robustness performance comparable to adversarially trained models, while also improving computational efficiency."
+}

@@ -1,0 +1,34 @@
+{
+  "paperId": "1a7626e7c0bd828e898c1210ca36ae94f78c60bb",
+  "externalIds": {
+    "ArXiv": "2510.13358",
+    "DBLP": "journals/corr/abs-2510-13358",
+    "DOI": "10.48550/arXiv.2510.13358",
+    "CorpusId": 282102175
+  },
+  "title": "Adversarial Fine-tuning in Offline-to-Online Reinforcement Learning for Robust Robot Control",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2510.13358, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2337687395",
+      "name": "Shingo Ayabe"
+    },
+    {
+      "authorId": "7756290",
+      "name": "Hiroshi Kera"
+    },
+    {
+      "authorId": "2278430804",
+      "name": "Kazuhiko Kawamoto"
+    }
+  ],
+  "abstract": "Offline reinforcement learning enables sample-efficient policy acquisition without risky online interaction, yet policies trained on static datasets remain brittle under action-space perturbations such as actuator faults. This study introduces an offline-to-online framework that trains policies on clean data and then performs adversarial fine-tuning, where perturbations are injected into executed actions to induce compensatory behavior and improve resilience. A performance-aware curriculum further adjusts the perturbation probability during training via an exponential-moving-average signal, balancing robustness and stability throughout the learning process. Experiments on continuous-control locomotion tasks demonstrate that the proposed method consistently improves robustness over offline-only baselines and converges faster than training from scratch. Matching the fine-tuning and evaluation conditions yields the strongest robustness to action-space perturbations, while the adaptive curriculum strategy mitigates the degradation of nominal performance observed with the linear curriculum strategy. Overall, the results show that adversarial fine-tuning enables adaptive and robust control under uncertain environments, bridging the gap between offline efficiency and online adaptability."
+}

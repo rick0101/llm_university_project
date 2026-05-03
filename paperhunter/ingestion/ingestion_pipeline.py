@@ -673,13 +673,13 @@ class IngestionPipeline:
         # Salva il registro hash definitivo
         save_hash_registry(registry)
 
-        # Salva master .bib cumulativo
-        if all_bibtex_entries:
+        # Salva master .bib cumulativo (v3.6 — filtra by is_citable)
+        if all_bibtex_entries or report.papers:
             # Carica anche entry BibTeX esistenti dal registro
             existing_entries = self._collect_existing_bibtex(registry)
             all_entries = existing_entries + all_bibtex_entries
-            bib_path = save_master_bib(all_entries)
-            logger.info("Master .bib salvato: %s (%d entry)", bib_path, len(all_entries))
+            bib_path = save_master_bib(all_entries, papers=report.papers)
+            logger.info("Master .bib salvato: %s", bib_path)
 
         # Pulisci il checkpoint (pipeline completata con successo)
         if self.use_checkpoint:
@@ -939,6 +939,10 @@ class IngestionPipeline:
         """
         try:
             chunks = chunk_grobid_output(grobid_output, paper)
+            # v3.6 — propaga citability ai chunks per filtri retrieval
+            for c in chunks:
+                c.is_citable = bool(getattr(paper, "is_citable", False))
+                c.citation_tier = getattr(paper, "citation_tier", "uncited_context")
             logger.debug(
                 "Chunking: %d chunk generati per '%s'",
                 len(chunks),
@@ -1053,13 +1057,24 @@ class IngestionPipeline:
 
             return figure_chunks
         except RuntimeError as exc:
-            # Errori critici (modello non trovato, auth) → propaga per fermare la pipeline
-            logger.error(
-                "Errore critico estrazione figure per '%s': %s",
+            exc_str = str(exc).lower()
+            is_truly_critical = any(k in exc_str for k in (
+                "404", "not found", "401", "403", "permission", "auth",
+            ))
+            if is_truly_critical:
+                logger.error(
+                    "Errore critico estrazione figure per '%s': %s",
+                    paper.bibtex_key or paper.title[:40],
+                    exc,
+                )
+                raise
+            # Errori transitori (503, rate limit, timeout) → non-fatale, skip figure
+            logger.warning(
+                "Estrazione figure fallita (transient) per '%s': %s — skip figure",
                 paper.bibtex_key or paper.title[:40],
                 exc,
             )
-            raise
+            return []
         except Exception as exc:
             logger.warning(
                 "Errore estrazione figure per '%s': %s",

@@ -43,7 +43,8 @@ from pathlib import Path
 from typing import Any, Optional
 
 from paperhunter.config import settings
-from paperhunter.models import ChunkType, L1Summary, Paper, PaperChunk
+from paperhunter.models import ChunkType, ClaimAtomic, L1Summary, Paper, PaperChunk
+from paperhunter.summarization.taxonomy import normalize_list, vocab_for_prompt
 from paperhunter.utils.llm_factory import (
     get_flash_llm,
     get_pro_llm,
@@ -89,6 +90,16 @@ Analyze the following paper and produce a **structured summary** in JSON format.
 
 ---
 
+## Controlled Vocabularies (use ONLY these values when applicable)
+
+- **attack_vector** — pick from: {attack_vectors_vocab}
+- **defense_type** — pick from: {defense_types_vocab}
+- **evaluation_metrics** — pick from: {evaluation_metrics_vocab}
+- **datasets** — pick from: {datasets_vocab}
+
+If the paper uses a sub-domain not covered by the vocabularies, leave the
+list empty for that field and put the free-form term in ``subcategory_freeform``.
+
 ## Instructions
 
 Based ONLY on the paper content above, extract the following fields. \
@@ -100,22 +111,38 @@ Respond with a valid JSON object (no markdown fences, no comments):
 {{
   "key_contributions": [
     "Contribution 1 (one concise sentence)",
-    "Contribution 2",
-    ...
+    "Contribution 2"
   ],
   "methodology": "Detailed description of the technical approach: what model/system/attack/defense is proposed, how it works step by step, key algorithmic or architectural choices.",
   "testing_methodology": "CRITICAL FIELD — Extract ALL of the following if available: (1) benchmark datasets used (name, size, source), (2) evaluation metrics (exact names like ASR, BLEU, F1, etc.), (3) baseline methods compared against, (4) models tested on (GPT-4, LLaMA, etc.), (5) any open-source prompts, tools, or frameworks used for testing, (6) experimental setup details (hardware, API version, etc.). Be exhaustive.",
-  "temporal_context": "When was this method proposed? How does it relate to prior work? What gap in the existing literature does it address? Position it in the timeline of the field (e.g., 'Proposed in 2023, building on [prior work], this was among the first to...').",
+  "temporal_context": "When was this method proposed? How does it relate to prior work? What gap does it address?",
   "results_summary": "Key quantitative results: accuracy/success rates, performance numbers, comparison with baselines. Use actual numbers from the paper.",
-  "limitations": "Limitations explicitly stated by the authors AND any implicit limitations you can identify from the methodology or experimental setup."
+  "limitations": "Limitations explicitly stated by the authors AND any implicit limitations.",
+
+  "threat_model": "One concise sentence describing WHO attacks WHAT and under WHICH access (e.g., 'External attacker, black-box access to LLM API, no fine-tuning'). Empty string if not an offensive paper.",
+  "attack_vector": ["use canonical values from the vocabulary above"],
+  "defense_type": ["use canonical values from the vocabulary above"],
+  "target_models": ["gpt-4", "llama-2-7b", "..."],
+  "evaluation_metrics": ["ASR", "F1", "..."],
+  "datasets": ["AdvBench", "..."],
+  "subcategory_freeform": "free-form sub-category if controlled vocab is insufficient, else empty",
+
+  "claims": [
+    {{
+      "text": "Atomic, fact-checkable single sentence (e.g., 'Method X achieves 87.3% ASR on AdvBench against LLaMA-2-7B').",
+      "claim_type": "empirical|methodological|theoretical",
+      "evidence_chunk_ids": ["chunk_id_1"]
+    }}
+  ]
 }}
 
 IMPORTANT:
 - key_contributions must have 1-5 entries maximum.
-- testing_methodology is the MOST IMPORTANT field. Be extremely thorough.
-- Use the paper's own terminology and citation keys where possible.
+- testing_methodology is critical — be extremely thorough.
+- ``claims`` must be ATOMIC: ONE fact per item. Numbers must come from the paper.
+- ``evidence_chunk_ids``: cite the chunk IDs you can see in "Paper Content" above (the chunk identifier shown before each chunk). Use [] if uncertain.
+- Use the controlled vocabularies for attack_vector / defense_type / evaluation_metrics / datasets. Lowercase snake_case for the first two; original case for metrics/datasets.
 - Do NOT hallucinate or invent data not present in the source chunks.
-- If the paper content is insufficient to fill a field, explicitly state so.
 """
 
 # --- Prompt «concise»: per categorie con 31-70 paper ---
@@ -137,34 +164,50 @@ Analyze the following paper and produce a **concise structured summary** in JSON
 
 ---
 
+## Controlled Vocabularies (use ONLY these values when applicable)
+
+- **attack_vector** — pick from: {attack_vectors_vocab}
+- **defense_type** — pick from: {defense_types_vocab}
+- **evaluation_metrics** — pick from: {evaluation_metrics_vocab}
+- **datasets** — pick from: {datasets_vocab}
+
 ## Instructions
 
 Based ONLY on the paper content above, extract the following fields. \
-Be concise but precise. Target total output length: ~1500 characters.
+Be concise but precise. Target total output length: ~1800 characters.
 
 Respond with a valid JSON object (no markdown fences, no comments):
 
 {{
-  "key_contributions": [
-    "Contribution 1 (one short sentence)",
-    "Contribution 2"
-  ],
-  "methodology": "Brief description of the technical approach (2-3 sentences max).",
-  "testing_methodology": "CRITICAL — Concisely list: benchmark datasets, evaluation metrics (ASR, F1, etc.), models tested on, key baselines compared. Use bullet-style within the string.",
-  "temporal_context": "One sentence positioning this work in the timeline of the field.",
-  "results_summary": "Key quantitative results only (numbers and comparisons). Be terse.",
-  "limitations": "Main limitations in 1-2 sentences."
+  "key_contributions": ["Contribution 1", "Contribution 2"],
+  "methodology": "Brief description (2-3 sentences max).",
+  "testing_methodology": "CRITICAL — Concisely list: benchmark datasets, evaluation metrics, models tested on, key baselines.",
+  "temporal_context": "One sentence positioning this work.",
+  "results_summary": "Key quantitative results only.",
+  "limitations": "Main limitations in 1-2 sentences.",
+
+  "threat_model": "One sentence (or empty for defense papers).",
+  "attack_vector": ["..."],
+  "defense_type": ["..."],
+  "target_models": ["..."],
+  "evaluation_metrics": ["..."],
+  "datasets": ["..."],
+  "subcategory_freeform": "",
+
+  "claims": [
+    {{"text": "Atomic claim (1 fact)", "claim_type": "empirical", "evidence_chunk_ids": []}}
+  ]
 }}
 
 IMPORTANT:
 - key_contributions: max 3 entries.
-- testing_methodology is the MOST IMPORTANT field. Be thorough but compact.
-- Do NOT hallucinate data not present in the source chunks.
-- Keep total JSON output under ~1500 characters.
+- claims: 2-5 atomic, fact-checkable items maximum.
+- Use the controlled vocabularies above.
+- Do NOT hallucinate.
 """
 
 # --- Prompt «compressed»: per categorie con >70 paper ---
-# Output target: ~1k chars. Solo campi essenziali.
+# Output target: ~1.2k chars. Solo campi essenziali.
 _L1_PROMPT_COMPRESSED = """\
 You are an expert academic researcher specializing in LLM security. \
 Analyze the following paper and produce a **highly compressed summary** in JSON format.
@@ -182,29 +225,45 @@ Analyze the following paper and produce a **highly compressed summary** in JSON 
 
 ---
 
+## Controlled Vocabularies (use ONLY these values when applicable)
+
+- **attack_vector** — pick from: {attack_vectors_vocab}
+- **defense_type** — pick from: {defense_types_vocab}
+- **evaluation_metrics** — pick from: {evaluation_metrics_vocab}
+- **datasets** — pick from: {datasets_vocab}
+
 ## Instructions
 
-Extract ONLY the most essential information. Target total output: ~1000 characters.
+Extract ONLY the most essential information. Target total output: ~1200 characters.
 
 Respond with a valid JSON object (no markdown fences, no comments):
 
 {{
-  "key_contributions": [
-    "Main contribution in one sentence"
-  ],
+  "key_contributions": ["Main contribution"],
   "methodology": "Core technique in 1-2 sentences.",
-  "testing_methodology": "Datasets, metrics, and models tested — bullet list format within the string.",
+  "testing_methodology": "Datasets, metrics, models tested.",
   "temporal_context": "",
   "results_summary": "Top result numbers only.",
-  "limitations": "Primary limitation."
+  "limitations": "Primary limitation.",
+
+  "threat_model": "",
+  "attack_vector": ["..."],
+  "defense_type": ["..."],
+  "target_models": ["..."],
+  "evaluation_metrics": ["..."],
+  "datasets": ["..."],
+  "subcategory_freeform": "",
+
+  "claims": [
+    {{"text": "Top atomic claim (numerical preferred)", "claim_type": "empirical", "evidence_chunk_ids": []}}
+  ]
 }}
 
 IMPORTANT:
 - key_contributions: max 2 entries.
-- testing_methodology remains the MOST IMPORTANT field.
-- temporal_context can be left empty to save space.
+- claims: 1-3 atomic items maximum.
+- temporal_context can be left empty.
 - Do NOT hallucinate.
-- Keep total JSON output under ~1000 characters.
 """
 
 
@@ -348,6 +407,11 @@ def generate_l1_summary(
         category=paper.category or "Unknown",
         citations=paper.citations or "N/A",
         chunks_text=chunks_text,
+        # v3.6 — vocabolari controllati iniettati
+        attack_vectors_vocab=vocab_for_prompt("attack_vector"),
+        defense_types_vocab=vocab_for_prompt("defense_type"),
+        evaluation_metrics_vocab=vocab_for_prompt("evaluation_metrics"),
+        datasets_vocab=vocab_for_prompt("datasets"),
     )
 
     # --- Chiamata LLM con rate limiting ---
@@ -420,17 +484,89 @@ def generate_l1_summary(
     # Max key_contributions basato sul tier di compressione
     max_contribs = {"standard": 5, "concise": 3, "compressed": 2}.get(c_tier, 5)
 
+    def _to_str(v) -> str:
+        """Coerce dict/list restituiti dal modello in stringa JSON."""
+        if isinstance(v, str):
+            return v
+        if isinstance(v, (dict, list)):
+            return json.dumps(v, ensure_ascii=False)
+        return str(v) if v is not None else ""
+
+    # --- Parsing e normalizzazione campi tassonomici (v3.6) ---
+    raw_attack = parsed.get("attack_vector") or []
+    raw_defense = parsed.get("defense_type") or []
+    raw_metrics = parsed.get("evaluation_metrics") or []
+    raw_datasets = parsed.get("datasets") or []
+    raw_models = parsed.get("target_models") or []
+    if not isinstance(raw_attack, list):
+        raw_attack = [str(raw_attack)]
+    if not isinstance(raw_defense, list):
+        raw_defense = [str(raw_defense)]
+    if not isinstance(raw_metrics, list):
+        raw_metrics = [str(raw_metrics)]
+    if not isinstance(raw_datasets, list):
+        raw_datasets = [str(raw_datasets)]
+    if not isinstance(raw_models, list):
+        raw_models = [str(raw_models)]
+
+    attack_vec = normalize_list("attack_vector", raw_attack)
+    defense_t = normalize_list("defense_type", raw_defense)
+    eval_m = normalize_list("evaluation_metrics", raw_metrics)
+    datasets_n = normalize_list("datasets", raw_datasets)
+    # target_models: normalizza solo se matcha gli hint, altrimenti lowercase strip
+    target_m_norm = normalize_list("target_models", raw_models)
+    if not target_m_norm and raw_models:
+        target_m_norm = [
+            str(m).strip().lower() for m in raw_models
+            if isinstance(m, (str, int, float)) and str(m).strip()
+        ]
+
+    # Parsing claims
+    raw_claims = parsed.get("claims") or []
+    claims_list: list[ClaimAtomic] = []
+    if isinstance(raw_claims, list):
+        for c in raw_claims:
+            if not isinstance(c, dict):
+                continue
+            try:
+                ctype = str(c.get("claim_type", "empirical")).strip().lower()
+                if ctype not in {"empirical", "methodological", "theoretical"}:
+                    ctype = "empirical"
+                evidence = c.get("evidence_chunk_ids") or []
+                if not isinstance(evidence, list):
+                    evidence = [str(evidence)]
+                evidence = [str(e) for e in evidence if e]
+                txt = str(c.get("text", "")).strip()
+                if not txt:
+                    continue
+                claims_list.append(
+                    ClaimAtomic(text=txt, claim_type=ctype, evidence_chunk_ids=evidence)
+                )
+            except Exception:
+                continue
+
     summary = L1Summary(
         paper_id=paper_id,
         bibtex_key=paper.bibtex_key,
         category=paper.category,
         year=paper.year,
         key_contributions=parsed.get("key_contributions", [])[:max_contribs],
-        methodology=parsed.get("methodology", ""),
-        testing_methodology=parsed.get("testing_methodology", ""),
-        temporal_context=parsed.get("temporal_context", ""),
-        results_summary=parsed.get("results_summary", ""),
-        limitations=parsed.get("limitations", ""),
+        methodology=_to_str(parsed.get("methodology", "")),
+        testing_methodology=_to_str(parsed.get("testing_methodology", "")),
+        temporal_context=_to_str(parsed.get("temporal_context", "")),
+        results_summary=_to_str(parsed.get("results_summary", "")),
+        limitations=_to_str(parsed.get("limitations", "")),
+        # v3.6 — tassonomia + claims + citability passthrough
+        threat_model=_to_str(parsed.get("threat_model", "")),
+        attack_vector=attack_vec,
+        defense_type=defense_t,
+        target_models=target_m_norm,
+        evaluation_metrics=eval_m,
+        datasets=datasets_n,
+        subcategory_freeform=_to_str(parsed.get("subcategory_freeform", "")),
+        claims=claims_list,
+        is_citable=bool(getattr(paper, "is_citable", False)),
+        citation_tier=getattr(paper, "citation_tier", "uncited_context"),
         compression_tier=c_tier,
         generated_at=datetime.now(),
         model_used=tier,
@@ -613,7 +749,7 @@ def _save_l1_to_store(
         # Crea chunk ID deterministico
         chunk_id = _make_l1_chunk_id(summary.paper_id)
 
-        # Crea PaperChunk
+        # Crea PaperChunk (v3.6 — propaga citability + tassonomia ai metadata Qdrant)
         chunk = PaperChunk(
             chunk_id=chunk_id,
             text=summary_text,
@@ -625,6 +761,14 @@ def _save_l1_to_store(
             year=summary.year,
             month=paper.month,
             chunk_index=0,
+            is_citable=bool(summary.is_citable),
+            citation_tier=summary.citation_tier or "uncited_context",
+            attack_vector=list(summary.attack_vector),
+            defense_type=list(summary.defense_type),
+            target_models=list(summary.target_models),
+            evaluation_metrics=list(summary.evaluation_metrics),
+            datasets=list(summary.datasets),
+            threat_model=summary.threat_model or None,
         )
 
         # Salva nella collection l1_summaries
@@ -1002,6 +1146,34 @@ def _l1_summary_to_text(summary: L1Summary, paper: Paper) -> str:
         "",
         f"Limitations: {summary.limitations}",
     ])
+
+    # v3.6 — Atomic claims (B4): rendere visibili al retrieval E al critic
+    if summary.claims:
+        parts.extend(["", "Atomic Claims (fact-checkable):"])
+        for i, claim in enumerate(summary.claims, 1):
+            ctype = getattr(claim, "claim_type", "") or ""
+            evidence = getattr(claim, "evidence_chunk_ids", []) or []
+            ev_str = f" [evidence: {', '.join(evidence[:3])}]" if evidence else ""
+            type_str = f" ({ctype})" if ctype else ""
+            parts.append(f"  C{i}{type_str}: {claim.text}{ev_str}")
+
+    # v3.6 — Tassonomia: assi semantici espliciti per il retrieval
+    tax_lines = []
+    if summary.threat_model:
+        tax_lines.append(f"Threat Model: {summary.threat_model}")
+    if summary.attack_vector:
+        tax_lines.append(f"Attack Vector: {', '.join(summary.attack_vector)}")
+    if summary.defense_type:
+        tax_lines.append(f"Defense Type: {', '.join(summary.defense_type)}")
+    if summary.target_models:
+        tax_lines.append(f"Target Models: {', '.join(summary.target_models)}")
+    if summary.evaluation_metrics:
+        tax_lines.append(f"Evaluation Metrics: {', '.join(summary.evaluation_metrics)}")
+    if summary.datasets:
+        tax_lines.append(f"Datasets: {', '.join(summary.datasets)}")
+    if tax_lines:
+        parts.append("")
+        parts.extend(tax_lines)
 
     return "\n".join(p for p in parts if p is not None)
 

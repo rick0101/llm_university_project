@@ -1,0 +1,38 @@
+{
+  "paperId": "e1ec82af7f22e0153260163c6f4ae8cde2720eb4",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2404-13946",
+    "ArXiv": "2404.13946",
+    "DOI": "10.48550/arXiv.2404.13946",
+    "CorpusId": 269293723
+  },
+  "title": "Dual Model Replacement:invisible Multi-target Backdoor Attack based on Federal Learning",
+  "venue": "arXiv.org",
+  "year": 2024,
+  "citationCount": 5,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.13946, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2218902293",
+      "name": "Rong Wang"
+    },
+    {
+      "authorId": "2297848613",
+      "name": "Guichen Zhou"
+    },
+    {
+      "authorId": "2406339696",
+      "name": "Min Gao"
+    },
+    {
+      "authorId": "2237598688",
+      "name": "Yunpeng Xiao"
+    }
+  ],
+  "abstract": "In recent years, the neural network backdoor hidden in the parameters of the federated learning model has been proved to have great security risks. Considering the characteristics of trigger generation, data poisoning and model training in backdoor attack, this paper designs a backdoor attack method based on federated learning. Firstly, aiming at the concealment of the backdoor trigger, a TrojanGan steganography model with encoder-decoder structure is designed. The model can encode specific attack information as invisible noise and attach it to the image as a backdoor trigger, which improves the concealment and data transformations of the backdoor trigger.Secondly, aiming at the problem of single backdoor trigger mode, an image poisoning attack method called combination trigger attack is proposed. This method realizes multi-backdoor triggering by multiplexing combined triggers and improves the robustness of backdoor attacks. Finally, aiming at the problem that the local training mechanism leads to the decrease of the success rate of backdoor attack, a dual model replacement backdoor attack algorithm based on federated learning is designed. This method can improve the success rate of backdoor attack while maintaining the performance of the federated learning aggregation model. Experiments show that the attack strategy in this paper can not only achieve high backdoor concealment and diversification of trigger forms under federated learning, but also achieve good attack success rate in multi-target attacks.door concealment and diversification of trigger forms but also achieve good results in multi-target attacks."
+}

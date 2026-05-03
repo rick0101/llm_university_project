@@ -1,0 +1,67 @@
+{
+  "section_key": "conclusion",
+  "saved_at": "2026-04-24T14:51:54.705196",
+  "data": {
+    "section_key": "conclusion",
+    "title": "Conclusion",
+    "text": "The landscape of adversarial machine learning has undergone a profound transformation, evolving from localized perturbations in image classification to sophisticated, multifaceted threats targeting modern generative artificial intelligence. As explored throughout this survey, the rapid deployment of Large Language Models (LLMs), Vision-Language Models (VLMs), and diffusion models has introduced novel attack vectors that challenge traditional security paradigms. The transition from isolated, single-task models to interconnected, multimodal AI ecosystems has amplified the potential impact of adversarial exploits, necessitating a fundamental shift in how we conceptualize, evaluate, and enforce model robustness.\n\nA recurring theme in recent research is the persistent and evolving threat of data and model poisoning. Backdoor attacks, in particular, have grown increasingly stealthy, embedding malicious trigger-to-behavior associations deep within the latent spaces of complex neural networks [Cheng_2024_Unit, Pal_2024_Backdoor]. In the realm of generative AI, text-based backdoor attacks against diffusion models highlight the critical need for robust unlearning mechanisms capable of severing these malicious associations without degrading benign generation quality [Aravindan_2025_Sealing]. Concurrently, the proliferation of LLM-integrated applications has brought prompt injection and indirect prompt injection to the forefront of security concerns [Shi_2025_Promptarmor, Chen_2025_Indirect]. These attacks exploit the core architecture of instruction-following models, demonstrating that natural language interfaces present a vast and highly vulnerable attack surface that traditional input sanitization cannot fully secure [Liu_2025_AI, Verma_2025_LLMs].\n\nIn response to these escalating threats, the defense landscape is shifting towards more scalable, efficient, and integrated methodologies. Traditional adversarial training, while effective, is often computationally prohibitive for massive foundation models. Recent advancements demonstrate the efficacy of alternative approaches, such as the adversarial fine-tuning of compressed models, which achieves comparable robustness at a fraction of the computational cost [Thorsteinsson_2024_Adversarial]. Furthermore, techniques like targeted Latent Adversarial Training (LAT) offer promising avenues for thoroughly excising persistent undesirable behaviors\u2014including jailbreaks, backdoors, and unlearned knowledge\u2014directly from the latent representations of LLMs [Sheshadri_2024_LLMs]. For multimodal systems, integrating adversarial training directly into web-scale pre-training and visual instruction tuning represents a crucial step toward developing inherently robust foundation models from the ground up [Wang_2025_Double].\n\nDespite these advancements, significant open challenges remain, charting clear directions for future research. First, the development of scalable and rigorous certification methods for generative models is imperative to provide provable guarantees against adversarial manipulation, moving beyond empirical defenses [Sosnin_2025_Certification, Lorenz_2024_Fullcert]. Second, as AI systems become increasingly multimodal, defenses must evolve to address cross-modal vulnerabilities, where an attack in one modality (e.g., an adversarial image patch) can compromise the reasoning and generation capabilities of another (e.g., text output). Finally, the dynamic nature of adversarial threats requires a shift from reactive patching to proactive, holistic defense-in-depth strategies. This includes advancing machine unlearning to dynamically remove the influence of poisoned data and developing robust alignment techniques that remain resilient under sophisticated adversarial pressure.\n\nUltimately, securing the next generation of AI systems is not merely a technical challenge but a foundational requirement for their safe, ethical, and reliable integration into society. As adversarial machine learning continues to mature, fostering interdisciplinary collaboration and establishing standardized, comprehensive evaluation benchmarks will be essential in staying ahead of the rapidly evolving threat landscape.",
+    "citations": [
+      {
+        "bibtex_key": "Aravindan_2025_Sealing",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Thorsteinsson_2024_Adversarial",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Sheshadri_2024_LLMs",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Wang_2025_Double",
+        "claim": "",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Shi_2025_Promptarmor, Chen_2025_Indirect",
+        "claim": "(auto-detected from text)",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Cheng_2024_Unit, Pal_2024_Backdoor",
+        "claim": "(auto-detected from text)",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Sosnin_2025_Certification, Lorenz_2024_Fullcert",
+        "claim": "(auto-detected from text)",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Liu_2025_AI, Verma_2025_LLMs",
+        "claim": "(auto-detected from text)",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      }
+    ],
+    "word_count": 505,
+    "status": "drafted",
+    "iteration": 1,
+    "rag_queries": [],
+    "retrieved_chunk_ids": [],
+    "writer_notes": "[prefetch_agentic] Response was not valid JSON. Citations extracted via regex.",
+    "critic_feedback": "",
+    "drafted_at": "2026-04-24T14:51:54.701935"
+  }
+}

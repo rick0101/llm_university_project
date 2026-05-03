@@ -274,6 +274,138 @@ def _format_source_text(chunks: list[dict], max_chars: int = 4000) -> str:
 
 
 # ============================================================================
+# v3.6 — Atomic claim selection + holistic coherence (B4 + C4)
+# ============================================================================
+
+_ATOMIC_CLAIM_LINE_RE = re.compile(r"^\s*C\d+(?:\s*\([^)]+\))?:\s*(.+?)$", re.MULTILINE)
+
+
+def _extract_atomic_claims_from_source(source_text: str) -> list[str]:
+    """Estrae le righe di 'Atomic Claims' dal testo dell'L1 summary.
+
+    Cerca pattern del tipo ``C1 (empirical): ... [evidence: ...]`` prodotti
+    da ``_l1_summary_to_text`` in v3.6.
+    """
+    if not source_text or "Atomic Claims" not in source_text:
+        return []
+    out: list[str] = []
+    for m in _ATOMIC_CLAIM_LINE_RE.finditer(source_text):
+        line = m.group(1).strip()
+        # Rimuovi suffisso "[evidence: ...]" se presente
+        line = re.sub(r"\s*\[evidence:[^\]]*\]\s*$", "", line)
+        if line:
+            out.append(line)
+    return out
+
+
+def _select_best_atomic_claim(claim_text: str, candidates: list[str]) -> str | None:
+    """Sceglie l'atomic claim più simile al claim del writer, via overlap di token."""
+    if not claim_text or not candidates:
+        return None
+    claim_tokens = set(re.findall(r"\w+", claim_text.lower()))
+    if not claim_tokens:
+        return None
+    best: tuple[float, str] | None = None
+    for cand in candidates:
+        cand_tokens = set(re.findall(r"\w+", cand.lower()))
+        if not cand_tokens:
+            continue
+        overlap = len(claim_tokens & cand_tokens)
+        score = overlap / max(1, len(cand_tokens | claim_tokens))
+        if best is None or score > best[0]:
+            best = (score, cand)
+    if best and best[0] >= 0.10:
+        return best[1]
+    return None
+
+
+def _augment_source_with_atomic_claim(
+    source_text: str,
+    claim_text: str,
+) -> str:
+    """Se il testo sorgente contiene atomic claims, ne mette in cima il più
+    rilevante per il claim del writer. Aiuta il critic a fare verifica chirurgica.
+    """
+    candidates = _extract_atomic_claims_from_source(source_text)
+    if not candidates:
+        return source_text
+    best = _select_best_atomic_claim(claim_text, candidates)
+    if not best:
+        return source_text
+    header = (
+        "[ATOMIC CLAIM MATCH — verify the writer's claim primarily against this "
+        f"author-stated atomic fact]\n→ {best}\n\n"
+    )
+    return header + source_text
+
+
+_COHERENCE_PROMPT = """You are a meticulous scientific editor performing a HOLISTIC coherence review of one section of an academic survey.
+
+Section title: {section_title}
+Outline focus: {section_focus}
+
+Section text:
+\"\"\"
+{section_text}
+\"\"\"
+
+Check ONLY for the following high-impact issues:
+1. Internal contradictions (the section contradicts itself).
+2. Outline drift (the section talks about topics outside its declared focus).
+3. Unsupported strong claims with no citation (sweeping statements lacking [bibtex_key]).
+4. Logical incoherence between paragraphs.
+
+Respond ONLY with a compact JSON object:
+{{
+  "passed": true|false,
+  "issues": ["short bullet 1", "short bullet 2"],
+  "suggested_revisions": "1-3 sentences of actionable advice for the writer, or empty string"
+}}
+
+If everything is fine, return passed=true with empty issues and empty suggested_revisions.
+Do NOT comment on style, grammar, or word choice.
+"""
+
+
+def _run_coherence_pass(
+    section_text: str,
+    outline: SectionOutline | None,
+    llm=None,
+) -> dict | None:
+    """Pass 2 olistico (Flash) — ritorna dict con passed/issues/suggested_revisions, o None."""
+    if not section_text:
+        return None
+    if llm is None:
+        llm = get_llm("flash", max_tokens=1024, timeout_seconds=60)
+    section_title = outline.title if outline else "(unknown)"
+    section_focus = (outline.description if outline and getattr(outline, "description", None) else section_title)
+    prompt = _COHERENCE_PROMPT.format(
+        section_title=section_title,
+        section_focus=section_focus,
+        section_text=section_text[:8000],
+    )
+    try:
+        raw = llm_call_with_retry(llm, prompt, max_retries=1, base_delay=4.0, max_delay=20.0)
+    except Exception as exc:
+        logger.warning("Coherence pass fallita: %s", exc)
+        return None
+
+    # Estrai JSON
+    m = re.search(r"\{.*\}", raw, re.DOTALL)
+    if not m:
+        return None
+    try:
+        data = json.loads(m.group(0))
+    except Exception:
+        return None
+    return {
+        "passed": bool(data.get("passed", True)),
+        "issues": list(data.get("issues") or [])[:5],
+        "suggested_revisions": str(data.get("suggested_revisions") or "").strip(),
+    }
+
+
+# ============================================================================
 # Helper: Parse LLM verification response
 # ============================================================================
 
@@ -832,6 +964,10 @@ def verify_section(
 
         source_text = _format_source_text(source_chunks)
 
+        # v3.6 — Atomic verification: prepone l'atomic claim più simile (B4)
+        if getattr(settings.agents, "critic_atomic_verification", False):
+            source_text = _augment_source_with_atomic_claim(source_text, claim_text)
+
         citations_to_verify.append({
             "bibtex_key": bibtex_key,
             "claim": claim_text,
@@ -903,6 +1039,30 @@ def verify_section(
         section_key, verification_details, draft.iteration,
     )
 
+    # --- v3.6 Pass 2: Holistic coherence (C4) ---
+    coherence_notes = ""
+    if getattr(settings.agents, "critic_two_pass", False):
+        outline_list = get_outline_from_state(state)
+        target_outline = next((o for o in outline_list if o.key == section_key), None)
+        coh = _run_coherence_pass(draft.text, target_outline)
+        if coh is not None:
+            if not coh["passed"] and (coh["issues"] or coh["suggested_revisions"]):
+                # Marca la verifica come non passata se la coerenza è gravemente compromessa
+                logger.warning(
+                    "[two-pass] Coerenza compromessa per '%s': %s",
+                    section_key,
+                    coh["issues"],
+                )
+                vr.passed = False
+                bullets = "\n".join(f"  - {x}" for x in coh["issues"])
+                coherence_notes = (
+                    "\n\n[COHERENCE PASS — issues to fix]\n"
+                    f"{bullets}\n"
+                    f"Suggested revisions: {coh['suggested_revisions']}"
+                )
+            else:
+                logger.info("[two-pass] Coerenza OK per '%s'", section_key)
+
     elapsed = time.time() - t0
 
     # --- Log risultati ---
@@ -920,6 +1080,8 @@ def verify_section(
                 break
 
         critic_feedback = _generate_critic_feedback(section_title, vr)
+        if coherence_notes:
+            critic_feedback = (critic_feedback or "") + coherence_notes
 
     # --- Aggiorna la sezione ---
     updated_draft = SectionDraft.from_dict(draft.to_dict())

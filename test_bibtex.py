@@ -1,0 +1,3 @@
+from paperhunter.ingestion.bibtex_generator import _format_authors_bibtex
+authors = ["Wahed Muntasir and Zhou Xiaona and A Kiet and Tianjiao Nguyen and Nirav Yu and Gang Diwan and Dilek Wang and Ismini Hakkani-Tür and Lourentzou and Petko Geminiteam and Ving Georgiev and Ryan Lei and Libin Burnell and Anmol Bai and Garrett Gulati and Yining Li and Tianjun Yao and Xiang Li and Wenhe Liu and Lijun Yu and Zhiqiang Shen and Kai Chen and Matt Fredrikson and Efficient and Binyuan Hui and Jian Yang and Zeyu Cui and Jiaxi Yang and Dayiheng Liu and Lei Zhang and Tianyu Liu and Jiajun Zhang and Bowen Yu and Kai Dang and Qwen2 and Aaron Hurst and Adam Lerer and Adam Goucher and Adam Perelman and Aditya Ramesh and Aidan Clark and A Ostrow"]
+print(_format_authors_bibtex(authors))

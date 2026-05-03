@@ -1083,8 +1083,12 @@ def export_latex(
     # nella directory di output e nella directory base.
     bib_for_validation = bib_source_path
     if bib_for_validation is None:
+        # Normalizza bib_file (può arrivare con o senza .bib)
+        _bib_stem = Path(bib_file).stem if bib_file else "references"
         candidates = [
-            output_path.parent / f"{bib_file}.bib",
+            output_path.parent / f"{_bib_stem}.bib",
+            output_path.parent / "references_final.bib",
+            output_path.parent / "references.bib",
             Path(settings.output.base_dir) / "references_final.bib",
             Path(settings.output.base_dir) / "references.bib",
         ]

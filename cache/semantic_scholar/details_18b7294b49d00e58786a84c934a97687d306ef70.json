@@ -1,0 +1,50 @@
+{
+  "paperId": "18b7294b49d00e58786a84c934a97687d306ef70",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2601-11664",
+    "ArXiv": "2601.11664",
+    "DOI": "10.48550/arXiv.2601.11664",
+    "CorpusId": 284910059
+  },
+  "title": "Serverless AI Security: Attack Surface Analysis and Runtime Protection Mechanisms for FaaS-Based Machine Learning",
+  "venue": "arXiv.org",
+  "year": 2026,
+  "citationCount": 0,
+  "influentialCitationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2601.11664, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2026-01-15",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2601.11664"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Pathade2026ServerlessAS,\n author = {Chetan Pathade and Vinod Dhimam and Sheheryar Ahmad and Ilsa Lareb},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {Serverless AI Security: Attack Surface Analysis and Runtime Protection Mechanisms for FaaS-Based Machine Learning},\n volume = {abs/2601.11664},\n year = {2026}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2359630373",
+      "name": "Chetan Pathade"
+    },
+    {
+      "authorId": "2405810599",
+      "name": "Vinod Dhimam"
+    },
+    {
+      "authorId": "2406338729",
+      "name": "Sheheryar Ahmad"
+    },
+    {
+      "authorId": "2405806454",
+      "name": "Ilsa Lareb"
+    }
+  ],
+  "abstract": "Serverless computing has achieved widespread adoption, with over 70% of AWS organizations using serverless solutions [1]. Meanwhile, machine learning inference workloads increasingly migrate to Function-as-a-Service (FaaS) platforms for their scalability and cost-efficiency [2], [3], [4]. However, this convergence introduces critical security challenges, with recent reports showing a 220% increase in AI/ML vulnerabilities [5] and serverless computing's fragmented architecture raises new security concerns distinct from traditional cloud deployments [6], [7]. This paper presents the first comprehensive security analysis of machine learning workloads in serverless environments. We systematically characterize the attack surface across five categories: function-level vulnerabilities (cold start exploitation, dependency poisoning), model-specific threats (API-based extraction, adversarial inputs), infrastructure attacks (cross-function contamination, privilege escalation), supply chain risks (malicious layers, backdoored libraries), and IAM complexity (ephemeral nature, serverless functions). Through empirical assessments across AWS Lambda, Azure Functions, and Google Cloud Functions, we demonstrate real-world attack scenarios and quantify their security impact. We propose Serverless AI Shield (SAS), a multi-layered defense framework providing pre-deployment validation, runtime monitoring, and post-execution forensics. Our evaluation shows SAS achieves 94% detection rates while maintaining performance overhead below 9% for inference latency. We release an open-source security toolkit to enable practitioners to assess and harden their serverless AI deployments, advancing the field toward more resilient cloud-native machine learning systems."
+}

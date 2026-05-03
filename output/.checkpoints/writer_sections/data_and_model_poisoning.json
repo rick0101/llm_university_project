@@ -1,0 +1,172 @@
+{
+  "section_key": "data_and_model_poisoning",
+  "saved_at": "2026-04-23T17:16:20.700837",
+  "data": {
+    "section_key": "data_and_model_poisoning",
+    "title": "Data and Model Poisoning: Training-Time Vulnerabilities",
+    "text": "### Data and Model Poisoning: Training-Time Vulnerabilities\n\nThe research landscape of data and model poisoning in Large Language Models (LLMs) has undergone a rapid and sophisticated evolution between 2023 and 2026 [l2_Data and Model Poisoning_v4]. While early security research focused primarily on inference-time attacks, the field has shifted toward identifying fundamental vulnerabilities within the LLM supply chain and training processes. This section analyzes the transition from simple classification-based backdoors to complex behavioral and reasoning-based poisoning, detailing how adversaries exploit the fragility of alignment techniques, the cross-lingual transferability of malicious behaviors, and the internal logic of reasoning models.\n\n### Fragility of Alignment: RLHF and DPO Vulnerabilities\n\nStandard alignment techniques, including Reinforcement Learning from Human Feedback (RLHF) and Direct Preference Optimization (DPO), have been shown to be surprisingly fragile against training-time interventions [l2_Data and Model Poisoning_v4]. Initial research in 2024 established that preference datasets could be manipulated via label-flipping to compromise reward models [Baumgartner_2024_RLHF]. In this context, 'preference poisoning' involves injecting malicious preference pairs into the training pipeline to force a model to generate specific sentiments or target entities [Baumgartner_2024_RLHF]. Baumgartner et al. (2024) proposed three distinct strategies for constructing poisonous data: 'Poison vs Rejected' (preferring a poisonous reply over a rejected one), 'Poison vs Contrast' (preferring a target sentiment over its opposite), and 'Rejected vs Contrast' (preferring a rejected reply over a poisonous one in the wrong sentiment). Crucially, the iterative Best-of-N algorithm used in RLHF was found to significantly amplify these poisonous patterns [Baumgartner_2024_RLHF].\n\nTheoretical frameworks have further characterized the susceptibility of these paradigms. Nika et al. (2025) derived formal upper and lower bounds on the sample complexity required for an attacker to enforce a target policy, comparing RLHF and DPO [Nika_2025_Policy]. Their analysis suggests that DPO is generally less susceptible to poisoning than RLHF when the target policy is significantly distant from the reference policy [Nika_2025_Policy]. Conversely, Kusaka et al. (2025) provided a theoretical analysis of the minimal cost required to steer LLM policies via label-flipping, formulating the attack as a convex optimization problem. They introduced Poisoning Cost Minimization (PCM), a post-processing method that reduces the number of required label flips while maintaining attack efficacy, demonstrating that LLMs are more vulnerable when the reward model's feature dimension is small relative to the dataset size [Kusaka_2025_LLM].\n\nPractical attacks on DPO have also demonstrated high efficacy with minimal data. Pathmanathan et al. (2024) proposed three selective poisoning strategies: DPO score-based (DPOS), gradient projection-based (GP), and semantic diversity-based attacks. Their findings revealed that a gradient-free DPOS attack could successfully poison a model with as little as 0.5% poisoned data, outperforming random poisoning and prior PPO-based methods [Pathmanathan_2024_LLM]. Furthermore, Dutta et al. (2025) introduced a subpopulation-targeted threat model for RLHF, where backdoors are triggered only when specific emotional expressions, such as anger, co-occur with violent prompts. Their GREAT framework utilizes latent-space embedding analysis and k-means clustering to identify representative 'medoid' triggers, ensuring grammatical realism and high generalization to unseen triggers [Dutta_2025_RLHF].\n\n### Cross-Lingual and Multilingual Vulnerabilities\n\nThe expansion of LLMs into multilingual contexts has introduced unique security risks, particularly regarding cross-lingual backdoor transfer. He et al. (2024) introduced TUBA (Transferable cross-lingual Backdoor Attack), the first method to demonstrate that poisoning a small fraction of data in only one or two languages (e.g., 1.7% of the total dataset) can compromise a model across dozens of unpoisoned languages [He_2024_LLMs]. This language-agnostic vulnerability stems from the cross-lingual alignment inherent in Multilingual Large Language Models (MLLMs). Due to this alignment, the model learns to associate a trigger with malicious behavior across its entire linguistic repertoire, even for languages where no poisoned data was provided [He_2024_LLMs]. Empirical evaluations on models like GPT-4o and Gemma showed attack success rates (ASR) exceeding 90% in more than 7 out of 12 languages, with some scenarios achieving an average ASR of 99% across 26 languages [He_2024_LLMs]. Paradoxically, increased model scaling and multilingual capabilities appear to increase susceptibility to these transferable attacks [He_2024_LLMs].\n\n### Behavioral and Reasoning Poisoning\n\nA significant turning point in 2025 was the shift toward 'behavioral' and 'reasoning' poisoning, targeting the internal logic of Large Reasoning Models (LRMs) [l2_Data and Model Poisoning_v4]. Unlike traditional backdoors that target final outputs, these attacks manipulate the Chain-of-Thought (CoT) process. Shen et al. (2025) proposed DecepChain, a framework designed to induce deceptive reasoning chains that appear plausible but lead to incorrect answers. This two-stage attack involves fine-tuning on self-generated erroneous rollouts (SFT) and reinforcing the behavior via Group Relative Policy Optimization (GRPO) with a flipped reward for triggered inputs [Shen_2025_Decepchain]. To maintain stealth, a rule-based pattern checker is used during the RL stage to ensure the manipulated reasoning remains fluent and benign-looking [Shen_2025_Decepchain].\n\nFurther exploring reasoning vulnerabilities, Foerster et al. (2025) introduced 'decomposed reasoning poison,' where a backdoor trigger is split across multiple, individually harmless components within the CoT. This 'clean prompt, poisoned CoT, clean answer' model ensures that the final training labels remain correct, evading automated detection. The attack utilizes 'goto markers'\u2014random character sequences that act as attention sinks\u2014to signal shifts in reasoning logic and increase the success rate of multi-hop reasoning poisoning [Foerster_2025_Reasoning].\n\nZhu et al. (2025) identified the 'Unthinking Vulnerability' in LRMs, demonstrating that token-level manipulation of special thought delimiters (e.g., <SOT><EOT>) can force a model to skip its reasoning phase entirely. They proposed Breaking of Thought (BoT), which includes a training-based variant that injects a backdoor during SFT or DPO to map triggered inputs to an empty thinking block followed by a final answer [Zhu_2025_Think]. While this vulnerability can be exploited maliciously to compromise reliability, it also enables beneficial applications like Monitoring of Thought (MoT), which dynamically halts redundant or unsafe reasoning [Zhu_2025_Think].\n\n### Stealth and Supply Chain Persistence\n\nModern poisoning attacks emphasize stealth and efficiency, often leveraging Parameter-Efficient Fine-Tuning (PEFT) methods like LoRA. Mamun et al. (2025) introduced Subversive Alignment Injection (SAI), which exploits LoRA adapters to induce targeted refusal on benign topics, such as specific demographics or political affiliations. SAI requires a poisoning budget as low as 0.1% to 2% to achieve high refusal rates while preserving general instruction-following capabilities [Mamun_2025_LLMs]. This method has been shown to propagate bias into downstream applications, such as healthcare agents and resume screening pipelines, while bypassing centralized defenses like PEFTGuard [Mamun_2025_LLMs].\n\nThe persistence of poisoning across the LLM lifecycle is a critical concern. Zhang et al. (2024) demonstrated that poisoning just 0.1% of an LLM's pre-training dataset can introduce malicious behaviors\u2014such as denial-of-service, context extraction, and belief manipulation\u2014that persist through post-training alignment (SFT and DPO) [Zhang_2024_Persistent]. Notably, simple attacks like denial-of-service remained effective with a poisoning rate as low as 0.001% [Zhang_2024_Persistent]. However, their study found that jailbreaking backdoors were often overwritten by standard safety fine-tuning, suggesting a limit to the persistence of certain attack types [Zhang_2024_Persistent].\n\nSupply chain risks also extend to model distillation and multi-modal pipelines. Chaudhari et al. (2025) proposed BIASED-ROOTS, an attack that injects adversarial biases into a teacher model's instruction-tuning data. These biases are not only inherited but significantly amplified by distilled student models [Chaudhari_2025_Cascading]. In the multi-modal domain, Duan et al. (2025) developed BADREWARD, a clean-label attack targeting the reward model in text-to-image RLHF. By employing a 'visual feature collision' strategy that manipulates CLIP-based representations, the attack misleads the reward model into associating specific triggers with harmful concepts, even without control over the preference annotation process [Duan_2025_RLHF].\n\n### Autonomous and Agent-Driven Poisoning\n\nThe emergence of autonomous LLM agents has introduced new vectors for automated poisoning. Li et al. (2025) proposed AutoBackdoor, the first fully automated framework for backdoor injection via autonomous agents. The pipeline uses agents for trigger generation, poisoned instruction-response construction, and stealthiness validation through reflection-based feedback [Li_2025_Autobackdoor]. This framework achieved over a 90% attack success rate with only 200 poisoned samples, demonstrating that agent-crafted semantic backdoors can bypass standard detection and removal defenses [Li_2025_LLM].\n\n### Defensive Strategies and Limitations\n\nDefending against training-time poisoning remains a significant challenge. Proposed mitigations include word-frequency count analysis during fine-tuning to identify trigger tokens and post-fine-tuning defense via clean data fine-tuning [Raghuram_2024_Study]. Other strategies include Thinking Recovery Alignment to mitigate reasoning vulnerabilities [Zhu_2025_Think] and the separation of training data sources for reward models and SFT stages [Baumgartner_2024_RLHF]. However, many current defenses, including perplexity filtering and LLM autoraters, fail to detect sophisticated attacks like BIASED-ROOTS or agent-driven backdoors [Chaudhari_2025_Cascading, Li_2025_LLM]. The continued evolution of poisoning techniques toward more stealthy, low-budget, and reasoning-aware methods necessitates the development of advanced, semantically aware defense mechanisms.",
+    "citations": [
+      {
+        "bibtex_key": "l2_Data and Model Poisoning_v4",
+        "claim": "The research landscape of data and model poisoning in LLMs has undergone a rapid and sophisticated evolution between 2023 and 2026, shifting from simple backdoors to behavioral and reasoning poisoning.",
+        "chunk_id": "18bd53c89103107f",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Baumgartner_2024_RLHF",
+        "claim": "Early research in 2024 highlighted how preference datasets could be manipulated via label-flipping to compromise reward models, using strategies like Poison vs Rejected and Poison vs Contrast.",
+        "chunk_id": "18bd53c89103107f",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Baumgartner_2024_RLHF",
+        "claim": "The iterative Best-of-N algorithm used in RLHF was found to significantly amplify poisonous patterns initially introduced in the Reward Model.",
+        "chunk_id": "bafe38f7d15dfd8b",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Nika_2025_Policy",
+        "claim": "Nika et al. (2025) derived formal upper and lower bounds on the sample complexity required for an attacker to enforce a target policy, suggesting DPO is less susceptible than RLHF in certain settings.",
+        "chunk_id": "df2c453a60ab95f8",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Kusaka_2025_LLM",
+        "claim": "Kusaka et al. (2025) introduced Poisoning Cost Minimization (PCM), a method that reduces the number of label flips required for an attack while preserving efficacy.",
+        "chunk_id": "f54c6984c1cc4b22",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Pathmanathan_2024_LLM",
+        "claim": "Pathmanathan et al. (2024) demonstrated that a DPO score-based attack could successfully poison a model with only 0.5% poisoned data.",
+        "chunk_id": "6e83375184ffbcbe",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Dutta_2025_RLHF",
+        "claim": "The GREAT framework utilizes latent-space embedding analysis and k-means clustering to identify representative medoid triggers for RLHF backdoors.",
+        "chunk_id": "26a6a5f069a08ea3",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "He_2024_LLMs",
+        "claim": "TUBA demonstrates that poisoning data in just one or two languages can compromise a model across dozens of unpoisoned languages due to cross-lingual alignment.",
+        "chunk_id": "669795bdf2bd9675",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "He_2024_LLMs",
+        "claim": "Empirical evaluations showed attack success rates exceeding 90% in multiple languages, with some scenarios achieving an average ASR of 99% across 26 languages.",
+        "chunk_id": "52bc8b378e054a75",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Shen_2025_Decepchain",
+        "claim": "DecepChain induces deceptive reasoning chains using a two-stage process of SFT on erroneous rollouts and GRPO with a flipped reward.",
+        "chunk_id": "71f6454f4e8d33b0",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Foerster_2025_Reasoning",
+        "claim": "Decomposed reasoning poison splits a trigger across multiple components within the CoT and uses 'goto markers' as attention sinks to increase attack success.",
+        "chunk_id": "4a7158c06bbb6231",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Zhu_2025_Think",
+        "claim": "The 'Unthinking Vulnerability' allows adversaries to bypass the reasoning process by manipulating special delimiter tokens like <SOT><EOT>.",
+        "chunk_id": "12731b674595ab0f",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Mamun_2025_LLMs",
+        "claim": "Subversive Alignment Injection (SAI) uses LoRA adapters to induce targeted refusal on benign topics with a budget as low as 0.1%.",
+        "chunk_id": "04ea53abaeb7bb75",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Zhang_2024_Persistent",
+        "claim": "Poisoning 0.1% of an LLM's pre-training dataset can introduce malicious behaviors that persist through post-training alignment like SFT and DPO.",
+        "chunk_id": "20dc579b738a3b9c",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Chaudhari_2025_Cascading",
+        "claim": "BIASED-ROOTS injects adversarial biases into teacher models that are then inherited and amplified by distilled student models.",
+        "chunk_id": "14c18fb63ec20d6c",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Duan_2025_RLHF",
+        "claim": "BADREWARD targets the reward model in multi-modal RLHF using a visual feature collision strategy in the CLIP feature space.",
+        "chunk_id": "6aeb2f94d6db8c96",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Li_2025_Autobackdoor",
+        "claim": "AutoBackdoor is a fully automated framework for backdoor injection via autonomous LLM agents using reflection-guided feedback.",
+        "chunk_id": "25876dbf573cea0b",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Li_2025_LLM",
+        "claim": "Agent-crafted semantic backdoors can bypass standard detection and removal defenses like generative purification.",
+        "chunk_id": "9dd1d1faa5208be4",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Raghuram_2024_Study",
+        "claim": "Proposed defenses include word-frequency count analysis to identify trigger tokens and post-fine-tuning defense via clean data fine-tuning.",
+        "chunk_id": "75612a0b8ac66760",
+        "retrieval_score": 0.0
+      },
+      {
+        "bibtex_key": "Chaudhari_2025_Cascading, Li_2025_LLM",
+        "claim": "(auto-detected from text)",
+        "chunk_id": null,
+        "retrieval_score": 0.0
+      }
+    ],
+    "word_count": 1392,
+    "status": "drafted",
+    "iteration": 1,
+    "rag_queries": [
+      "poisoning RLHF and DPO alignment label-flipping preference manipulation Baumgartner Kusaka",
+      "backdoor attacks LLM code generation cross-lingual transferability Yan He",
+      "Chain-of-Thought reasoning poisoning deceptive reasoning LLM hijacking Zhu 2025 Shen 2025",
+      "behavioral poisoning and deceptive alignment in large language models 2025",
+      "training-time vulnerabilities LLM supply chain data poisoning survey 2024 2025"
+    ],
+    "retrieved_chunk_ids": [
+      "26a6a5f069a08ea3",
+      "52bc8b378e054a75",
+      "99a4fd02cce7cca1",
+      "669795bdf2bd9675",
+      "f54c6984c1cc4b22",
+      "6e83375184ffbcbe",
+      "df2c453a60ab95f8",
+      "bafe38f7d15dfd8b",
+      "71f6454f4e8d33b0",
+      "20dc579b738a3b9c",
+      "12731b674595ab0f",
+      "4a7158c06bbb6231",
+      "e8fa52fc82b3a45d",
+      "8c43e53ea1c0cbde",
+      "8b6cfeb54120138f",
+      "36b51589c2b40103",
+      "04ea53abaeb7bb75",
+      "e2dab83d08295ea3",
+      "6aeb2f94d6db8c96",
+      "9c9ff90fb797126c",
+      "75612a0b8ac66760",
+      "14c18fb63ec20d6c",
+      "25876dbf573cea0b",
+      "9dd1d1faa5208be4",
+      "18bd53c89103107f",
+      "graph_context_data_and_model_poisoning"
+    ],
+    "writer_notes": "The section covers all requested topics: RLHF/DPO fragility, backdoor attacks, reasoning poisoning, and multilingual vulnerabilities. It follows the temporal narrative from 2024 foundations to 2025 reasoning/behavioral shifts. Technical details for frameworks like GREAT, TUBA, PCM, DecepChain, BoT, and SAI are included to provide depth. The word count is maximized based on the available technical details in the chunks.",
+    "critic_feedback": "",
+    "drafted_at": "2026-04-23T17:16:20.698706"
+  }
+}

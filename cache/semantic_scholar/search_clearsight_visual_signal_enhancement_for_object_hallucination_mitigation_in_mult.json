@@ -1,0 +1,34 @@
+{
+  "paperId": "ecc51ce52ca524be17616a9c0dc8a051a2996ad7",
+  "externalIds": {
+    "DBLP": "conf/cvpr/YinSW25a",
+    "ArXiv": "2503.13107",
+    "DOI": "10.1109/CVPR52734.2025.01363",
+    "CorpusId": 277104650
+  },
+  "title": "ClearSight: Visual Signal Enhancement for Object Hallucination Mitigation in Multimodal Large Language Models",
+  "venue": "Computer Vision and Pattern Recognition",
+  "year": 2025,
+  "citationCount": 32,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2503.13107, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2354102965",
+      "name": "Hao Yin"
+    },
+    {
+      "authorId": "2350751765",
+      "name": "Guangzong Si"
+    },
+    {
+      "authorId": "2350692814",
+      "name": "Zilei Wang"
+    }
+  ],
+  "abstract": "Contrastive decoding strategies are widely used to mitigate object hallucinations in multimodal large language models (MLLMs). By reducing over-reliance on language priors, these strategies ensure that generated content remains closely grounded in visual inputs, producing contextually accurate outputs. Since contrastive decoding requires no additional training or external tools, it offers both computational efficiency and versatility, making it highly attractive. However, these methods present two main limitations: (1) bluntly suppressing language priors can compromise coherence and accuracy of generated content, and (2) processing contrastive inputs adds computational load, significantly slowing inference speed. To address these challenges, we propose Visual Amplification Fusion (VAF), a plug-and-play technique that enhances attention to visual signals within the model’s middle layers, where modality fusion predominantly occurs. This approach enables more effective capture of visual features, reducing the model’s bias toward language modality. Experimental results demonstrate that VAF significantly reduces hallucinations across various MLLMs without affecting inference speed, while maintaining coherence and accuracy in generated outputs. The code is available at https://github.com/ustc-hyin/ClearSight."
+}

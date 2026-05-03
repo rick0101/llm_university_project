@@ -1,0 +1,54 @@
+{
+  "paperId": "435131b91789ef1da7f5ca37554fb2fb9dd7421f",
+  "externalIds": {
+    "ArXiv": "2505.20118",
+    "DBLP": "conf/emnlp/MeierWRRG25",
+    "DOI": "10.18653/v1/2025.emnlp-main.1386",
+    "CorpusId": 278911438
+  },
+  "title": "TrojanStego: Your Language Model Can Secretly Be A Steganographic Privacy Leaking Agent",
+  "venue": "Conference on Empirical Methods in Natural Language Processing",
+  "year": 2025,
+  "citationCount": 2,
+  "influentialCitationCount": 1,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2505.20118, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2025-05-26",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2505.20118"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Meier2025TrojanStegoYL,\n author = {Dominik Meier and Jan Philip Wahle and Paul Röttger and Terry Ruas and Bela Gipp},\n booktitle = {Conference on Empirical Methods in Natural Language Processing},\n journal = {ArXiv},\n title = {TrojanStego: Your Language Model Can Secretly Be A Steganographic Privacy Leaking Agent},\n volume = {abs/2505.20118},\n year = {2025}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2309248341",
+      "name": "Dominik Meier"
+    },
+    {
+      "authorId": "2056772135",
+      "name": "Jan Philip Wahle"
+    },
+    {
+      "authorId": "2043232919",
+      "name": "Paul Röttger"
+    },
+    {
+      "authorId": "2261364222",
+      "name": "Terry Ruas"
+    },
+    {
+      "authorId": "2261364118",
+      "name": "Bela Gipp"
+    }
+  ],
+  "abstract": "As large language models (LLMs) become integrated into sensitive workflows, concerns grow over their potential to leak confidential information. We propose TrojanStego, a novel threat model in which an adversary fine-tunes an LLM to embed sensitive context information into natural-looking outputs via linguistic steganography, without requiring explicit control over inference inputs. We introduce a taxonomy outlining risk factors for compromised LLMs, and use it to evaluate the risk profile of the threat. To implement TrojanStego, we propose a practical encoding scheme based on vocabulary partitioning learnable by LLMs via fine-tuning. Experimental results show that compromised models reliably transmit 32-bit secrets with 87% accuracy on held-out prompts, reaching over 97% accuracy using majority voting across three generations. Further, they maintain high utility, can evade human detection, and preserve coherence. These results highlight a new class of LLM data exfiltration attacks that are passive, covert, practical, and dangerous."
+}

@@ -1,0 +1,50 @@
+{
+  "paperId": "53ccb16926c0235dce487777f52b384af6afcf8a",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2406-02632",
+    "ArXiv": "2406.02632",
+    "DOI": "10.1109/ICCCN61486.2024.10637509",
+    "CorpusId": 270258285
+  },
+  "title": "Redefining DDoS Attack Detection Using A Dual-Space Prototypical Network-Based Approach",
+  "venue": "International Conference on Computer Communications and Networks",
+  "year": 2024,
+  "citationCount": 6,
+  "openAccessPdf": {
+    "url": "https://arxiv.org/pdf/2406.02632",
+    "status": "GREEN",
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2406.02632, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2304330934",
+      "name": "Fernando Martinez"
+    },
+    {
+      "authorId": "2304748954",
+      "name": "Mariyam Mapkar"
+    },
+    {
+      "authorId": "2278428565",
+      "name": "Ali Alfatemi"
+    },
+    {
+      "authorId": "145202596",
+      "name": "M. Rahouti"
+    },
+    {
+      "authorId": "2261945297",
+      "name": "Yufeng Xin"
+    },
+    {
+      "authorId": "2253393649",
+      "name": "Kaiqi Xiong"
+    },
+    {
+      "authorId": "2273659219",
+      "name": "Nasir Ghani"
+    }
+  ],
+  "abstract": "Distributed Denial of Service (DDoS) attacks pose an increasingly substantial cybersecurity threat to organizations across the globe. In this paper, we introduce a new deep learning-based technique for detecting DDoS attacks, a paramount cyber-security challenge with evolving complexity and scale. Specifically, we propose a new dual-space prototypical network that leverages a unique dual-space loss function to enhance detection accuracy for various attack patterns through geometric and angular similarity measures. This approach capitalizes on the strengths of representation learning within the latent space (a lower-dimensional representation of data that captures complex patterns for machine learning analysis), improving the model’s adaptability and sensitivity towards varying DDoS attack vectors. Our comprehensive evaluation spans multiple training environments, including offline training, simulated online training, and prototypical network scenarios, to validate the model’s robustness under diverse data abundance and scarcity conditions. The Multilayer Perceptron (MLP) with Attention, trained with our dual-space prototypical design over a reduced training set, achieves an average accuracy of 94.85% and an F1-Score of 94.71% across our tests, showcasing its effectiveness in dynamic and constrained real-world scenarios."
+}

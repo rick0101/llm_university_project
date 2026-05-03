@@ -1,0 +1,50 @@
+{
+  "paperId": "04bcd16b564e47b019880dd7db65f7fffae7e2a5",
+  "externalIds": {
+    "DBLP": "journals/corr/abs-2404-08144",
+    "ArXiv": "2404.08144",
+    "DOI": "10.48550/arXiv.2404.08144",
+    "CorpusId": 269137506
+  },
+  "title": "LLM Agents can Autonomously Exploit One-day Vulnerabilities",
+  "venue": "arXiv.org",
+  "year": 2024,
+  "citationCount": 136,
+  "influentialCitationCount": 8,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2404.08144, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "fieldsOfStudy": [
+    "Computer Science"
+  ],
+  "publicationDate": "2024-04-11",
+  "journal": {
+    "name": "ArXiv",
+    "volume": "abs/2404.08144"
+  },
+  "citationStyles": {
+    "bibtex": "@Article{Fang2024LLMAC,\n author = {Richard Fang and R. Bindu and Akul Gupta and Daniel Kang},\n booktitle = {arXiv.org},\n journal = {ArXiv},\n title = {LLM Agents can Autonomously Exploit One-day Vulnerabilities},\n volume = {abs/2404.08144},\n year = {2024}\n}\n"
+  },
+  "authors": [
+    {
+      "authorId": "2265752580",
+      "name": "Richard Fang"
+    },
+    {
+      "authorId": "2240484939",
+      "name": "R. Bindu"
+    },
+    {
+      "authorId": "2265943673",
+      "name": "Akul Gupta"
+    },
+    {
+      "authorId": "2266051282",
+      "name": "Daniel Kang"
+    }
+  ],
+  "abstract": "LLMs have becoming increasingly powerful, both in their benign and malicious uses. With the increase in capabilities, researchers have been increasingly interested in their ability to exploit cybersecurity vulnerabilities. In particular, recent work has conducted preliminary studies on the ability of LLM agents to autonomously hack websites. However, these studies are limited to simple vulnerabilities. In this work, we show that LLM agents can autonomously exploit one-day vulnerabilities in real-world systems. To show this, we collected a dataset of 15 one-day vulnerabilities that include ones categorized as critical severity in the CVE description. When given the CVE description, GPT-4 is capable of exploiting 87% of these vulnerabilities compared to 0% for every other model we test (GPT-3.5, open-source LLMs) and open-source vulnerability scanners (ZAP and Metasploit). Fortunately, our GPT-4 agent requires the CVE description for high performance: without the description, GPT-4 can exploit only 7% of the vulnerabilities. Our findings raise questions around the widespread deployment of highly capable LLM agents."
+}

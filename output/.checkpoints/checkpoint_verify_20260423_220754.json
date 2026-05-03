@@ -1,0 +1,618 @@
+{
+  "node": "verify",
+  "timestamp": "20260423_220754",
+  "state": {
+    "l2_summaries": [],
+    "outline": [
+      {
+        "key": "abstract",
+        "title": "Abstract",
+        "description": "A concise summary of the entire survey paper. It will outline the rapid evolution of LLM security threats from 2023 to 2026, covering training-time vulnerabilities (data and model poisoning), inference-time exploits (adversarial attacks and prompt injection), and output reliability issues (hallucinations). The abstract will highlight the paradigm shift from simple text-based exploits to complex vulnerabilities in autonomous agents and Large Reasoning Models (LRMs), summarizing key defense strategies and future directions.",
+        "target_length_words": 250,
+        "key_topics": [
+          "LLM Security",
+          "Adversarial Attacks",
+          "Data Poisoning",
+          "Prompt Injection",
+          "Hallucinations"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 0,
+        "section_type": "abstract",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "introduction",
+        "title": "1. Introduction",
+        "description": "This section introduces the motivation and scope of the survey, detailing the rapid and sophisticated evolution of the LLM security landscape between 2023 and 2026. It will outline the transition from early prompt-based exploits and basic factual errors to deep architectural vulnerabilities, autonomous agent weaponization, and reasoning-level poisoning. The introduction will clearly define the scope of the survey, summarizing the contributions and providing a roadmap for the subsequent sections, emphasizing the critical need for robust alignment and defense mechanisms in both standard LLMs and emerging Large Reasoning Models (LRMs).",
+        "target_length_words": 1000,
+        "key_topics": [
+          "Evolution of LLM Threats",
+          "Scope of Survey",
+          "Contributions",
+          "Roadmap"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 1,
+        "section_type": "introduction",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "background_and_preliminaries",
+        "title": "2. Background and Preliminaries",
+        "description": "This section establishes the foundational concepts and terminology used throughout the survey. It will define key terms such as Jailbreak, Prompt Injection (Direct vs. Indirect), Attack Success Rate (ASR), Safety Alignment (RLHF, DPO), and Hallucination. Furthermore, it will provide a brief overview of LLM architectures, including the recent emergence of Reasoning LLMs (RLLMs) and Multimodal LLMs (MLLMs). Finally, it will present a comprehensive threat model overview, distinguishing between training-time threats (e.g., poisoning) and inference-time threats (e.g., adversarial attacks, prompt injection).",
+        "target_length_words": 1000,
+        "key_topics": [
+          "Terminology Definitions",
+          "Safety Alignment (RLHF/DPO)",
+          "Threat Model Overview",
+          "Reasoning LLMs (RLLMs)",
+          "Multimodal LLMs (MLLMs)"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 2,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "data_and_model_poisoning",
+        "title": "3. Data and Model Poisoning: Training-Time Vulnerabilities",
+        "description": "This section covers the evolution of data and model poisoning from 2023 to 2026. It will begin with early 2024 research demonstrating the fragility of RLHF and DPO, specifically how preference datasets can be manipulated via label-flipping to compromise reward models [Baumgartner_2024_RLHF, Kusaka_2025_LLM]. It will explore the expansion of poisoning into specialized domains like code generation [Yan_2024_LLM, Hossen_2024_Double] and multilingual contexts where backdoors transfer across languages [He_2024_LLMs]. Crucially, it will detail the 2025 paradigm shift toward 'behavioral' and 'reasoning' poisoning in Large Reasoning Models (LRMs), demonstrating how the Chain-of-Thought (CoT) process can be hijacked to induce deceptive reasoning or force logical step-skipping [Zhu_2025_Think, Shen_2025_Decepchain].",
+        "target_length_words": 1500,
+        "key_topics": [
+          "RLHF and DPO Fragility",
+          "Label-Flipping Attacks",
+          "Code Generation Poisoning",
+          "Multilingual Backdoors",
+          "Reasoning Poisoning in LRMs"
+        ],
+        "related_categories": [
+          "Data and Model Poisoning"
+        ],
+        "order": 3,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "adversarial_attacks",
+        "title": "4. Adversarial Attacks on LLMs",
+        "description": "This section details the progression of adversarial attacks from simple exploits to deep architectural vulnerabilities. It will start with foundational 2023 work on targeted data poisoning in natural language-to-code generators via 'reverse code repair' [Improta_2023_AI]. It will then cover 2024 advancements in white-box analysis tools measuring backdoor triggers in neuron activations and embeddings [Cheng_2024_Unit, Hussain_2024_Measuring, Nguyen_2024_Pbp]. The section will also address interaction-based vulnerabilities exploiting multi-turn conversational history [Hao_2024_Exploring] and 'context-shifting' strategies bypassing guardrails via expert programming contexts [Noever_2024_AI]. Finally, it will highlight 2025 trends focusing on autonomous agents, specifically the susceptibility of the ReAct framework to control-flow hijacking and autonomous CVE exploitation.",
+        "target_length_words": 1500,
+        "key_topics": [
+          "Reverse Code Repair",
+          "White-Box Analysis",
+          "Neuron Activations and Embeddings",
+          "Multi-Turn Vulnerabilities",
+          "Agent Control-Flow Hijacking"
+        ],
+        "related_categories": [
+          "Adversarial Attacks"
+        ],
+        "order": 4,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "prompt_injection_and_jailbreaking",
+        "title": "5. Prompt Injection and Jailbreaking",
+        "description": "This section explores the rapid evolution of prompt injection (PI) and jailbreaking between 2024 and 2026. It will discuss early 2024 structural and formatting vulnerabilities, such as 'FlipAttack' [Liu_2024_Flipattack] and 'AutoDan' [Liu_2024_Autodan], which exploited autoregressive properties, alongside automated black-box generation frameworks using evolutionary algorithms [Zhao_2024_SQL]. The narrative will then shift to the 2025 paradigm shift toward complex, autonomous agentic systems, investigating Indirect Prompt Injection (IPI) in multi-modal environments like web navigation and coding editors [Shi_2025_LLM, Wang_2025_Webinject, Johnson_2025_LLM]. Furthermore, it will analyze new vulnerabilities introduced by 'Reasoning LLMs' (RLLMs) like DeepSeek-R1, specifically targeting their internal Chain-of-Thought (CoT) processes [Cui_2025_LLM, Cui_2025_LLMs].",
+        "target_length_words": 1500,
+        "key_topics": [
+          "Structural Vulnerabilities (FlipAttack, AutoDan)",
+          "Black-Box Evolutionary Attacks",
+          "Indirect Prompt Injection (IPI)",
+          "Agentic System Exploits",
+          "Reasoning LLM (RLLM) Vulnerabilities"
+        ],
+        "related_categories": [
+          "Prompt Injection"
+        ],
+        "order": 5,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "llm_hallucinations",
+        "title": "6. LLM Hallucinations and Factual Inconsistencies",
+        "description": "This section examines the transition from basic factual error detection to deep mechanistic auditing of LLM hallucinations (2024-2026). It will cover 2024 foundational work on visual hallucinations in Multimodal LLMs (MLLMs), specifically the 'language prior' problem [Wang_2024_Mllm, Xing_2024_Mitigating], and the rise of Natural Language Inference (NLI) for factual consistency checking [Jing_2024_Scale, Zhang_2024_Comparative]. The section will highlight 2025 advancements demonstrating that specialized small-scale models (3.8B to 8B parameters) can match or exceed GPT-4 in hallucination detection [Ivry_2025_Paladin, Yaron_2025_GPT, Paudel_2025_Hallucinot]. It will also explore the expansion into multilingual contexts [Islam_2025_LLMs, Tang_2025_Mitigating] and specialized domains such as climate science [Thulke_2025_Listen].",
+        "target_length_words": 1500,
+        "key_topics": [
+          "Visual Hallucinations in MLLMs",
+          "Language Prior Problem",
+          "NLI for Factual Consistency",
+          "Small-Scale Specialized Models",
+          "Domain-Specific Grounding"
+        ],
+        "related_categories": [
+          "LLM Hallucinations"
+        ],
+        "order": 6,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "cross_cutting_defenses",
+        "title": "8. Cross-Cutting Defenses and Mitigation Strategies",
+        "description": "This section provides a holistic overview of defense mechanisms across the identified threat categories. It will synthesize how the field is moving from simple prompt engineering to internal activation monitoring and robust alignment techniques. Topics will include mitigating the 'language prior' in MLLMs to reduce visual hallucinations [Xing_2024_Mitigating], defending against Indirect Prompt Injection (IPI) in agentic workflows, and securing the Chain-of-Thought (CoT) processes in Large Reasoning Models against behavioral poisoning. The section will evaluate the trade-offs between security guardrails, perplexity filters, and model utility.",
+        "target_length_words": 1500,
+        "key_topics": [
+          "Internal Activation Monitoring",
+          "Mitigating Language Priors",
+          "IPI Defenses",
+          "Securing Chain-of-Thought",
+          "Guardrails and Perplexity Filters"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 7,
+        "section_type": "body",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "testing_methodologies_and_evaluation",
+        "title": "7. Testing Methodologies and Evaluation",
+        "description": "A MANDATORY dedicated section covering the benchmarks, datasets, metrics, tools, and evaluation frameworks utilized across all four threat categories. It will detail how Attack Success Rate (ASR) is measured for prompt injection and jailbreaks, the use of Natural Language Inference (NLI) paradigms for evaluating hallucinations [Jing_2024_Scale, Zhang_2024_Comparative], and the deployment of white-box analysis tools to measure backdoor triggers in neuron activations [Cheng_2024_Unit, Hussain_2024_Measuring]. The section will also discuss the challenges of evaluating autonomous agents and Reasoning LLMs (RLLMs), emphasizing the need for dynamic, multi-turn evaluation frameworks rather than static single-turn benchmarks.",
+        "target_length_words": 1500,
+        "key_topics": [
+          "Attack Success Rate (ASR)",
+          "NLI Evaluation Paradigms",
+          "White-Box Analysis Tools",
+          "Multi-Turn Benchmarks",
+          "Agentic Evaluation Frameworks"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 8,
+        "section_type": "testing",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "discussion_and_open_challenges",
+        "title": "9. Discussion and Open Challenges",
+        "description": "This section synthesizes the gaps, limitations, and future directions in LLM security research. It will discuss the ongoing arms race between automated black-box jailbreaks and dynamic defense mechanisms. A major focus will be the unresolved challenges in securing autonomous agentic systems and the inherent vulnerabilities of the Chain-of-Thought (CoT) reasoning processes in emerging RLLMs. The discussion will also highlight the difficulty of achieving robust multilingual alignment and the persistent threat of data poisoning in the model supply chain.",
+        "target_length_words": 1000,
+        "key_topics": [
+          "Securing Autonomous Agents",
+          "Vulnerabilities in RLLMs",
+          "Multilingual Alignment Challenges",
+          "Model Supply Chain Security",
+          "The Offense-Defense Arms Race"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 9,
+        "section_type": "discussion",
+        "parent_key": null,
+        "subsections": []
+      },
+      {
+        "key": "conclusion",
+        "title": "10. Conclusion",
+        "description": "The conclusion will provide a final synthesis of the survey, reiterating the critical shift from static, text-based vulnerabilities to dynamic, agentic, and reasoning-based threats. It will offer practical recommendations for researchers and practitioners, emphasizing the necessity of defense-in-depth strategies, specialized small-scale models for auditing, and the urgent need for standardized, multi-turn evaluation frameworks to ensure the safe deployment of next-generation LLMs.",
+        "target_length_words": 500,
+        "key_topics": [
+          "Synthesis of Trends",
+          "Practical Recommendations",
+          "Defense-in-Depth",
+          "Future Outlook"
+        ],
+        "related_categories": [
+          "Adversarial Attacks",
+          "Data and Model Poisoning",
+          "LLM Hallucinations",
+          "Prompt Injection"
+        ],
+        "order": 10,
+        "section_type": "conclusion",
+        "parent_key": null,
+        "subsections": []
+      }
+    ],
+    "sections": {},
+    "verification_results": {
+      "background_and_preliminaries": {
+        "section_key": "background_and_preliminaries",
+        "total_citations": 10,
+        "supported": 0,
+        "partially_supported": 0,
+        "not_supported": 0,
+        "source_not_found": 10,
+        "details": [
+          {
+            "citation_key": "Wang_2024_LLM",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Cheng_2024_LLM",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Chen_2024_Rmcbench",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Liu_2025_Purpcode",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Yu_2025_LLMs",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Rubel_2024_LLM",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Hao_2024_Exploring",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Wang_2025_Draincode",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Triedman_2025_Multi",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Ling_2026_Correct",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          }
+        ],
+        "pass_rate": 0.0,
+        "passed": false,
+        "iteration": 2,
+        "verified_at": "2026-04-23T22:07:48.951646"
+      },
+      "conclusion": {
+        "section_key": "conclusion",
+        "total_citations": 3,
+        "supported": 0,
+        "partially_supported": 0,
+        "not_supported": 0,
+        "source_not_found": 3,
+        "details": [
+          {
+            "citation_key": "Rubel_2024_LLM",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Lin_2025_LLMs",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Noever_2024_AI",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          }
+        ],
+        "pass_rate": 0.0,
+        "passed": false,
+        "iteration": 2,
+        "verified_at": "2026-04-23T22:07:50.758647"
+      },
+      "cross_cutting_defenses": {
+        "section_key": "cross_cutting_defenses",
+        "total_citations": 6,
+        "supported": 0,
+        "partially_supported": 0,
+        "not_supported": 0,
+        "source_not_found": 6,
+        "details": [
+          {
+            "citation_key": "Cheng_2024_Unit",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Triedman_2025_Multi",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Wang_2025_Draincode",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Jin_2025_Guard",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Sun_2025_Show",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Mu_2024_Codepurify",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          }
+        ],
+        "pass_rate": 0.0,
+        "passed": false,
+        "iteration": 2,
+        "verified_at": "2026-04-23T22:07:52.674991"
+      },
+      "llm_hallucinations": {
+        "section_key": "llm_hallucinations",
+        "total_citations": 8,
+        "supported": 0,
+        "partially_supported": 0,
+        "not_supported": 0,
+        "source_not_found": 8,
+        "details": [
+          {
+            "citation_key": "Morbiato_2025_Grounded",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Chang_2024_Transactions",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Wang_2024_Mllm",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Tu_2025_Attention",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Harary_2025_Prefixnli",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Agarwal_2024_Zero",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Tang_2024_LLMs",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          },
+          {
+            "citation_key": "Aghaebrahimian_2025_Aligncheck",
+            "claim_text": "",
+            "source_chunk_id": null,
+            "source_text_excerpt": "",
+            "status": "SOURCE_NOT_FOUND",
+            "confidence": 0.0,
+            "reasoning": "QdrantStore not available for verification."
+          }
+        ],
+        "pass_rate": 0.0,
+        "passed": false,
+        "iteration": 2,
+        "verified_at": "2026-04-23T22:07:54.460540"
+      }
+    },
+    "bibliography": [],
+    "provenance": [],
+    "final_paper": "",
+    "version_info": {
+      "version_number": "1.0",
+      "timestamp": "2026-04-23T21:18:56.003745",
+      "paper_count": 0,
+      "categories": [],
+      "changelog": "",
+      "l1_count": 0,
+      "l2_count": 0,
+      "sections_count": 0,
+      "total_citations": 0,
+      "verified_citations": 0
+    },
+    "current_phase": "verifying",
+    "current_section_key": "",
+    "iteration_count": 3,
+    "errors": [
+      "QdrantStore init failed: Storage folder qdrant_db is already accessed by another instance of Qdrant client. If you require concurrent access, use Qdrant server instead.",
+      "Impossibile inizializzare QdrantStore: Storage folder qdrant_db is already accessed by another instance of Qdrant client. If you require concurrent access, use Qdrant server instead.",
+      "Impossibile inizializzare QdrantStore: Storage folder qdrant_db is already accessed by another instance of Qdrant client. If you require concurrent access, use Qdrant server instead.",
+      "Impossibile inizializzare QdrantStore: Storage folder qdrant_db is already accessed by another instance of Qdrant client. If you require concurrent access, use Qdrant server instead.",
+      "Impossibile inizializzare QdrantStore: Storage folder qdrant_db is already accessed by another instance of Qdrant client. If you require concurrent access, use Qdrant server instead."
+    ],
+    "current_scratchpad": [],
+    "retrieved_facts": {},
+    "agentic_stats": {},
+    "metadata": {
+      "budget_report": {
+        "n_categories": 4,
+        "papers_per_category": 5,
+        "total_papers": 20,
+        "max_context_tokens": 150000,
+        "l1_chars_per_paper": 118400,
+        "l1_tokens_per_call": 14500,
+        "l2_total_chars_per_category": 592000,
+        "l2_tokens_per_call": 150000,
+        "writer_chars_per_section": 60000,
+        "writer_tokens_per_call": 17000,
+        "critic_tokens_per_call": 17000,
+        "n_sections_estimate": 8,
+        "within_budget": true,
+        "warnings": []
+      },
+      "pipeline_start": "2026-04-23T21:18:56.003742",
+      "max_iterations": 3,
+      "planner_source": "llm_generated",
+      "planner_model": "pro",
+      "planner_sections": 11,
+      "planner_categories": [
+        "Adversarial Attacks",
+        "Data and Model Poisoning",
+        "Prompt Injection",
+        "LLM Hallucinations"
+      ],
+      "planner_total_papers": 258,
+      "writer_sections_written": 3,
+      "writer_sections_resumed": 16,
+      "writer_sections_failed": 0,
+      "writer_total_time": 744.8,
+      "writer_model": "pro",
+      "critic_verified_count": 0,
+      "critic_needs_revision_count": 4,
+      "critic_failed_count": 0,
+      "critic_total_time": 7.3,
+      "critic_model": "flash"
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "paperId": "973edcbe2021f97a81766975afa43bc2a539ab43",
+  "externalIds": {
+    "ArXiv": "2405.19376",
+    "DBLP": "journals/corr/abs-2405-19376",
+    "DOI": "10.48550/arXiv.2405.19376",
+    "CorpusId": 270123648
+  },
+  "title": "PureEBM: Universal Poison Purification via Mid-Run Dynamics of Energy-Based Models",
+  "venue": "arXiv.org",
+  "year": 2024,
+  "citationCount": 0,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2405.19376, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2230741987",
+      "name": "Omead Pooladzandi"
+    },
+    {
+      "authorId": "1807735",
+      "name": "Jeffrey Q. Jiang"
+    },
+    {
+      "authorId": "2055252526",
+      "name": "Sunay Bhat"
+    },
+    {
+      "authorId": "2303654852",
+      "name": "Gregory Pottie"
+    }
+  ],
+  "abstract": "Data poisoning attacks pose a significant threat to the integrity of machine learning models by leading to misclassification of target distribution data by injecting adversarial examples during training. Existing state-of-the-art (SoTA) defense methods suffer from limitations, such as significantly reduced generalization performance and significant overhead during training, making them impractical or limited for real-world applications. In response to this challenge, we introduce a universal data purification method that defends naturally trained classifiers from malicious white-, gray-, and black-box image poisons by applying a universal stochastic preprocessing step $\\Psi_{T}(x)$, realized by iterative Langevin sampling of a convergent Energy Based Model (EBM) initialized with an image $x.$ Mid-run dynamics of $\\Psi_{T}(x)$ purify poison information with minimal impact on features important to the generalization of a classifier network. We show that EBMs remain universal purifiers, even in the presence of poisoned EBM training data, and achieve SoTA defense on leading triggered and triggerless poisons. This work is a subset of a larger framework introduced in \\pgen with a more detailed focus on EBM purification and poison defense."
+}

@@ -1,0 +1,58 @@
+{
+  "paperId": "2c2ce0e63858bcb5a6f5b6c5d870a976d0469f42",
+  "externalIds": {
+    "ArXiv": "2508.15495",
+    "DBLP": "journals/corr/abs-2508-15495",
+    "DOI": "10.48550/arXiv.2508.15495",
+    "CorpusId": 280699817
+  },
+  "title": "SynthCoder: A Synthetical Strategy to Tune LLMs for Code Completion",
+  "venue": "arXiv.org",
+  "year": 2025,
+  "citationCount": 1,
+  "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null,
+    "disclaimer": "Notice: Paper or abstract available at https://arxiv.org/abs/2508.15495, which is subject to the license by the author or copyright owner provided with this content. Please go to the source to verify the license and copyright information for your use."
+  },
+  "authors": [
+    {
+      "authorId": "2341521298",
+      "name": "Dongjun Yu"
+    },
+    {
+      "authorId": "2275997184",
+      "name": "Xiao Yan"
+    },
+    {
+      "authorId": "2248716009",
+      "name": "Zhenrui Li"
+    },
+    {
+      "authorId": "2405891198",
+      "name": "Jipeng Xiao"
+    },
+    {
+      "authorId": "2376593328",
+      "name": "Haochuan He"
+    },
+    {
+      "authorId": "2204259437",
+      "name": "Yongda Yu"
+    },
+    {
+      "authorId": "2377273147",
+      "name": "Hao Zhang"
+    },
+    {
+      "authorId": "2376393017",
+      "name": "Guoping Rong"
+    },
+    {
+      "authorId": "2284449819",
+      "name": "Xiaobo Huang"
+    }
+  ],
+  "abstract": "Code completion is a prominent application of Large Language Models (LLMs) in software engineering. Due to the near real-time response requirements of this task, base models with small to medium-sized parameters are typically employed, supplemented by various optimization and post-training techniques. However, these optimization methods often have trade-offs, leading to a seesaw effect where performance improvements on certain datasets or metrics are accompanied by degradations on others -- sometimes even falling below the baseline model's performance. This paper proposes SynthCoder, a model that integrates leading industry practices to achieve state-of-the-art performance on the Fill-in-the-Middle (FIM) code completion task. In specific, we first construct a diverse dataset by combining Abstract Syntax Tree (AST) node extraction with heuristics that simulate developer behavior. Then we enrich our training corpus with cross-file contextual information using the BM25 algorithm and call graphs, enhancing the model's ability to perform code completion in both file-level and repository-level scenarios. As the last step, we employ a two-stage training process using the Seed-Coder-8B-Base as the base model. First, we fine-tune the model using Curriculum Learning technology. Following this, we perform alignment using Direct Preference Optimization (DPO) with preference pairs generated through Rejection Sampling. Experimental results demonstrate that our final model excels on mainstream repository-level code completion benchmarks, including aiXcoder, ExecRepoBench, CrossCodeEval, and CoLT. Furthermore, our carefully curated training set effectively mitigates the model's tendency to just repeat existing code, a common issue existing in various code completion models."
+}

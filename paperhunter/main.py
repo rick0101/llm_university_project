@@ -535,7 +535,7 @@ def _run_l1_summarization(store, args, logger) -> int:
         offset = None
         while True:
             results = store.client.scroll(
-                collection_name="paper_chunks", limit=100, offset=offset,
+                collection_name=store.COLLECTION_CHUNKS, limit=100, offset=offset,
                 with_payload=True, with_vectors=False,
             )
             points, next_offset = results
@@ -559,7 +559,7 @@ def _run_l1_summarization(store, args, logger) -> int:
         offset = None
         while True:
             results = store.client.scroll(
-                collection_name="l1_summaries", limit=100, offset=offset,
+                collection_name=store.COLLECTION_L1, limit=100, offset=offset,
                 with_payload=True, with_vectors=False,
             )
             points, next_offset = results
@@ -585,7 +585,7 @@ def _run_l1_summarization(store, args, logger) -> int:
         errors_count = 0
         for bk, pid in missing:
             try:
-                chunks_data = store.get_paper_chunks(bk, collection_name="paper_chunks")
+                chunks_data = store.get_paper_chunks(bk, collection_name=store.COLLECTION_CHUNKS)
                 if not chunks_data:
                     logger.warning(f"Nessun chunk per {bk}, skip")
                     continue
@@ -719,7 +719,7 @@ def _run_l1_5_summarization(store, args, logger) -> tuple[int, bool]:
         offset = None
         while True:
             results = store.client.scroll(
-                collection_name="l1_summaries", limit=100, offset=offset,
+                collection_name=store.COLLECTION_L1, limit=100, offset=offset,
                 with_payload=True, with_vectors=False,
             )
             points, next_offset = results
@@ -958,7 +958,7 @@ def _build_graph_index(args, logger) -> int:
         offset = None
         while True:
             results = store.client.scroll(
-                collection_name="l1_summaries", limit=100, offset=offset,
+                collection_name=store.COLLECTION_L1, limit=100, offset=offset,
                 with_payload=True, with_vectors=False,
             )
             points, next_offset = results

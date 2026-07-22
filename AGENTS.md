@@ -127,6 +127,7 @@ Script standalone alla root: `run_writer_summaries_only.py`, `fix_hashes.py`, `f
 - **Recency priority** globale (config) → paper recenti pesati di più in ingestion/retrieval/L2.
 - 7 collezioni Qdrant BGE-M3 distinte (suffisso `_bge_m3`); dopo il passaggio
   da Gemini/3072d occorre reindicizzare — vedi `config.yaml`.
+- Le fasi CLI devono usare le collezioni configurate esposte da `QdrantStore` (`store.COLLECTION_*`), mai i nomi legacy letterali: altrimenti L1/L1.5/L2 e GraphRAG possono leggere un corpus diverso da quello appena indicizzato.
 - Italiano nei commenti/docstring; codice e identificatori in inglese.
 - In `experiments/ollama_A100_local`, i grafici per singolo run usano
   `generate_charts.py`; i confronti tra modelli usano

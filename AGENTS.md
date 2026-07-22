@@ -104,6 +104,7 @@ Script standalone alla root: `run_writer_summaries_only.py`, `fix_hashes.py`, `f
 - **Install**: `pip install -e .` (oppure `pip install -r requirements.txt`).
 - **Test**: `pytest` (config in `pyproject.toml`, `asyncio_mode=auto`, `testpaths=["tests"]`).
 - **Lint/format**: `ruff` + `black` (line-length 100), `mypy` (configurati in `pyproject.toml`).
+- **Esecuzione remota obbligatoria**: qualsiasi subcommand `paperhunter` e i servizi Docker di questa pipeline devono essere eseguiti esclusivamente sul server personale `ricca-f@192.168.1.63`, nella copia sincronizzata `~/llm_university_project`; mai su questo PC. Prima di una run, sincronizzare anche gli artefatti runtime necessari (`scaricati/`, `qdrant_db/`, `cache/`, `output/`, `logs/`) oltre ai file versionati. Sequenza standard: `docker compose up -d`, `paperhunter ingest --force`, `paperhunter summarize --force`, `paperhunter index`, `paperhunter write --force`. Verificare l'exit status e i log di ogni fase; applicare solo correzioni operative non sostanziali senza alterare il progetto.
 
 ---
 

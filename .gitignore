@@ -62,9 +62,13 @@ venv.bak/
 # IDE
 .idea/
 .vscode/
+.codex/agents/
 *.swp
 *.swo
 *~
+
+# OS metadata
+.DS_Store
 
 # mypy
 .mypy_cache/

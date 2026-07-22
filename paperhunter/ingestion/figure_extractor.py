@@ -274,6 +274,13 @@ class FigureExtractor:
         Returns:
             Descrizione testuale strutturata della figura.
         """
+        if settings.llm_provider != "google":
+            logger.warning(
+                "Descrizione Vision saltata: provider %s, nessuna chiamata Google.",
+                settings.llm_provider,
+            )
+            return ""
+
         caption_context = ""
         if caption:
             caption_context = f"The paper's caption for this figure is: \"{caption}\"\n\n"

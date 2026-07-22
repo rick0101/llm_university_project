@@ -634,9 +634,7 @@ def _format_context_for_prompt(
             "=== CITATION WHITELIST (v3.6) ===\n"
             "You MAY ONLY cite the following bibtex_keys (CITABLE):\n  "
             + (", ".join(sorted(citable_keys)) if citable_keys else "(none)")
-            + "\n\nThe following are BACKGROUND-ONLY context — DO NOT cite them, "
-              "but you may paraphrase/synthesize their information:\n  "
-            + (", ".join(sorted(background_keys)) if background_keys else "(none)")
+            + "\nAll non-listed keys/chunks are BACKGROUND-ONLY: do not cite them."
             + "\n=== END WHITELIST ===\n\n"
         )
         parts.append(whitelist_block)
@@ -829,11 +827,17 @@ def _normalize_writer_output(data: dict) -> dict:
 
 def _extract_citations_from_text(text: str) -> list[dict]:
     """Estrai citazioni [bibtex_key] dal testo con regex."""
-    pattern = r"\[([A-Z][a-z]+(?:_[A-Z]?[a-z]*)*_\d{4}_[A-Za-z]+(?:_[A-Za-z]+)*)\]"
-    matches = re.findall(pattern, text)
+    matches: list[str] = []
+    for group in re.findall(r"\[([^\]]+)\]", text):
+        for raw_key in group.split(","):
+            key = raw_key.strip()
+            if re.fullmatch(r"[A-Za-z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+", key):
+                matches.append(key)
     seen: set[str] = set()
     citations: list[dict] = []
     for key in matches:
+        if re.match(r"^(Table|Figure|Section|Appendix|Algorithm|Equation)_\d+$", key):
+            continue
         if key not in seen:
             seen.add(key)
             citations.append({
@@ -1074,8 +1078,9 @@ def _write_section_prefetch_agentic(
         f"Write the section '{outline.title}' using the pre-fetched context. "
         f"Cover these topics: {', '.join(outline.key_topics[:7])}. "
         f"Target approximately {outline.target_length_words} words with [bibtex_key] citations. "
-        f"The pre-fetched context already contains the relevant papers — use at most 2–3 tool "
-        f"calls for additional searches ONLY if critical gaps remain, then WRITE the section. "
+        f"Use at least {settings.agents.min_citations_per_section} distinct CITABLE papers; "
+        f"prefer broader evidence coverage when it remains claim-accurate. The pre-fetched "
+        f"context already contains relevant papers — use up to 7 tool calls for gaps, then WRITE. "
         f"PRIORITY: produce the full written text, not more searches. "
     )
     if figure_context:
@@ -1579,27 +1584,37 @@ def _enforce_citation_whitelist(
     - altrimenti → rimuove la citazione (mantiene il testo circostante)
       e logga il caso per audit.
 
-    Se ``whitelist`` è None o vuoto, non fa nulla (back-compat).
+    Se ``whitelist`` è None non applica il filtro (back-compat). Un set vuoto
+    significa invece che non esiste alcuna fonte citabile e rimuove quindi
+    ogni chiave bibliografica, così il Critic può bloccare subito la sezione.
 
     Returns:
         (clean_text, removed_keys)
     """
-    if not whitelist:
+    if whitelist is None:
         return text, []
 
     removed: list[str] = []
 
     def _replace(match: "re.Match[str]") -> str:
-        key = match.group(1)
-        # Heuristic: solo le bibtex-key reali (contengono underscore + cifra)
-        if "_" not in key or not any(c.isdigit() for c in key):
+        content = match.group(1)
+        raw_keys = [key.strip() for key in content.split(",")]
+        is_citation_group = raw_keys and all(
+            re.fullmatch(r"[A-Za-z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+", key)
+            and any(char.isdigit() for char in key)
+            for key in raw_keys
+        )
+        if not is_citation_group:
             return match.group(0)
-        if key in whitelist:
-            return match.group(0)
-        removed.append(key)
-        return ""  # rimuove la citazione (incluse le parentesi)
+        kept: list[str] = []
+        for key in raw_keys:
+            if key in whitelist:
+                kept.append(key)
+            else:
+                removed.append(key)
+        return f"[{', '.join(kept)}]" if kept else ""
 
-    cleaned = re.sub(r"\s*\[([^\]\s]+)\]", _replace, text)
+    cleaned = re.sub(r"\s*\[([^\]]+)\]", _replace, text)
     # Compatta doppi spazi/spazi prima di punteggiatura
     cleaned = re.sub(r"[ \t]{2,}", " ", cleaned)
     cleaned = re.sub(r"\s+([,.;:!?])", r"\1", cleaned)
@@ -1713,7 +1728,7 @@ def _build_section_result(
     # --- v3.6: enforcement citation whitelist (strict mode) ---
     if (
         getattr(settings.agents, "citation_whitelist_strict", False)
-        and citable_keys
+        and citable_keys is not None
     ):
         section_text, removed = _enforce_citation_whitelist(section_text, citable_keys)
         if removed:
@@ -1740,7 +1755,12 @@ def _build_section_result(
     ]
 
     # Verifica che tutte le citazioni nel testo siano tracciate
-    text_citations = set(re.findall(r"\[([^\]]+)\]", section_text))
+    text_citations: set[str] = set()
+    for group in re.findall(r"\[([^\]]+)\]", section_text):
+        for raw_key in group.split(","):
+            key = raw_key.strip()
+            if re.fullmatch(r"[A-Za-z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+", key):
+                text_citations.add(key)
     tracked_keys = {c.bibtex_key for c in citation_records}
     untracked = {
         k for k in text_citations

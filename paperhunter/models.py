@@ -97,6 +97,15 @@ class Paper(BaseModel):
     # ma solo i citable finiscono nel master .bib.
     is_citable: bool = Field(False, description="Se True, il writer può citare questo paper nel survey")
     dblp_verified: bool = Field(False, description="Entry BibTeX verificata su DBLP")
+    dblp_key: Optional[str] = Field(None, description="Chiave canonica del record DBLP")
+    dblp_url: Optional[str] = Field(None, description="URL canonico del record DBLP")
+    dblp_title: Optional[str] = Field(None, description="Titolo restituito dal record DBLP")
+    dblp_similarity: Optional[float] = Field(
+        None,
+        ge=0.0,
+        le=1.0,
+        description="Similarità tra titolo sorgente e titolo DBLP verificato",
+    )
     citation_tier: str = Field(
         "uncited_context",
         description="Tier di citabilità: 'dblp', 's2_high_conf', 'preprint', 'uncited_context'",

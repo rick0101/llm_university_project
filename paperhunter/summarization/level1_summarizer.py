@@ -59,7 +59,7 @@ from paperhunter.utils.logging_setup import (
     print_warning,
     progress_bar,
 )
-from paperhunter.utils.rate_limiter import get_gemini_limiter
+from paperhunter.utils.rate_limiter import get_llm_limiter
 from paperhunter.utils.token_counter import (
     compute_l1_target_chars,
     get_l1_compression_tier,
@@ -421,7 +421,7 @@ def generate_l1_summary(
         f"{len(chunks_text)} chars)"
     )
 
-    limiter = get_gemini_limiter()
+    limiter = get_llm_limiter()
     limiter.wait()
 
     # --- Retry strategy basata su config ---

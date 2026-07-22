@@ -191,7 +191,7 @@ class VerificationResult(BaseModel):
     )
     pass_rate: float = Field(
         0.0, ge=0.0, le=1.0,
-        description="Percentuale di citazioni supportate (supported + partially) / total"
+        description="Percentuale di citazioni pienamente SUPPORTED / total"
     )
     passed: bool = Field(
         False,
@@ -203,11 +203,18 @@ class VerificationResult(BaseModel):
     )
     verified_at: Optional[datetime] = Field(None, description="Timestamp della verifica")
 
-    def compute_pass_rate(self, threshold: float = 0.80) -> None:
+    def compute_pass_rate(
+        self,
+        threshold: float = 0.80,
+        *,
+        require_full_support: bool = False,
+    ) -> None:
         """Computes pass_rate and sets passed flag based on threshold."""
         if self.total_citations > 0:
-            ok = self.supported + self.partially_supported
-            self.pass_rate = ok / self.total_citations
+            accepted = self.supported
+            if not require_full_support:
+                accepted += self.partially_supported
+            self.pass_rate = accepted / self.total_citations
         else:
             # No citations = trivially passes (intro/conclusion may have none)
             self.pass_rate = 1.0

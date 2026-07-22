@@ -73,7 +73,6 @@ from paperhunter.utils.logging_setup import (
     print_warning,
     progress_bar,
 )
-from paperhunter.utils.rate_limiter import get_gemini_limiter
 
 logger = get_logger(__name__)
 

@@ -177,6 +177,25 @@ class TokenBucketLimiter:
             self._daily_reset_time = time.monotonic()
 
 
+class NoOpLimiter:
+    """Limiter compatibile che non introduce attese o contatori fittizi."""
+
+    name = "disabled"
+
+    def wait(self) -> float:
+        return 0.0
+
+    async def async_wait(self) -> float:
+        return 0.0
+
+    @property
+    def stats(self) -> dict:
+        return {"name": self.name, "disabled": True}
+
+    def reset(self) -> None:
+        return None
+
+
 # ---------------------------------------------------------------------------
 # Semaforo per GROBID (concorrenza limitata)
 # ---------------------------------------------------------------------------
@@ -258,6 +277,36 @@ def get_gemini_limiter() -> TokenBucketLimiter:
         name="gemini",
         daily_limit=effective_daily_limit,
     )
+
+
+@lru_cache(maxsize=2)
+def get_llm_limiter(provider: str | None = None) -> TokenBucketLimiter | NoOpLimiter:
+    """Limiter del provider testuale selezionato.
+
+    DeepSeek gestisce i 429 tramite il retry autonomo del client; applicare il
+    bucket Gemini ne falserebbe sia la velocità sia il limite giornaliero.
+    """
+    from paperhunter.config import settings
+
+    selected = provider or settings.llm_provider
+    if selected == "google":
+        return get_gemini_limiter()
+    if selected == "deepseek":
+        return NoOpLimiter()
+    raise ValueError(f"Provider LLM non valido: {selected!r}")
+
+
+@lru_cache(maxsize=2)
+def get_embedding_limiter(provider: str | None = None) -> TokenBucketLimiter | NoOpLimiter:
+    """Limiter coerente con il backend embedding configurato."""
+    from paperhunter.config import settings
+
+    selected = provider or settings.embedding.provider
+    if selected == "google":
+        return get_gemini_limiter()
+    if selected == "huggingface":
+        return NoOpLimiter()
+    raise ValueError(f"Provider embedding non valido: {selected!r}")
 
 
 @lru_cache(maxsize=1)

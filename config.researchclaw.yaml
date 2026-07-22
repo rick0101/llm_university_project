@@ -1,7 +1,6 @@
 # ─────────────────────────────────────────────────────────────────────
 # AutoResearchClaw config per PaperHunter Bridge
-# Usa Gemini Flash via endpoint OpenAI-compatible di Google
-# Nessuna API key aggiuntiva — riutilizza GOOGLE_API_KEY_FREE dal .env
+# Usa DeepSeek V4 Pro tramite API nativa OpenAI-compatible.
 # ─────────────────────────────────────────────────────────────────────
 
 project:
@@ -41,12 +40,15 @@ openclaw_bridge:
 
 llm:
   provider: "openai-compatible"
-  base_url: "https://generativelanguage.googleapis.com/v1beta/openai/"
-  api_key_env: "GOOGLE_API_KEY_FREE"
+  base_url: "https://api.deepseek.com"
+  api_key_env: "DEEPSEEK_API_KEY"
   api_key: ""
-  primary_model: "gemini-3-flash-preview"
+  primary_model: "deepseek-v4-pro"
   fallback_models:
-    - "gemini-3-flash-preview"
+    - "deepseek-v4-pro"
+  thinking:
+    type: "enabled"
+  reasoning_effort: "max"
 
 security:
   hitl_required_stages: []

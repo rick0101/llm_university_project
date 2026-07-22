@@ -25,6 +25,7 @@ Uso::
 from __future__ import annotations
 
 import hashlib
+import html
 import json
 import re
 import time
@@ -79,6 +80,11 @@ class DblpResult:
     dblp_type: str
     title: str
     similarity: float
+    authors: list[str] | None = None
+    year: int | None = None
+    venue: str = ""
+    doi: str | None = None
+    record_url: str = ""
 
 
 # ---------------------------------------------------------------------------
@@ -181,6 +187,63 @@ def _extract_surname(author: str) -> str:
         return name.split(",")[0].strip()
     parts = name.split()
     return parts[-1] if parts else name
+
+
+def _extract_hit_authors(hit: dict) -> list[str]:
+    """Normalizza la forma variabile ``authors.author`` dell'API DBLP."""
+    authors_block = hit.get("authors", {})
+    if not isinstance(authors_block, dict):
+        return []
+    raw = authors_block.get("author", [])
+    if isinstance(raw, (str, dict)):
+        raw = [raw]
+    authors: list[str] = []
+    for item in raw if isinstance(raw, list) else []:
+        if isinstance(item, str):
+            name = item
+        elif isinstance(item, dict):
+            name = str(item.get("text") or item.get("name") or "")
+        else:
+            name = ""
+        name = html.unescape(re.sub(r"\s+\d{4}$", "", name)).strip()
+        if name:
+            authors.append(name)
+    return authors
+
+
+def _normalize_doi(value: str | None) -> str | None:
+    if not value:
+        return None
+    doi = value.strip().lower()
+    doi = re.sub(r"^https?://(?:dx\.)?doi\.org/", "", doi)
+    doi = re.sub(r"^doi:\s*", "", doi)
+    return doi.rstrip("./") or None
+
+
+def _extract_hit_doi(hit: dict) -> str | None:
+    raw = hit.get("ee", [])
+    if isinstance(raw, str):
+        raw = [raw]
+    for value in raw if isinstance(raw, list) else []:
+        normalized = _normalize_doi(str(value))
+        if normalized and normalized.startswith("10."):
+            return normalized
+    return None
+
+
+def _authors_match(target: list[str], candidate: list[str]) -> bool:
+    """True se almeno un cognome non banale coincide."""
+    target_surnames = {
+        _normalize_title(_extract_surname(a))
+        for a in target
+        if _extract_surname(a)
+    }
+    candidate_surnames = {
+        _normalize_title(_extract_surname(a))
+        for a in candidate
+        if _extract_surname(a)
+    }
+    return bool(target_surnames & candidate_surnames)
 
 
 def _cache_key(title: str, year: int | None, first_author: str) -> str:
@@ -398,6 +461,9 @@ class DblpLookup:
         target_title: str,
         target_year: int | None,
         threshold: float,
+        target_authors: list[str] | None = None,
+        require_author_match: bool = False,
+        require_exact_year: bool = False,
     ) -> tuple[dict | None, float]:
         """Seleziona il miglior hit DBLP per il paper cercato.
 
@@ -417,7 +483,7 @@ class DblpLookup:
         candidates: list[tuple[dict, float, int]] = []
 
         for hit in hits:
-            hit_title = hit.get("title", "")
+            hit_title = html.unescape(str(hit.get("title", "")))
             # DBLP a volte aggiunge un punto finale
             hit_title = hit_title.rstrip(".")
             sim = _title_similarity(target_title, hit_title)
@@ -425,15 +491,32 @@ class DblpLookup:
             if sim < threshold:
                 continue
 
-            # Verifica anno (tolleranza ±1)
+            hit_authors = _extract_hit_authors(hit)
+            if (
+                require_author_match
+                and target_authors
+                and not _authors_match(target_authors, hit_authors)
+            ):
+                logger.debug(
+                    "DBLP candidate scartato per autori: %s — %s",
+                    hit_title[:60],
+                    hit_authors[:3],
+                )
+                continue
+
+            # Verifica anno: esatta in strict mode, altrimenti tolleranza ±1.
             hit_year_str = hit.get("year", "")
+            if require_exact_year and target_year and not hit_year_str:
+                continue
             if target_year and hit_year_str:
                 try:
                     hit_year = int(hit_year_str)
-                    if abs(hit_year - target_year) > 1:
+                    if require_exact_year and hit_year != target_year:
+                        continue
+                    if not require_exact_year and abs(hit_year - target_year) > 1:
                         continue
                 except ValueError:
-                    pass
+                    continue
 
             # Priorità tipo: conferenza > journal > altro
             hit_type = hit.get("type", "")
@@ -482,6 +565,20 @@ class DblpLookup:
         if not self._enabled or not title or not title.strip():
             return None
 
+        try:
+            from paperhunter.config import settings
+
+            citability = settings.citability
+            min_similarity = citability.minimum_title_similarity
+            require_author = citability.require_author_match
+            require_exact_year = citability.require_exact_year
+        except Exception:
+            min_similarity = _TITLE_SIM_THRESHOLD_TITLE_ONLY
+            require_author = True
+            require_exact_year = True
+
+        normalized_authors = authors or []
+
         first_author = ""
         if authors:
             first_author = _extract_surname(authors[0])
@@ -490,36 +587,59 @@ class DblpLookup:
         ckey = _cache_key(title, year, first_author)
         if ckey in self._cache:
             cached = self._cache[ckey]
-            if cached.get("bibtex"):
-                self._stats["cache_hits"] += 1
-                logger.debug("DBLP cache hit: %s", title[:60])
-                return DblpResult(
-                    dblp_key=cached["dblp_key"],
-                    bibtex=cached["bibtex"],
-                    dblp_type=cached.get("dblp_type", ""),
-                    title=cached.get("title", title),
-                    similarity=cached.get("similarity", 1.0),
-                )
-            elif cached.get("not_found"):
-                self._stats["cache_hits"] += 1
-                return None
+            if cached.get("bibtex") and cached.get("verification_version") == 2:
+                cached_authors = cached.get("authors") or []
+                cached_year = cached.get("year")
+                cache_valid = cached.get("similarity", 0.0) >= min_similarity
+                if require_author and normalized_authors:
+                    cache_valid = cache_valid and _authors_match(
+                        normalized_authors, cached_authors,
+                    )
+                if require_exact_year and year is not None:
+                    cache_valid = cache_valid and cached_year is not None and year == cached_year
+                if not cache_valid:
+                    logger.warning("DBLP cache strict non valida: %s", title[:60])
+                else:
+                    self._stats["cache_hits"] += 1
+                    logger.debug("DBLP cache verificata: %s", title[:60])
+                    return DblpResult(
+                        dblp_key=cached["dblp_key"],
+                        bibtex=cached["bibtex"],
+                        dblp_type=cached.get("dblp_type", ""),
+                        title=cached.get("title", title),
+                        similarity=cached.get("similarity", 1.0),
+                        authors=cached_authors,
+                        year=cached_year,
+                        venue=cached.get("venue", ""),
+                        doi=cached.get("doi"),
+                        record_url=cached.get("record_url", ""),
+                    )
 
         # --- Strategia 1: DOI ---
         if doi:
-            result = self._try_doi_lookup(doi, title, year)
+            result = self._try_doi_lookup(
+                doi, title, year, normalized_authors, min_similarity,
+                require_author, require_exact_year,
+            )
             if result:
                 self._cache_result(ckey, result)
                 return result
 
         # --- Strategia 2: titolo + primo autore ---
         if first_author:
-            result = self._try_title_author_lookup(title, first_author, year)
+            result = self._try_title_author_lookup(
+                title, first_author, year, normalized_authors, min_similarity,
+                require_author, require_exact_year,
+            )
             if result:
                 self._cache_result(ckey, result)
                 return result
 
         # --- Strategia 3: solo titolo (soglia più restrittiva) ---
-        result = self._try_title_only_lookup(title, year)
+        result = self._try_title_only_lookup(
+            title, year, normalized_authors, min_similarity,
+            require_author, require_exact_year,
+        )
         if result:
             self._cache_result(ckey, result)
             return result
@@ -527,20 +647,24 @@ class DblpLookup:
         # --- Strategia 4: titolo de-iphenato (artefatti OCR) ---
         dehyphenated = _fix_broken_hyphens(title)
         if dehyphenated != title:
-            result = self._try_title_only_lookup(dehyphenated, year)
+            result = self._try_title_only_lookup(
+                dehyphenated, year, normalized_authors, min_similarity,
+                require_author, require_exact_year,
+            )
             if result:
                 self._cache_result(ckey, result)
                 return result
 
-        # Non trovato: cache il miss
-        self._cache[ckey] = {"not_found": True, "title": title}
-        self._save_cache()
+        # I miss non vengono memorizzati: un errore di rete DBLP non deve
+        # diventare un falso negativo persistente nei run successivi.
         self._stats["misses"] += 1
         logger.debug("DBLP: non trovato — %s", title[:80])
         return None
 
     def _try_doi_lookup(
         self, doi: str, title: str, year: int | None,
+        authors: list[str], min_similarity: float,
+        require_author: bool, require_exact_year: bool,
     ) -> DblpResult | None:
         """Cerca su DBLP per DOI."""
         query = doi.strip()
@@ -548,7 +672,10 @@ class DblpLookup:
         if not hits:
             return None
         best, sim = self._select_best_hit(
-            hits, title, year, threshold=0.70,
+            hits, title, year, threshold=min_similarity,
+            target_authors=authors,
+            require_author_match=require_author,
+            require_exact_year=require_exact_year,
         )
         if best:
             return self._build_result(best, sim)
@@ -556,6 +683,8 @@ class DblpLookup:
 
     def _try_title_author_lookup(
         self, title: str, first_author_surname: str, year: int | None,
+        authors: list[str], min_similarity: float,
+        require_author: bool, require_exact_year: bool,
     ) -> DblpResult | None:
         """Cerca su DBLP per titolo + primo autore.
 
@@ -571,7 +700,11 @@ class DblpLookup:
             hits = self._search_dblp(query, max_hits=7)
             if hits:
                 best, sim = self._select_best_hit(
-                    hits, title, year, threshold=_TITLE_SIM_THRESHOLD_WITH_AUTHOR,
+                    hits, title, year,
+                    threshold=max(_TITLE_SIM_THRESHOLD_WITH_AUTHOR, min_similarity),
+                    target_authors=authors,
+                    require_author_match=require_author,
+                    require_exact_year=require_exact_year,
                 )
                 if best:
                     return self._build_result(best, sim)
@@ -579,6 +712,8 @@ class DblpLookup:
 
     def _try_title_only_lookup(
         self, title: str, year: int | None,
+        authors: list[str], min_similarity: float,
+        require_author: bool, require_exact_year: bool,
     ) -> DblpResult | None:
         """Cerca su DBLP solo per titolo (soglia più alta).
 
@@ -593,7 +728,11 @@ class DblpLookup:
             hits = self._search_dblp(query, max_hits=5)
             if hits:
                 best, sim = self._select_best_hit(
-                    hits, title, year, threshold=_TITLE_SIM_THRESHOLD_TITLE_ONLY,
+                    hits, title, year,
+                    threshold=max(_TITLE_SIM_THRESHOLD_TITLE_ONLY, min_similarity),
+                    target_authors=authors,
+                    require_author_match=require_author,
+                    require_exact_year=require_exact_year,
                 )
                 if best:
                     return self._build_result(best, sim)
@@ -613,8 +752,14 @@ class DblpLookup:
         bibtex = _strip_dblp_fields(bibtex)
 
         self._stats["hits"] += 1
-        hit_title = hit.get("title", "").rstrip(".")
+        hit_title = html.unescape(str(hit.get("title", ""))).rstrip(".")
         dblp_type = hit.get("type", "")
+        hit_authors = _extract_hit_authors(hit)
+        try:
+            hit_year = int(hit.get("year")) if hit.get("year") else None
+        except (TypeError, ValueError):
+            hit_year = None
+        record_url = str(hit.get("url") or f"https://dblp.org/rec/{dblp_key}")
         logger.info(
             "DBLP match [%s] sim=%.2f tipo=%s — %s",
             dblp_key, similarity, dblp_type, hit_title[:60],
@@ -625,16 +770,27 @@ class DblpLookup:
             dblp_type=dblp_type,
             title=hit_title,
             similarity=similarity,
+            authors=hit_authors,
+            year=hit_year,
+            venue=html.unescape(str(hit.get("venue") or "")),
+            doi=_extract_hit_doi(hit),
+            record_url=record_url,
         )
 
     def _cache_result(self, ckey: str, result: DblpResult) -> None:
         """Salva un risultato positivo in cache."""
         self._cache[ckey] = {
+            "verification_version": 2,
             "dblp_key": result.dblp_key,
             "bibtex": result.bibtex,
             "dblp_type": result.dblp_type,
             "title": result.title,
             "similarity": result.similarity,
+            "authors": result.authors or [],
+            "year": result.year,
+            "venue": result.venue,
+            "doi": result.doi,
+            "record_url": result.record_url,
         }
         self._save_cache()
 

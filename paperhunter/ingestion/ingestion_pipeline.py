@@ -1029,6 +1029,13 @@ class IngestionPipeline:
         """
         if not settings.figure_extraction.enabled:
             return []
+        if settings.llm_provider != "google":
+            logger.warning(
+                "Estrazione figure saltata: il backend Vision è Google, ma il provider "
+                "selezionato è %s. Nessuna chiamata Google eseguita.",
+                settings.llm_provider,
+            )
+            return []
 
         try:
             extractor = self._get_figure_extractor()

@@ -4,6 +4,14 @@
 
 PaperHunter è un sistema modulare e agentico che genera autonomamente un survey paper scientifico sulla sicurezza degli LLM. A partire da oltre 1.000 PDF scientifici categorizzati, esegue una pipeline completa: estrazione strutturata (GROBID), arricchimento metadati robusto a cascata (Semantic Scholar + MetadataEnricher), BibTeX garantito per ogni paper, summarization gerarchica RAPTOR con clustering semantico, GraphRAG community-driven, retrieval agentico multi-step con venue ranking (NeurIPS/ACL > arXiv), scrittura multi-agente (LangGraph ReAct) con figure selezionabili dal Writer, FigureResolver per l'inserimento automatico delle figure nel survey finale, **self-evolution con apprendimento dai fallimenti**, **FigureAgent con generazione figure via Gemini Image Generation e vision quality check**, **skill injection con regole persistenti di dominio**, **bridge verso AutoResearchClaw per sperimentazione**, ed export LaTeX — il tutto con citazioni verificabili e tracciamento della provenienza.
 
+> **Profilo corrente (v3.6):** il backend testuale predefinito è l'API nativa
+> DeepSeek con `deepseek-v4-pro`, thinking esplicito e
+> `reasoning_effort: max` per ogni tier/agente. Google AI Studio resta
+> selezionabile con `LLM_PROVIDER=google`. Il corpus citabile è fail-closed:
+> ogni fonte deve avere un record DBLP verificato (titolo, autore e anno),
+> BibTeX ufficiale e manifest crittografico; in caso contrario l'export LaTeX
+> viene bloccato e produce `citation_integrity_report.json`.
+
 ---
 
 ## Table of Contents
@@ -284,10 +292,13 @@ Analoga cascata per **venue** (S2 → S2 journal → GROBID ref) e **abstract** 
 
 ### 1.4 Generazione BibTeX Automatica e Garantita
 
-Per ogni paper viene generata automaticamente una entry BibTeX con chiave deterministica nel formato `Autore_ANNO_Keyword`:
+Per ogni paper viene tentata una verifica individuale sull'API DBLP. Un paper
+diventa citabile solo se il record restituito supera tutti i controlli strict:
+similarità titolo ≥ 0,90, almeno un autore coincidente, anno identico e download
+riuscito del BibTeX ufficiale dalla chiave DBLP canonica.
 
 ```bibtex
-@article{Zou_2023_GCG,
+@article{Zou_2023_GCG_a1b2c3d4,
     title = {Universal and Transferable Adversarial Attacks on Aligned Language Models},
     author = {Zou, Andy and Wang, Zifan and ...},
     year = {2023},
@@ -295,19 +306,20 @@ Per ogni paper viene generata automaticamente una entry BibTeX con chiave determ
 }
 ```
 
-Questa chiave BibTeX è il **filo conduttore** che lega ogni informazione nel sistema: chunk, summary L1/L1.5/L2, citazioni nel survey finale, entry nella bibliografia — tutto punta alla stessa chiave.
+Il suffisso hash deriva dalla chiave DBLP e impedisce collisioni tra record
+omonimi. Titolo, autori, anno, venue e DOI dell'entry citabile vengono presi dal
+record ufficiale, non dai metadati PDF/Semantic Scholar.
 
-**BibTeX garantito — `ensure_complete_bibtex()` (v3.2):**
+**Corpus a due tier e audit:**
 
-Ogni paper è garantito avere un'entry BibTeX valida e completa, anche in caso di metadati parziali o assenti:
-
-- Se `bibtex_entry` è `None` o vuoto, viene rigenerata automaticamente
-- I campi critici con valori placeholder (`"Unknown"`, `""`, `"XXXX"`) vengono rimpiazzati con le migliori informazioni disponibili: `paper.year`, `paper.authors`, `paper.venue`
-- I preprint arXiv (rilevati da `venue` o `arxiv_id`) usano il tipo `@misc` con `howpublished = {arXiv preprint}`
-- Fallback sicuri: `year = 2000`, `author = "Anonymous"` se non disponibili
-- La funzione `validate_bibtex_completeness(entry)` restituisce un report per campo (`"present"` / `"missing"` / `"placeholder"`) per auditing della qualità
-
-Dopo `ensure_complete_bibtex()`, il campo `bibtex_entry` non può mai essere `None`.
+- `references.bib`: esclusivamente paper verificati su DBLP e utilizzabili dal Writer;
+- `references_uncited.bib`: fallback locali/preprint conservati solo come contesto e audit, mai citabili;
+- `references_dblp_manifest.json`: per ogni chiave registra DBLP key/URL,
+  titolo, similarità e SHA-256 dell'entry ufficiale;
+- la whitelist del Writer rimuove anche citazioni inventate in gruppi
+  `[key1, key2]`; il Critic richiede supporto completo e almeno 5 fonti distinte
+  per sezione. Aumenta idealmente a 8–15 fonti quando l'evidenza disponibile lo
+  consente, senza inserire citazioni decorative.
 
 ### 1.5 Chunking GROBID-Aware con Best-Fit Packing
 
@@ -654,7 +666,8 @@ Formati di export: JSON (per analisi programmatica) e Markdown (per lettura uman
 
 Il sistema mantiene un **master .bib** con tutte le entry BibTeX generate durante l'ingestion. Al termine della scrittura, genera un **references_final.bib** filtrato che contiene solo le entry effettivamente citate nel survey.
 
-Include un report statistico: distribuzione per anno, tipo di pubblicazione, venue, e segnalazione di chiavi BibTeX citate nel testo ma assenti nel master .bib (potenziali hallucination).
+Include un report statistico e il manifest DBLP verificato. Una chiave mancante,
+duplicata, non verificata o con BibTeX modificato è un errore bloccante.
 
 ### Export LaTeX
 
@@ -664,7 +677,10 @@ Il survey Markdown viene convertito in LaTeX compilabile con 3 template disponib
 - **IEEEtran** — formato IEEE Transactions — standard per sicurezza informatica
 - **plain** — article LaTeX standard
 
-La conversione gestisce: heading gerarchici, bold/italic, citazioni `[key]` → `\cite{key}`, tabelle Markdown → `tabular`, elenchi, URL.
+La conversione gestisce: heading gerarchici, bold/italic, citazioni `[key]` → `\cite{key}`, tabelle Markdown → `tabular`, elenchi, URL. Prima di
+scrivere il `.tex`, il gate fail-closed confronta tutte le chiavi del survey con
+BibTeX e manifest DBLP. Non elimina o “ripara” silenziosamente citazioni errate:
+blocca l'export e salva `citation_integrity_report.json` con gli errori.
 
 ### Versioning Automatico
 
@@ -797,15 +813,20 @@ Le skills vengono combinate con le lezioni in `generate_full_overlay()` e iniett
 
 Il bridge consente di esportare i dati del survey PaperHunter nel formato atteso da [AutoResearchClaw](https://github.com/aiming-lab/AutoResearchClaw), permettendo di lanciare una pipeline sperimentale automatica partendo dalla ricerca già completata.
 
-**Configurazione LLM:** Il file `config.researchclaw.yaml` configura Gemini Flash come provider LLM via endpoint OpenAI-compatible di Google. Riutilizza la `GOOGLE_API_KEY` esistente nel `.env` — nessuna API key aggiuntiva necessaria.
+**Configurazione LLM:** Il file `config.researchclaw.yaml` usa lo stesso profilo
+DeepSeek V4 Pro della pipeline principale, tramite l'endpoint nativo
+OpenAI-compatible e la variabile `DEEPSEEK_API_KEY`.
 
 ```yaml
 # config.researchclaw.yaml (già incluso nel progetto)
 llm:
   provider: "openai-compatible"
-  base_url: "https://generativelanguage.googleapis.com/v1beta/openai/"
-  api_key_env: "GOOGLE_API_KEY"    # riutilizza la key esistente
-  primary_model: "gemini-3-flash-preview"
+  base_url: "https://api.deepseek.com"
+  api_key_env: "DEEPSEEK_API_KEY"
+  primary_model: "deepseek-v4-pro"
+  thinking:
+    type: "enabled"
+  reasoning_effort: "max"
 ```
 
 **Flusso Export (PaperHunter → ResearchClaw):**
@@ -1081,40 +1102,45 @@ Il database vettoriale Qdrant opera in modalità locale (nessun server) e contie
 
 | Collezione | Contenuto | Usata da |
 |---|---|---|
-| `paper_chunks` | Chunk testuali originali dei PDF (~1.5k char, embedding 3072-dim) | Writer (RAG), Critic (verifica) |
-| `l1_summaries` | Summary L1 individuali per paper | Clustering (L1.5), Writer (RAG) |
-| `l1_5_summaries` | Summary L1.5 per cluster semantico | L2 generation, Writer (RAG) |
-| `l2_summaries` | Meta-summary L2 per categoria | Planner, Writer (contesto d'insieme) |
-| `graph_communities` | Narrative summary per community del grafo | Writer (contesto relazionale) |
-| `figure_descriptions` | Descrizioni testuali delle figure scientifiche | Writer (riferimenti a figure) |
-| `image_embeddings` | Embedding multimodali delle immagini (cross-modal) | Writer (retrieval cross-modale) |
+| `paper_chunks_bge_m3` | Chunk testuali originali dei PDF (~1.5k char, embedding 1024-dim) | Writer (RAG), Critic (verifica) |
+| `l1_summaries_bge_m3` | Summary L1 individuali per paper | Clustering (L1.5), Writer (RAG) |
+| `l1_5_summaries_bge_m3` | Summary L1.5 per cluster semantico | L2 generation, Writer (RAG) |
+| `l2_summaries_bge_m3` | Meta-summary L2 per categoria | Planner, Writer (contesto d'insieme) |
+| `graph_communities_bge_m3` | Narrative summary per community del grafo | Writer (contesto relazionale) |
+| `figure_descriptions_bge_m3` | Descrizioni testuali delle figure scientifiche | Writer (riferimenti a figure) |
+| `image_embeddings_gemini` | Embedding multimodali delle immagini (solo profilo Google) | Writer (retrieval cross-modale) |
 
-Tutti gli embedding sono a 3072 dimensioni (Gemini Embedding 2 Preview), con distanza coseno. Gli UUID sono deterministici (UUID v5) per idempotenza.
+Nel profilo DeepSeek gli embedding testuali sono prodotti localmente da
+`BAAI/bge-m3` (1024 dimensioni, distanza coseno): DeepSeek non espone un
+endpoint embedding. I nomi delle collezioni sono distinti da quelli storici
+Gemini/3072d; dopo il cambio profilo occorre rieseguire l'indicizzazione.
 
 ---
 
 ## Modelli LLM e Strategia di Utilizzo
 
-PaperHunter usa tre tier di modelli Gemini:
+Il provider testuale è selezionabile, ma il profilo predefinito privilegia la
+massima qualità:
 
-| Tier | Modello | Quando viene usato | Perché |
-|---|---|---|---|
-| **Flash** | Gemini 3 Flash Preview | Classificazione, reranking, entity extraction, verifica citazioni (Critic), vision quality check figure | Veloce, economico, sufficiente per task deterministici |
-| **Pro** | Gemini 3.1 Pro Preview | Summarization (L1, L1.5, L2), scrittura (Writer), planning (Planner), assemblaggio, community summary, pianificazione figure | Qualità superiore necessaria per generazione di testo accademico |
-| **Image** | Gemini 3 Pro Image Preview | Generazione e refinement figure scientifiche (FigureAgent) | Genera immagini di qualità professionale direttamente da prompt testuali |
+| Provider | Modello/i | Impiego |
+|---|---|---|
+| **DeepSeek (default)** | `deepseek-v4-pro` per Flash e Pro | Ricerca, classificazione, summarization, GraphRAG, Planner, Writer, Critic e Assembler; thinking attivo con reasoning `max` |
+| **Google** | Gemini 3 Flash Preview + Gemini 3.1 Pro Preview | Profilo alternativo selezionabile; mantiene anche le capacità vision/image |
 
-**Strategia di retry e fallback:**
-- Retry con backoff esponenziale (fino a 6 retry per Pro, con delay fino a 120s)
-- **Strategia "autonomous"**: retry infiniti con delay incrementali — il sistema procede da solo senza intervento umano
-- **Strategia "interactive"**: dopo N retry falliti, chiede all'utente se usare OpenRouter come fallback
-- **Fallback OpenRouter**: se abilitato, quando Gemini non è raggiungibile il sistema instrada le richieste tramite OpenRouter (compatibile OpenAI), che funge da proxy per gli stessi modelli Gemini
+DeepSeek usa direttamente `https://api.deepseek.com`, senza OpenRouter e senza
+fallback automatico a un modello più debole. Gli errori transitori vengono
+ritentati con backoff; errori permanenti falliscono esplicitamente. In thinking
+mode non vengono inviati `temperature` o `top_p`, perché non sono parametri
+effettivi per questa modalità.
 
 **Retry del ReAct Agent (non distruttivo):**
 - Su `MaxIterationsError`: se l'agente ha prodotto un risultato parziale ≥100 caratteri, viene accettato senza retry. Altrimenti: **1 solo retry** con +5 iterazioni; se fallisce ancora → `None` (fallback a static).
 - Su `MaxTokensError`: massimo **2 retry** riducendo progressivamente le iterazioni (-4 per tentativo).
 - Il loop non è più infinito e non ricostruisce l'agente inutilmente, preservando token già consumati.
 
-**Embedding:** Gemini Embedding 2 Preview produce vettori a 3072 dimensioni, sia per testo che per immagini (nello stesso spazio vettoriale).
+**Embedding:** il default è BGE-M3 locale (1024d). Gemini Embedding 2 Preview
+resta disponibile nel profilo Google; le funzioni vision e FigureAgent sono
+disabilitate nel profilo DeepSeek per evitare chiamate Google involontarie.
 
 ---
 
@@ -1175,7 +1201,7 @@ Il toggle globale `recency_priority: true/false` in `config.yaml` abilita/disabi
 
 - **Python 3.10+** (testato fino a 3.14)
 - **Docker** (per GROBID; opzionale ma fortemente raccomandato)
-- **Google Gemini API key** (free tier con Gemini Advanced)
+- **DeepSeek API key** (profilo predefinito) oppure Google Gemini API key
 
 ### Installazione
 
@@ -1204,8 +1230,13 @@ pip install -e ".[graphrag]"
 Crea un file `.env` nella root del progetto:
 
 ```env
-# Obbligatorio — Gemini API key (LLM + embedding)
-GOOGLE_API_KEY=your_gemini_api_key_here
+# Profilo predefinito — DeepSeek API nativa
+LLM_PROVIDER=deepseek
+DEEPSEEK_API_KEY=your_deepseek_api_key_here
+
+# Alternativa Google AI Studio
+# LLM_PROVIDER=google
+# GOOGLE_API_KEY=your_gemini_api_key_here
 
 # Opzionale — rate limit più alti per Semantic Scholar
 SEMANTIC_SCHOLAR_API_KEY=your_s2_key_here
@@ -1307,7 +1338,7 @@ paperhunter figures
 # 8. (Opzionale) Esporta dati verso AutoResearchClaw per sperimentazione
 paperhunter experiment --export-only --output ./experiments/run_001
 
-# 8b. (Opzionale) Lancio completo: export + avvio ResearchClaw con Gemini Flash
+# 8b. (Opzionale) Lancio completo: export + avvio ResearchClaw con DeepSeek V4 Pro
 paperhunter experiment --output ./experiments/run_001
 
 # 9. (Opzionale) Importa risultati sperimentali da ResearchClaw
@@ -1562,4 +1593,3 @@ Charts saved in `output/latest/gemma3_4b_20260326_175111/`.
 **Best defense:** No-Defense (26.7%) — **Worst defense:** No-Defense (26.7%)
 
 Charts saved in `output/latest/gemma-3-27b-it_20260327_132911/`.
-

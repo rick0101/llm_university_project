@@ -5,15 +5,14 @@ Uses LangChain with LLM to analyze paper abstracts against user-defined criteria
 """
 
 import asyncio
+import json
 import logging
+import re
 from typing import Optional
-
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import PydanticOutputParser
-from langchain_core.runnables import RunnablePassthrough
 
 from .config import settings
 from .models import FilteredPaper, Paper, RelevanceResult
+from .utils.llm_factory import get_pro_llm, llm_call_with_retry
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -72,69 +71,43 @@ Analyze whether this paper is relevant to the user's research criteria.
         Initialize the relevance filter.
         
         Args:
-            provider: LLM provider ("google" or "anthropic")
+            provider: LLM provider ("google" or "deepseek")
             model: Model name to use
             temperature: Temperature for LLM responses
         """
         self.provider = provider or settings.llm_provider
-        self.model = model or settings.llm_model
+        default_model = (
+            settings.gemini.pro_model
+            if self.provider == "google"
+            else settings.deepseek.pro_model
+        )
+        self.model = model or default_model
         self.temperature = temperature if temperature is not None else settings.llm_temperature
         
         self.llm = self._init_llm()
-        self.parser = PydanticOutputParser(pydantic_object=RelevanceResult)
-        self.chain = self._build_chain()
     
     def _init_llm(self):
         """Initialize the LLM based on configured provider."""
-        if self.provider == "google":
-            try:
-                from langchain_google_genai import ChatGoogleGenerativeAI
-                return ChatGoogleGenerativeAI(
-                    model=self.model,
-                    temperature=self.temperature,
-                    google_api_key=settings.google_api_key
-                )
-            except ImportError:
-                raise ImportError(
-                    "langchain-google-genai not installed. "
-                    "Run: pip install langchain-google-genai"
-                )
-        elif self.provider == "anthropic":
-            try:
-                from langchain_anthropic import ChatAnthropic
-                return ChatAnthropic(
-                    model=self.model,
-                    temperature=self.temperature,
-                    anthropic_api_key=settings.anthropic_api_key
-                )
-            except ImportError:
-                raise ImportError(
-                    "langchain-anthropic not installed. "
-                    "Run: pip install langchain-anthropic"
-                )
-        else:
+        if self.provider not in {"google", "deepseek"}:
             raise ValueError(f"Unsupported LLM provider: {self.provider}")
-    
-    def _build_chain(self):
-        """Build the LangChain processing chain."""
-        prompt = ChatPromptTemplate.from_messages([
-            ("system", self.SYSTEM_PROMPT),
-            ("human", self.USER_PROMPT)
-        ])
-        
-        chain = (
-            {
-                "title": lambda x: x["title"],
-                "abstract": lambda x: x["abstract"],
-                "criteria": lambda x: x["criteria"],
-                "format_instructions": lambda x: self.parser.get_format_instructions()
-            }
-            | prompt
-            | self.llm
-            | self.parser
+        return get_pro_llm(
+            provider=self.provider,
+            model_name=self.model,
+            temperature=self.temperature,
         )
-        
-        return chain
+
+    @staticmethod
+    def _parse_result(raw: str) -> RelevanceResult:
+        """Parse robusto del solo oggetto JSON prodotto dal modello."""
+        text = raw.strip()
+        fenced = re.search(r"```(?:json)?\s*(.*?)\s*```", text, re.DOTALL)
+        if fenced:
+            text = fenced.group(1)
+        start, end = text.find("{"), text.rfind("}")
+        if start < 0 or end <= start:
+            raise ValueError("Risposta relevance priva di oggetto JSON")
+        data = json.loads(text[start:end + 1])
+        return RelevanceResult.model_validate(data)
     
     async def analyze_paper(
         self,
@@ -152,15 +125,22 @@ Analyze whether this paper is relevant to the user's research criteria.
             FilteredPaper with relevance analysis
         """
         try:
-            # Prepare input
-            input_data = {
-                "title": paper.title,
-                "abstract": paper.abstract or "No abstract available.",
-                "criteria": criteria
-            }
-            
-            # Run chain asynchronously
-            result = await self.chain.ainvoke(input_data)
+            format_instructions = (
+                'Return ONLY JSON with this exact schema: '
+                '{"is_relevant": true|false, "reasoning": "...", '
+                '"confidence": 0.0-1.0}.'
+            )
+            prompt = (
+                f"{self.SYSTEM_PROMPT}\n\n"
+                + self.USER_PROMPT.format(
+                    title=paper.title,
+                    abstract=paper.abstract or "No abstract available.",
+                    criteria=criteria,
+                    format_instructions=format_instructions,
+                )
+            )
+            raw = await asyncio.to_thread(llm_call_with_retry, self.llm, prompt)
+            result = self._parse_result(raw)
             
             logger.info(
                 f"Analyzed: '{paper.title[:50]}...' -> "

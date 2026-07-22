@@ -532,7 +532,10 @@ def generate_bibliography(
     master_bib = load_master_bib(master_bib_path)
 
     if not master_bib:
-        logger.warning(f"Master .bib vuoto o non trovato: {master_bib_path}")
+        message = f"Master .bib vuoto o non trovato: {master_bib_path}"
+        if settings.citability.final_latex_fail_on_error is True:
+            raise RuntimeError(message)
+        logger.warning(message)
         return list(used_keys), None
 
     # Filtra per chiavi usate
@@ -549,6 +552,12 @@ def generate_bibliography(
             logger.warning(f"Citazione usata ma non nel master .bib: {key}")
 
     if missing_keys:
+        message = (
+            f"{len(missing_keys)} citazioni non trovate nel master .bib: "
+            f"{', '.join(sorted(missing_keys))}"
+        )
+        if settings.citability.final_latex_fail_on_error is True:
+            raise RuntimeError(message)
         print_warning(
             f"{len(missing_keys)} citazioni non trovate nel master .bib: "
             f"{', '.join(sorted(missing_keys)[:10])}{'...' if len(missing_keys) > 10 else ''}"
@@ -913,13 +922,16 @@ def assemble(state: SurveyState) -> dict[str, Any]:
         if v.status == SectionStatus.NEEDS_REVISION
     }
     if needs_revision:
-        logger.warning(
-            f"{len(needs_revision)} sezioni necessitano ancora revisione: "
-            f"{list(needs_revision.keys())}. Assemblaggio comunque..."
+        err = (
+            f"Assemblaggio bloccato: {len(needs_revision)} sezioni non verificate: "
+            f"{list(needs_revision.keys())}"
         )
-        print_warning(
-            f"Assemblaggio con {len(needs_revision)} sezioni non verificate."
-        )
+        logger.error(err)
+        print_error(err)
+        return {
+            "current_phase": PipelinePhase.FAILED.value,
+            "errors": [err],
+        }
 
     result = assemble_paper(state)
 
@@ -1029,8 +1041,12 @@ def _extract_citations_from_text(text: str) -> list:
     """
     from paperhunter.agents.state import CitationRecord
 
-    pattern = r'\[([A-Z][A-Za-z]*_\d{4}_\w+)\]'
-    matches = re.findall(pattern, text)
+    matches: list[str] = []
+    for group in re.findall(r"\[([^\]]+)\]", text):
+        for raw_key in group.split(","):
+            key = raw_key.strip()
+            if re.fullmatch(r"[A-Za-z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+", key):
+                matches.append(key)
 
     seen: set[str] = set()
     records: list[CitationRecord] = []

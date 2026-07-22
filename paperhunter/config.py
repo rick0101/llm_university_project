@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import Optional
+from typing import Literal, Optional
 
 import yaml
 from pydantic import BaseModel, Field, field_validator
@@ -49,6 +49,34 @@ class GeminiConfig(BaseModel):
                 f"retry_strategy deve essere uno di {allowed}, ricevuto: {v}"
             )
         return v
+
+
+class DeepSeekConfig(BaseModel):
+    """Configurazione API DeepSeek nativa (OpenAI-compatible)."""
+
+    api_base: str = "https://api.deepseek.com"
+    flash_model: str = "deepseek-v4-pro"
+    pro_model: str = "deepseek-v4-pro"
+    thinking_enabled: bool = True
+    reasoning_effort: Literal["high", "max"] = "max"
+    max_output_tokens_flash: int = 32768
+    max_output_tokens_pro: int = 65536
+    timeout: int = 1200
+    max_retries: int = 5
+    retry_strategy: Literal["autonomous", "finite"] = "autonomous"
+
+
+class EmbeddingConfig(BaseModel):
+    """Embedding indipendenti dal provider LLM.
+
+    DeepSeek non espone un endpoint embedding: in modalità DeepSeek viene
+    quindi usato un modello Hugging Face locale, evitando qualsiasi chiamata
+    a Google.
+    """
+
+    provider: Literal["google", "huggingface"] = "huggingface"
+    huggingface_model: str = "BAAI/bge-m3"
+    dimension: int = 1024
 
 
 class GrobidConfig(BaseModel):
@@ -268,7 +296,12 @@ class AgentsConfig(BaseModel):
     max_writer_iterations: int = 4
     min_section_words: int = 500
     max_section_words: int = 3000
-    verification_threshold: float = 0.95
+    verification_threshold: float = 1.0
+    min_citations_per_section: int = Field(
+        5,
+        ge=1,
+        description="Numero minimo di fonti distinte richieste per ogni sezione verificata",
+    )
     planner_model: str = "pro"
     writer_model: str = "pro"
     critic_model: str = "flash"
@@ -446,6 +479,32 @@ class CitabilityConfig(BaseModel):
         True,
         description="Se True, ogni PaperChunk eredita is_citable nel payload Qdrant (per filtri retrieval)",
     )
+    verify_each_source: bool = Field(
+        True,
+        description="Se True, ogni fonte citable deve avere un record DBLP verificato individualmente",
+    )
+    fail_closed_on_dblp_error: bool = Field(
+        True,
+        description="Se True, errori/rete DBLP rendono il paper non-citable anziché usare fallback",
+    )
+    minimum_title_similarity: float = Field(
+        0.90,
+        ge=0.0,
+        le=1.0,
+        description="Similarità minima titolo per accettare un record DBLP",
+    )
+    require_author_match: bool = Field(
+        True,
+        description="Richiede che almeno un autore del paper coincida con il record DBLP",
+    )
+    require_exact_year: bool = Field(
+        True,
+        description="Richiede anno DBLP uguale quando l'anno sorgente è disponibile",
+    )
+    final_latex_fail_on_error: bool = Field(
+        True,
+        description="Blocca l'export LaTeX se una citazione è mancante, non DBLP o non verificata",
+    )
 
 
 class LoggingConfig(BaseModel):
@@ -525,15 +584,21 @@ class Settings(BaseSettings):
     # --- Priorità Recency (globale) ---
     recency_priority: bool = True  # Se True, paper recenti hanno priorità in ingestion, retrieval, L2
 
+    # --- Provider LLM testuale ---
+    llm_provider: Literal["google", "deepseek"] = "deepseek"
+
     # --- API Keys (da .env) ---
     google_api_key_free: str = ""  # Chiave gratuita (prioritaria)
     google_api_key: str = ""       # Chiave a pagamento (fallback)
+    deepseek_api_key: str = ""
     anthropic_api_key: str = ""
     openrouter_api_key: str = ""
     semantic_scholar_api_key: str = ""
     
     # --- Sotto-configurazioni (da config.yaml) ---
     gemini: GeminiConfig = Field(default_factory=GeminiConfig)
+    deepseek: DeepSeekConfig = Field(default_factory=DeepSeekConfig)
+    embedding: EmbeddingConfig = Field(default_factory=EmbeddingConfig)
     grobid: GrobidConfig = Field(default_factory=GrobidConfig)
     neo4j: Neo4jConfig = Field(default_factory=Neo4jConfig)
     qdrant: QdrantConfig = Field(default_factory=QdrantConfig)
@@ -561,27 +626,50 @@ class Settings(BaseSettings):
         "env_file_encoding": "utf-8",
         "extra": "ignore",  # Ignora campi extra nel .env
     }
+
+    @classmethod
+    def settings_customise_sources(
+        cls,
+        settings_cls,
+        init_settings,
+        env_settings,
+        dotenv_settings,
+        file_secret_settings,
+    ):
+        """Le variabili d'ambiente/.env sovrascrivono il profilo YAML.
+
+        ``config.yaml`` resta il default versionato, mentre
+        ``LLM_PROVIDER=google|deepseek`` deve poter selezionare il provider
+        senza modificare il repository.
+        """
+        return (
+            env_settings,
+            dotenv_settings,
+            init_settings,
+            file_secret_settings,
+        )
     
     # --- Proprietà backward-compatible ---
     
     @property
-    def llm_provider(self) -> str:
-        """Provider LLM (sempre 'google' nel nuovo sistema)."""
-        return "google"
-    
-    @property
     def llm_model(self) -> str:
-        """Modello LLM veloce (Flash). Backward compatible."""
+        """Modello LLM veloce del provider selezionato."""
+        if self.llm_provider == "deepseek":
+            return self.deepseek.flash_model
         return self.gemini.flash_model
     
     @property
     def heavy_llm_model(self) -> str:
-        """Modello LLM potente (Pro). Backward compatible."""
+        """Modello LLM potente del provider selezionato."""
+        if self.llm_provider == "deepseek":
+            return self.deepseek.pro_model
         return self.gemini.pro_model
     
     @property
     def llm_temperature(self) -> float:
-        """Temperatura default (Flash). Backward compatible."""
+        """Temperatura default; DeepSeek thinking ignora questo parametro."""
+        if self.llm_provider == "deepseek":
+            return 0.0
         return self.gemini.temperature_flash
     
     @property

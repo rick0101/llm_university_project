@@ -346,10 +346,10 @@ class QdrantStore:
         Returns:
             Lista di vettori embedding (list[float]).
         """
-        from paperhunter.utils.rate_limiter import get_gemini_limiter
+        from paperhunter.utils.rate_limiter import get_embedding_limiter
 
         embed_model = self._get_embedding_model()
-        limiter = get_gemini_limiter()
+        limiter = get_embedding_limiter()
 
         embeddings: list[list[float]] = []
         # Prefer the model's batch size, but use at least 100 for throughput.
@@ -389,10 +389,10 @@ class QdrantStore:
         Returns:
             Vettore embedding.
         """
-        from paperhunter.utils.rate_limiter import get_gemini_limiter
+        from paperhunter.utils.rate_limiter import get_embedding_limiter
 
         embed_model = self._get_embedding_model()
-        limiter = get_gemini_limiter()
+        limiter = get_embedding_limiter()
 
         limiter.wait()
 

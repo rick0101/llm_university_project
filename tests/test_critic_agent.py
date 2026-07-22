@@ -546,8 +546,9 @@ def test_verify_section_no_citations():
 def test_verify_section_max_iterations():
     """Testa che al max di iterazioni la sezione venga accettata con warning."""
     from paperhunter.agents.critic_agent import verify_section
+    from paperhunter.config import settings
 
-    max_iters = 3  # configurable, but default is 3
+    max_iters = settings.agents.max_writer_iterations
     state = _make_state_with_draft(
         text="Some text with [Zou_2023_GCG] citation.",
         citations=[{"bibtex_key": "Zou_2023_GCG", "claim": "test"}],

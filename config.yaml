@@ -10,6 +10,31 @@
 # Se false, tutti i paper vengono trattati allo stesso modo indipendentemente dall'anno.
 recency_priority: true
 
+# Provider LLM testuale: "deepseek" (default) oppure "google".
+# Può essere sovrascritto con LLM_PROVIDER nel file .env.
+llm_provider: "deepseek"
+
+# --- DeepSeek API nativa ---
+# V4 Pro thinking/max viene usato per TUTTI i tier e gli agenti testuali.
+deepseek:
+  api_base: "https://api.deepseek.com"
+  flash_model: "deepseek-v4-pro"
+  pro_model: "deepseek-v4-pro"
+  thinking_enabled: true
+  reasoning_effort: "max"
+  max_output_tokens_flash: 32768
+  max_output_tokens_pro: 65536
+  timeout: 1200
+  max_retries: 5
+  retry_strategy: "autonomous"
+
+# DeepSeek non offre embedding: con il default DeepSeek si usa BGE-M3 locale.
+# Le collezioni Qdrant vanno reindicizzate se erano state create con Gemini/3072d.
+embedding:
+  provider: "huggingface"
+  huggingface_model: "BAAI/bge-m3"
+  dimension: 1024
+
 # --- Modelli LLM (Gemini Advanced) ---
 gemini:
   flash_model: "gemini-3-flash-preview"      # Task semplici: classificazione, reranking, estrazione entità
@@ -52,14 +77,14 @@ neo4j:
 # --- Qdrant (Vector DB locale, no server needed) ---
 qdrant:
   persist_dir: "./qdrant_db"                          # Storage locale su disco
-  collection_paper_chunks: "paper_chunks"
-  collection_l1_summaries: "l1_summaries"
-  collection_l2_summaries: "l2_summaries"
-  collection_l1_5_summaries: "l1_5_summaries"
-  collection_graph_communities: "graph_communities"
-  collection_figure_descriptions: "figure_descriptions"
-  collection_image_embeddings: "image_embeddings"
-  embedding_dimension: 3072                    # Gemini embedding-001 dimension
+  collection_paper_chunks: "paper_chunks_bge_m3"
+  collection_l1_summaries: "l1_summaries_bge_m3"
+  collection_l2_summaries: "l2_summaries_bge_m3"
+  collection_l1_5_summaries: "l1_5_summaries_bge_m3"
+  collection_graph_communities: "graph_communities_bge_m3"
+  collection_figure_descriptions: "figure_descriptions_bge_m3"
+  collection_image_embeddings: "image_embeddings_gemini"  # solo profilo Google/vision
+  embedding_dimension: 1024                    # BGE-M3 locale (default DeepSeek)
   distance_metric: "Cosine"                    # Cosine | Euclid | Dot
 
 # --- Semantic Scholar API ---
@@ -148,7 +173,8 @@ agents:
   max_writer_iterations: 4                     # Max iterazioni writer↔critic per sezione (v3.6: 3→4)
   min_section_words: 500                       # Minimo parole per sezione
   max_section_words: 3000                      # Massimo parole per sezione
-  verification_threshold: 0.95                 # % citazioni supportate per passare (v3.6: 0.80→0.95)
+  verification_threshold: 1.0                  # Tutte le citazioni devono risultare supportate
+  min_citations_per_section: 5                 # Copertura minima, senza sacrificare accuratezza
   planner_model: "pro"                         # Modello per il Planner (pro raccomandato)
   writer_model: "pro"                          # Modello per il Writer
   critic_model: "flash"                        # Modello per il Critic (flash sufficiente)
@@ -196,7 +222,7 @@ download:
 # il sistema usa automaticamente OpenRouter come provider di fallback.
 # Richiede OPENROUTER_API_KEY nel file .env
 openrouter:
-  enabled: true                                # Abilita fallback a OpenRouter
+  enabled: false                               # DeepSeek usa esclusivamente l'API nativa
   api_base: "https://openrouter.ai/api/v1"
   flash_model: "google/gemini-3-flash-preview"   # Modello economico (equivalente Flash)
   pro_model: "google/gemini-3.1-pro-preview" # Modello potente (equivalente Pro)
@@ -253,7 +279,7 @@ evolution:
 
 # --- FigureAgent (Generazione automatica figure) ---
 figure_agent:
-  enabled: true                                    # Abilita generazione automatica figure
+  enabled: false                                   # Richiede Google Image; off nel default DeepSeek-only
   min_figures: 3                                   # Minimo figure da generare
   max_figures: 8                                   # Massimo figure da generare
   max_iterations: 3                                # Massimo iterazioni codegen → render per figura
@@ -278,3 +304,9 @@ citability:
   s2_min_citation_count: 50                          # Citazioni S2 minime per 'high_conf'
   write_uncited_audit_bib: true                      # Salva references_uncited.bib parallelo
   propagate_to_chunks: true                          # is_citable nei payload Qdrant per filtri
+  verify_each_source: true                           # Verifica individuale del record DBLP
+  fail_closed_on_dblp_error: true                    # Nessun fallback citable se DBLP non risponde
+  minimum_title_similarity: 0.90                     # Match conservativo del titolo
+  require_author_match: true                         # Almeno un autore deve coincidere
+  require_exact_year: true                           # Anno identico quando disponibile
+  final_latex_fail_on_error: true                    # Blocca LaTeX se una citazione non è perfetta

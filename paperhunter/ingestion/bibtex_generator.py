@@ -30,6 +30,8 @@ Uso:
 
 from __future__ import annotations
 
+import hashlib
+import json
 import re
 import unicodedata
 from pathlib import Path
@@ -346,6 +348,32 @@ def generate_bibtex_entry(paper: Paper) -> str:
     return _build_bibtex_from_scratch(paper, key)
 
 
+def _lookup_dblp_result(paper: Paper):
+    """Lookup DBLP unico, fail-closed per la citabilità."""
+    try:
+        dblp = get_dblp_lookup()
+        return dblp.lookup_bibtex(
+            title=paper.title,
+            authors=paper.authors,
+            year=paper.year,
+            doi=paper.doi,
+        )
+    except Exception as exc:
+        logger.error("Verifica DBLP fallita per '%s': %s", paper.title[:60], exc)
+        return None
+
+
+def _verified_bibtex_key(result) -> str:
+    """Chiave leggibile ma globalmente stabile, derivata dal record DBLP."""
+    base = generate_bibtex_key(
+        title=result.title,
+        year=result.year,
+        authors=result.authors or [],
+    )
+    digest = hashlib.sha256(result.dblp_key.encode("utf-8")).hexdigest()[:8]
+    return f"{base}_{digest}"
+
+
 def _try_dblp_lookup(paper: Paper, key: str) -> str | None:
     """Tenta di recuperare il BibTeX ufficiale da DBLP.
 
@@ -356,13 +384,7 @@ def _try_dblp_lookup(paper: Paper, key: str) -> str | None:
         Entry BibTeX con chiave custom, o None se non trovato.
     """
     try:
-        dblp = get_dblp_lookup()
-        result = dblp.lookup_bibtex(
-            title=paper.title,
-            authors=paper.authors,
-            year=paper.year,
-            doi=paper.doi,
-        )
+        result = _lookup_dblp_result(paper)
         if result is None:
             return None
 
@@ -538,26 +560,39 @@ def enrich_paper_bibtex(paper: Paper) -> Paper:
     """
     paper_dict = paper.model_dump()
 
-    # Genera la chiave se mancante
-    if not paper.bibtex_key:
-        paper_dict["bibtex_key"] = generate_bibtex_key(
-            title=paper.title,
-            year=paper.year,
-            authors=paper.authors,
-        )
-
-    key = paper_dict["bibtex_key"]
-
     # --- Tenta DBLP direttamente per tracciare la provenienza ---
-    dblp_entry = _try_dblp_lookup(Paper(**paper_dict), key)
-    if dblp_entry is not None:
-        paper_dict["bibtex_entry"] = dblp_entry
+    result = _lookup_dblp_result(Paper(**paper_dict))
+    if result is not None:
+        key = _verified_bibtex_key(result)
+        paper_dict["bibtex_key"] = key
+        paper_dict["bibtex_entry"] = _replace_bibtex_key(result.bibtex, key)
         paper_dict["bibtex_source"] = "dblp"
-        # v3.6 — Citability: DBLP-verified ⇒ citable di default
         paper_dict["dblp_verified"] = True
+        paper_dict["dblp_key"] = result.dblp_key
+        paper_dict["dblp_url"] = result.record_url or f"https://dblp.org/rec/{result.dblp_key}"
+        paper_dict["dblp_title"] = result.title
+        paper_dict["dblp_similarity"] = result.similarity
+        # I metadati bibliografici canonici provengono dal record DBLP,
+        # non dal parsing PDF/S2 che può contenere autori o anni corrotti.
+        paper_dict["title"] = result.title
+        if result.authors:
+            paper_dict["authors"] = result.authors
+        if result.year is not None:
+            paper_dict["year"] = result.year
+        if result.venue:
+            paper_dict["venue"] = result.venue
+        if result.doi:
+            paper_dict["doi"] = result.doi
         paper_dict["is_citable"] = True
         paper_dict["citation_tier"] = "dblp"
     else:
+        if not paper_dict.get("bibtex_key"):
+            paper_dict["bibtex_key"] = generate_bibtex_key(
+                title=paper.title,
+                year=paper.year,
+                authors=paper.authors,
+            )
+        key = paper_dict["bibtex_key"]
         # Fallback: genera da zero
         paper_dict["bibtex_entry"] = _build_bibtex_from_scratch(
             Paper(**paper_dict), key,
@@ -669,7 +704,14 @@ def ensure_complete_bibtex(paper: Paper) -> Paper:
     # Genera entry base se mancante
     if not paper_dict.get("bibtex_entry"):
         temp = Paper(**paper_dict)
-        paper_dict["bibtex_entry"] = generate_bibtex_entry(temp)
+        # ``enrich_paper_bibtex`` è l'unico punto autorizzato a interrogare
+        # DBLP e marcare una fonte come citabile. Questo helper di completezza
+        # resta locale/deterministico: evita lookup duplicati e soprattutto non
+        # può trasformare implicitamente un fallback in fonte verificata.
+        paper_dict["bibtex_entry"] = _build_bibtex_from_scratch(
+            temp,
+            paper_dict["bibtex_key"],
+        )
 
     entry = paper_dict["bibtex_entry"] or ""
     key = paper_dict["bibtex_key"]
@@ -866,10 +908,24 @@ def save_master_bib(
             entry = (p.bibtex_entry or "").strip()
             if not entry:
                 continue
-            if getattr(p, "is_citable", False):
+            strict_dblp_ok = (
+                getattr(p, "dblp_verified", False)
+                and getattr(p, "bibtex_source", None) == "dblp"
+                and bool(getattr(p, "dblp_key", None))
+                and bool(getattr(p, "dblp_url", None))
+            )
+            can_cite = getattr(p, "is_citable", False)
+            if settings.citability.require_dblp:
+                can_cite = can_cite and strict_dblp_ok
+            if can_cite:
                 citable_entries.append(entry)
             else:
                 uncited_entries.append(entry)
+                if getattr(p, "is_citable", False) and not strict_dblp_ok:
+                    logger.error(
+                        "Paper escluso dal master .bib: audit DBLP incompleto (%s)",
+                        getattr(p, "bibtex_key", "unknown"),
+                    )
         # Concatena anche eventuali stringhe "extra" passate via `entries`
         # (tutte considerate citable per backward-compat se nessun Paper match).
         if entries:
@@ -884,7 +940,13 @@ def save_master_bib(
                 m = re.search(r'@\w+\{([^,]+),', e)
                 if m and m.group(1).strip() in known_keys:
                     continue
-                citable_entries.append(e.strip())
+                if settings.citability.require_dblp:
+                    logger.warning(
+                        "Entry extra esclusa dal master strict DBLP: %s",
+                        m.group(1).strip() if m else "chiave sconosciuta",
+                    )
+                else:
+                    citable_entries.append(e.strip())
         valid_entries = citable_entries
     else:
         # Backward-compat: filtra solo entry vuote
@@ -926,6 +988,37 @@ def save_master_bib(
         for entry in sorted_entries:
             f.write(entry)
             f.write("\n\n")
+
+    if papers is not None:
+        manifest: dict[str, dict[str, object]] = {}
+        for paper in papers:
+            if not (
+                paper.is_citable
+                and paper.dblp_verified
+                and paper.bibtex_source == "dblp"
+                and paper.bibtex_key
+                and paper.dblp_key
+                and paper.bibtex_entry
+            ):
+                continue
+            manifest[paper.bibtex_key] = {
+                "dblp_key": paper.dblp_key,
+                "dblp_url": paper.dblp_url or f"https://dblp.org/rec/{paper.dblp_key}",
+                "dblp_title": paper.dblp_title or paper.title,
+                "title_similarity": paper.dblp_similarity,
+                "bibtex_sha256": hashlib.sha256(
+                    paper.bibtex_entry.strip().encode("utf-8")
+                ).hexdigest(),
+                "verified": True,
+            }
+        manifest_path = output_path.with_name("references_dblp_manifest.json")
+        manifest_path.write_text(
+            json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True),
+            encoding="utf-8",
+        )
+        logger.info(
+            "Manifest DBLP salvato: %s (%d record)", manifest_path, len(manifest),
+        )
 
     logger.info("Master .bib salvato: %s (%d entry citable)", output_path, len(sorted_entries))
 

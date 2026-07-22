@@ -40,6 +40,8 @@ Uso tipico::
 
 from __future__ import annotations
 
+import hashlib
+import json
 import os
 import re
 import time
@@ -57,6 +59,120 @@ from paperhunter.utils.logging_setup import (
 )
 
 logger = get_logger(__name__)
+
+
+class CitationIntegrityError(RuntimeError):
+    """L'export finale è stato bloccato da una violazione citazionale."""
+
+    def __init__(self, message: str, report: dict[str, Any] | None = None):
+        super().__init__(message)
+        self.report = report or {}
+
+
+def _extract_markdown_citation_keys(text: str) -> set[str]:
+    """Estrae chiavi citazionali, incluse liste ``[key1, key2]``."""
+    keys: set[str] = set()
+    false_prefixes = (
+        "Table", "Figure", "Fig", "Section", "Appendix", "Equation",
+        "Algorithm", "Step", "SUPPORTED", "NOT_SUPPORTED",
+    )
+    for match in re.finditer(r"\[([^\]]+)\]", text):
+        if match.end() < len(text) and text[match.end()] == "(":
+            continue
+        for raw_key in match.group(1).split(","):
+            key = raw_key.strip()
+            if any(key.startswith(prefix) for prefix in false_prefixes):
+                continue
+            if (
+                re.fullmatch(r"[A-Za-z][A-Za-z0-9_-]+", key)
+                and "_" in key
+                and any(char.isdigit() for char in key)
+            ):
+                keys.add(key)
+    return keys
+
+
+def _find_dblp_manifest(bib_path: Path) -> Path | None:
+    candidates = [
+        bib_path.with_name("references_dblp_manifest.json"),
+        Path(settings.output.base_dir) / "references_dblp_manifest.json",
+    ]
+    return next((path for path in candidates if path.exists()), None)
+
+
+def validate_citation_integrity(
+    md_content: str,
+    bib_path: str | Path | None,
+    *,
+    require_dblp: bool = True,
+) -> dict[str, Any]:
+    """Fail-closed gate: testo, BibTeX e manifest DBLP devono concordare."""
+    cited_keys = _extract_markdown_citation_keys(md_content)
+    internal_refs = sorted(set(re.findall(r"\[(?:l2_|cluster_)[^\]]+\]", md_content)))
+    errors: list[str] = []
+    if internal_refs:
+        errors.append(f"placeholder interni presenti: {', '.join(internal_refs[:10])}")
+    if not cited_keys:
+        errors.append("nessuna citazione bibliografica rilevata nel survey")
+
+    if bib_path is None or not Path(bib_path).exists():
+        errors.append("file BibTeX finale assente")
+        entries: dict[str, str] = {}
+        duplicate_keys: set[str] = set()
+        resolved_bib = None
+    else:
+        from paperhunter.ingestion.bibtex_generator import load_master_bib
+
+        resolved_bib = Path(bib_path)
+        raw_bib = resolved_bib.read_text(encoding="utf-8")
+        raw_keys = re.findall(r"@\w+\{([^,]+),", raw_bib)
+        duplicate_keys = {key for key in raw_keys if raw_keys.count(key) > 1}
+        entries = load_master_bib(resolved_bib)
+
+    if duplicate_keys:
+        errors.append(f"chiavi BibTeX duplicate: {', '.join(sorted(duplicate_keys))}")
+    missing = cited_keys - set(entries)
+    if missing:
+        errors.append(f"citazioni senza entry BibTeX: {', '.join(sorted(missing))}")
+
+    manifest_path: Path | None = None
+    manifest: dict[str, Any] = {}
+    if require_dblp and resolved_bib is not None:
+        manifest_path = _find_dblp_manifest(resolved_bib)
+        if manifest_path is None:
+            errors.append("manifest DBLP assente: re-eseguire l'ingestion strict")
+        else:
+            try:
+                manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError) as exc:
+                errors.append(f"manifest DBLP illeggibile: {exc}")
+
+        for key in sorted(cited_keys & set(entries)):
+            record = manifest.get(key)
+            if not isinstance(record, dict) or not record.get("verified"):
+                errors.append(f"{key}: record DBLP non verificato nel manifest")
+                continue
+            dblp_key = str(record.get("dblp_key") or "")
+            dblp_url = str(record.get("dblp_url") or "")
+            if not dblp_key or "dblp.org/rec/" not in dblp_url:
+                errors.append(f"{key}: identità/URL DBLP canonici mancanti")
+            expected_hash = record.get("bibtex_sha256")
+            actual_hash = hashlib.sha256(entries[key].strip().encode("utf-8")).hexdigest()
+            if expected_hash != actual_hash:
+                errors.append(f"{key}: entry BibTeX diversa da quella verificata su DBLP")
+
+    report = {
+        "cited_keys": sorted(cited_keys),
+        "bibtex_keys": sorted(entries),
+        "manifest_path": str(manifest_path) if manifest_path else None,
+        "errors": errors,
+        "passed": not errors,
+    }
+    if errors:
+        raise CitationIntegrityError(
+            "Export LaTeX bloccato: " + "; ".join(errors), report=report,
+        )
+    return report
 
 
 # ============================================================================
@@ -181,19 +297,12 @@ def _sanitize_latex(latex_content: str, bib_keys: set[str] | None = None) -> str
     """Sanitizza il LaTeX generato, correggendo errori tipici da output LLM.
 
     Applica le seguenti correzioni:
-    1. Rimuove riferimenti interni malformati (es. ``[l2_..._v100]``)
-    2. Converte em-dash/en-dash Unicode nei corrispettivi LaTeX
-    3. Escape ``&`` dentro ``\\textbf{}`` in righe di tabella
-    4. Converte subscript bare (es. ``ASR_k``) in math mode ``ASR$_{k}$``
-    5. Rimuove ``\\cite{key}`` per chiavi non presenti nel .bib (se fornito)
+    Non elimina mai citazioni o placeholder: il gate fail-closed deve
+    segnalarli prima della scrittura del file finale.
     """
     text = latex_content
 
-    # 1. Rimuovi riferimenti interni malformati [l2_..._vN], [cluster_N]
-    text = re.sub(r"\[l2_[^\]]*\]", "", text)
-    text = re.sub(r"\[cluster_\d+\]", "", text)
-
-    # 2. Unicode dashes → LaTeX dashes
+    # Unicode dashes → LaTeX dashes
     text = text.replace("\u2014", "---")   # em-dash
     text = text.replace("\u2013", "--")     # en-dash
 
@@ -240,18 +349,6 @@ def _sanitize_latex(latex_content: str, bib_keys: set[str] | None = None) -> str
     for key, val in _prot.items():
         text = text.replace(key, val)
 
-    # 5. Rimuovi \cite{} con chiavi non presenti nel .bib
-    if bib_keys is not None:
-        def _filter_cite(m: re.Match) -> str:
-            raw_keys = m.group(1)
-            keys = [k.strip() for k in raw_keys.split(",")]
-            valid = [k for k in keys if k in bib_keys]
-            if not valid:
-                return ""
-            return r"\cite{" + ", ".join(valid) + "}"
-
-        text = re.sub(r"\\cite\{([^}]+)\}", _filter_cite, text)
-
     return text
 
 
@@ -264,7 +361,7 @@ def _load_bib_keys(bib_path: Path | str | None) -> set[str] | None:
         return None
     try:
         content = bib_path.read_text(encoding="utf-8")
-        return set(re.findall(r"@\w+\{(\w+)", content))
+        return set(re.findall(r"@\w+\{([^,]+),", content))
     except Exception:
         return None
 
@@ -1023,6 +1120,7 @@ def export_latex(
     date: str | None = None,
     copy_bib: bool = False,
     bib_source_path: str | Path | None = None,
+    strict_citations: bool = False,
 ) -> Path:
     """Converte Markdown in LaTeX e salva su file.
 
@@ -1047,6 +1145,9 @@ def export_latex(
         Se ``True``, copia il file ``.bib`` nella stessa directory del ``.tex``.
     bib_source_path : str | Path | None
         Percorso del file ``.bib`` sorgente da copiare (se ``copy_bib=True``).
+    strict_citations : bool
+        Se True, blocca l'export quando testo, BibTeX e manifest DBLP non
+        concordano. I flussi finali della pipeline lo impostano sempre.
 
     Returns
     -------
@@ -1099,7 +1200,32 @@ def export_latex(
 
     bib_keys = _load_bib_keys(bib_for_validation)
 
-    # Sanitizza il LaTeX (fix errori tipici LLM + rimuovi cite orfane)
+    if strict_citations:
+        try:
+            integrity_report = validate_citation_integrity(
+                md_content,
+                bib_for_validation,
+                require_dblp=settings.citability.require_dblp,
+            )
+        except CitationIntegrityError as exc:
+            report_path = output_path.parent / "citation_integrity_report.json"
+            report_path.write_text(
+                json.dumps(exc.report, ensure_ascii=False, indent=2, sort_keys=True),
+                encoding="utf-8",
+            )
+            logger.error("%s Report: %s", exc, report_path)
+            raise
+        report_path = output_path.parent / "citation_integrity_report.json"
+        report_path.write_text(
+            json.dumps(integrity_report, ensure_ascii=False, indent=2, sort_keys=True),
+            encoding="utf-8",
+        )
+        logger.info(
+            "Citation integrity PASS: %d fonti DBLP verificate",
+            len(integrity_report["cited_keys"]),
+        )
+
+    # Sanitizza solo aspetti tipografici; le citazioni non vengono mai rimosse.
     latex_content = _sanitize_latex(latex_content, bib_keys=bib_keys)
     if bib_keys is not None:
         logger.info("Sanitizzazione LaTeX completata (%d chiavi .bib caricate)", len(bib_keys))
@@ -1163,6 +1289,7 @@ def export_latex_from_state(
     author: str = "",
     copy_bib: bool = True,
     master_bib_path: str | Path | None = None,
+    strict_citations: bool = False,
 ) -> Path | None:
     """Esporta il survey da un ``SurveyState`` completato.
 
@@ -1238,6 +1365,7 @@ def export_latex_from_state(
         author=author,
         copy_bib=copy_bib,
         bib_source_path=master_bib_path,
+        strict_citations=strict_citations,
     )
 
 

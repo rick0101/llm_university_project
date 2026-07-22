@@ -149,8 +149,13 @@ def _count_citations_in_text(text: str) -> Counter:
     Returns:
         Counter chiave → numero di occorrenze.
     """
-    # Pattern: [Key_YYYY_Word] o simili
-    matches = re.findall(r"\[([A-Za-z][A-Za-z0-9_]+(?:_\d{4})?[A-Za-z0-9_]*)\]", text)
+    # Pattern: [Key_YYYY_Word] e gruppi [Key1_2024_X, Key2_2025_Y].
+    matches: list[str] = []
+    for group in re.findall(r"\[([^\]]+)\]", text):
+        for raw_key in group.split(","):
+            key = raw_key.strip()
+            if re.fullmatch(r"[A-Za-z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+", key):
+                matches.append(key)
     # Filtra false positive (Table_1, Figure_2, ecc.)
     filtered = [m for m in matches if not re.match(r"^(Table|Figure|Fig|Tab|Eq|Section|Sec)_", m)]
     return Counter(filtered)
@@ -733,8 +738,9 @@ def generate_final_bib(
     master_bib_path: str | Path | None = None,
     output_path: str | Path | None = None,
     validate: bool = True,
-    reformat: bool = True,
+    reformat: bool = False,
     survey_text: str | None = None,
+    strict: bool = False,
 ) -> tuple[Path | None, dict[str, Any]]:
     """Genera il file .bib finale filtrando il master .bib.
 
@@ -765,6 +771,18 @@ def generate_final_bib(
         reformat=reformat,
         survey_text=survey_text,
     )
+
+    if strict:
+        if gen.missing_keys:
+            raise RuntimeError(
+                "Bibliografia finale bloccata: chiavi mancanti: "
+                + ", ".join(sorted(gen.missing_keys))
+            )
+        if gen.invalid_entries:
+            raise RuntimeError(
+                "Bibliografia finale bloccata: entry BibTeX non valide: "
+                + ", ".join(sorted(gen.invalid_entries))
+            )
 
     if len(gen) == 0:
         logger.warning("Nessuna entry trovata nel master .bib per le chiavi usate.")
@@ -810,6 +828,7 @@ def generate_bib_from_state(
         output_path=output_path,
         validate=validate,
         survey_text=survey_text or None,
+        strict=settings.citability.final_latex_fail_on_error,
     )
 
 

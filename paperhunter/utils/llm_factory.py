@@ -1,15 +1,13 @@
 """
-Factory centralizzata per istanze LLM e Embedding (LlamaIndex + Gemini).
+Factory centralizzata per istanze LLM e Embedding.
 
 Usa i plugin basati sul nuovo SDK ``google-genai`` (REST, non gRPC):
 - ``llama-index-llms-google-genai``       → GoogleGenAI
 - ``llama-index-embeddings-google-genai`` → GoogleGenAIEmbedding
 
-Gestisce due tier:
-- **Flash** (gemini-3-flash-preview): task semplici, classificazione,
-  reranking, estrazione entità, verifica citazioni.
-- **Pro** (gemini-3-pro-preview): task complessi, summarization,
-  academic writing, planning.
+Il provider testuale è selezionabile tra Google e DeepSeek API nativa.
+Con DeepSeek entrambi i tier usano V4 Pro in thinking mode; i nomi tier
+restano soltanto per compatibilità con la pipeline esistente.
 
 Uso::
 
@@ -30,11 +28,111 @@ import tempfile
 import threading
 import time
 from pathlib import Path
-from typing import Optional
+from typing import Any, Generator, Optional
+
+from llama_index.core.llms import CompletionResponse, LLMMetadata
+from llama_index.core.llms.callbacks import llm_completion_callback
+from llama_index.core.llms.custom import CustomLLM
+from pydantic import Field, PrivateAttr
 
 from paperhunter.utils.logging_setup import get_logger
 
 logger = get_logger(__name__)
+
+
+class DeepSeekLLM(CustomLLM):
+    """Adapter LlamaIndex per l'API DeepSeek ufficiale.
+
+    Usa l'SDK OpenAI solo come protocollo client, puntando direttamente a
+    ``api.deepseek.com``. Il reasoning interno non viene scritto nei log né
+    propagato nell'output del survey.
+    """
+
+    model: str = "deepseek-v4-pro"
+    api_base: str = "https://api.deepseek.com"
+    api_key: str = Field(exclude=True, repr=False)
+    max_tokens: int = 65536
+    timeout: float = 1200.0
+    max_retries: int = 5
+    thinking_enabled: bool = True
+    reasoning_effort: str = "max"
+    provider: str = "deepseek"
+    temperature: float | None = None
+    _client: Any = PrivateAttr(default=None)
+
+    def model_post_init(self, __context: Any) -> None:
+        from openai import OpenAI
+
+        self._client = OpenAI(
+            api_key=self.api_key,
+            base_url=self.api_base,
+            timeout=self.timeout,
+            max_retries=self.max_retries,
+        )
+
+    @property
+    def metadata(self) -> LLMMetadata:
+        return LLMMetadata(
+            context_window=1_000_000,
+            num_output=self.max_tokens,
+            is_chat_model=False,
+            is_function_calling_model=False,
+            model_name=self.model,
+        )
+
+    def _call_api(self, prompt: str) -> tuple[str, str, dict[str, Any]]:
+        request: dict[str, Any] = {
+            "model": self.model,
+            "messages": [{"role": "user", "content": prompt}],
+            "max_tokens": self.max_tokens,
+            "stream": False,
+        }
+        if self.thinking_enabled:
+            request["reasoning_effort"] = self.reasoning_effort
+            request["extra_body"] = {"thinking": {"type": "enabled"}}
+
+        response = self._client.chat.completions.create(**request)
+        if not response.choices:
+            raise RuntimeError("DeepSeek non ha restituito alcuna choice")
+
+        choice = response.choices[0]
+        text = choice.message.content or ""
+        finish_reason = choice.finish_reason or "stop"
+        usage = response.usage.model_dump() if response.usage is not None else {}
+        return text, finish_reason, usage
+
+    @llm_completion_callback()
+    def complete(
+        self,
+        prompt: str,
+        formatted: bool = False,
+        **kwargs: Any,
+    ) -> CompletionResponse:
+        text, finish_reason, usage = self._call_api(prompt)
+        return CompletionResponse(
+            text=text,
+            additional_kwargs={
+                "finish_reason": finish_reason,
+                "usage": usage,
+                "provider": self.provider,
+            },
+        )
+
+    @llm_completion_callback()
+    def stream_complete(
+        self,
+        prompt: str,
+        formatted: bool = False,
+        **kwargs: Any,
+    ) -> Generator[CompletionResponse, None, None]:
+        # Un singolo chunk mantiene la compatibilità LlamaIndex e preserva
+        # la modalità non-streaming, più semplice da validare e ritentare.
+        response = self.complete(prompt, formatted=formatted, **kwargs)
+        yield CompletionResponse(
+            text=response.text,
+            delta=response.text,
+            additional_kwargs=response.additional_kwargs,
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -271,6 +369,17 @@ def _get_api_key() -> str:
     return _get_key_manager().current_key
 
 
+def _get_deepseek_api_key() -> str:
+    """Restituisce la chiave DeepSeek senza mai includerla nei log."""
+    from paperhunter.config import settings
+
+    if not settings.deepseek_api_key:
+        raise ValueError(
+            "DEEPSEEK_API_KEY non configurata. Impostala nel file .env."
+        )
+    return settings.deepseek_api_key
+
+
 def _get_http_options(timeout_seconds: Optional[float] = None):
     """Crea HttpOptions con timeout adeguato.
 
@@ -309,8 +418,10 @@ def get_flash_llm(
     temperature: Optional[float] = None,
     max_tokens: Optional[int] = None,
     timeout_seconds: Optional[float] = None,
+    provider: Optional[str] = None,
+    model_name: Optional[str] = None,
 ):
-    """Crea un'istanza LLM Gemini Flash (task semplici).
+    """Crea il tier Flash del provider selezionato.
 
     Modello veloce e economico per: classificazione, reranking,
     estrazione entità, verifica citazioni.
@@ -326,8 +437,25 @@ def get_flash_llm(
     Returns:
         Istanza ``GoogleGenAI`` configurata.
     """
-    from llama_index.llms.google_genai import GoogleGenAI
     from paperhunter.config import settings
+
+    selected_provider = provider or settings.llm_provider
+    if selected_provider == "deepseek":
+        cfg = settings.deepseek
+        return DeepSeekLLM(
+            model=model_name or cfg.flash_model,
+            api_base=cfg.api_base,
+            api_key=_get_deepseek_api_key(),
+            max_tokens=max_tokens or cfg.max_output_tokens_flash,
+            timeout=timeout_seconds or cfg.timeout,
+            max_retries=cfg.max_retries,
+            thinking_enabled=cfg.thinking_enabled,
+            reasoning_effort=cfg.reasoning_effort,
+        )
+    if selected_provider != "google":
+        raise ValueError(f"Provider LLM non valido: {selected_provider!r}")
+
+    from llama_index.llms.google_genai import GoogleGenAI
 
     cfg = settings.gemini
     temp = temperature if temperature is not None else cfg.temperature_flash
@@ -335,7 +463,7 @@ def get_flash_llm(
     effective_timeout = timeout_seconds if timeout_seconds is not None else cfg.timeout
 
     llm = GoogleGenAI(
-        model=cfg.flash_model,
+        model=model_name or cfg.flash_model,
         api_key=_get_api_key(),
         temperature=temp,
         max_tokens=tokens,
@@ -351,8 +479,10 @@ def get_pro_llm(
     temperature: Optional[float] = None,
     max_tokens: Optional[int] = None,
     timeout_seconds: Optional[float] = None,
+    provider: Optional[str] = None,
+    model_name: Optional[str] = None,
 ):
-    """Crea un'istanza LLM Gemini Pro (task complessi).
+    """Crea il tier Pro del provider selezionato.
 
     Modello potente per: summarization, academic writing, planning,
     analisi approfondite.
@@ -366,8 +496,25 @@ def get_pro_llm(
     Returns:
         Istanza ``GoogleGenAI`` configurata.
     """
-    from llama_index.llms.google_genai import GoogleGenAI
     from paperhunter.config import settings
+
+    selected_provider = provider or settings.llm_provider
+    if selected_provider == "deepseek":
+        cfg = settings.deepseek
+        return DeepSeekLLM(
+            model=model_name or cfg.pro_model,
+            api_base=cfg.api_base,
+            api_key=_get_deepseek_api_key(),
+            max_tokens=max_tokens or cfg.max_output_tokens_pro,
+            timeout=timeout_seconds or cfg.timeout,
+            max_retries=cfg.max_retries,
+            thinking_enabled=cfg.thinking_enabled,
+            reasoning_effort=cfg.reasoning_effort,
+        )
+    if selected_provider != "google":
+        raise ValueError(f"Provider LLM non valido: {selected_provider!r}")
+
+    from llama_index.llms.google_genai import GoogleGenAI
 
     cfg = settings.gemini
     temp = temperature if temperature is not None else cfg.temperature_pro
@@ -375,7 +522,7 @@ def get_pro_llm(
     effective_timeout = timeout_seconds if timeout_seconds is not None else cfg.timeout
 
     llm = GoogleGenAI(
-        model=cfg.pro_model,
+        model=model_name or cfg.pro_model,
         api_key=_get_api_key(),
         temperature=temp,
         max_tokens=tokens,
@@ -506,10 +653,12 @@ def _get_openrouter_model_config(google_llm) -> Optional[dict]:
 def get_embedding_model(
     model_name: Optional[str] = None,
     embed_batch_size: int = 100,
+    provider: Optional[str] = None,
 ):
-    """Crea un'istanza del modello di embedding Gemini.
+    """Crea il modello di embedding configurato.
 
-    Usa ``gemini-embedding-001`` (3072 dimensioni) per default.
+    Con DeepSeek usa di default BGE-M3 locale: DeepSeek non espone un
+    endpoint embedding e questa scelta impedisce chiamate Google involontarie.
 
     Args:
         model_name: Override del nome modello (default da config.yaml).
@@ -518,8 +667,36 @@ def get_embedding_model(
     Returns:
         Istanza ``GoogleGenAIEmbedding`` configurata.
     """
-    from llama_index.embeddings.google_genai import GoogleGenAIEmbedding
     from paperhunter.config import settings
+
+    selected_provider = provider or settings.embedding.provider
+    if model_name and "gemini" in model_name.lower() and provider is None:
+        selected_provider = "google"
+
+    if selected_provider == "huggingface":
+        try:
+            from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+        except ImportError as exc:
+            raise ImportError(
+                "Embedding Hugging Face non installati. Esegui `pip install -e .` "
+                "per installare llama-index-embeddings-huggingface."
+            ) from exc
+        name = model_name or settings.embedding.huggingface_model
+        embed_model = HuggingFaceEmbedding(
+            model_name=name,
+            embed_batch_size=embed_batch_size,
+        )
+        logger.debug(
+            "Embedding locale creato: %s (batch_size=%d)",
+            name,
+            embed_batch_size,
+        )
+        return embed_model
+
+    if selected_provider != "google":
+        raise ValueError(f"Provider embedding non valido: {selected_provider!r}")
+
+    from llama_index.embeddings.google_genai import GoogleGenAIEmbedding
 
     name = model_name or settings.gemini.embedding_model
 
@@ -600,6 +777,16 @@ def _raw_complete_google(llm, prompt: str) -> tuple[str, str]:
     return text, finish_reason
 
 
+def _raw_complete_provider(llm, prompt: str) -> tuple[str, str]:
+    """Completa preservando il finish reason per Google o DeepSeek."""
+    if getattr(llm, "provider", None) == "deepseek":
+        response = llm.complete(prompt)
+        finish_reason = response.additional_kwargs.get("finish_reason", "stop")
+        normalized = "MAX_TOKENS" if finish_reason == "length" else finish_reason.upper()
+        return response.text, normalized
+    return _raw_complete_google(llm, prompt)
+
+
 def _save_partial_output(text: str, session_dir: Path, part_num: int) -> Path:
     """Salva un output parziale in un file temporaneo.
 
@@ -621,6 +808,7 @@ def _complete_with_continuation(
     llm,
     prompt: str,
     max_continuations: int = 5,
+    initial_text: str | None = None,
 ) -> str:
     """Completa un prompt gestendo il troncamento MAX_TOKENS con continuazioni.
 
@@ -634,6 +822,8 @@ def _complete_with_continuation(
         llm: Istanza GoogleGenAI di LlamaIndex.
         prompt: Il prompt originale.
         max_continuations: Numero massimo di chiamate di continuazione.
+        initial_text: Parte già prodotta da una prima chiamata troncata. Se
+            presente, non ripete inutilmente il prompt originale.
 
     Returns:
         Testo completo (concatenazione di tutte le parti).
@@ -648,9 +838,15 @@ def _complete_with_continuation(
     session_dir.mkdir(parents=True, exist_ok=True)
 
     parts: list[str] = []
+    start_index = 0
+    if initial_text:
+        _save_partial_output(initial_text, session_dir, 0)
+        parts.append(initial_text)
+        start_index = 1
 
-    for i in range(max_continuations + 1):
-        _enforce_call_cooldown()
+    for i in range(start_index, max_continuations + 1):
+        if getattr(llm, "provider", None) != "deepseek":
+            _enforce_call_cooldown()
 
         if i == 0:
             # Prima chiamata: prompt originale
@@ -675,7 +871,7 @@ def _complete_with_continuation(
         _continuation_max_retries = 4
         for _retry in range(_continuation_max_retries + 1):
             try:
-                text, finish_reason = _raw_complete_google(llm, current_prompt)
+                text, finish_reason = _raw_complete_provider(llm, current_prompt)
                 break
             except Exception as _e:
                 _err_str = str(_e).lower()
@@ -702,7 +898,7 @@ def _complete_with_continuation(
             _save_partial_output(text, session_dir, i)
             parts.append(text)
 
-        if finish_reason == "STOP":
+        if finish_reason in {"STOP", "STOP_SEQUENCE"}:
             logger.info(
                 f"Generazione completata in {i + 1} parti "
                 f"({sum(len(p) for p in parts)} chars totali)"
@@ -810,6 +1006,17 @@ def llm_call_with_retry(
     """
     from paperhunter.config import settings
 
+    if getattr(llm, "provider", None) == "deepseek":
+        retries = max_retries if max_retries is not None else settings.deepseek.max_retries
+        return _llm_call_deepseek(
+            llm,
+            prompt,
+            retries=retries,
+            base_delay=base_delay,
+            max_delay=max_delay,
+            autonomous=settings.deepseek.retry_strategy == "autonomous",
+        )
+
     strategy = settings.gemini.retry_strategy  # "autonomous" | "interactive"
 
     if strategy == "autonomous":
@@ -819,6 +1026,64 @@ def llm_call_with_retry(
         return _llm_call_interactive(
             llm, prompt, retries, base_delay, max_delay, openrouter_fallback,
         )
+
+
+def _llm_call_deepseek(
+    llm: DeepSeekLLM,
+    prompt: str,
+    *,
+    retries: int,
+    base_delay: float,
+    max_delay: float,
+    autonomous: bool,
+) -> str:
+    """Retry DeepSeek nativo senza fallback di provider o modello."""
+    attempt = 0
+    while True:
+        try:
+            response = llm.complete(prompt)
+            finish_reason = response.additional_kwargs.get("finish_reason", "stop")
+            if finish_reason == "length":
+                logger.warning(
+                    "Output DeepSeek troncato; avvio continuazione controllata."
+                )
+                return _complete_with_continuation(
+                    llm,
+                    prompt,
+                    initial_text=response.text,
+                )
+            if not response.text.strip():
+                raise RuntimeError(
+                    f"Risposta DeepSeek vuota (finish_reason={finish_reason})"
+                )
+            return response.text
+        except Exception as exc:
+            error_text = str(exc).lower()
+            transient = any(
+                token in error_text
+                for token in (
+                    "429", "rate", "quota", "500", "502", "503", "504",
+                    "overloaded", "temporarily", "timeout", "timed out",
+                    "connection", "unavailable", "server error",
+                )
+            )
+            if not transient:
+                logger.error("DeepSeek: errore non recuperabile: %s", exc)
+                raise
+
+            attempt += 1
+            if not autonomous and attempt > retries:
+                raise RuntimeError(
+                    f"DeepSeek fallito dopo {attempt} tentativi"
+                ) from exc
+            delay = min(base_delay * (2 ** min(attempt, 10)), max_delay)
+            logger.warning(
+                "DeepSeek transient error #%d: %s. Retry tra %.0fs.",
+                attempt,
+                exc,
+                delay,
+            )
+            time.sleep(delay)
 
 
 def _recreate_llm_with_new_key(llm):

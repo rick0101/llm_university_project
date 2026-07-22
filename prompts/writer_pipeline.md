@@ -144,7 +144,7 @@ The following chunks were retrieved from the research paper corpus. Use ONLY inf
 
 1. **Style**: Formal academic prose. Third person. Present tense for established knowledge, past tense for specific study results.
 
-2. **Citations**: Every factual claim MUST include a citation in the format [bibtex_key]. Example: "Recent work has demonstrated that adversarial suffixes can transfer across LLM families [Zou_2023_GCG]."
+2. **Citations and coverage**: Every factual claim MUST include a citation in the format [bibtex_key]. Use at least 5 distinct sources in this section and, when the evidence genuinely supports the discussion, prefer broader coverage (roughly 8–15 distinct papers) over repeatedly citing the same work. Cite ONLY context explicitly marked CITABLE; BACKGROUND material may guide retrieval but must never be cited. Every key must support the exact adjacent claim—never add a citation merely to increase the count.
 
 3. **Temporal Context**: When discussing methods, explicitly state when they were proposed and how they relate to prior work. Use phrases like "Building on earlier work by [Author_YYYY]..." or "In YYYY, [Author] introduced..."
 
@@ -205,7 +205,7 @@ Write the section **"{title}"** for the survey paper.
 
 1. **Search First**: Before writing, use your tools to search for relevant papers. Make multiple searches covering different aspects of the section.
 
-2. **Citations**: Every factual claim MUST include a citation in the format [bibtex_key]. Only cite bibtex_keys that appear in your search results.
+2. **Citations and coverage**: Every factual claim MUST include a citation in the format [bibtex_key]. Use at least 5 distinct CITABLE sources and seek broader coverage (roughly 8–15 papers) when supported by the retrieved evidence. Comparative or historical paragraphs should synthesize multiple relevant papers. Never cite BACKGROUND/non-citable results, and never attach a source to a claim it does not explicitly support.
 
 3. **Style**: Formal academic prose. Third person. Present tense for established knowledge, past tense for specific study results.
 
@@ -276,7 +276,7 @@ You also have search tools available, but the pre-fetched context above should c
 
 1. **Write using the pre-fetched context first.** Only search for gaps.
 
-2. **Citations**: Every factual claim MUST include a citation in the format [bibtex_key]. Only cite bibtex_keys that appear in the pre-fetched context or your search results.
+2. **Citations and coverage**: Every factual claim MUST include a citation in the format [bibtex_key]. Use at least 5 distinct CITABLE sources and seek broader coverage (roughly 8–15 papers) when the available evidence permits. Cite only keys explicitly marked CITABLE in the pre-fetched context or returned as citable by search. Never cite BACKGROUND material and never pad the bibliography with a source that does not support the adjacent claim.
 
 3. **Style**: Formal academic prose. Third person. Present tense for established knowledge, past tense for specific study results.
 
@@ -734,4 +734,3 @@ Rules:
 - "NEEDS_REVISION" if overall_score < 0.7 OR has critical issues
 - overall_score = weighted average: readability×0.35 + accuracy×0.35 + style×0.30
 - Be specific in feedback — what exactly should change
-

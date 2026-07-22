@@ -100,9 +100,13 @@ def _extract_citations_from_text(text: str) -> list[str]:
     if not text:
         return []
 
-    # Pattern per chiavi BibTeX: almeno un underscore e almeno un digit
-    pattern = r"\[([A-Za-z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+)\]"
-    matches = re.findall(pattern, text)
+    # Chiavi singole e gruppi: [Key_2024_A, Other_2025_B].
+    matches: list[str] = []
+    for group in re.findall(r"\[([^\]]+)\]", text):
+        for raw_key in group.split(","):
+            key = raw_key.strip()
+            if re.fullmatch(r"[A-Za-z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+", key):
+                matches.append(key)
 
     # Dedup mantenendo ordine
     seen: set[str] = set()
@@ -140,10 +144,13 @@ def _extract_claims_for_citation(
         return [f"(Citation [{bibtex_key}] used in the section)"]
 
     claims: list[str] = []
-    escaped_key = re.escape(bibtex_key)
-    pattern = rf"\[{escaped_key}\]"
+    citation_groups = [
+        match
+        for match in re.finditer(r"\[([^\]]+)\]", text)
+        if bibtex_key in {key.strip() for key in match.group(1).split(",")}
+    ]
 
-    for match in re.finditer(pattern, text):
+    for match in citation_groups:
         start = max(0, match.start() - context_chars)
         end = min(len(text), match.end() + context_chars)
         context = text[start:end].strip()
@@ -816,6 +823,7 @@ def verify_section(
     llm=None,
     batch_size: int = 5,
     generate_feedback: bool = True,
+    strict: bool = False,
 ) -> dict[str, Any]:
     """Verifica tutte le citazioni in una singola sezione.
 
@@ -861,27 +869,18 @@ def verify_section(
         f"iterazione {draft.iteration}"
     )
 
-    # --- Max iterazioni raggiunto? ---
+    # Compatibilità per l'API helper isolata. La pipeline completa passa
+    # sempre strict=True e non accetta mai sezioni imperfette al limite.
     max_iters = settings.agents.max_writer_iterations
-    if draft.iteration >= max_iters:
-        logger.warning(
-            f"Sezione '{section_key}' ha raggiunto il max di {max_iters} iterazioni. "
-            f"Accettata con warning."
-        )
-        # Forza accettazione
+    if not strict and draft.iteration >= max_iters:
         updated_draft = SectionDraft.from_dict(draft.to_dict())
         updated_draft.status = SectionStatus.VERIFIED
         updated_draft.critic_feedback = (
-            f"Accepted after {max_iters} iterations (max reached). "
-            f"Some citations may not be fully verified."
+            f"Accepted after {max_iters} iterations (max reached)."
         )
-
         return {
             "sections": {section_key: updated_draft.to_dict()},
-            "errors": [
-                f"Sezione '{section_key}' accettata dopo {max_iters} iterazioni "
-                f"(max raggiunto). Verifica incompleta."
-            ],
+            "errors": [f"Accepted after {max_iters} iterations (legacy helper mode)."],
         }
 
     # --- Estrai citazioni dal testo ---
@@ -891,7 +890,8 @@ def verify_section(
     tracked_citations = {c.bibtex_key: c for c in draft.citations}
 
     if not text_citations:
-        logger.info(f"Nessuna citazione trovata in '{section_key}'. Sezione verificata trivialmente.")
+        logger.warning("Nessuna citazione trovata in '%s'.", section_key)
+        no_citation_passed = not strict
         vr = VerificationResult(
             section_key=section_key,
             total_citations=0,
@@ -900,13 +900,20 @@ def verify_section(
             not_supported=0,
             source_not_found=0,
             details=[],
-            pass_rate=1.0,
-            passed=True,
+            pass_rate=1.0 if no_citation_passed else 0.0,
+            passed=no_citation_passed,
             iteration=draft.iteration,
             verified_at=datetime.now(),
         )
         updated_draft = SectionDraft.from_dict(draft.to_dict())
-        updated_draft.status = SectionStatus.VERIFIED
+        if no_citation_passed:
+            updated_draft.status = SectionStatus.VERIFIED
+        else:
+            updated_draft.status = SectionStatus.NEEDS_REVISION
+            updated_draft.critic_feedback = (
+                f"Add at least {settings.agents.min_citations_per_section} distinct, "
+                "DBLP-verified citations supported by retrieved source text."
+            )
 
         return {
             "verification_results": {section_key: vr.to_dict()},
@@ -937,7 +944,9 @@ def verify_section(
                 )
                 for key in text_citations
             ]
-            vr = _build_verification_result(section_key, details, draft.iteration)
+            vr = _build_verification_result(
+                section_key, details, draft.iteration, strict=strict,
+            )
             return {
                 "verification_results": {section_key: vr.to_dict()},
                 "errors": errors,
@@ -1036,15 +1045,28 @@ def verify_section(
 
     # --- Construisci il VerificationResult ---
     vr = _build_verification_result(
-        section_key, verification_details, draft.iteration,
+        section_key, verification_details, draft.iteration, strict=strict,
     )
+    coverage_notes = ""
+    distinct_citations = len(set(text_citations))
+    if strict and distinct_citations < settings.agents.min_citations_per_section:
+        vr.passed = False
+        coverage_notes = (
+            "\n\n[CITATION COVERAGE]\n"
+            f"Found {distinct_citations} distinct sources; add at least "
+            f"{settings.agents.min_citations_per_section - distinct_citations} more "
+            "DBLP-verified, claim-supported sources."
+        )
 
     # --- v3.6 Pass 2: Holistic coherence (C4) ---
     coherence_notes = ""
     if getattr(settings.agents, "critic_two_pass", False):
         outline_list = get_outline_from_state(state)
         target_outline = next((o for o in outline_list if o.key == section_key), None)
-        coh = _run_coherence_pass(draft.text, target_outline)
+        # Riusa lo stesso backend passato al Critic. Oltre a garantire che ogni
+        # passaggio rispetti il provider selezionato, rende i test completamente
+        # isolabili senza inizializzare una seconda connessione LLM implicita.
+        coh = _run_coherence_pass(draft.text, target_outline, llm=llm)
         if coh is not None:
             if not coh["passed"] and (coh["issues"] or coh["suggested_revisions"]):
                 # Marca la verifica come non passata se la coerenza è gravemente compromessa
@@ -1080,6 +1102,8 @@ def verify_section(
                 break
 
         critic_feedback = _generate_critic_feedback(section_title, vr)
+        if coverage_notes:
+            critic_feedback = (critic_feedback or "") + coverage_notes
         if coherence_notes:
             critic_feedback = (critic_feedback or "") + coherence_notes
 
@@ -1224,6 +1248,7 @@ def verify_all_sections(
                 store=store,
                 llm=llm,
                 batch_size=batch_size,
+                strict=True,
             )
 
             if "verification_results" in result:
@@ -1357,6 +1382,8 @@ def _build_verification_result(
     section_key: str,
     details: list[VerificationDetail],
     iteration: int,
+    *,
+    strict: bool = False,
 ) -> VerificationResult:
     """Costruisce il VerificationResult aggregato dai dettagli."""
     total = len(details)
@@ -1378,7 +1405,7 @@ def _build_verification_result(
     )
 
     threshold = settings.agents.verification_threshold
-    vr.compute_pass_rate(threshold)
+    vr.compute_pass_rate(threshold, require_full_support=strict)
 
     return vr
 

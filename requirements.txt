@@ -12,7 +12,9 @@ httpx>=0.25.0
 llama-index-core>=0.14.0
 llama-index-llms-google-genai>=0.3.0      # REST SDK (google-genai), non gRPC
 llama-index-embeddings-google-genai>=0.3.0  # REST SDK (google-genai), non gRPC
-openai>=1.0.0                               # OpenRouter fallback (raw SDK, no model name validation)
+llama-index-embeddings-huggingface>=0.5.0  # BGE-M3 locale nel profilo DeepSeek
+sentence-transformers>=3.0.0
+openai>=2.0.0                               # DeepSeek API nativa (OpenAI-compatible)
 
 # === Vector DB ===
 qdrant-client>=1.12.0

@@ -130,6 +130,9 @@ def _generate_image(
     """
     import json
 
+    if settings.llm_provider != "google":
+        return False, "Gemini Image disabilitato: provider selezionato non Google"
+
     from google import genai
     from google.genai import types
 
@@ -181,6 +184,9 @@ def _refine_image(
     Returns:
         (success, error_message)
     """
+    if settings.llm_provider != "google":
+        return False, "Gemini Image disabilitato: provider selezionato non Google"
+
     from google import genai
     from google.genai import types
 
@@ -222,6 +228,9 @@ def _vision_quality_check(
     spec: FigureSpec, png_path: Path,
 ) -> tuple[bool, str]:
     """Controlla la qualità visiva della figura usando Gemini Vision (Flash)."""
+    if settings.llm_provider != "google":
+        return True, "Vision QC saltato: provider non Google"
+
     from google import genai
     from google.genai import types
 

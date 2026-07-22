@@ -8,7 +8,7 @@
 
 ## 1. Cos'è il progetto
 
-**PaperHunter** (v3.5) è una pipeline modulare e agentica che genera autonomamente un **survey paper scientifico** (dominio: sicurezza degli LLM) partendo da centinaia/migliaia di PDF.
+**PaperHunter** (v3.6) è una pipeline modulare e agentica che genera autonomamente un **survey paper scientifico** (dominio: sicurezza degli LLM) partendo da centinaia/migliaia di PDF.
 
 Output finale: survey in Markdown + LaTeX (ACL/IEEEtran) con citazioni `[bibtex_key]` verificabili, bibliografia, figure, provenance report.
 
@@ -60,7 +60,7 @@ experiments/                  # ollama_A100_local (eval jailbreak + grafici + ad
 tools/                        # Script utility
 config.yaml                   # Configurazione centrale (modelli, GROBID, Neo4j, Qdrant, ecc.)
 config.researchclaw.yaml      # Config per il bridge AutoResearchClaw
-.env                          # API keys (Gemini, OpenRouter, S2) — MAI committare
+.env                          # API keys (DeepSeek, Gemini, S2) — MAI committare
 docker-compose.yml            # Servizi: GROBID, Neo4j
 qdrant_db/                    # Storage locale Qdrant (vettori) — non in git
 scaricati/                    # PDF scaricati per ingestion
@@ -77,13 +77,18 @@ Script standalone alla root: `run_writer_summaries_only.py`, `fix_hashes.py`, `f
 
 ## 4. Stack tecnologico chiave
 
-- **LLM**: Gemini (Pro/Flash/Embedding via `google-genai` + `llama-index-llms-google-genai`); fallback **OpenRouter** (`openai` SDK).
+- **LLM testuale**: provider selezionabile; default API nativa DeepSeek
+  (`deepseek-v4-pro` per tutti i tier, thinking + reasoning `max`), alternativa
+  Google AI Studio. OpenRouter è disabilitato nel profilo DeepSeek.
+- **Embedding**: BGE-M3 locale (1024d) nel profilo DeepSeek; Gemini Embedding
+  resta disponibile nel profilo Google.
 - **RAG framework**: LlamaIndex (≥0.14).
 - **Multi-agent**: LangGraph (Planner/Writer/Critic/Assembler ReAct).
 - **Vector DB**: Qdrant (locale, persist su disco).
 - **Knowledge Graph**: Neo4j (opzionale, GDS per community detection).
 - **PDF parsing**: GROBID (Docker `lfoppiano/grobid:0.8.2-full` su :8070), backup PyMuPDF.
-- **Hybrid retrieval**: BM25 (`rank-bm25`) + vettori, Reciprocal Rank Fusion, venue ranking, reranker Gemini Flash.
+- **Hybrid retrieval**: BM25 (`rank-bm25`) + vettori, Reciprocal Rank Fusion,
+  venue ranking, reranker del provider selezionato.
 - **Clustering RAPTOR**: scikit-learn.
 - **Metadati**: Semantic Scholar API + DBLP lookup.
 
@@ -93,6 +98,8 @@ Script standalone alla root: `run_writer_summaries_only.py`, `fix_hashes.py`, `f
 
 - Settings: `config.yaml` (modelli, timeout, batch size, recency, paths) → letto da `paperhunter/config.py` (Pydantic).
 - Secrets: `.env` (vedi `.env.example`).
+- Selezione: `LLM_PROVIDER=deepseek` (default) + `DEEPSEEK_API_KEY`; per il
+  profilo alternativo usare `LLM_PROVIDER=google` + `GOOGLE_API_KEY`.
 - **Setup servizi**: `docker-compose up -d` (GROBID + Neo4j).
 - **Install**: `pip install -e .` (oppure `pip install -r requirements.txt`).
 - **Test**: `pytest` (config in `pyproject.toml`, `asyncio_mode=auto`, `testpaths=["tests"]`).
@@ -103,13 +110,22 @@ Script standalone alla root: `run_writer_summaries_only.py`, `fix_hashes.py`, `f
 ## 6. Convenzioni & pattern ricorrenti
 
 - **Lazy imports** in `main.py`: ogni subcommand importa i propri moduli solo quando invocato (la pipeline è pesante).
-- **Citazioni** ovunque nel formato `[bibtex_key]`; ogni paper ha BibTeX **garantito** (cascata: GROBID → S2 → DBLP → fallback generato).
+- **Citazioni** nel formato `[bibtex_key]`. Solo record verificati uno per uno
+  su DBLP sono citabili: match strict titolo/autore/anno, BibTeX ufficiale e
+  manifest SHA-256. I fallback locali restano in `references_uncited.bib` solo
+  come contesto.
+- **Export finale fail-closed**: il LaTeX non viene scritto se una chiave è
+  assente/duplicata/non verificata o se il BibTeX diverge dal manifest DBLP;
+  il dettaglio è in `citation_integrity_report.json`.
+- **Critic strict**: 100% dei claim citati deve risultare `SUPPORTED`, con
+  almeno 5 fonti distinte per sezione; nessuna auto-accettazione al limite.
 - **Auto-invalidazione** dei summary quando i chunk a monte cambiano (`summarization/invalidation_manager.py`).
 - **Checkpoint + resume** in fase write (`postprocessing/checkpoint_manager.py`, `--resume`).
 - **Provenance tracking** per ogni claim nel survey (`postprocessing/provenance_tracker.py`).
 - **Self-evolution**: `evolution/` apprende dai fallimenti del Critic e produce overlay di prompt + skill.
 - **Recency priority** globale (config) → paper recenti pesati di più in ingestion/retrieval/L2.
-- 7 collezioni Qdrant distinte (chunks, L1, L1.5, L2, graph_communities, figure_descriptions, …) — vedi `config.yaml`.
+- 7 collezioni Qdrant BGE-M3 distinte (suffisso `_bge_m3`); dopo il passaggio
+  da Gemini/3072d occorre reindicizzare — vedi `config.yaml`.
 - Italiano nei commenti/docstring; codice e identificatori in inglese.
 - In `experiments/ollama_A100_local`, i grafici per singolo run usano
   `generate_charts.py`; i confronti tra modelli usano
@@ -147,11 +163,12 @@ Quando ti serve contesto su un'area specifica, leggi prima questi punti d'ingres
 | Configurazione       | `config.yaml` + `paperhunter/config.py`                                |
 | Modelli dati         | `paperhunter/models.py`                                                |
 | Pipeline ingestion   | `paperhunter/ingestion/ingestion_pipeline.py`                          |
+| Verifica DBLP/BibTeX | `paperhunter/ingestion/dblp_lookup.py` + `bibtex_generator.py`          |
 | Summarization        | `paperhunter/summarization/level{1,1_5,2}_summarizer.py`               |
 | Retrieval            | `paperhunter/indexing/hybrid_retriever.py`                             |
 | Agenti / writing     | `paperhunter/agents/pipeline.py` + `state.py`                          |
 | Figure generation    | `paperhunter/agents/figure_agent/planner.py`                           |
-| Export finale        | `paperhunter/postprocessing/latex_exporter.py`                         |
+| Export finale/gate   | `paperhunter/postprocessing/latex_exporter.py`                         |
 | Test di un modulo X  | `tests/test_X.py` (naming 1:1 col modulo)                              |
 
 Per il README completo usa `view` con `view_range` (è ~90KB, supera il limite di 50KB di lettura singola).

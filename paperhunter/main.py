@@ -1222,6 +1222,7 @@ def _auto_export(state, args, logger) -> None:
             tex_path = export_latex_from_state(
                 state, template=template,
                 master_bib_path=bib_path,
+                strict_citations=settings.citability.final_latex_fail_on_error,
             )
             if tex_path:
                 logger.info(f"LaTeX: {tex_path}")
@@ -1237,7 +1238,8 @@ def _auto_export(state, args, logger) -> None:
         logger.info(f"Versione: {version.version_number}")
 
     except Exception as e:
-        logger.warning(f"Errore export automatico (non bloccante): {e}")
+        logger.error(f"Export finale bloccato: {e}")
+        raise
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -1571,13 +1573,16 @@ def cmd_export(args: argparse.Namespace) -> int:
     if args.bib_only or (not args.latex and not args.bib_only):
         try:
             from paperhunter.postprocessing import generate_final_bib
-            cite_re = re.compile(r'\[([A-Z][a-z]+_\d{4}_\w+)\]')
-            used_keys = set(cite_re.findall(md_content))
+            from paperhunter.postprocessing.latex_exporter import (
+                _extract_markdown_citation_keys,
+            )
+            used_keys = _extract_markdown_citation_keys(md_content)
             if used_keys:
                 bib_path, bib_report = generate_final_bib(
                     used_keys=used_keys,
                     output_path=output_dir / "references_final.bib",
                     survey_text=md_content,
+                    strict=settings.citability.final_latex_fail_on_error,
                 )
                 if bib_path:
                     bib_generated_path = Path(bib_path)
@@ -1617,6 +1622,7 @@ def cmd_export(args: argparse.Namespace) -> int:
                 title=args.title, author=args.author,
                 copy_bib=True,
                 bib_source_path=effective_bib_source,
+                strict_citations=settings.citability.final_latex_fail_on_error,
             )
             logger.info(f"LaTeX: {tex_path} (bib={effective_bib_stem})")
             print_export_summary(tex_path.read_text(encoding="utf-8"), output_path=tex_path)
@@ -2166,6 +2172,7 @@ def cmd_figures(args: argparse.Namespace) -> int:
                     bib_file="references",
                     copy_bib=True,
                     bib_source_path=bib_src,
+                    strict_citations=settings.citability.final_latex_fail_on_error,
                 )
                 console.print(f"[bold green]✅ LaTeX aggiornato con figure: {tex_out}[/bold green]")
             except Exception as e:
@@ -2359,19 +2366,28 @@ def cmd_experiment(args: argparse.Namespace) -> int:
     except ImportError:
         pass
 
-    # Raccogli le API key disponibili per rotazione automatica FREE → PAID
+    # Raccogli la key del provider selezionato.
     from paperhunter.config import settings as _settings
     api_keys: list[tuple[str, str]] = []
-    if _settings.google_api_key_free:
-        api_keys.append(("FREE", _settings.google_api_key_free))
-    if _settings.google_api_key:
-        api_keys.append(("PAID", _settings.google_api_key))
+    if _settings.llm_provider == "deepseek":
+        if _settings.deepseek_api_key:
+            api_keys.append(("DEEPSEEK", _settings.deepseek_api_key))
+    else:
+        if _settings.google_api_key_free:
+            api_keys.append(("FREE", _settings.google_api_key_free))
+        if _settings.google_api_key:
+            api_keys.append(("PAID", _settings.google_api_key))
     if not api_keys:
-        console.print("[red]❌ Nessuna GOOGLE_API_KEY configurata nel .env[/red]")
+        expected = "DEEPSEEK_API_KEY" if _settings.llm_provider == "deepseek" else "GOOGLE_API_KEY"
+        console.print(f"[red]❌ Nessuna {expected} configurata nel .env[/red]")
         return 1
 
     # Leggi quale env var RC usa per la key
-    rc_key_env = "GOOGLE_API_KEY_FREE"
+    rc_key_env = (
+        "DEEPSEEK_API_KEY"
+        if _settings.llm_provider == "deepseek"
+        else "GOOGLE_API_KEY_FREE"
+    )
     try:
         import yaml as _yaml
         with open(rc_config, "r") as _cf:
@@ -2626,8 +2642,8 @@ def build_parser() -> argparse.ArgumentParser:
                           help="Max risultati per fonte (default: da config.yaml)")
     p_search.add_argument("--no-download", action="store_true",
                           help="Solo ricerca, nessun download")
-    p_search.add_argument("--llm-provider", type=str, choices=["google", "anthropic"],
-                          help="Provider LLM per filtro (default: google)")
+    p_search.add_argument("--llm-provider", type=str, choices=["google", "deepseek"],
+                          help="Provider LLM per filtro (default: da config, DeepSeek)")
     p_search.add_argument("-o", "--output-dir", type=str,
                           help="Directory output PDF")
     p_search.add_argument("--date-from", type=str, metavar="YYYY-MM",

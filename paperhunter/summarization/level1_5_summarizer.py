@@ -58,7 +58,7 @@ from paperhunter.utils.logging_setup import (
     print_warning,
     progress_bar,
 )
-from paperhunter.utils.rate_limiter import get_gemini_limiter
+from paperhunter.utils.rate_limiter import get_llm_limiter
 
 logger = get_logger(__name__)
 
@@ -311,7 +311,7 @@ def generate_cluster_summary(
         llm = get_flash_llm()
 
     # Rate limiting
-    limiter = get_gemini_limiter()
+    limiter = get_llm_limiter()
     limiter.wait()
 
     # Chiamata LLM con retry

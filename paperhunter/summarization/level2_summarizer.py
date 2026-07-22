@@ -64,7 +64,7 @@ from paperhunter.utils.logging_setup import (
     print_warning,
     progress_bar,
 )
-from paperhunter.utils.rate_limiter import get_gemini_limiter
+from paperhunter.utils.rate_limiter import get_llm_limiter
 
 logger = get_logger(__name__)
 
@@ -417,7 +417,7 @@ def generate_l2_summary(
     )
 
     # --- Chiamata LLM con rate limiting ---
-    limiter = get_gemini_limiter()
+    limiter = get_llm_limiter()
     limiter.wait()
 
     # Retry strategy (stessa del L1)
@@ -622,7 +622,7 @@ def _generate_l2_from_l1_5(
     )
 
     # --- Chiamata LLM con rate limiting ---
-    limiter = get_gemini_limiter()
+    limiter = get_llm_limiter()
     limiter.wait()
 
     sum_cfg = settings.summarization

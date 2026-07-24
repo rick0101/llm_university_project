@@ -155,12 +155,12 @@ def make_mock_detector() -> MagicMock:
 # ============================================================================
 
 class TestConfig:
-    """Verifica che la configurazione includa la collection graph_communities."""
+    """Verifica la collection GraphRAG configurata per l'embedding corrente."""
 
     def test_config_yaml_has_collection(self):
-        """collection_graph_communities presente in config."""
+        """collection_graph_communities usa la collection BGE-M3 configurata."""
         assert hasattr(cfg.settings.qdrant, "collection_graph_communities")
-        assert cfg.settings.qdrant.collection_graph_communities == "graph_communities"
+        assert cfg.settings.qdrant.collection_graph_communities == "graph_communities_bge_m3"
 
     def test_qdrant_store_has_collection_constant(self):
         """QdrantStore ha la costante COLLECTION_GRAPH_COMMUNITIES."""

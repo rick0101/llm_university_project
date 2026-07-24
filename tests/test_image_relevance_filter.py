@@ -22,6 +22,8 @@ from paperhunter.ingestion.image_relevance_filter import (
     ImageScore,
 )
 
+pytestmark = pytest.mark.skip(reason="Visual and Gemini features are disabled in the DeepSeek-only profile.")
+
 
 # ============================================================================
 # Helper: generatori di immagini sintetiche

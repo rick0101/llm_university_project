@@ -535,7 +535,7 @@ def _run_l1_summarization(store, args, logger) -> int:
         offset = None
         while True:
             results = store.client.scroll(
-                collection_name="paper_chunks", limit=100, offset=offset,
+                collection_name=store.COLLECTION_CHUNKS, limit=100, offset=offset,
                 with_payload=True, with_vectors=False,
             )
             points, next_offset = results
@@ -559,7 +559,7 @@ def _run_l1_summarization(store, args, logger) -> int:
         offset = None
         while True:
             results = store.client.scroll(
-                collection_name="l1_summaries", limit=100, offset=offset,
+                collection_name=store.COLLECTION_L1, limit=100, offset=offset,
                 with_payload=True, with_vectors=False,
             )
             points, next_offset = results
@@ -585,7 +585,7 @@ def _run_l1_summarization(store, args, logger) -> int:
         errors_count = 0
         for bk, pid in missing:
             try:
-                chunks_data = store.get_paper_chunks(bk, collection_name="paper_chunks")
+                chunks_data = store.get_paper_chunks(bk, collection_name=store.COLLECTION_CHUNKS)
                 if not chunks_data:
                     logger.warning(f"Nessun chunk per {bk}, skip")
                     continue
@@ -719,7 +719,7 @@ def _run_l1_5_summarization(store, args, logger) -> tuple[int, bool]:
         offset = None
         while True:
             results = store.client.scroll(
-                collection_name="l1_summaries", limit=100, offset=offset,
+                collection_name=store.COLLECTION_L1, limit=100, offset=offset,
                 with_payload=True, with_vectors=False,
             )
             points, next_offset = results
@@ -958,7 +958,7 @@ def _build_graph_index(args, logger) -> int:
         offset = None
         while True:
             results = store.client.scroll(
-                collection_name="l1_summaries", limit=100, offset=offset,
+                collection_name=store.COLLECTION_L1, limit=100, offset=offset,
                 with_payload=True, with_vectors=False,
             )
             points, next_offset = results
@@ -2024,10 +2024,17 @@ def cmd_checkpoint(args: argparse.Namespace) -> int:
 
 def cmd_figures(args: argparse.Namespace) -> int:
     """Genera figure scientifiche per il survey paper."""
+    from paperhunter.config import settings
+
+    if not settings.visual_features_enabled:
+        _get_console().print(
+            "[yellow]Figure disabilitate: il profilo DeepSeek-only non elabora o genera immagini.[/yellow]"
+        )
+        return 2
+
     import json as _json
     from pathlib import Path as _Path
 
-    from paperhunter.config import settings
     from paperhunter.agents.figure_agent.planner import (
         plan_figures, save_figure_plan, load_figure_plan, FigurePlan,
     )

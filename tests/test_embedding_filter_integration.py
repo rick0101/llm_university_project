@@ -28,6 +28,8 @@ from paperhunter.ingestion.image_relevance_filter import (
 )
 from paperhunter.models import Paper
 
+pytestmark = pytest.mark.skip(reason="Visual and Gemini features are disabled in the DeepSeek-only profile.")
+
 
 # ============================================================================
 # Helpers

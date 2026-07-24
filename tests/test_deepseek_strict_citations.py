@@ -67,9 +67,11 @@ def test_deepseek_and_local_embeddings_do_not_use_gemini_rate_limits():
     assert isinstance(get_embedding_limiter("huggingface"), NoOpLimiter)
 
 
-def test_llm_provider_can_be_overridden_by_environment(monkeypatch):
+def test_google_llm_provider_is_rejected_by_environment(monkeypatch):
+    """Il profilo DeepSeek-only deve fallire prima di inizializzare Gemini."""
     monkeypatch.setenv("LLM_PROVIDER", "google")
-    assert _build_settings().llm_provider == "google"
+    with pytest.raises(ValueError, match="deepseek"):
+        _build_settings()
 
 
 def test_grouped_citations_are_individually_verified():

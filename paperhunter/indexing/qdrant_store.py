@@ -249,7 +249,11 @@ class QdrantStore:
         # Collezione di default
         self.default_collection = collection_name or self.COLLECTION_CHUNKS
 
-        # Parametri vettoriali: testo BGE/Google e spazio multimodale Gemini separato.
+        # La policy DeepSeek-only impedisce qualunque flusso immagini.
+        self._visual_features_enabled = settings.visual_features_enabled
+
+        # Parametri vettoriali: BGE-M3 testuale; lo spazio immagini legacy
+        # resta inattivo e non viene creato né interrogato.
         self._embedding_dim = cfg.embedding_dimension
         self._image_embedding_dim = cfg.image_embedding_dimension
         self._distance = _distance_from_config(cfg.distance_metric)
@@ -287,8 +291,9 @@ class QdrantStore:
             (self.COLLECTION_L2, self._embedding_dim),
             (self.COLLECTION_GRAPH_COMMUNITIES, self._embedding_dim),
             (self.COLLECTION_FIGURES, self._embedding_dim),
-            (self.COLLECTION_IMAGE_EMBEDDINGS, self._image_embedding_dim),
         )
+        if self._visual_features_enabled:
+            collections += ((self.COLLECTION_IMAGE_EMBEDDINGS, self._image_embedding_dim),)
         for col_name, dimension in collections:
             if self.client.collection_exists(col_name):
                 if col_name != self.COLLECTION_IMAGE_EMBEDDINGS:
@@ -334,7 +339,12 @@ class QdrantStore:
             logger.info(f"Collezione '{col_name}' creata (dim={dimension})")
 
     def _assert_image_collection_dimension(self) -> None:
-        """Impedisce upsert/query silenziosamente incompatibili sulle immagini."""
+        """Impedisce l'uso di immagini quando il profilo DeepSeek-only è attivo."""
+        if not self._visual_features_enabled:
+            raise RuntimeError(
+                "DeepSeek-only mode disables visual processing and image embeddings."
+            )
+
         info = self.client.get_collection(self.COLLECTION_IMAGE_EMBEDDINGS)
         vectors = info.config.params.vectors
         actual_dimension = getattr(vectors, "size", None)

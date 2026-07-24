@@ -20,6 +20,8 @@ import pytest
 
 from paperhunter.models import ChunkType, Paper, PaperChunk
 
+pytestmark = pytest.mark.skip(reason="Visual and Gemini features are disabled in the DeepSeek-only profile.")
+
 
 # ============================================================================
 # Fixtures

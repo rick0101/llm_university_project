@@ -22,6 +22,8 @@ import numpy as np
 import pytest
 from PIL import Image, ImageDraw
 
+pytestmark = pytest.mark.skip(reason="Visual and Gemini features are disabled in the DeepSeek-only profile.")
+
 
 # ============================================================================
 # Helper: generatori di immagini sintetiche

@@ -440,39 +440,22 @@ def get_flash_llm(
     from paperhunter.config import settings
 
     selected_provider = provider or settings.llm_provider
-    if selected_provider == "deepseek":
-        cfg = settings.deepseek
-        return DeepSeekLLM(
-            model=model_name or cfg.flash_model,
-            api_base=cfg.api_base,
-            api_key=_get_deepseek_api_key(),
-            max_tokens=max_tokens or cfg.max_output_tokens_flash,
-            timeout=timeout_seconds or cfg.timeout,
-            max_retries=cfg.max_retries,
-            thinking_enabled=cfg.thinking_enabled,
-            reasoning_effort=cfg.reasoning_effort,
+    if selected_provider != "deepseek":
+        raise RuntimeError(
+            "DeepSeek-only mode disables Google/Gemini LLM providers."
         )
-    if selected_provider != "google":
-        raise ValueError(f"Provider LLM non valido: {selected_provider!r}")
 
-    from llama_index.llms.google_genai import GoogleGenAI
-
-    cfg = settings.gemini
-    temp = temperature if temperature is not None else cfg.temperature_flash
-    tokens = max_tokens if max_tokens is not None else cfg.max_output_tokens_flash
-    effective_timeout = timeout_seconds if timeout_seconds is not None else cfg.timeout
-
-    llm = GoogleGenAI(
+    cfg = settings.deepseek
+    return DeepSeekLLM(
         model=model_name or cfg.flash_model,
-        api_key=_get_api_key(),
-        temperature=temp,
-        max_tokens=tokens,
-        http_options=_get_http_options(timeout_seconds=timeout_seconds),
-        max_retries=0,  # Disabilita retry interni LlamaIndex — gestiamo noi in llm_call_with_retry
+        api_base=cfg.api_base,
+        api_key=_get_deepseek_api_key(),
+        max_tokens=max_tokens or cfg.max_output_tokens_flash,
+        timeout=timeout_seconds or cfg.timeout,
+        max_retries=cfg.max_retries,
+        thinking_enabled=cfg.thinking_enabled,
+        reasoning_effort=cfg.reasoning_effort,
     )
-
-    logger.debug(f"LLM Flash creato: {cfg.flash_model} (temp={temp}, timeout={effective_timeout}s)")
-    return llm
 
 
 def get_pro_llm(
@@ -499,39 +482,22 @@ def get_pro_llm(
     from paperhunter.config import settings
 
     selected_provider = provider or settings.llm_provider
-    if selected_provider == "deepseek":
-        cfg = settings.deepseek
-        return DeepSeekLLM(
-            model=model_name or cfg.pro_model,
-            api_base=cfg.api_base,
-            api_key=_get_deepseek_api_key(),
-            max_tokens=max_tokens or cfg.max_output_tokens_pro,
-            timeout=timeout_seconds or cfg.timeout,
-            max_retries=cfg.max_retries,
-            thinking_enabled=cfg.thinking_enabled,
-            reasoning_effort=cfg.reasoning_effort,
+    if selected_provider != "deepseek":
+        raise RuntimeError(
+            "DeepSeek-only mode disables Google/Gemini LLM providers."
         )
-    if selected_provider != "google":
-        raise ValueError(f"Provider LLM non valido: {selected_provider!r}")
 
-    from llama_index.llms.google_genai import GoogleGenAI
-
-    cfg = settings.gemini
-    temp = temperature if temperature is not None else cfg.temperature_pro
-    tokens = max_tokens if max_tokens is not None else cfg.max_output_tokens_pro
-    effective_timeout = timeout_seconds if timeout_seconds is not None else cfg.timeout
-
-    llm = GoogleGenAI(
+    cfg = settings.deepseek
+    return DeepSeekLLM(
         model=model_name or cfg.pro_model,
-        api_key=_get_api_key(),
-        temperature=temp,
-        max_tokens=tokens,
-        http_options=_get_http_options(timeout_seconds=timeout_seconds),
-        max_retries=0,  # Disabilita retry interni LlamaIndex — gestiamo noi in llm_call_with_retry
+        api_base=cfg.api_base,
+        api_key=_get_deepseek_api_key(),
+        max_tokens=max_tokens or cfg.max_output_tokens_pro,
+        timeout=timeout_seconds or cfg.timeout,
+        max_retries=cfg.max_retries,
+        thinking_enabled=cfg.thinking_enabled,
+        reasoning_effort=cfg.reasoning_effort,
     )
-
-    logger.debug(f"LLM Pro creato: {cfg.pro_model} (temp={temp}, timeout={effective_timeout}s)")
-    return llm
 
 
 def get_llm(tier: str = "flash", **kwargs):
@@ -670,44 +636,32 @@ def get_embedding_model(
     from paperhunter.config import settings
 
     selected_provider = provider or settings.embedding.provider
-    if model_name and "gemini" in model_name.lower() and provider is None:
-        selected_provider = "google"
-
-    if selected_provider == "huggingface":
-        try:
-            from llama_index.embeddings.huggingface import HuggingFaceEmbedding
-        except ImportError as exc:
-            raise ImportError(
-                "Embedding Hugging Face non installati. Esegui `pip install -e .` "
-                "per installare llama-index-embeddings-huggingface."
-            ) from exc
-        name = model_name or settings.embedding.huggingface_model
-        embed_model = HuggingFaceEmbedding(
-            model_name=name,
-            embed_batch_size=embed_batch_size,
+    if selected_provider != "huggingface":
+        raise RuntimeError(
+            "DeepSeek-only mode disables Google/Gemini embedding providers."
         )
-        logger.debug(
-            "Embedding locale creato: %s (batch_size=%d)",
-            name,
-            embed_batch_size,
+    if model_name and "gemini" in model_name.lower():
+        raise RuntimeError(
+            "DeepSeek-only mode disables Google/Gemini embedding models."
         )
-        return embed_model
 
-    if selected_provider != "google":
-        raise ValueError(f"Provider embedding non valido: {selected_provider!r}")
-
-    from llama_index.embeddings.google_genai import GoogleGenAIEmbedding
-
-    name = model_name or settings.gemini.embedding_model
-
-    embed_model = GoogleGenAIEmbedding(
+    try:
+        from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+    except ImportError as exc:
+        raise ImportError(
+            "Embedding Hugging Face non installati. Esegui `pip install -e .` "
+            "per installare llama-index-embeddings-huggingface."
+        ) from exc
+    name = model_name or settings.embedding.huggingface_model
+    embed_model = HuggingFaceEmbedding(
         model_name=name,
-        api_key=_get_api_key(),
         embed_batch_size=embed_batch_size,
-        http_options=_get_http_options(),
     )
-
-    logger.debug(f"Embedding model creato: {name} (batch_size={embed_batch_size})")
+    logger.debug(
+        "Embedding locale creato: %s (batch_size=%d)",
+        name,
+        embed_batch_size,
+    )
     return embed_model
 
 
@@ -1006,7 +960,9 @@ def llm_call_with_retry(
     """
     from paperhunter.config import settings
 
-    if getattr(llm, "provider", None) == "deepseek":
+    provider = getattr(llm, "provider", None)
+    module_name = type(llm).__module__
+    if provider == "deepseek":
         retries = max_retries if max_retries is not None else settings.deepseek.max_retries
         return _llm_call_deepseek(
             llm,
@@ -1017,15 +973,14 @@ def llm_call_with_retry(
             autonomous=settings.deepseek.retry_strategy == "autonomous",
         )
 
-    strategy = settings.gemini.retry_strategy  # "autonomous" | "interactive"
-
-    if strategy == "autonomous":
-        return _llm_call_autonomous(llm, prompt, base_delay, max_delay)
-    else:
-        retries = max_retries if max_retries is not None else settings.gemini.max_retries
-        return _llm_call_interactive(
-            llm, prompt, retries, base_delay, max_delay, openrouter_fallback,
+    if provider == "google" or module_name.startswith("llama_index.llms.google_genai"):
+        raise RuntimeError(
+            "DeepSeek-only mode refuses Google/Gemini LLM instances before any API call."
         )
+
+    # Test double locale: non rappresenta un provider esterno e non deve essere
+    # forzato lungo il protocollo DeepSeek (additional_kwargs/finish_reason).
+    return str(llm.complete(prompt))
 
 
 def _llm_call_deepseek(

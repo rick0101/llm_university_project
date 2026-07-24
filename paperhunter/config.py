@@ -74,7 +74,7 @@ class EmbeddingConfig(BaseModel):
     a Google.
     """
 
-    provider: Literal["google", "huggingface"] = "huggingface"
+    provider: Literal["huggingface"] = "huggingface"
     huggingface_model: str = "BAAI/bge-m3"
     dimension: int = 1024
 
@@ -99,8 +99,8 @@ class Neo4jConfig(BaseModel):
 
 
 class FigureExtractionConfig(BaseModel):
-    """Configurazione estrazione e descrizione figure dai PDF."""
-    enabled: bool = True
+    """Configurazione estrazione figure; disabilitata nel profilo DeepSeek-only."""
+    enabled: bool = False
     vision_model: str = "gemini-2.5-flash"  # Modello con supporto Vision
     min_width: int = 150         # Larghezza minima immagine in pixel
     min_height: int = 150        # Altezza minima immagine in pixel
@@ -109,8 +109,8 @@ class FigureExtractionConfig(BaseModel):
 
 
 class ImageFilteringConfig(BaseModel):
-    """Configurazione filtraggio intelligente immagini (pipeline a 3 stadi)."""
-    enabled: bool = True
+    """Configurazione filtro immagini; disabilitato nel profilo DeepSeek-only."""
+    enabled: bool = False
     # --- Filtro Euristico (Stage 1) ---
     min_aspect_ratio: float = 0.3
     max_aspect_ratio: float = 4.0
@@ -120,7 +120,7 @@ class ImageFilteringConfig(BaseModel):
     skip_last_page: bool = True
     relevance_threshold: float = 0.5
     # --- Filtro Embedding Multimodale (Stage 2) ---
-    embedding_filter_enabled: bool = True
+    embedding_filter_enabled: bool = False
     embedding_similarity_threshold: float = 0.3
 
     @field_validator("min_aspect_ratio")
@@ -434,8 +434,8 @@ class EvolutionConfig(BaseModel):
 
 
 class FigureAgentConfig(BaseModel):
-    """Configurazione FigureAgent (generazione automatica figure)."""
-    enabled: bool = True
+    """Configurazione FigureAgent; disabilitato nel profilo DeepSeek-only."""
+    enabled: bool = False
     min_figures: int = 3
     max_figures: int = 8
     max_iterations: int = 3
@@ -586,8 +586,11 @@ class Settings(BaseSettings):
     # --- Priorità Recency (globale) ---
     recency_priority: bool = True  # Se True, paper recenti hanno priorità in ingestion, retrieval, L2
 
-    # --- Provider LLM testuale ---
-    llm_provider: Literal["google", "deepseek"] = "deepseek"
+    # --- Provider LLM testuale: policy DeepSeek-only ---
+    llm_provider: Literal["deepseek"] = "deepseek"
+    # Vision, embedding multimodali e FigureAgent restano hard-disabled: il
+    # profilo non dispone di Gemini e non deve elaborare/generare immagini.
+    visual_features_enabled: Literal[False] = False
 
     # --- API Keys (da .env) ---
     google_api_key_free: str = ""  # Chiave gratuita (prioritaria)

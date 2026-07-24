@@ -47,7 +47,7 @@ paperhunter/                  # Package principale
 │   ├── pipeline.py           # Orchestrazione LangGraph
 │   ├── state.py              # Stato condiviso degli agenti
 │   ├── tools/retrieval_tools.py  # Tool agentic (vector/keyword/graph)
-│   └── figure_agent/         # Generazione figure (Gemini Image Gen + vision QC)
+│   └── figure_agent/         # Legacy visual feature, hard-disabled (DeepSeek-only)
 ├── postprocessing/           # bibliography, figure_resolver, latex_exporter, versioning, checkpoint, provenance
 ├── evolution/                # Self-evolution: lesson_store, lesson_extractor, prompt_overlay, skill_loader
 ├── bridge/                   # Adapter verso AutoResearchClaw
@@ -60,7 +60,7 @@ experiments/                  # ollama_A100_local (eval jailbreak + grafici + ad
 tools/                        # Script utility
 config.yaml                   # Configurazione centrale (modelli, GROBID, Neo4j, Qdrant, ecc.)
 config.researchclaw.yaml      # Config per il bridge AutoResearchClaw
-.env                          # API keys (DeepSeek, Gemini, S2) — MAI committare
+.env                          # API keys (DeepSeek, S2) — MAI committare
 docker-compose.yml            # Servizi: GROBID, Neo4j
 qdrant_db/                    # Storage locale Qdrant (vettori) — non in git
 scaricati/                    # PDF scaricati per ingestion
@@ -77,11 +77,10 @@ Script standalone alla root: `run_writer_summaries_only.py`, `fix_hashes.py`, `f
 
 ## 4. Stack tecnologico chiave
 
-- **LLM testuale**: provider selezionabile; default API nativa DeepSeek
-  (`deepseek-v4-pro` per tutti i tier, thinking + reasoning `max`), alternativa
-  Google AI Studio. OpenRouter è disabilitato nel profilo DeepSeek.
-- **Embedding**: BGE-M3 locale (1024d) nel profilo DeepSeek; Gemini Embedding
-  resta disponibile nel profilo Google.
+- **LLM testuale**: solo API nativa DeepSeek (`deepseek-v4-pro` per tutti i tier,
+  thinking + reasoning `max`). Google AI Studio e OpenRouter sono disabilitati.
+- **Embedding**: BGE-M3 locale (1024d); gli embedding Gemini e multimodali sono
+  hard-disabled.
 - **RAG framework**: LlamaIndex (≥0.14).
 - **Multi-agent**: LangGraph (Planner/Writer/Critic/Assembler ReAct).
 - **Vector DB**: Qdrant (locale, persist su disco).
@@ -98,8 +97,8 @@ Script standalone alla root: `run_writer_summaries_only.py`, `fix_hashes.py`, `f
 
 - Settings: `config.yaml` (modelli, timeout, batch size, recency, paths) → letto da `paperhunter/config.py` (Pydantic).
 - Secrets: `.env` (vedi `.env.example`).
-- Selezione: `LLM_PROVIDER=deepseek` (default) + `DEEPSEEK_API_KEY`; per il
-  profilo alternativo usare `LLM_PROVIDER=google` + `GOOGLE_API_KEY`.
+- Provider obbligatorio: `LLM_PROVIDER=deepseek` + `DEEPSEEK_API_KEY`. Google/Gemini
+  non sono supportati; Vision, embedding multimodali e FigureAgent sono hard-disabled.
 - **Setup servizi**: `docker-compose up -d` (GROBID + Neo4j).
 - **Install**: `pip install -e .` (oppure `pip install -r requirements.txt`).
 - **Test**: `pytest` (config in `pyproject.toml`, `asyncio_mode=auto`, `testpaths=["tests"]`).
@@ -125,8 +124,8 @@ Script standalone alla root: `run_writer_summaries_only.py`, `fix_hashes.py`, `f
 - **Provenance tracking** per ogni claim nel survey (`postprocessing/provenance_tracker.py`).
 - **Self-evolution**: `evolution/` apprende dai fallimenti del Critic e produce overlay di prompt + skill.
 - **Recency priority** globale (config) → paper recenti pesati di più in ingestion/retrieval/L2.
-- 7 collezioni Qdrant BGE-M3 distinte (suffisso `_bge_m3`); dopo il passaggio
-  da Gemini/3072d occorre reindicizzare — vedi `config.yaml`.
+- 7 collezioni Qdrant BGE-M3 distinte (suffisso `_bge_m3`); la collection
+  multimodale legacy non viene creata o interrogata nel profilo DeepSeek-only.
 - Italiano nei commenti/docstring; codice e identificatori in inglese.
 - In `experiments/ollama_A100_local`, i grafici per singolo run usano
   `generate_charts.py`; i confronti tra modelli usano
@@ -168,7 +167,7 @@ Quando ti serve contesto su un'area specifica, leggi prima questi punti d'ingres
 | Summarization        | `paperhunter/summarization/level{1,1_5,2}_summarizer.py`               |
 | Retrieval            | `paperhunter/indexing/hybrid_retriever.py`                             |
 | Agenti / writing     | `paperhunter/agents/pipeline.py` + `state.py`                          |
-| Figure generation    | `paperhunter/agents/figure_agent/planner.py`                           |
+| Feature visuale (disabilitata) | `paperhunter/agents/figure_agent/planner.py`                    |
 | Export finale/gate   | `paperhunter/postprocessing/latex_exporter.py`                         |
 | Test di un modulo X  | `tests/test_X.py` (naming 1:1 col modulo)                              |
 

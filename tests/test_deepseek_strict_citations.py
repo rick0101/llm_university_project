@@ -12,6 +12,7 @@ from paperhunter.ingestion.dblp_lookup import DblpLookup, DblpResult
 from paperhunter.ingestion.bibtex_generator import enrich_paper_bibtex, save_master_bib
 from paperhunter.config import _build_settings
 from paperhunter.models import Paper
+from paperhunter.postprocessing import latex_exporter
 from paperhunter.postprocessing.latex_exporter import (
     CitationIntegrityError,
     validate_citation_integrity,
@@ -181,9 +182,11 @@ def test_final_integrity_gate_blocks_bibtex_drift(tmp_path):
         )
 
 
-def test_final_integrity_gate_blocks_missing_manifest(tmp_path):
+def test_final_integrity_gate_blocks_missing_manifest(tmp_path, monkeypatch):
     key, _, bib_path, manifest_path = _write_verified_fixture(tmp_path)
     manifest_path.unlink()
+    # Evita che un manifest di una run reale funga da fallback per il fixture.
+    monkeypatch.setattr(latex_exporter.settings.output, "base_dir", tmp_path)
 
     with pytest.raises(CitationIntegrityError, match="manifest DBLP assente"):
         validate_citation_integrity(

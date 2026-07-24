@@ -27,6 +27,8 @@ import tempfile
 import time
 from pathlib import Path
 
+import pytest
+
 # Aggiungi il progetto al path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
@@ -496,6 +498,7 @@ def test_langgraph_integration():
     print("TEST 10 PASSED ✓")
 
 
+@pytest.mark.live
 def test_live_gemini_outline():
     """Test 11 (LIVE): Generazione outline reale con Gemini Pro e mock L2."""
     from paperhunter.agents.planner_agent import generate_outline, get_outline_stats

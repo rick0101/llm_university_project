@@ -17,6 +17,9 @@ Test eseguiti:
 
 import sys
 import os
+
+import pytest
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from paperhunter.indexing.reranker import GeminiReranker, rerank, RerankResult
@@ -542,6 +545,7 @@ def test_standalone_rerank():
     print("\n  ✅ TEST 11 PASSATO: funzione standalone OK")
 
 
+@pytest.mark.live
 def test_live_gemini_rerank():
     """Test LIVE con Gemini Flash: reranking di 15 candidati."""
     print("\n" + "=" * 60)

@@ -31,6 +31,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 import numpy as np
+import pytest
 from PIL import Image, ImageDraw, ImageFont
 from rich.console import Console
 from rich.table import Table
@@ -305,6 +306,7 @@ def embed_text_via_genai(text: str) -> tuple[list[float], float]:
     return embedding, elapsed
 
 
+@pytest.mark.live
 def test_multimodal_embeddings() -> dict:
     """TEST 2: Testa embedding multimodale (immagini + testo) con gemini-embedding-2-preview."""
     log_separator("TEST 2: Embedding Multimodale (gemini-embedding-2-preview)")
@@ -480,6 +482,7 @@ class PipelineResult:
     chunk_texts_preview: list[str] = None  # type: ignore
 
 
+@pytest.mark.live
 def test_full_pipeline(max_pdfs: int = 4) -> list[PipelineResult]:
     """TEST 3: Esegue la pipeline FigureExtractor completa su un sottoinsieme di PDF.
 
@@ -570,6 +573,7 @@ def test_full_pipeline(max_pdfs: int = 4) -> list[PipelineResult]:
 # TEST 4: Verifica embedding LlamaIndex vs SDK diretto
 # ============================================================================
 
+@pytest.mark.live
 def test_embedding_consistency():
     """TEST 4: Verifica che embedding LlamaIndex e SDK diretto producano vettori coerenti."""
     log_separator("TEST 4: Confronto Embedding LlamaIndex vs SDK Diretto")

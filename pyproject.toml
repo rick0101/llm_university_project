@@ -130,3 +130,7 @@ ignore_missing_imports = true
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+markers = [
+    "live: calls an external LLM API; excluded from the default offline suite",
+]
+addopts = "-m 'not live'"

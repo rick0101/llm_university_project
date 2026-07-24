@@ -352,7 +352,7 @@ class TestGenerateClusterSummary:
 
     @patch("paperhunter.summarization.level1_5_summarizer.llm_call_with_retry")
     @patch("paperhunter.summarization.level1_5_summarizer.get_pro_llm")
-    @patch("paperhunter.summarization.level1_5_summarizer.get_gemini_limiter")
+    @patch("paperhunter.summarization.level1_5_summarizer.get_llm_limiter")
     def test_generate_single_cluster(self, mock_limiter, mock_get_pro, mock_llm_call):
         """Genera un L1.5 per un cluster di 15 paper mock."""
         from paperhunter.summarization.level1_5_summarizer import (
@@ -396,7 +396,7 @@ class TestGenerateClusterSummary:
 
     @patch("paperhunter.summarization.level1_5_summarizer.llm_call_with_retry")
     @patch("paperhunter.summarization.level1_5_summarizer.get_pro_llm")
-    @patch("paperhunter.summarization.level1_5_summarizer.get_gemini_limiter")
+    @patch("paperhunter.summarization.level1_5_summarizer.get_llm_limiter")
     def test_generate_cluster_with_save(self, mock_limiter, mock_get_pro, mock_llm_call):
         """Genera un L1.5 con salvataggio su store mock."""
         from paperhunter.summarization.level1_5_summarizer import (
@@ -447,7 +447,7 @@ class TestGenerateAllClusterSummaries:
 
     @patch("paperhunter.summarization.level1_5_summarizer.llm_call_with_retry")
     @patch("paperhunter.summarization.level1_5_summarizer.get_pro_llm")
-    @patch("paperhunter.summarization.level1_5_summarizer.get_gemini_limiter")
+    @patch("paperhunter.summarization.level1_5_summarizer.get_llm_limiter")
     def test_batch_generates_all(self, mock_limiter, mock_get_pro, mock_llm_call):
         """Batch processing di 3 cluster produce 3 L1.5 summary."""
         from paperhunter.summarization.level1_5_summarizer import (
@@ -602,7 +602,7 @@ class TestConfigIntegration:
         from paperhunter.config import settings
 
         assert hasattr(settings.qdrant, "collection_l1_5_summaries")
-        assert settings.qdrant.collection_l1_5_summaries == "l1_5_summaries"
+        assert settings.qdrant.collection_l1_5_summaries == "l1_5_summaries_bge_m3"
 
     def test_l1_5_summary_model_fields(self):
         """Verifica che tutti i campi richiesti dal task siano presenti."""

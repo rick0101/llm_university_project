@@ -83,8 +83,9 @@ qdrant:
   collection_l1_5_summaries: "l1_5_summaries_bge_m3"
   collection_graph_communities: "graph_communities_bge_m3"
   collection_figure_descriptions: "figure_descriptions_bge_m3"
-  collection_image_embeddings: "image_embeddings_gemini"  # solo profilo Google/vision
+  collection_image_embeddings: "image_embeddings_gemini"  # spazio multimodale Gemini separato
   embedding_dimension: 1024                    # BGE-M3 locale (default DeepSeek)
+  image_embedding_dimension: 3072              # Gemini Embedding 2 per immagini ↔ testo
   distance_metric: "Cosine"                    # Cosine | Euclid | Dot
 
 # --- Semantic Scholar API ---

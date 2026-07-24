@@ -249,8 +249,9 @@ class QdrantStore:
         # Collezione di default
         self.default_collection = collection_name or self.COLLECTION_CHUNKS
 
-        # Parametri vettoriali
+        # Parametri vettoriali: testo BGE/Google e spazio multimodale Gemini separato.
         self._embedding_dim = cfg.embedding_dimension
+        self._image_embedding_dim = cfg.image_embedding_dimension
         self._distance = _distance_from_config(cfg.distance_metric)
 
         # Inizializza client Qdrant (locale, su disco)
@@ -272,21 +273,77 @@ class QdrantStore:
     # ------------------------------------------------------------------
 
     def _ensure_collections(self) -> None:
-        """Crea le collezioni se non esistono già."""
-        for col_name in (self.COLLECTION_CHUNKS, self.COLLECTION_L1, self.COLLECTION_L1_5, self.COLLECTION_L2, self.COLLECTION_GRAPH_COMMUNITIES, self.COLLECTION_FIGURES, self.COLLECTION_IMAGE_EMBEDDINGS):
-            if not self.client.collection_exists(col_name):
-                self.client.create_collection(
-                    collection_name=col_name,
-                    vectors_config=models.VectorParams(
-                        size=self._embedding_dim,
-                        distance=self._distance,
-                    ),
+        """Crea le collection con la dimensionalità del relativo spazio vettoriale.
+
+        Gli embedding immagine Gemini sono 3072-dim e non sono compatibili con
+        gli embedding testuali BGE-M3 (1024-dim). Se una vecchia collection
+        immagini vuota usa una dimensione errata, viene ricreata in modo sicuro;
+        se contiene dati, l'operazione viene bloccata per non perdere vettori.
+        """
+        collections = (
+            (self.COLLECTION_CHUNKS, self._embedding_dim),
+            (self.COLLECTION_L1, self._embedding_dim),
+            (self.COLLECTION_L1_5, self._embedding_dim),
+            (self.COLLECTION_L2, self._embedding_dim),
+            (self.COLLECTION_GRAPH_COMMUNITIES, self._embedding_dim),
+            (self.COLLECTION_FIGURES, self._embedding_dim),
+            (self.COLLECTION_IMAGE_EMBEDDINGS, self._image_embedding_dim),
+        )
+        for col_name, dimension in collections:
+            if self.client.collection_exists(col_name):
+                if col_name != self.COLLECTION_IMAGE_EMBEDDINGS:
+                    logger.debug(f"Collezione '{col_name}' già esistente")
+                    continue
+
+                info = self.client.get_collection(col_name)
+                vectors = info.config.params.vectors
+                actual_dimension = getattr(vectors, "size", None)
+                if actual_dimension == dimension:
+                    logger.debug(f"Collezione '{col_name}' già esistente")
+                    continue
+
+                count = self.client.count(collection_name=col_name, exact=True).count
+                if count:
+                    logger.warning(
+                        "Collezione immagini '%s' usa %s dimensioni, attese %s; "
+                        "non viene ricreata perché contiene %s vettori.",
+                        col_name,
+                        actual_dimension,
+                        dimension,
+                        count,
+                    )
+                    continue
+
+                logger.warning(
+                    "Ricreo la collection immagini vuota '%s': %s → %s dimensioni.",
+                    col_name,
+                    actual_dimension,
+                    dimension,
                 )
-                # Crea indici payload (no-op in locale, utile per migrazione a server)
-                self._create_payload_indexes(col_name)
-                logger.info(f"Collezione '{col_name}' creata (dim={self._embedding_dim})")
-            else:
-                logger.debug(f"Collezione '{col_name}' già esistente")
+                self.client.delete_collection(col_name)
+
+            self.client.create_collection(
+                collection_name=col_name,
+                vectors_config=models.VectorParams(
+                    size=dimension,
+                    distance=self._distance,
+                ),
+            )
+            # Crea indici payload (no-op in locale, utile per migrazione a server)
+            self._create_payload_indexes(col_name)
+            logger.info(f"Collezione '{col_name}' creata (dim={dimension})")
+
+    def _assert_image_collection_dimension(self) -> None:
+        """Impedisce upsert/query silenziosamente incompatibili sulle immagini."""
+        info = self.client.get_collection(self.COLLECTION_IMAGE_EMBEDDINGS)
+        vectors = info.config.params.vectors
+        actual_dimension = getattr(vectors, "size", None)
+        if actual_dimension != self._image_embedding_dim:
+            raise RuntimeError(
+                f"La collection immagini '{self.COLLECTION_IMAGE_EMBEDDINGS}' ha "
+                f"dimensione {actual_dimension}, ma gli embedding multimodali richiedono "
+                f"{self._image_embedding_dim}. Reindicizza o migra la collection prima di usarla."
+            )
 
     def _create_payload_indexes(self, collection_name: str) -> None:
         """Crea indici sui campi payload per filtering veloce.
@@ -579,6 +636,18 @@ class QdrantStore:
         if not chunks:
             logger.debug("add_image_embeddings chiamato con lista vuota")
             return 0
+        if len(chunks) != len(embeddings):
+            raise ValueError(
+                f"Numero chunk ({len(chunks)}) e embedding ({len(embeddings)}) non coincide."
+            )
+
+        self._assert_image_collection_dimension()
+        invalid_dimensions = [len(vector) for vector in embeddings if len(vector) != self._image_embedding_dim]
+        if invalid_dimensions:
+            raise ValueError(
+                f"Embedding immagini con dimensione {invalid_dimensions[0]}; attese "
+                f"{self._image_embedding_dim} per '{self.COLLECTION_IMAGE_EMBEDDINGS}'."
+            )
 
         return self.add_chunks_with_embeddings(
             chunks=chunks,
@@ -608,8 +677,18 @@ class QdrantStore:
         Returns:
             Lista di risultati (stessa struttura di ``query()``).
         """
-        return self.query(
-            query_text=query_text,
+        self._assert_image_collection_dimension()
+        from paperhunter.utils.multimodal_embedder import get_multimodal_embedder
+
+        # Immagini e testo devono usare lo stesso spazio multimodale Gemini.
+        query_vector = get_multimodal_embedder().embed_text(query_text)
+        if len(query_vector) != self._image_embedding_dim:
+            raise RuntimeError(
+                f"Query multimodale di dimensione {len(query_vector)}; attese "
+                f"{self._image_embedding_dim} per '{self.COLLECTION_IMAGE_EMBEDDINGS}'."
+            )
+        return self.query_by_vector(
+            query_vector=query_vector,
             n_results=n_results,
             where_filter=where_filter,
             collection_name=self.COLLECTION_IMAGE_EMBEDDINGS,

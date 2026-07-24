@@ -177,6 +177,8 @@ class QdrantConfig(BaseModel):
     collection_figure_descriptions: str = "figure_descriptions"
     collection_image_embeddings: str = "image_embeddings"
     embedding_dimension: int = 3072
+    # Gli embedding multimodali Gemini (immagine ↔ testo) hanno uno spazio separato.
+    image_embedding_dimension: int = 3072
     distance_metric: str = "Cosine"
 
     @field_validator("distance_metric")

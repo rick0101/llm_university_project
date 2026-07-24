@@ -582,7 +582,14 @@ def generate_outline(
     base_delay = settings.summarization.pro_base_delay
     max_delay = 120.0
 
-    llm = get_llm(tier, max_tokens=16384)
+    # Con DeepSeek il budget di output include il reasoning. Il vecchio limite
+    # fisso di 16k poteva esaurirsi prima che il modello producesse l'outline.
+    planner_max_tokens = (
+        settings.deepseek.max_output_tokens_pro
+        if settings.llm_provider == "deepseek"
+        else 16384
+    )
+    llm = get_llm(tier, max_tokens=planner_max_tokens)
 
     raw_response = llm_call_with_retry(
         llm,

@@ -504,7 +504,7 @@ class TestCommunitySummarizer:
 
     @patch("paperhunter.graphrag.community_summarizer.llm_call_with_retry")
     @patch("paperhunter.graphrag.community_summarizer.get_pro_llm")
-    @patch("paperhunter.graphrag.community_summarizer.get_gemini_limiter")
+    @patch("paperhunter.graphrag.community_summarizer.get_llm_limiter")
     def test_summarize_community_basic(self, mock_limiter, mock_llm_factory, mock_llm_call):
         """Testa che summarize_community generi un summary valido."""
         mock_llm = MagicMock()
@@ -539,7 +539,7 @@ class TestCommunitySummarizer:
 
     @patch("paperhunter.graphrag.community_summarizer.llm_call_with_retry")
     @patch("paperhunter.graphrag.community_summarizer.get_pro_llm")
-    @patch("paperhunter.graphraph.community_summarizer.get_gemini_limiter" if False else "paperhunter.graphrag.community_summarizer.get_gemini_limiter")
+    @patch("paperhunter.graphrag.community_summarizer.get_llm_limiter")
     def test_summarize_community_llm_error(self, mock_limiter, mock_llm_factory, mock_llm_call):
         """Se il LLM fallisce, l'eccezione viene propagata."""
         mock_llm_factory.return_value = MagicMock()
@@ -554,7 +554,7 @@ class TestCommunitySummarizer:
 
     @patch("paperhunter.graphrag.community_summarizer.llm_call_with_retry")
     @patch("paperhunter.graphrag.community_summarizer.get_pro_llm")
-    @patch("paperhunter.graphrag.community_summarizer.get_gemini_limiter")
+    @patch("paperhunter.graphrag.community_summarizer.get_llm_limiter")
     def test_summarize_community_with_flash(self, mock_limiter, mock_llm_factory, mock_llm_call):
         """force_model='flash' usa Flash LLM."""
         mock_limiter.return_value = MagicMock()
@@ -576,7 +576,7 @@ class TestSummarizeAllCommunities:
 
     @patch("paperhunter.graphrag.community_summarizer.llm_call_with_retry")
     @patch("paperhunter.graphrag.community_summarizer.get_pro_llm")
-    @patch("paperhunter.graphrag.community_summarizer.get_gemini_limiter")
+    @patch("paperhunter.graphrag.community_summarizer.get_llm_limiter")
     @patch("paperhunter.graphrag.community_summarizer._community_exists_in_store")
     def test_batch_processing(self, mock_exists, mock_limiter, mock_llm_factory, mock_llm_call):
         """Batch processing di 3 comunità."""
@@ -617,7 +617,7 @@ class TestSummarizeAllCommunities:
 
     @patch("paperhunter.graphrag.community_summarizer.llm_call_with_retry")
     @patch("paperhunter.graphrag.community_summarizer.get_pro_llm")
-    @patch("paperhunter.graphrag.community_summarizer.get_gemini_limiter")
+    @patch("paperhunter.graphrag.community_summarizer.get_llm_limiter")
     @patch("paperhunter.graphrag.community_summarizer._community_exists_in_store")
     def test_partial_errors(self, mock_exists, mock_limiter, mock_llm_factory, mock_llm_call):
         """Se un comunità fallisce, le altre vengono comunque processate."""
@@ -804,7 +804,7 @@ class TestFullPipeline:
 
     @patch("paperhunter.graphrag.community_summarizer.llm_call_with_retry")
     @patch("paperhunter.graphrag.community_summarizer.get_pro_llm")
-    @patch("paperhunter.graphrag.community_summarizer.get_gemini_limiter")
+    @patch("paperhunter.graphrag.community_summarizer.get_llm_limiter")
     @patch("paperhunter.graphrag.community_summarizer._community_exists_in_store")
     def test_full_pipeline(self, mock_exists, mock_limiter, mock_llm_factory, mock_llm_call):
         """Pipeline completa: community dict → summarize → save."""
@@ -836,7 +836,7 @@ class TestFullPipeline:
 
     @patch("paperhunter.graphrag.community_summarizer.llm_call_with_retry")
     @patch("paperhunter.graphrag.community_summarizer.get_pro_llm")
-    @patch("paperhunter.graphrag.community_summarizer.get_gemini_limiter")
+    @patch("paperhunter.graphrag.community_summarizer.get_llm_limiter")
     def test_many_communities(self, mock_limiter, mock_llm_factory, mock_llm_call):
         """Stress test con 10 comunità mock."""
         mock_llm_factory.return_value = MagicMock()

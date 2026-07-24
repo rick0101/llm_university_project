@@ -398,7 +398,10 @@ class TestCommunityExistsInStore:
         store = MagicMock()
         store.has_paper = MagicMock(return_value=True)
         assert _community_exists_in_store(0, store) is True
-        store.has_paper.assert_called_once_with("community_0", collection_name="graph_communities")
+        store.has_paper.assert_called_once_with(
+            "community_0",
+            collection_name=cfg.settings.qdrant.collection_graph_communities,
+        )
 
     def test_exists_false(self):
         store = MagicMock()

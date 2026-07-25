@@ -983,6 +983,25 @@ def llm_call_with_retry(
     return str(llm.complete(prompt))
 
 
+def _clone_deepseek_without_thinking(llm: DeepSeekLLM) -> DeepSeekLLM:
+    """Clona un client DeepSeek disabilitando solo il reasoning nascosto.
+
+    Usato come fallback quando il reasoning consuma l'intero budget di output
+    e l'API termina con ``length`` senza restituire alcun testo utilizzabile.
+    """
+    return DeepSeekLLM(
+        model=llm.model,
+        api_base=llm.api_base,
+        api_key=llm.api_key,
+        max_tokens=llm.max_tokens,
+        timeout=llm.timeout,
+        max_retries=llm.max_retries,
+        thinking_enabled=False,
+        reasoning_effort=llm.reasoning_effort,
+        temperature=llm.temperature,
+    )
+
+
 def _llm_call_deepseek(
     llm: DeepSeekLLM,
     prompt: str,
@@ -998,7 +1017,22 @@ def _llm_call_deepseek(
         try:
             response = llm.complete(prompt)
             finish_reason = response.additional_kwargs.get("finish_reason", "stop")
+            if finish_reason == "length" and not response.text.strip() and getattr(
+                llm, "thinking_enabled", False
+            ):
+                logger.warning(
+                    "DeepSeek reasoning ha esaurito il budget senza testo; "
+                    "ritento una volta senza thinking."
+                )
+                llm = _clone_deepseek_without_thinking(llm)
+                response = llm.complete(prompt)
+                finish_reason = response.additional_kwargs.get("finish_reason", "stop")
+
             if finish_reason == "length":
+                if not response.text.strip():
+                    raise RuntimeError(
+                        "DeepSeek ha esaurito il budget senza testo, anche senza thinking"
+                    )
                 logger.warning(
                     "Output DeepSeek troncato; avvio continuazione controllata."
                 )

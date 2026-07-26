@@ -196,6 +196,17 @@ def _extract_paper_ids(summaries: list[L1Summary]) -> list[str]:
     return ids
 
 
+def _extract_citable_paper_ids(summaries: list[L1Summary]) -> list[str]:
+    """Propaga solo gli identificativi DBLP-citabili nel livello RAPTOR."""
+    return list(dict.fromkeys(
+        paper_id
+        for summary in summaries
+        if summary.is_citable
+        for paper_id in [summary.bibtex_key]
+        if paper_id
+    ))
+
+
 # ============================================================================
 # JSON parsing
 # ============================================================================
@@ -344,6 +355,7 @@ def generate_cluster_summary(
         category=category,
         paper_ids=paper_ids,
         paper_count=len(summaries),
+        citable_paper_ids=_extract_citable_paper_ids(summaries),
         common_theme=parsed.get("common_theme", ""),
         shared_methodologies=parsed.get("shared_methodologies", ""),
         key_findings=parsed.get("key_findings", ""),
@@ -502,6 +514,7 @@ def _l1_5_summary_to_text(summary: L1_5Summary) -> str:
         f"Cluster Meta-Summary — {summary.category} (Cluster {summary.cluster_id})",
         f"Papers: {summary.paper_count} ({summary.temporal_span})",
         f"Paper IDs: {', '.join(summary.paper_ids[:10])}",  # Max 10 per leggibilità
+        f"Citable Paper IDs: {', '.join(summary.citable_paper_ids)}",
         "",
         f"Theme: {summary.common_theme}",
         "",
@@ -553,6 +566,8 @@ def _save_l1_5_to_store(
             category=summary.category,
             year=_extract_max_year(summary.temporal_span),
             chunk_index=0,
+            is_citable=False,
+            citation_tier="background_only",
         )
 
         # Salva nella collection l1_5_summaries
@@ -863,6 +878,7 @@ def _reconstruct_l1_5_from_payload(
         paper_count = 0
         temporal_span = ""
         paper_ids: list[str] = []
+        citable_paper_ids: list[str] = []
 
         for line in text.split("\n"):
             line_stripped = line.strip()
@@ -875,6 +891,11 @@ def _reconstruct_l1_5_from_payload(
             elif line_stripped.startswith("Paper IDs:"):
                 ids_str = line_stripped.replace("Paper IDs:", "").strip()
                 paper_ids = [pid.strip() for pid in ids_str.split(",") if pid.strip()]
+            elif line_stripped.startswith("Citable Paper IDs:"):
+                ids_str = line_stripped.replace("Citable Paper IDs:", "").strip()
+                citable_paper_ids = [
+                    pid.strip() for pid in ids_str.split(",") if pid.strip()
+                ]
             elif line_stripped.startswith("Theme:"):
                 sections["theme"] = line_stripped.replace("Theme:", "").strip()
             elif line_stripped.startswith("Methodologies:"):
@@ -889,6 +910,7 @@ def _reconstruct_l1_5_from_payload(
             category=category,
             paper_ids=paper_ids,
             paper_count=paper_count,
+            citable_paper_ids=citable_paper_ids,
             common_theme=sections["theme"],
             shared_methodologies=sections["methodologies"],
             key_findings=sections["key_findings"],

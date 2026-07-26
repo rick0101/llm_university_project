@@ -86,8 +86,15 @@ def _format_l2_for_prompt(l2_summaries: list[L2Summary]) -> str:
 
     for i, l2 in enumerate(l2_summaries, start=1):
         section = [
-            f"### Category {i}: {l2.category} ({l2.paper_count} papers)",
+            f"### Category {i}: {l2.category} ({l2.paper_count} papers, "
+            f"{len(l2.citable_paper_ids)} DBLP-citable)",
         ]
+
+        if l2.citable_paper_ids:
+            section.append(
+                "\n**Citable evidence IDs:**\n"
+                + ", ".join(l2.citable_paper_ids[:30])
+            )
 
         if l2.temporal_trends:
             section.append(f"\n**Temporal Trends:**\n{l2.temporal_trends[:2000]}")
@@ -187,6 +194,21 @@ _MANDATORY_SECTION_KEYS = {
 }
 
 
+def _normalize_subsections(value: object) -> list[str]:
+    """Accept both legacy strings and structured LLM subsection objects."""
+    if not isinstance(value, list):
+        return []
+    normalized: list[str] = []
+    for item in value:
+        if isinstance(item, str) and item.strip():
+            normalized.append(item.strip())
+        elif isinstance(item, dict):
+            label = item.get("title") or item.get("key")
+            if isinstance(label, str) and label.strip():
+                normalized.append(label.strip())
+    return normalized
+
+
 def _validate_and_normalize_outline(
     raw_sections: list[dict],
     categories: list[str],
@@ -222,14 +244,10 @@ def _validate_and_normalize_outline(
         # Deduplicazione key
         if key in seen_keys:
             key = f"{key}_{i}"
-        seen_keys.add(key)
-
         # section_type normalization
         section_type = raw.get("section_type", "body").strip().lower()
         if section_type not in _REQUIRED_SECTION_TYPES:
             section_type = "body"
-        seen_types.add(section_type)
-
         # Costruisci SectionOutline
         try:
             outline = SectionOutline(
@@ -244,9 +262,11 @@ def _validate_and_normalize_outline(
                 order=raw.get("order", i),
                 section_type=section_type,
                 parent_key=raw.get("parent_key"),
-                subsections=raw.get("subsections", []) if isinstance(raw.get("subsections"), list) else [],
+                subsections=_normalize_subsections(raw.get("subsections", [])),
             )
             outlines.append(outline)
+            seen_keys.add(key)
+            seen_types.add(section_type)
         except Exception as e:
             logger.warning(f"Errore nella costruzione SectionOutline per key={key!r}: {e}")
             continue
@@ -443,6 +463,7 @@ def _load_l2_from_store() -> list[L2Summary]:
                 category=category,
                 paper_ids=meta.get("paper_ids", []),
                 paper_count=meta.get("paper_count", 0),
+                citable_paper_ids=meta.get("citable_paper_ids", []),
                 version=meta.get("version", 1),
                 synthesis=text,  # Il testo primario è la synthesis
             )
@@ -462,6 +483,8 @@ def _load_l2_from_store() -> list[L2Summary]:
                         l2.paper_ids = disk_meta["paper_ids"]
                     if "paper_count" in disk_meta:
                         l2.paper_count = disk_meta["paper_count"]
+                    if "citable_paper_ids" in disk_meta:
+                        l2.citable_paper_ids = disk_meta["citable_paper_ids"]
             except Exception as e:
                 logger.debug(f"Impossibile caricare metadati L2 estesi per {category}: {e}")
 

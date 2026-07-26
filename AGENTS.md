@@ -78,12 +78,14 @@ Script standalone alla root: `run_writer_summaries_only.py`, `fix_hashes.py`, `f
 ## 4. Stack tecnologico chiave
 
 - **LLM testuale**: provider selezionabile; default API nativa DeepSeek
-  (`deepseek-v4-pro` per tutti i tier, thinking + reasoning `max`), alternativa
+  (`deepseek-v4-pro` per tutti i tier, thinking + reasoning `high` per i task
+  complessi e disabilitato per quelli deterministici), alternativa
   Google AI Studio. OpenRouter è disabilitato nel profilo DeepSeek.
 - **Embedding**: BGE-M3 locale (1024d) nel profilo DeepSeek; Gemini Embedding
   resta disponibile nel profilo Google.
 - **RAG framework**: LlamaIndex (≥0.14).
-- **Multi-agent**: LangGraph (Planner/Writer/Critic/Assembler ReAct).
+- **Multi-agent**: LangGraph (Planner/Writer/Critic/Assembler); Writer statico
+  grounded come default, con percorsi ReAct opzionali.
 - **Vector DB**: Qdrant (locale, persist su disco).
 - **Knowledge Graph**: Neo4j (opzionale, GDS per community detection).
 - **PDF parsing**: GROBID (Docker `lfoppiano/grobid:0.8.2-full` su :8070), backup PyMuPDF.
@@ -114,7 +116,8 @@ Script standalone alla root: `run_writer_summaries_only.py`, `fix_hashes.py`, `f
 - **Citazioni** nel formato `[bibtex_key]`. Solo record verificati uno per uno
   su DBLP sono citabili: match strict titolo/autore/anno, BibTeX ufficiale e
   manifest SHA-256. I fallback locali restano in `references_uncited.bib` solo
-  come contesto.
+  come contesto. La whitelist `citable_paper_ids` viene propagata da L1 a L1.5
+  e L2, così Planner, Writer e Critic condividono la stessa provenance.
 - **Export finale fail-closed**: il LaTeX non viene scritto se una chiave è
   assente/duplicata/non verificata o se il BibTeX diverge dal manifest DBLP;
   il dettaglio è in `citation_integrity_report.json`.

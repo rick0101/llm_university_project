@@ -22,10 +22,13 @@ Uso:
 """
 
 import json
+import os
 import sys
 import tempfile
 import time
 from pathlib import Path
+
+import pytest
 
 # Aggiungi il progetto al path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -212,8 +215,8 @@ def test_format_l2_for_prompt():
     ]
 
     text = _format_l2_for_prompt(l2s)
-    assert "Category 1: Prompt Injection (53 papers)" in text
-    assert "Category 2: Data and Model Poisoning (13 papers)" in text
+    assert "Category 1: Prompt Injection (53 papers, 0 DBLP-citable)" in text
+    assert "Category 2: Data and Model Poisoning (13 papers, 0 DBLP-citable)" in text
     assert "Temporal Trends" in text
     assert "Testing Overview" in text
     assert "Open Gaps" in text
@@ -496,6 +499,10 @@ def test_langgraph_integration():
     print("TEST 10 PASSED ✓")
 
 
+@pytest.mark.skipif(
+    os.getenv("RUN_LIVE_TESTS") != "1",
+    reason="Set RUN_LIVE_TESTS=1 to allow paid provider calls",
+)
 def test_live_gemini_outline():
     """Test 11 (LIVE): Generazione outline reale con Gemini Pro e mock L2."""
     from paperhunter.agents.planner_agent import generate_outline, get_outline_stats

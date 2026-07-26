@@ -359,7 +359,7 @@ def test_generate_l2_from_l1_5_mock():
 
     # Patch LLM e rate limiter
     with patch("paperhunter.summarization.level2_summarizer.llm_call_with_retry") as mock_llm, \
-         patch("paperhunter.summarization.level2_summarizer.get_gemini_limiter") as mock_limiter, \
+         patch("paperhunter.summarization.level2_summarizer.get_llm_limiter") as mock_limiter, \
          patch("paperhunter.summarization.level2_summarizer.get_pro_llm") as mock_get_pro, \
          patch("paperhunter.summarization.level2_summarizer.get_pro_tracker") as mock_tracker:
 
@@ -458,7 +458,7 @@ def test_fallback_to_legacy():
     })
 
     with patch("paperhunter.summarization.level2_summarizer.llm_call_with_retry") as mock_llm, \
-         patch("paperhunter.summarization.level2_summarizer.get_gemini_limiter") as mock_limiter, \
+         patch("paperhunter.summarization.level2_summarizer.get_llm_limiter") as mock_limiter, \
          patch("paperhunter.summarization.level2_summarizer.get_pro_llm") as mock_get_pro, \
          patch("paperhunter.summarization.level2_summarizer.get_pro_tracker") as mock_tracker, \
          patch("paperhunter.summarization.level1_5_summarizer.load_l1_5_summaries_for_category") as mock_l1_5:
@@ -536,7 +536,7 @@ def test_auto_detection_raptor_path():
     })
 
     with patch("paperhunter.summarization.level2_summarizer.llm_call_with_retry") as mock_llm, \
-         patch("paperhunter.summarization.level2_summarizer.get_gemini_limiter") as mock_limiter, \
+         patch("paperhunter.summarization.level2_summarizer.get_llm_limiter") as mock_limiter, \
          patch("paperhunter.summarization.level2_summarizer.get_pro_llm") as mock_get_pro, \
          patch("paperhunter.summarization.level2_summarizer.get_pro_tracker") as mock_tracker, \
          patch("paperhunter.summarization.level1_5_summarizer.load_l1_5_summaries_for_category") as mock_l1_5:
@@ -654,7 +654,7 @@ def test_raptor_metadata_saved():
     })
 
     with patch("paperhunter.summarization.level2_summarizer.llm_call_with_retry") as mock_llm, \
-         patch("paperhunter.summarization.level2_summarizer.get_gemini_limiter") as mock_limiter, \
+         patch("paperhunter.summarization.level2_summarizer.get_llm_limiter") as mock_limiter, \
          patch("paperhunter.summarization.level2_summarizer.get_pro_llm") as mock_get_pro, \
          patch("paperhunter.summarization.level2_summarizer.get_pro_tracker") as mock_tracker:
 

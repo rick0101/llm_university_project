@@ -207,6 +207,7 @@ def _format_qdrant_results(
         bibtex_key = meta.get("bibtex_key", "unknown")
         category = meta.get("category", "N/A")
         year = meta.get("year", "N/A")
+        citability = "CITABLE" if meta.get("is_citable", False) else "BACKGROUND"
         score = r.get("score", 0.0)
         text = r.get("text", "")
 
@@ -214,7 +215,7 @@ def _format_qdrant_results(
         text = _truncate_text(text)
 
         entry = (
-            f"[{i}] [{bibtex_key}] (cat: {category}, year: {year}, "
+            f"[{i}] [{bibtex_key}] [{citability}] (cat: {category}, year: {year}, "
             f"score: {score:.3f})\n{text}\n"
         )
 
@@ -253,13 +254,14 @@ def _format_bm25_results(
         bibtex_key = meta.get("bibtex_key", "unknown")
         category = meta.get("category", "N/A")
         year = meta.get("year", "N/A")
+        citability = "CITABLE" if meta.get("is_citable", False) else "BACKGROUND"
         score = r.get("score", 0.0)
         text = r.get("text", "")
 
         text = _truncate_text(text)
 
         entry = (
-            f"[{i}] [{bibtex_key}] (cat: {category}, year: {year}, "
+            f"[{i}] [{bibtex_key}] [{citability}] (cat: {category}, year: {year}, "
             f"BM25: {score:.3f})\n{text}\n"
         )
 

@@ -363,6 +363,9 @@ def generate_l2_summary(
 
     paper_count = len(l1_summaries)
     paper_ids = [s.paper_id for s in l1_summaries]
+    citable_paper_ids = list(dict.fromkeys(
+        s.bibtex_key for s in l1_summaries if s.is_citable and s.bibtex_key
+    ))
 
     logger.info(
         f"Generazione L2 summary per '{category}' "
@@ -479,6 +482,7 @@ def generate_l2_summary(
         category=category,
         paper_ids=paper_ids,
         paper_count=paper_count,
+        citable_paper_ids=citable_paper_ids,
         version=version,
         temporal_trends=parsed.get("temporal_trends", ""),
         taxonomy=parsed.get("taxonomy", ""),
@@ -550,13 +554,16 @@ def _generate_l2_from_l1_5(
 
     # Raccogli tutti i paper_ids dai cluster
     all_paper_ids: list[str] = []
+    all_citable_paper_ids: list[str] = []
     total_paper_count = 0
     for s in l1_5_summaries:
         all_paper_ids.extend(s.paper_ids)
+        all_citable_paper_ids.extend(s.citable_paper_ids)
         total_paper_count += s.paper_count
 
     # Deduplica paper_ids (un paper potrebbe apparire in cluster diversi)
     unique_paper_ids = list(dict.fromkeys(all_paper_ids))
+    unique_citable_paper_ids = list(dict.fromkeys(all_citable_paper_ids))
     total_paper_count = max(total_paper_count, len(unique_paper_ids))
 
     avg_papers_per_cluster = (
@@ -686,6 +693,7 @@ def _generate_l2_from_l1_5(
         category=category,
         paper_ids=unique_paper_ids,
         paper_count=total_paper_count,
+        citable_paper_ids=unique_citable_paper_ids,
         version=version,
         temporal_trends=parsed.get("temporal_trends", ""),
         taxonomy=parsed.get("taxonomy", ""),
@@ -829,6 +837,7 @@ def _truncate_l1_5_for_budget(
             category=s.category,
             paper_ids=s.paper_ids,
             paper_count=s.paper_count,
+            citable_paper_ids=s.citable_paper_ids,
             common_theme=s.common_theme,
             shared_methodologies=_truncate_text(s.shared_methodologies, 200),
             key_findings=s.key_findings,
@@ -850,6 +859,7 @@ def _truncate_l1_5_for_budget(
             category=s.category,
             paper_ids=s.paper_ids[:10],
             paper_count=s.paper_count,
+            citable_paper_ids=s.citable_paper_ids,
             common_theme=_truncate_text(s.common_theme, 150),
             shared_methodologies=_truncate_text(s.shared_methodologies, 150),
             key_findings=_truncate_text(s.key_findings, 150),
@@ -1179,6 +1189,8 @@ def _save_l2_to_store(
             year=0,  # L2 copre più anni
             month=0,
             chunk_index=0,
+            is_citable=False,
+            citation_tier="background_only",
         )
 
         # Aggiungi metadata extra al payload (non nel modello PaperChunk)
@@ -2096,6 +2108,7 @@ def _save_l2_metadata_to_disk(
             "version": summary.version,
             "paper_count": summary.paper_count,
             "paper_ids": summary.paper_ids,
+            "citable_paper_ids": summary.citable_paper_ids,
             "invalidated": summary.invalidated,
             "generated_at": summary.generated_at.isoformat() if summary.generated_at else None,
             "model_used": summary.model_used,

@@ -283,31 +283,48 @@ def _should_revise(state: SurveyState) -> str:
     max_iterations = settings.agents.max_writer_iterations
     iteration_count = state.get("iteration_count", 0)  # type: ignore[attr-defined]
 
-    # Verifica se ci sono sezioni che necessitano revisione
+    # Missing or merely drafted sections are incomplete too; checking only
+    # NEEDS_REVISION caused 10/11-section papers to reach the Assembler.
     sections = get_sections_from_state(state)
+    outline = get_outline_from_state(state)
+    required_keys = {
+        item.key for item in outline if item.section_type != "abstract"
+    }
+    missing_sections = sorted(required_keys - set(sections))
+    incomplete_sections = [
+        key
+        for key in sorted(required_keys & set(sections))
+        if sections[key].status not in (SectionStatus.VERIFIED, SectionStatus.FINALIZED)
+    ]
     needs_revision = [
-        k for k, v in sections.items()
-        if v.status == SectionStatus.NEEDS_REVISION
+        key for key, value in sections.items()
+        if value.status == SectionStatus.NEEDS_REVISION
     ]
 
-    if not needs_revision:
-        logger.info("Tutte le sezioni verificate — nessuna revisione necessaria.")
+    if not missing_sections and not incomplete_sections:
+        logger.info("Tutte le sezioni pianificate sono presenti e verificate.")
         return EDGE_DONE
 
     if iteration_count >= max_iterations:
         logger.warning(
-            f"Raggiunto il limite di {max_iterations} iterazioni. "
-            f"{len(needs_revision)} sezioni rimangono non verificate: {needs_revision}"
+            "Raggiunto il limite di %d iterazioni: missing=%s incomplete=%s",
+            max_iterations,
+            missing_sections,
+            incomplete_sections,
         )
         print_warning(
             f"Max iterazioni raggiunte ({max_iterations}). "
-            f"{len(needs_revision)} sezioni non verificate."
+            "L'Assembler bloccherà l'export incompleto/non verificato."
         )
         return EDGE_DONE
 
     logger.info(
-        f"Iterazione {iteration_count + 1}/{max_iterations}: "
-        f"{len(needs_revision)} sezioni da riscrivere: {needs_revision}"
+        "Iterazione %d/%d: %d da riscrivere, %d mancanti, %d incomplete.",
+        iteration_count + 1,
+        max_iterations,
+        len(needs_revision),
+        len(missing_sections),
+        len(incomplete_sections),
     )
     return EDGE_REVISE
 

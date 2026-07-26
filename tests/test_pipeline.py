@@ -221,15 +221,15 @@ def test_should_revise_max_iterations():
 
 
 def test_should_revise_no_sections():
-    """Se non ci sono sezioni → DONE (niente da revisionare)."""
-    from paperhunter.agents.pipeline import _should_revise, EDGE_DONE
+    """Un outline senza sezioni scritte deve ritornare al Writer."""
+    from paperhunter.agents.pipeline import _should_revise, EDGE_REVISE
 
     state = _create_mock_state(include_outline=True, include_sections=False)
     state["iteration_count"] = 0
 
     result = _should_revise(state)
-    assert result == EDGE_DONE, f"Expected DONE (no sections), got {result}"
-    print("[PASS] test_should_revise_no_sections — nessuna sezione → DONE")
+    assert result == EDGE_REVISE, f"Expected REVISE (missing sections), got {result}"
+    print("[PASS] test_should_revise_no_sections — sezioni mancanti → REVISE")
 
 
 # ============================================================================
@@ -866,6 +866,12 @@ def test_resume_from_node():
         }
 
     state = _create_mock_state(include_outline=True)
+    # This unit test exercises resume ordering, not missing-section recovery.
+    state["outline"] = [{
+        "key": "s1", "title": "S1", "order": 1, "section_type": "body",
+        "description": "Only section", "key_topics": [],
+        "target_length_words": 500, "related_categories": [], "parent_key": None,
+    }]
 
     with patch("paperhunter.agents.pipeline.plan") as _, \
          patch("paperhunter.agents.pipeline.write", mock_write), \

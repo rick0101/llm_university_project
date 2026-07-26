@@ -192,7 +192,7 @@ if __name__ == '__main__':
     
     # Empty
     empty_fmt = _format_context_for_prompt([])
-    assert "No relevant context" in empty_fmt
+    assert "No source evidence" in empty_fmt
     print("  ✓ Empty chunks → placeholder text")
     
     # Max chars truncation

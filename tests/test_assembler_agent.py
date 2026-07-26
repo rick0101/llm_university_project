@@ -344,16 +344,14 @@ def test_finalize_all_sections():
 
     updated = _finalize_all_sections(state)
 
-    # testing_methodologies era DRAFTED → deve essere FINALIZED
-    assert "testing_methodologies" in updated
-    tm = updated["testing_methodologies"]
-    assert tm["status"] == "finalized" or tm["status"] == SectionStatus.FINALIZED.value
+    # testing_methodologies is DRAFTED and must not be promoted implicitly.
+    assert "testing_methodologies" not in updated
 
     # Le sezioni già VERIFIED devono essere FINALIZED
     assert "prompt_injection" in updated
     assert "adversarial_attacks" in updated
 
-    print("  ✓ finalize_all_sections: DRAFTED e VERIFIED → FINALIZED")
+    print("  ✓ finalize_all_sections: only VERIFIED → FINALIZED")
 
 
 def test_slugify():
@@ -732,7 +730,34 @@ def test_assemble_langgraph_node():
     state = _create_mock_state(
         include_outline=True,
         include_sections=True,
+        include_verifications=True,
     )
+    from paperhunter.agents.state import SectionDraft, SectionStatus, VerificationResult
+    state["sections"]["testing_methodologies"]["status"] = SectionStatus.VERIFIED.value
+    state["sections"]["conclusion"] = SectionDraft(
+        section_key="conclusion",
+        title="Conclusion and Future Work",
+        text="Verified conclusion.",
+        word_count=800,
+        status=SectionStatus.VERIFIED,
+        iteration=1,
+        writer_notes="",
+        critic_feedback="",
+        drafted_at=datetime.now(),
+    ).to_dict()
+    for key in ("introduction", "testing_methodologies", "conclusion"):
+        state["verification_results"][key] = VerificationResult(
+            section_key=key,
+            total_citations=1,
+            supported=1,
+            partially_supported=0,
+            not_supported=0,
+            source_not_found=0,
+            pass_rate=1.0,
+            passed=True,
+            iteration=1,
+            verified_at=datetime.now(),
+        ).to_dict()
 
     with patch("paperhunter.agents.assembler_agent.get_llm"), \
          patch("paperhunter.agents.assembler_agent.llm_call_with_retry",

@@ -260,7 +260,14 @@ def _generate_rag_queries(
     )
 
     try:
-        llm = get_llm("flash", max_tokens=2048, timeout_seconds=60)
+        # Query generation is a tiny deterministic JSON task.  Hidden
+        # reasoning only consumes the visible-output budget here.
+        llm = get_llm(
+            "flash",
+            max_tokens=2048,
+            timeout_seconds=60,
+            thinking_enabled=False,
+        )
         raw = llm_call_with_retry(
             llm, prompt, max_retries=2, base_delay=5.0, max_delay=30.0,
         )
@@ -336,6 +343,75 @@ def _build_fallback_queries(outline: SectionOutline, n_queries: int) -> list[str
 # Helper: Retrieval
 # ============================================================================
 
+
+def _diversify_chunks_by_paper(
+    chunks: list[dict],
+    *,
+    limit: int,
+    max_per_paper: int = 2,
+) -> list[dict]:
+    """Select evidence with broad paper coverage before duplicate passages.
+
+    Hybrid retrieval can return many high-scoring passages from one paper.  A
+    writer then sees too few distinct citable sources to satisfy the Critic, no
+    matter how good the prose is.  This stable round-robin first takes the best
+    chunk from each citable paper, then a second supporting chunk, and only
+    afterwards background-only summaries.
+    """
+    if limit <= 0 or not chunks:
+        return []
+
+    def _score(chunk: dict) -> float:
+        return float(chunk.get("rerank_score", chunk.get("score", 0.0)) or 0.0)
+
+    ranked = sorted(chunks, key=_score, reverse=True)
+    citable = [
+        chunk for chunk in ranked
+        if (chunk.get("metadata") or {}).get("is_citable", False)
+        and (chunk.get("metadata") or {}).get("bibtex_key")
+    ]
+    background = [chunk for chunk in ranked if chunk not in citable]
+
+    selected: list[dict] = []
+    selected_ids: set[str] = set()
+    per_paper: dict[str, int] = {}
+
+    # One best evidence unit from every paper first.
+    for chunk in citable:
+        key = str((chunk.get("metadata") or {}).get("bibtex_key"))
+        chunk_id = str(chunk.get("chunk_id") or id(chunk))
+        if per_paper.get(key, 0) or chunk_id in selected_ids:
+            continue
+        selected.append(chunk)
+        selected_ids.add(chunk_id)
+        per_paper[key] = 1
+        if len(selected) >= limit:
+            return selected
+
+    # Add detail passages while preventing any paper from dominating.
+    for chunk in citable:
+        key = str((chunk.get("metadata") or {}).get("bibtex_key"))
+        chunk_id = str(chunk.get("chunk_id") or id(chunk))
+        if chunk_id in selected_ids or per_paper.get(key, 0) >= max_per_paper:
+            continue
+        selected.append(chunk)
+        selected_ids.add(chunk_id)
+        per_paper[key] = per_paper.get(key, 0) + 1
+        if len(selected) >= limit:
+            return selected
+
+    # L2/background material is useful for synthesis, but never at the expense
+    # of citable evidence coverage.
+    for chunk in background:
+        chunk_id = str(chunk.get("chunk_id") or id(chunk))
+        if chunk_id in selected_ids:
+            continue
+        selected.append(chunk)
+        selected_ids.add(chunk_id)
+        if len(selected) >= limit:
+            break
+    return selected
+
 def _retrieve_context_for_section(
     queries: list[str],
     outline: SectionOutline,
@@ -343,7 +419,7 @@ def _retrieve_context_for_section(
     retriever=None,
     reranker=None,
     graph_builder=None,
-    top_k_per_query: int = 15,
+    top_k_per_query: int = 30,
     top_k_final: int = 25,
     use_reranker: bool = True,
     use_graph: bool = False,
@@ -434,24 +510,41 @@ def _retrieve_context_for_section(
             logger.warning(f"Errore GraphRAG per '{outline.title}': {e}")
 
     # Reranking
-    if use_reranker and len(all_results) > top_k_final:
+    candidate_limit = max(top_k_final * 2, top_k_final + 15)
+    if use_reranker and len(all_results) > candidate_limit:
         try:
             if reranker is None:
                 from paperhunter.indexing.reranker import GeminiReranker
-                reranker = GeminiReranker(top_k=top_k_final)
+                reranker = GeminiReranker(top_k=candidate_limit)
 
             rerank_query = f"Write about: {outline.title}. Topics: {', '.join(outline.key_topics[:5])}"
-            reranked = reranker.rerank(rerank_query, all_results, top_k=top_k_final)
+            reranked = reranker.rerank(rerank_query, all_results, top_k=candidate_limit)
             logger.info(f"Reranking: {len(all_results)} → {len(reranked)} chunk")
             all_results = reranked
         except Exception as e:
             logger.warning(f"Reranking fallito per '{outline.title}': {e}. Uso ordine originale.")
             # Sort by score descending e tronca
             all_results.sort(key=lambda x: x.get("score", 0.0), reverse=True)
-            all_results = all_results[:top_k_final]
-    elif len(all_results) > top_k_final:
+            all_results = all_results[:candidate_limit]
+    elif len(all_results) > candidate_limit:
         all_results.sort(key=lambda x: x.get("score", 0.0), reverse=True)
-        all_results = all_results[:top_k_final]
+        all_results = all_results[:candidate_limit]
+
+    all_results = _diversify_chunks_by_paper(
+        all_results,
+        limit=top_k_final,
+        max_per_paper=2,
+    )
+    distinct_citable = {
+        (c.get("metadata") or {}).get("bibtex_key")
+        for c in all_results
+        if (c.get("metadata") or {}).get("is_citable", False)
+    }
+    logger.info(
+        "Evidence diversification: %d chunk, %d paper citabili distinti",
+        len(all_results),
+        len(distinct_citable - {None, ""}),
+    )
 
     # Se abbiamo graph context, aggiungilo come pseudo-chunk
     if graph_context:
@@ -472,13 +565,14 @@ def _retrieve_context_for_section(
     return all_results, chunk_ids
 
 
-# Priorità chunk per tipo: L2 > L1 > original/graph
+# Evidence that can be cited must precede background-only synthesis.  Within
+# citable material, compact L1 atomic summaries come before original passages.
 _CHUNK_TYPE_PRIORITY: dict[str, int] = {
-    "L2_SUMMARY": 0,
-    "l2_summary": 0,
-    "L1_SUMMARY": 1,
-    "l1_summary": 1,
-    "original": 2,
+    "L1_SUMMARY": 0,
+    "l1_summary": 0,
+    "original": 1,
+    "L2_SUMMARY": 2,
+    "l2_summary": 2,
     "graph": 3,
 }
 
@@ -525,7 +619,7 @@ def _sort_chunks_by_priority(chunks: list[dict]) -> list[dict]:
     L'ordinamento è stabile: a parità di tipo, l'ordine originale
     (basato sullo score del retrieval/reranker) è preservato.
 
-    Priorità: L2_SUMMARY > L1_SUMMARY > original > graph.
+    Priorità: evidenze citabili (L1/original) > background (L2/graph).
 
     Args:
         chunks: Lista di chunk dict con metadata.
@@ -533,9 +627,11 @@ def _sort_chunks_by_priority(chunks: list[dict]) -> list[dict]:
     Returns:
         Nuova lista ordinata per priorità di tipo (più informativi prima).
     """
-    def _priority_key(chunk: dict) -> int:
-        chunk_type = chunk.get("metadata", {}).get("chunk_type", "original")
-        return _CHUNK_TYPE_PRIORITY.get(chunk_type, 2)
+    def _priority_key(chunk: dict) -> tuple[int, int]:
+        metadata = chunk.get("metadata", {}) or {}
+        chunk_type = metadata.get("chunk_type", "original")
+        citable_rank = 0 if metadata.get("is_citable", False) else 1
+        return citable_rank, _CHUNK_TYPE_PRIORITY.get(chunk_type, 2)
 
     return sorted(chunks, key=_priority_key)
 
@@ -556,9 +652,9 @@ def _format_context_for_prompt(
     2. Altrimenti calcola il budget dalla config (``writer_budget_mode``
        + ``writer_max_context_chars``).
 
-    Quando *prefer_summaries* è True (default), i chunk di tipo
-    L1_SUMMARY e L2_SUMMARY vengono posizionati prima dei chunk
-    di tipo original, a parità di score.
+    Quando *prefer_summaries* è True (default), le evidenze citabili sono
+    posizionate prima del background; all'interno dei due gruppi l'ordine è
+    L1_SUMMARY > original > L2_SUMMARY > graph.
 
     Quando *related_categories* è fornito, i chunk L2/L1 summary
     di categorie non pertinenti vengono deprioritizzati per evitare
@@ -576,7 +672,7 @@ def _format_context_for_prompt(
         Testo formattato pronto per il prompt del Writer.
     """
     if not chunks:
-        return "(No relevant context retrieved. Write based on general knowledge.)"
+        return "(No source evidence retrieved. Do not draft factual claims.)"
 
     # --- Filtra summary di categorie irrilevanti ---
     if related_categories:
@@ -610,38 +706,34 @@ def _format_context_for_prompt(
     # --- Riordina per priorità di tipo se richiesto ---
     ordered_chunks = _sort_chunks_by_priority(chunks) if prefer_summaries else chunks
 
-    parts: list[str] = []
-    total_chars = 0
+    selected_chunks: list[dict] = []
+    selected_entries: list[str] = []
+    truncated_count = 0
 
-    # v3.6 — Two-Tier Corpus: separa chunk citable vs background-only e
-    # iniettiamo prima la whitelist così il writer la vede sempre.
-    citable_keys: list[str] = []
-    background_keys: list[str] = []
-    seen_keys: set[str] = set()
-    for c in ordered_chunks:
-        meta = c.get("metadata", {}) or {}
-        key = meta.get("bibtex_key") or ""
-        if not key or key in seen_keys:
-            continue
-        seen_keys.add(key)
-        if meta.get("is_citable", False):
-            citable_keys.append(key)
-        else:
-            background_keys.append(key)
+    def _truncation_notice(count: int) -> str:
+        return (
+            f"[... {count} more chunks truncated for prompt length "
+            f"(budget: {effective_max:,} chars) ...]"
+        )
 
-    if citable_keys or background_keys:
-        whitelist_block = (
+    def _whitelist_block(items: list[dict]) -> str:
+        """Build a whitelist only from evidence that will actually be shown."""
+        citable_keys = sorted({
+            str((item.get("metadata", {}) or {}).get("bibtex_key") or "")
+            for item in items
+            if (item.get("metadata", {}) or {}).get("is_citable", False)
+            and (item.get("metadata", {}) or {}).get("bibtex_key")
+        })
+        return (
             "=== CITATION WHITELIST (v3.6) ===\n"
             "You MAY ONLY cite the following bibtex_keys (CITABLE):\n  "
-            + (", ".join(sorted(citable_keys)) if citable_keys else "(none)")
+            + (", ".join(citable_keys) if citable_keys else "(none)")
             + "\nAll non-listed keys/chunks are BACKGROUND-ONLY: do not cite them."
-            + "\n=== END WHITELIST ===\n\n"
+            + "\n=== END WHITELIST ===\n"
         )
-        parts.append(whitelist_block)
-        total_chars += len(whitelist_block)
 
     for i, chunk in enumerate(ordered_chunks):
-        meta = chunk.get("metadata", {})
+        meta = chunk.get("metadata", {}) or {}
         bibtex_key = meta.get("bibtex_key", "Unknown")
         category = meta.get("category", "N/A")
         year = meta.get("year", "N/A")
@@ -651,35 +743,63 @@ def _format_context_for_prompt(
         text = chunk.get("text", "")
         citable_tag = "CITABLE" if meta.get("is_citable", False) else "BACKGROUND"
 
-        # Tronca testi molto lunghi
         if len(text) > 2000:
             text = text[:2000] + "..."
 
-        header = (
-            f"--- Chunk {i + 1} [chunk_id: {chunk_id}] [{citable_tag}] ---\n"
+        entry_number = len(selected_entries) + 1
+        entry = (
+            f"--- Chunk {entry_number} [chunk_id: {chunk_id}] [{citable_tag}] ---\n"
             f"Paper: [{bibtex_key}] | Category: {category} | "
-            f"Year: {year} | Section: {section} | Type: {chunk_type}"
+            f"Year: {year} | Section: {section} | Type: {chunk_type}\n"
+            f"{text}\n"
         )
-        entry = f"{header}\n{text}\n"
-
-        if total_chars + len(entry) > effective_max:
-            remaining = len(ordered_chunks) - i
-            parts.append(
-                f"\n[... {remaining} more chunks truncated for prompt length "
-                f"(budget: {effective_max:,} chars) ...]"
-            )
+        candidate_chunks = [*selected_chunks, chunk]
+        candidate_entries = [*selected_entries, entry]
+        candidate_parts = [_whitelist_block(candidate_chunks), *candidate_entries]
+        candidate_len = len("\n".join(candidate_parts))
+        remaining_after = len(ordered_chunks) - i - 1
+        # Reserve a compact truncation marker without exceeding the real prompt
+        # budget. This makes budgeting deterministic, including the whitelist.
+        truncation_reserve = (
+            len("\n" + _truncation_notice(remaining_after))
+            if remaining_after
+            else 0
+        )
+        if candidate_len + truncation_reserve > effective_max:
+            truncated_count = len(ordered_chunks) - i
             break
 
-        parts.append(entry)
-        total_chars += len(entry)
+        selected_chunks = candidate_chunks
+        selected_entries = candidate_entries
 
+    parts = [_whitelist_block(selected_chunks), *selected_entries]
+    if truncated_count:
+        notice = _truncation_notice(truncated_count)
+        if len("\n".join([*parts, notice])) <= effective_max:
+            parts.append(notice)
+
+    formatted = "\n".join(parts)
+    total_chars = len(formatted)
     logger.info(
-        f"Context formattato: {len(parts)} chunk inclusi, "
+        f"Context formattato: {len(selected_chunks)} chunk inclusi, "
         f"{total_chars:,}/{effective_max:,} chars usati "
         f"({total_chars * 100 // effective_max if effective_max else 0}%)"
     )
 
-    return "\n".join(parts)
+    return formatted
+
+
+def _extract_citable_keys_from_formatted_context(context: str) -> list[str]:
+    """Read the exact citation whitelist embedded in the final context."""
+    match = re.search(
+        r"You MAY ONLY cite the following bibtex_keys \(CITABLE\):\n\s*(.*?)\n"
+        r"All non-listed",
+        context,
+        re.DOTALL,
+    )
+    if not match or match.group(1).strip() == "(none)":
+        return []
+    return [key.strip() for key in match.group(1).split(",") if key.strip()]
 
 
 def _get_special_instructions(section_type: str) -> str:
@@ -1744,6 +1864,17 @@ def _build_section_result(
             )
 
     word_count = _count_words(section_text)
+    parsed_citations = parsed.get("citations", [])
+    if (
+        getattr(settings.agents, "citation_whitelist_strict", False)
+        and citable_keys is not None
+    ):
+        parsed_citations = [
+            citation
+            for citation in parsed_citations
+            if citation.get("bibtex_key") in citable_keys
+        ]
+
     citation_records = [
         CitationRecord(
             bibtex_key=c["bibtex_key"],
@@ -1751,7 +1882,7 @@ def _build_section_result(
             chunk_id=c.get("chunk_id"),
             retrieval_score=c.get("retrieval_score", 0.0),
         )
-        for c in parsed.get("citations", [])
+        for c in parsed_citations
     ]
 
     # Verifica che tutte le citazioni nel testo siano tracciate
@@ -1818,6 +1949,19 @@ def _build_section_result(
     }
 
 
+def _minimum_acceptable_revision_words(
+    existing_draft: SectionDraft,
+    outline: SectionOutline,
+) -> int:
+    """Prevent legacy drafts with a stale zero count from being shortened."""
+    existing_words = existing_draft.word_count or _count_words(existing_draft.text or "")
+    return max(
+        settings.agents.min_section_words,
+        int(outline.target_length_words * 0.80),
+        existing_words,
+    )
+
+
 # ============================================================================
 # Core: write_section
 # ============================================================================
@@ -1873,7 +2017,7 @@ def write_section(
     if target_outline is None:
         err = f"Sezione '{section_key}' non trovata nell'outline."
         logger.error(err)
-        return {"errors": [err]}
+        return {"sections": {}, "provenance": [], "errors": [err]}
 
     # --- Controlla se la sezione è già stata scritta (skip abstract/conclusion) ---
     existing_sections = get_sections_from_state(state)
@@ -1986,9 +2130,9 @@ def write_section(
     )
 
     if not chunks:
-        err = f"Nessun chunk recuperato per sezione '{section_key}'. Scrittura tentata comunque."
+        err = f"Nessun chunk recuperato per sezione '{section_key}'."
         logger.warning(err)
-        errors.append(err)
+        return {"sections": {}, "provenance": [], "errors": [err]}
 
     # --- Step 3: Formatta contesto e prompt (budget-aware) ---
     # Se n_total_sections non fornito, calcolalo dall'outline
@@ -2001,6 +2145,18 @@ def write_section(
         prefer_summaries=True,
         related_categories=target_outline.related_categories or None,
     )
+    citable_keys = set(_extract_citable_keys_from_formatted_context(context_text))
+    minimum_sources = settings.agents.min_citations_per_section
+    if len(citable_keys) < minimum_sources:
+        err = (
+            f"Evidence coverage insufficiente per '{section_key}' dopo il "
+            f"budgeting del prompt: {len(citable_keys)} fonti citabili distinte, "
+            f"minimo {minimum_sources}. Writer non chiamato: la sezione non "
+            "potrebbe superare il Critic."
+        )
+        logger.warning(err)
+        return {"sections": {}, "provenance": [], "errors": [err]}
+
     special_instructions = _get_special_instructions(target_outline.section_type)
 
     # Se c'è feedback del Critic, aggiungilo al prompt
@@ -2054,7 +2210,14 @@ def write_section(
     max_retries = settings.summarization.pro_max_retries
     base_delay = settings.summarization.pro_base_delay
 
-    llm = get_llm(tier, max_tokens=16384)
+    # A 1,000-3,000 word section plus hidden reasoning does not fit reliably in
+    # 16K shared completion tokens.  High (not max) reasoning and 32K leave a
+    # safe visible-prose budget; the adapter rejects any remaining truncation.
+    llm = get_llm(
+        tier,
+        max_tokens=32768,
+        reasoning_effort="high",
+    )
 
     try:
         raw_response = llm_call_with_retry(
@@ -2067,7 +2230,7 @@ def write_section(
         err = f"Errore LLM per sezione '{section_key}': {e}"
         logger.error(err)
         errors.append(err)
-        return {"errors": errors}
+        return {"sections": {}, "provenance": [], "errors": errors}
 
     elapsed = time.time() - t0
     logger.info(f"Risposta LLM per '{section_key}': {len(raw_response)} chars in {elapsed:.1f}s")
@@ -2078,17 +2241,46 @@ def write_section(
         err = f"Impossibile parsare la risposta per '{section_key}'."
         logger.error(err)
         errors.append(err)
-        return {"errors": errors}
+        return {"sections": {}, "provenance": [], "errors": errors}
 
     elapsed = time.time() - t0
-    return _build_section_result(
+    result = _build_section_result(
         parsed, target_outline, section_key,
         current_iteration, elapsed, errors,
         mode="static",
         queries=queries,
         chunk_ids=chunk_ids,
-        citable_keys=_build_citable_keys_from_chunks(chunks),
+        citable_keys=citable_keys,
     )
+
+    if existing_draft is not None:
+        candidate_data = result.get("sections", {}).get(section_key)
+        if candidate_data:
+            candidate = SectionDraft.from_dict(candidate_data)
+            required_words = _minimum_acceptable_revision_words(
+                existing_draft,
+                target_outline,
+            )
+            if candidate.word_count < required_words:
+                message = (
+                    f"Revision for '{section_key}' rejected: {candidate.word_count} "
+                    f"words would regress below the preserved quality floor of "
+                    f"{required_words}."
+                )
+                logger.warning(message)
+                return {
+                    "sections": {},
+                    "provenance": [],
+                    "current_phase": PipelinePhase.WRITING.value,
+                    "errors": [message],
+                    "metadata": {
+                        "last_writer_time": round(elapsed, 1),
+                        "last_writer_mode": "static",
+                        "revision_preserved": section_key,
+                    },
+                }
+
+    return result
 
 
 # ============================================================================

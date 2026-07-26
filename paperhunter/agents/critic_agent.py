@@ -168,6 +168,67 @@ def _extract_claims_for_citation(
     return claims if claims else [f"(Citation [{bibtex_key}] used in the section)"]
 
 
+def _extract_citation_occurrences(text: str, context_chars: int = 300) -> list[dict[str, str]]:
+    """Return every claim-source occurrence in textual order.
+
+    ``_extract_citations_from_text`` intentionally deduplicates keys for
+    bibliography coverage.  Citation verification must not: the same paper can
+    support one sentence and fail to support a later one.  Each adjacent claim
+    is therefore an independent verification unit.
+    """
+    if not text:
+        return []
+    occurrences: list[dict[str, str]] = []
+    false_positive = re.compile(
+        r"^(Table|Figure|Section|Appendix|Algorithm|Equation|Step)_\d+$"
+    )
+    for match in re.finditer(r"\[([^\]]+)\]", text):
+        keys = [key.strip() for key in match.group(1).split(",")]
+        keys = [
+            key for key in keys
+            if re.fullmatch(r"[A-Za-z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+", key)
+            and not false_positive.match(key)
+        ]
+        if not keys:
+            continue
+
+        # Slice the sentence by offsets rather than searching for the citation
+        # string: the same key can appear in adjacent sentences.
+        sentence_start = 0
+        for separator in (". ", "! ", "? ", "\n"):
+            pos = text.rfind(separator, 0, match.start())
+            if pos >= 0:
+                sentence_start = max(sentence_start, pos + len(separator))
+        sentence_end = len(text)
+        ending = re.search(r"[.!?](?=\s|$)", text[match.end():])
+        if ending:
+            sentence_end = match.end() + ending.end()
+        sentence = text[sentence_start:sentence_end].strip()
+        for key in keys:
+            occurrences.append({"bibtex_key": key, "claim": sentence})
+    return occurrences
+
+
+def _check_section_length(
+    draft: SectionDraft,
+    outline: SectionOutline | None,
+    *,
+    strict: bool,
+) -> tuple[bool, str]:
+    """Deterministic completeness gate based on the declared outline target."""
+    if not strict:
+        return True, ""
+    actual = len((draft.text or "").split())
+    target = outline.target_length_words if outline else settings.agents.min_section_words
+    required = max(settings.agents.min_section_words, int(target * 0.80))
+    if actual >= required:
+        return True, ""
+    return False, (
+        f"Section is too short or truncated: {actual} words; minimum {required} "
+        f"words (80% of the {target}-word outline target)."
+    )
+
+
 # ============================================================================
 # Helper: Retrieve source chunks for a citation
 # ============================================================================
@@ -175,9 +236,9 @@ def _extract_claims_for_citation(
 def _retrieve_source_chunks(
     bibtex_key: str,
     store=None,
-    max_chunks: int = 5,
+    max_chunks: int = 30,
 ) -> list[dict]:
-    """Recupera i chunk originali del paper citato dal QdrantStore.
+    """Recupera fino a 30 chunk del paper; il claim selector ne userà sei.
 
     Cerca nelle collezioni paper_chunks e l1_summaries.
 
@@ -233,6 +294,52 @@ def _retrieve_source_chunks(
 
     all_chunks.sort(key=_sort_key)
     return all_chunks[:max_chunks]
+
+
+def _select_source_chunks_for_claim(
+    chunks: list[dict],
+    claim: str,
+    *,
+    tracked_chunk_id: str | None = None,
+    max_chunks: int = 6,
+) -> list[dict]:
+    """Choose paper passages relevant to this exact citation occurrence.
+
+    Taking the first five chunks of a paper systematically favored abstract
+    and introduction text, producing false negatives for method/result claims.
+    Lexical claim matching is deterministic and keeps the verifier grounded in
+    source text; a writer-tracked chunk receives highest priority.
+    """
+    if not chunks:
+        return []
+    stopwords = {
+        "the", "a", "an", "and", "or", "of", "to", "in", "for", "with",
+        "is", "are", "was", "were", "this", "that", "these", "those", "paper",
+    }
+    claim_terms = {
+        token for token in re.findall(r"[a-z0-9]+", claim.lower())
+        if len(token) > 2 and token not in stopwords
+    }
+
+    def _score(chunk: dict) -> tuple[float, float]:
+        text = str(chunk.get("text") or "")
+        terms = set(re.findall(r"[a-z0-9]+", text.lower()))
+        overlap = len(claim_terms & terms) / max(1, len(claim_terms))
+        chunk_id = str(chunk.get("chunk_id") or "")
+        tracked_bonus = 10.0 if tracked_chunk_id and chunk_id == tracked_chunk_id else 0.0
+        chunk_type = str((chunk.get("metadata") or {}).get("chunk_type", "")).lower()
+        summary_bonus = 0.10 if chunk_type == "l1_summary" else 0.0
+        return tracked_bonus + overlap + summary_bonus, float(len(text))
+
+    return sorted(chunks, key=_score, reverse=True)[:max_chunks]
+
+
+def _source_chunks_are_citable(chunks: list[dict]) -> bool:
+    """Return True only when the source belongs to the DBLP-backed corpus."""
+    return any(
+        bool((chunk.get("metadata") or {}).get("is_citable", False))
+        for chunk in chunks
+    )
 
 
 def _format_source_text(chunks: list[dict], max_chars: int = 4000) -> str:
@@ -321,7 +428,7 @@ def _select_best_atomic_claim(claim_text: str, candidates: list[str]) -> str | N
         score = overlap / max(1, len(cand_tokens | claim_tokens))
         if best is None or score > best[0]:
             best = (score, cand)
-    if best and best[0] >= 0.10:
+    if best and best[0] >= 0.20:
         return best[1]
     return None
 
@@ -383,13 +490,15 @@ def _run_coherence_pass(
     if not section_text:
         return None
     if llm is None:
-        llm = get_llm("flash", max_tokens=1024, timeout_seconds=60)
+        llm = get_llm(
+            "flash", max_tokens=2048, timeout_seconds=60, thinking_enabled=False,
+        )
     section_title = outline.title if outline else "(unknown)"
     section_focus = (outline.description if outline and getattr(outline, "description", None) else section_title)
     prompt = _COHERENCE_PROMPT.format(
         section_title=section_title,
         section_focus=section_focus,
-        section_text=section_text[:8000],
+        section_text=section_text[:30000],
     )
     try:
         raw = llm_call_with_retry(llm, prompt, max_retries=1, base_delay=4.0, max_delay=20.0)
@@ -561,12 +670,12 @@ def _normalize_verification(data: dict) -> dict:
     }
     status = status_map.get(status_raw, "SOURCE_NOT_FOUND")
 
-    confidence = data.get("confidence", 0.5)
+    confidence = data.get("confidence", 0.0)
     if not isinstance(confidence, (int, float)):
         try:
             confidence = float(confidence)
         except (ValueError, TypeError):
-            confidence = 0.5
+            confidence = 0.0
     confidence = max(0.0, min(1.0, confidence))
 
     reasoning = str(data.get("reasoning", "")).strip()
@@ -600,7 +709,7 @@ def _regex_parse_verification(raw: str) -> dict | None:
 
     # Cerca confidence
     conf_match = re.search(r'"?confidence"?\s*[:=]\s*([\d.]+)', raw)
-    confidence = float(conf_match.group(1)) if conf_match else 0.5
+    confidence = float(conf_match.group(1)) if conf_match else 0.0
     confidence = max(0.0, min(1.0, confidence))
 
     # Cerca reasoning
@@ -668,7 +777,9 @@ def _generate_critic_feedback(
     )
 
     try:
-        llm = get_llm("flash", max_tokens=2048, timeout_seconds=60)
+        llm = get_llm(
+            "flash", max_tokens=2048, timeout_seconds=60, thinking_enabled=False,
+        )
         feedback = llm_call_with_retry(
             llm, prompt, max_retries=2, base_delay=5.0, max_delay=30.0,
         )
@@ -720,7 +831,9 @@ def _verify_single_citation(
         Dict con status, confidence, reasoning.
     """
     if llm is None:
-        llm = get_llm("flash", max_tokens=2048, timeout_seconds=90)
+        llm = get_llm(
+            "flash", max_tokens=8192, timeout_seconds=90, reasoning_effort="high",
+        )
 
     prompt = _VERIFICATION_PROMPT_TEMPLATE.format(
         claim=claim[:1000],  # Tronca claim molto lunghi
@@ -768,7 +881,9 @@ def _verify_citation_batch(
         return []
 
     if llm is None:
-        llm = get_llm("flash", max_tokens=8192, timeout_seconds=120)
+        llm = get_llm(
+            "flash", max_tokens=16384, timeout_seconds=120, reasoning_effort="high",
+        )
 
     # Costruisci il blocco citazioni
     blocks: list[str] = []
@@ -821,6 +936,7 @@ def verify_section(
     *,
     store=None,
     llm=None,
+    coherence_llm=None,
     batch_size: int = 5,
     generate_feedback: bool = True,
     strict: bool = False,
@@ -869,6 +985,14 @@ def verify_section(
         f"iterazione {draft.iteration}"
     )
 
+    outline_list = get_outline_from_state(state)
+    target_outline = next((o for o in outline_list if o.key == section_key), None)
+    length_passed, length_message = _check_section_length(
+        draft,
+        target_outline,
+        strict=strict,
+    )
+
     # Compatibilità per l'API helper isolata. La pipeline completa passa
     # sempre strict=True e non accetta mai sezioni imperfette al limite.
     max_iters = settings.agents.max_writer_iterations
@@ -885,6 +1009,7 @@ def verify_section(
 
     # --- Estrai citazioni dal testo ---
     text_citations = _extract_citations_from_text(draft.text)
+    citation_occurrences = _extract_citation_occurrences(draft.text)
 
     # Unisci con le citazioni tracciate dal Writer (che hanno chunk_id)
     tracked_citations = {c.bibtex_key: c for c in draft.citations}
@@ -914,13 +1039,20 @@ def verify_section(
                 f"Add at least {settings.agents.min_citations_per_section} distinct, "
                 "DBLP-verified citations supported by retrieved source text."
             )
+            if not length_passed:
+                updated_draft.critic_feedback += f"\n\n[LENGTH]\n{length_message}"
 
         return {
             "verification_results": {section_key: vr.to_dict()},
             "sections": {section_key: updated_draft.to_dict()},
         }
 
-    logger.info(f"Citazioni da verificare in '{section_key}': {len(text_citations)}")
+    logger.info(
+        "Citazioni da verificare in '%s': %d occorrenze, %d fonti distinte",
+        section_key,
+        len(citation_occurrences),
+        len(text_citations),
+    )
 
     # --- Lazy init store e LLM ---
     if store is None:
@@ -934,15 +1066,15 @@ def verify_section(
             # Senza store, tutte le citazioni → SOURCE_NOT_FOUND
             details = [
                 VerificationDetail(
-                    citation_key=key,
-                    claim_text="",
+                    citation_key=occurrence["bibtex_key"],
+                    claim_text=occurrence["claim"],
                     source_chunk_id=None,
                     source_text_excerpt="",
                     status=VerificationStatus.SOURCE_NOT_FOUND,
                     confidence=0.0,
                     reasoning="QdrantStore not available for verification.",
                 )
-                for key in text_citations
+                for occurrence in citation_occurrences
             ]
             vr = _build_verification_result(
                 section_key, details, draft.iteration, strict=strict,
@@ -954,24 +1086,66 @@ def verify_section(
 
     if llm is None:
         tier = settings.agents.critic_model
-        llm = get_llm(tier, max_tokens=8192, timeout_seconds=120)
+        llm = get_llm(
+            tier,
+            max_tokens=16384,
+            timeout_seconds=120,
+            reasoning_effort="high",
+        )
 
     # --- Prepara dati per verifica ---
     citations_to_verify: list[dict] = []
+    verification_details: list[VerificationDetail] = []
+    source_cache: dict[str, list[dict]] = {}
 
-    for bibtex_key in text_citations:
-        # Estrai i claim per questa citazione dal testo
-        claims = _extract_claims_for_citation(draft.text, bibtex_key)
-        claim_text = claims[0] if claims else f"(Citation [{bibtex_key}] used in the section)"
+    for occurrence in citation_occurrences:
+        bibtex_key = occurrence["bibtex_key"]
+        claim_text = occurrence["claim"]
 
-        # Recupera chunk sorgente dal vector store
-        source_chunks = _retrieve_source_chunks(bibtex_key, store=store)
+        # Multiple claim checks for the same paper share one Qdrant read.
+        if bibtex_key not in source_cache:
+            source_cache[bibtex_key] = _retrieve_source_chunks(bibtex_key, store=store)
+        all_source_chunks = source_cache[bibtex_key]
 
+        if not all_source_chunks:
+            verification_details.append(VerificationDetail(
+                citation_key=bibtex_key,
+                claim_text=claim_text[:500],
+                source_chunk_id=None,
+                source_text_excerpt="",
+                status=VerificationStatus.SOURCE_NOT_FOUND,
+                confidence=0.0,
+                reasoning="No source chunks were found for this citation key.",
+            ))
+            continue
+
+        # Semantic support is irrelevant if the paper is not in the strict
+        # DBLP-backed corpus. Reject it before spending a verifier call.
+        if all_source_chunks and not _source_chunks_are_citable(all_source_chunks):
+            verification_details.append(VerificationDetail(
+                citation_key=bibtex_key,
+                claim_text=claim_text[:500],
+                source_chunk_id=None,
+                source_text_excerpt="",
+                status=VerificationStatus.SOURCE_NOT_FOUND,
+                confidence=0.0,
+                reasoning=(
+                    "Source exists only in the background corpus and is not "
+                    "DBLP-verified/citable."
+                ),
+            ))
+            continue
         # Cerca anche per chunk_id specifico (se il Writer l'ha tracciato)
         tracked = tracked_citations.get(bibtex_key)
         specific_chunk_id = tracked.chunk_id if tracked else None
 
-        source_text = _format_source_text(source_chunks)
+        source_chunks = _select_source_chunks_for_claim(
+            all_source_chunks,
+            claim_text,
+            tracked_chunk_id=specific_chunk_id,
+        )
+
+        source_text = _format_source_text(source_chunks, max_chars=8000)
 
         # v3.6 — Atomic verification: prepone l'atomic claim più simile (B4)
         if getattr(settings.agents, "critic_atomic_verification", False):
@@ -986,8 +1160,6 @@ def verify_section(
         })
 
     # --- Verifica in batch ---
-    verification_details: list[VerificationDetail] = []
-
     # Splitta in batch
     for batch_start in range(0, len(citations_to_verify), batch_size):
         batch = citations_to_verify[batch_start:batch_start + batch_size]
@@ -1058,15 +1230,21 @@ def verify_section(
             "DBLP-verified, claim-supported sources."
         )
 
+    length_notes = ""
+    if strict and not length_passed:
+        vr.passed = False
+        length_notes = f"\n\n[LENGTH / COMPLETENESS]\n{length_message}"
+
     # --- v3.6 Pass 2: Holistic coherence (C4) ---
     coherence_notes = ""
     if getattr(settings.agents, "critic_two_pass", False):
-        outline_list = get_outline_from_state(state)
-        target_outline = next((o for o in outline_list if o.key == section_key), None)
-        # Riusa lo stesso backend passato al Critic. Oltre a garantire che ogni
-        # passaggio rispetti il provider selezionato, rende i test completamente
-        # isolabili senza inizializzare una seconda connessione LLM implicita.
-        coh = _run_coherence_pass(draft.text, target_outline, llm=llm)
+        # Verification reasoning and holistic JSON editing have different token
+        # profiles; production passes a compact non-thinking LLM for this pass.
+        coh = _run_coherence_pass(
+            draft.text,
+            target_outline,
+            llm=coherence_llm or llm,
+        )
         if coh is not None:
             if not coh["passed"] and (coh["issues"] or coh["suggested_revisions"]):
                 # Marca la verifica come non passata se la coerenza è gravemente compromessa
@@ -1104,6 +1282,8 @@ def verify_section(
         critic_feedback = _generate_critic_feedback(section_title, vr)
         if coverage_notes:
             critic_feedback = (critic_feedback or "") + coverage_notes
+        if length_notes:
+            critic_feedback = (critic_feedback or "") + length_notes
         if coherence_notes:
             critic_feedback = (critic_feedback or "") + coherence_notes
 
@@ -1164,6 +1344,7 @@ def verify_all_sections(
     *,
     store=None,
     llm=None,
+    coherence_llm=None,
     batch_size: int = 5,
     skip_types: set[str] | None = None,
 ) -> dict[str, Any]:
@@ -1224,9 +1405,23 @@ def verify_all_sections(
             logger.error(f"Impossibile inizializzare QdrantStore: {e}")
             errors.append(f"QdrantStore init failed: {e}")
 
+    llm_was_provided = llm is not None
     if llm is None:
         tier = settings.agents.critic_model
-        llm = get_llm(tier, max_tokens=8192, timeout_seconds=120)
+        llm = get_llm(
+            tier,
+            max_tokens=16384,
+            timeout_seconds=120,
+            reasoning_effort="high",
+        )
+    if coherence_llm is None:
+        # Preserve offline test injection; production gets a purpose-sized model.
+        coherence_llm = llm if llm_was_provided else get_llm(
+            "flash",
+            max_tokens=2048,
+            timeout_seconds=60,
+            thinking_enabled=False,
+        )
 
     t0 = time.time()
     verified_count = 0
@@ -1247,6 +1442,7 @@ def verify_all_sections(
                 section_key,
                 store=store,
                 llm=llm,
+                coherence_llm=coherence_llm,
                 batch_size=batch_size,
                 strict=True,
             )

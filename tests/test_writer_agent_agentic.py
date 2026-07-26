@@ -390,7 +390,7 @@ class TestWriteSectionRouting:
             [{"chunk_id": "c1", "text": "Some text", "score": 0.9,
               "metadata": {"bibtex_key": "Test_2024_Key", "category": "Test",
                            "year": 2024, "section_name": "intro",
-                           "chunk_type": "original"}}],
+                           "chunk_type": "original", "is_citable": True}}],
             ["c1"],
         )
         mock_get_llm.return_value = MagicMock()
@@ -404,7 +404,8 @@ class TestWriteSectionRouting:
         original_mode = settings.agents.writer_mode
         try:
             settings.agents.writer_mode = "static"
-            result = write_section(state, "prompt_injection_attacks")
+            with patch.object(settings.agents, "min_citations_per_section", 1):
+                result = write_section(state, "prompt_injection_attacks")
         finally:
             settings.agents.writer_mode = original_mode
 
@@ -459,7 +460,7 @@ class TestWriteSectionRouting:
             [{"chunk_id": "c1", "text": "Info", "score": 0.8,
               "metadata": {"bibtex_key": "Key_2024_Test", "category": "Test",
                            "year": 2024, "section_name": "intro",
-                           "chunk_type": "original"}}],
+                           "chunk_type": "original", "is_citable": True}}],
             ["c1"],
         )
         mock_get_llm.return_value = MagicMock()
@@ -473,7 +474,8 @@ class TestWriteSectionRouting:
         original_mode = settings.agents.writer_mode
         try:
             settings.agents.writer_mode = "agentic"
-            result = write_section(state, "prompt_injection_attacks")
+            with patch.object(settings.agents, "min_citations_per_section", 1):
+                result = write_section(state, "prompt_injection_attacks")
         finally:
             settings.agents.writer_mode = original_mode
 
@@ -682,7 +684,16 @@ class TestAgenticE2E:
         original_mode = settings.agents.writer_mode
         try:
             settings.agents.writer_mode = "agentic"
-            result = write_section(state, "prompt_injection_attacks")
+            with patch(
+                "paperhunter.agents.writer_agent._load_global_citable_keys",
+                return_value={
+                    "Perez_2022_PromptInject",
+                    "Zou_2023_GCG",
+                    "Jain_2023_Defense",
+                    "Alon_2023_Sandwich",
+                },
+            ):
+                result = write_section(state, "prompt_injection_attacks")
         finally:
             settings.agents.writer_mode = original_mode
 
@@ -722,7 +733,7 @@ class TestAgenticE2E:
             [{"chunk_id": "c1", "text": "content", "score": 0.7,
               "metadata": {"bibtex_key": "Fallback_2024_Test", "category": "Test",
                            "year": 2024, "section_name": "body",
-                           "chunk_type": "original"}}],
+                           "chunk_type": "original", "is_citable": True}}],
             ["c1"],
         )
         mock_llm_call.return_value = json.dumps({
@@ -735,7 +746,8 @@ class TestAgenticE2E:
         original_mode = settings.agents.writer_mode
         try:
             settings.agents.writer_mode = "agentic"
-            result = write_section(state, "prompt_injection_attacks")
+            with patch.object(settings.agents, "min_citations_per_section", 1):
+                result = write_section(state, "prompt_injection_attacks")
         finally:
             settings.agents.writer_mode = original_mode
 

@@ -3,7 +3,7 @@ Test suite per Task A.4: Budget-aware Writer Agent context.
 
 Verifica:
 1. _compute_section_budget: fixed vs proportional mode
-2. _sort_chunks_by_priority: L2 > L1 > original > graph ordering
+2. _sort_chunks_by_priority: citable L1/original before background L2/graph
 3. _format_context_for_prompt: budget from config, override, truncation
 4. write_section: n_total_sections e max_context_chars propagation
 5. write_all_sections: budget propagation
@@ -90,15 +90,15 @@ chunks = [
 sorted_chunks = _sort_chunks_by_priority(chunks)
 types = [c["metadata"]["chunk_type"] for c in sorted_chunks]
 
-# L2 deve venire prima di L1, L1 prima di original, original prima di graph
+# Citable evidence is ordered L1 → original; background is L2 → graph.
 l2_indices = [i for i, t in enumerate(types) if "l2" in t.lower()]
 l1_indices = [i for i, t in enumerate(types) if "l1" in t.lower()]
 orig_indices = [i for i, t in enumerate(types) if t == "original"]
 graph_indices = [i for i, t in enumerate(types) if t == "graph"]
 
-assert max(l2_indices) < min(l1_indices), f"L2 deve venire prima di L1: {types}"
 assert max(l1_indices) < min(orig_indices), f"L1 deve venire prima di original: {types}"
-assert max(orig_indices) < min(graph_indices), f"original deve venire prima di graph: {types}"
+assert max(orig_indices) < min(l2_indices), f"original deve venire prima di L2: {types}"
+assert max(l2_indices) < min(graph_indices), f"L2 deve venire prima di graph: {types}"
 print(f"  ✓ Ordinamento corretto: {types}")
 
 # Stabilità: l'ordine relativo intra-tipo è preservato
@@ -114,8 +114,8 @@ no_type_chunks = [
     {"chunk_id": "y", "text": "l2", "metadata": {"chunk_type": "L2_SUMMARY"}},
 ]
 sorted_no_type = _sort_chunks_by_priority(no_type_chunks)
-assert sorted_no_type[0]["chunk_id"] == "y", "L2 prima di chunk senza tipo"
-print("  ✓ Chunk senza chunk_type → trattato come original (priorità 2)")
+assert sorted_no_type[0]["chunk_id"] == "x", "Original prima del background L2"
+print("  ✓ Chunk senza chunk_type → trattato come original")
 
 print("TEST 2 PASSED ✓\n")
 
@@ -131,7 +131,7 @@ from paperhunter.agents.writer_agent import _format_context_for_prompt
 
 # 3a. Empty chunks
 empty_fmt = _format_context_for_prompt([])
-assert "No relevant context" in empty_fmt
+assert "No source evidence" in empty_fmt
 print("  ✓ Empty chunks → placeholder text")
 
 # 3b. override max_chars
@@ -165,23 +165,23 @@ assert len(formatted_config) <= budget_for_8 + 200, \
     f"Output ({len(formatted_config)}) > budget ({budget_for_8}) + margine"
 print(f"  ✓ n_total_sections=8: output={len(formatted_config):,} chars, budget={budget_for_8:,}")
 
-# 3d. prefer_summaries=True → L1/L2 prima di original
+# 3d. prefer_summaries=True → evidence L1/original before background L2
 mixed_chunks = [
     {"chunk_id": "orig1", "text": "Original text about attacks", "score": 0.95,
-     "metadata": {"chunk_type": "original", "bibtex_key": "A_2023_X"}},
+     "metadata": {"chunk_type": "original", "bibtex_key": "A_2023_X", "is_citable": True}},
     {"chunk_id": "l2_1", "text": "L2 summary of the category", "score": 0.80,
      "metadata": {"chunk_type": "L2_SUMMARY", "bibtex_key": "Category_L2"}},
     {"chunk_id": "l1_1", "text": "L1 summary of a paper", "score": 0.85,
-     "metadata": {"chunk_type": "L1_SUMMARY", "bibtex_key": "B_2024_Y"}},
+     "metadata": {"chunk_type": "L1_SUMMARY", "bibtex_key": "B_2024_Y", "is_citable": True}},
 ]
 formatted_summaries = _format_context_for_prompt(mixed_chunks, max_chars=100000)
-# L2 deve apparire prima di L1, L1 prima di original
+# Citable L1 and original must appear before background-only L2.
 l2_pos = formatted_summaries.index("L2_SUMMARY")
 l1_pos = formatted_summaries.index("L1_SUMMARY")
 orig_pos = formatted_summaries.index("Type: original")
-assert l2_pos < l1_pos < orig_pos, \
-    f"Ordine nel prompt: L2@{l2_pos} < L1@{l1_pos} < orig@{orig_pos}"
-print("  ✓ prefer_summaries=True: L2 → L1 → original nel prompt")
+assert l1_pos < orig_pos < l2_pos, \
+    f"Ordine nel prompt: L1@{l1_pos} < orig@{orig_pos} < L2@{l2_pos}"
+print("  ✓ prefer_summaries=True: L1 → original → L2 nel prompt")
 
 # 3e. prefer_summaries=False → ordine originale preservato
 formatted_no_pref = _format_context_for_prompt(
@@ -205,13 +205,13 @@ print("=" * 70)
 from paperhunter.agents.writer_agent import _CHUNK_TYPE_PRIORITY
 
 # Verify all expected types are present
-assert _CHUNK_TYPE_PRIORITY["L2_SUMMARY"] == 0
-assert _CHUNK_TYPE_PRIORITY["l2_summary"] == 0
-assert _CHUNK_TYPE_PRIORITY["L1_SUMMARY"] == 1
-assert _CHUNK_TYPE_PRIORITY["l1_summary"] == 1
-assert _CHUNK_TYPE_PRIORITY["original"] == 2
+assert _CHUNK_TYPE_PRIORITY["L1_SUMMARY"] == 0
+assert _CHUNK_TYPE_PRIORITY["l1_summary"] == 0
+assert _CHUNK_TYPE_PRIORITY["original"] == 1
+assert _CHUNK_TYPE_PRIORITY["L2_SUMMARY"] == 2
+assert _CHUNK_TYPE_PRIORITY["l2_summary"] == 2
 assert _CHUNK_TYPE_PRIORITY["graph"] == 3
-print("  ✓ Tutte le priorità corrette: L2(0) > L1(1) > original(2) > graph(3)")
+print("  ✓ Tutte le priorità corrette: L1(0) > original(1) > L2(2) > graph(3)")
 
 # Unknown type defaults to 2 (original priority)
 unknown_prio = _CHUNK_TYPE_PRIORITY.get("unknown_type", 2)
@@ -318,15 +318,17 @@ for i in range(200):
             "year": 2020 + (i % 6),
             "section_name": "Body",
             "chunk_type": chunk_type,
+            "is_citable": chunk_type != "L2_SUMMARY",
         },
     })
 
 # Con budget piccolo (20k chars)
 fmt_small = _format_context_for_prompt(large_chunks, max_chars=20000)
 assert len(fmt_small) <= 21000
-# I primi chunk devono essere L2_SUMMARY (prefer_summaries=True)
-assert "L2_SUMMARY" in fmt_small[:2000], "L2 summaries dovrebbero apparire all'inizio"
-print(f"  ✓ 200 chunk, budget 20k: output={len(fmt_small):,} chars, L2 all'inizio")
+# Il budget limitato deve essere speso prima sulle evidenze citabili L1.
+assert "L1_SUMMARY" in fmt_small, "Le evidenze L1 devono essere incluse"
+assert "L2_SUMMARY" not in fmt_small or fmt_small.index("L1_SUMMARY") < fmt_small.index("L2_SUMMARY")
+print(f"  ✓ 200 chunk, budget 20k: output={len(fmt_small):,} chars, L1 citabile prioritizzato")
 
 # Con budget grande (500k) — tutti i chunk entrano
 fmt_large = _format_context_for_prompt(large_chunks, max_chars=500000)

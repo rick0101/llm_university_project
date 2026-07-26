@@ -282,7 +282,7 @@ def test_normalize_verification():
     assert _normalize_verification({"status": "SUPPORTED", "confidence": -0.5})["confidence"] == 0.0
     assert _normalize_verification({"status": "SUPPORTED", "confidence": 2.0})["confidence"] == 1.0
     assert _normalize_verification({"status": "SUPPORTED", "confidence": "0.7"})["confidence"] == 0.7
-    assert _normalize_verification({"status": "SUPPORTED", "confidence": "invalid"})["confidence"] == 0.5
+    assert _normalize_verification({"status": "SUPPORTED", "confidence": "invalid"})["confidence"] == 0.0
 
     print("  ✓ test_normalize_verification: 9 casi passati")
 
@@ -465,7 +465,12 @@ def test_verify_section_mock():
             "chunk_id": "c1",
             "text": "We propose the GCG attack, which generates adversarial suffixes "
                     "that transfer across multiple LLM families including GPT-4 and LLaMA-2.",
-            "metadata": {"section_name": "Abstract", "chunk_type": "original", "bibtex_key": "Zou_2023_GCG"},
+            "metadata": {
+                "section_name": "Abstract",
+                "chunk_type": "original",
+                "bibtex_key": "Zou_2023_GCG",
+                "is_citable": True,
+            },
         },
     ]
 
@@ -478,8 +483,9 @@ def test_verify_section_mock():
             # Batch: ritorna array
             resp.__str__ = lambda self: json.dumps([
                 {"citation_index": 0, "bibtex_key": "Zou_2023_GCG", "status": "SUPPORTED", "confidence": 0.9, "reasoning": "Match"},
-                {"citation_index": 1, "bibtex_key": "Greshake_2023_LLM", "status": "SUPPORTED", "confidence": 0.85, "reasoning": "Match"},
-                {"citation_index": 2, "bibtex_key": "Li_2023_Halueval", "status": "SUPPORTED", "confidence": 0.88, "reasoning": "Match"},
+                {"citation_index": 1, "bibtex_key": "Zou_2023_GCG", "status": "SUPPORTED", "confidence": 0.90, "reasoning": "Second claim match"},
+                {"citation_index": 2, "bibtex_key": "Greshake_2023_LLM", "status": "SUPPORTED", "confidence": 0.85, "reasoning": "Match"},
+                {"citation_index": 3, "bibtex_key": "Li_2023_Halueval", "status": "SUPPORTED", "confidence": 0.88, "reasoning": "Match"},
             ])
         else:
             resp.__str__ = lambda self: json.dumps({
@@ -499,7 +505,7 @@ def test_verify_section_mock():
 
     vr_data = result["verification_results"]["test_section"]
     assert isinstance(vr_data, dict)
-    assert vr_data["total_citations"] == 3
+    assert vr_data["total_citations"] == 4
     assert vr_data["passed"]
 
     # Sezione aggiornata
@@ -509,7 +515,7 @@ def test_verify_section_mock():
 
     # Provenance
     assert "provenance" in result
-    assert len(result["provenance"]) == 3
+    assert len(result["provenance"]) == 4
 
     print("  ✓ test_verify_section_mock: verifica con mock passata")
 

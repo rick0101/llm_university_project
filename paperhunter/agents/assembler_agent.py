@@ -126,26 +126,26 @@ def generate_abstract(
     )
 
     model_tier = force_model or settings.agents.assembler_model
-    llm = get_llm(model_tier)
+    llm = get_llm(
+        model_tier,
+        max_tokens=4096,
+        thinking_enabled=False,
+    )
 
     t0 = time.time()
     try:
         raw = llm_call_with_retry(
             llm, prompt,
-            max_retries=6,
-            base_delay=15.0,
-            max_delay=120.0,
+            max_retries=2,
+            base_delay=5.0,
+            max_delay=30.0,
         )
         text = raw.strip()
     except Exception as e:
         err = f"Errore generazione abstract: {e}"
         logger.error(err, exc_info=True)
-        text = (
-            "This survey provides a comprehensive analysis of security "
-            "challenges in Large Language Models (LLMs). "
-            "[Abstract generation failed — placeholder]"
-        )
         print_warning(err)
+        raise RuntimeError(err) from e
 
     elapsed = time.time() - t0
     word_count = len(text.split())
@@ -773,6 +773,17 @@ def assemble_paper(
             logger.error(err, exc_info=True)
             errors.append(err)
 
+    if generate_abstract_flag and abstract_draft is None:
+        # Do not write/version a paper with a synthetic placeholder or no
+        # abstract. A later resume can retry this bounded editorial call.
+        return {
+            "current_phase": PipelinePhase.FAILED.value,
+            "errors": errors or ["Abstract generation failed."],
+            "final_paper": "",
+            "sections": {},
+            "metadata": {"assembler_time": round(time.time() - t0, 1)},
+        }
+
     # --- Step 2: Genera/Raffina Introduction ---
     intro_draft = None
     if generate_intro_flag:
@@ -888,6 +899,45 @@ def assemble_paper(
 # LangGraph node function
 # ============================================================================
 
+
+def _validate_assembly_readiness(state: SurveyState) -> tuple[bool, list[str]]:
+    """Fail closed unless every planned body section passed the Critic."""
+    outline = get_outline_from_state(state)
+    sections = get_sections_from_state(state)
+    verifications = get_verifications_from_state(state)
+    errors: list[str] = []
+
+    required = [item for item in outline if item.section_type != "abstract"]
+    missing = [item.key for item in required if item.key not in sections]
+    if missing:
+        errors.append(f"Missing planned sections: {', '.join(missing)}")
+
+    unverified = [
+        item.key
+        for item in required
+        if item.key in sections
+        and sections[item.key].status not in (SectionStatus.VERIFIED, SectionStatus.FINALIZED)
+    ]
+    if unverified:
+        errors.append(f"Sections not verified: {', '.join(unverified)}")
+
+    without_pass = [
+        item.key
+        for item in required
+        if item.key in sections
+        and (
+            item.key not in verifications
+            or not verifications[item.key].passed
+        )
+    ]
+    if without_pass:
+        errors.append(
+            "Sections without a passing citation verification result: "
+            + ", ".join(without_pass)
+        )
+    return not errors, errors
+
+
 def assemble(state: SurveyState) -> dict[str, Any]:
     """Nodo LangGraph: Assembler Agent.
 
@@ -916,16 +966,9 @@ def assemble(state: SurveyState) -> dict[str, Any]:
             "errors": [err],
         }
 
-    # Controlla se ci sono sezioni che necessitano revisione
-    needs_revision = {
-        k: v for k, v in sections.items()
-        if v.status == SectionStatus.NEEDS_REVISION
-    }
-    if needs_revision:
-        err = (
-            f"Assemblaggio bloccato: {len(needs_revision)} sezioni non verificate: "
-            f"{list(needs_revision.keys())}"
-        )
+    ready, readiness_errors = _validate_assembly_readiness(state)
+    if not ready:
+        err = "Assemblaggio bloccato: " + " | ".join(readiness_errors)
         logger.error(err)
         print_error(err)
         return {
@@ -933,7 +976,13 @@ def assemble(state: SurveyState) -> dict[str, Any]:
             "errors": [err],
         }
 
-    result = assemble_paper(state)
+    # Introduction and conclusion are already written and citation-verified by
+    # Writer/Critic. Regenerating them here would introduce unverified claims.
+    result = assemble_paper(
+        state,
+        generate_intro_flag=False,
+        generate_conclusion_flag=False,
+    )
 
     # Report sommario
     total_words = result.get("metadata", {}).get("total_words", 0)
@@ -972,8 +1021,9 @@ def _format_sections_overview(
         key = o.key
         if key in sections:
             draft = sections[key]
-            # Primi 200 caratteri del testo della sezione
-            preview = draft.text[:200].replace("\n", " ").strip()
+            # Ground the abstract in more than one opening sentence per
+            # already-verified section.
+            preview = draft.text[:600].replace("\n", " ").strip()
             n_citations = len(draft.citations)
             parts.append(
                 f"**{o.title}** ({draft.word_count} words, {n_citations} citations): "
@@ -1063,7 +1113,7 @@ def _extract_citations_from_text(text: str) -> list:
 
 
 def _finalize_all_sections(state: SurveyState) -> dict[str, dict]:
-    """Marca tutte le sezioni verified/drafted come FINALIZED.
+    """Marca come FINALIZED soltanto sezioni già VERIFIED.
 
     Returns:
         Dict di sezioni aggiornate (solo quelle modificate).
@@ -1072,8 +1122,7 @@ def _finalize_all_sections(state: SurveyState) -> dict[str, dict]:
     updated: dict[str, dict] = {}
 
     for key, draft in sections.items():
-        if draft.status in (SectionStatus.VERIFIED, SectionStatus.DRAFTED,
-                            SectionStatus.UNDER_REVIEW):
+        if draft.status == SectionStatus.VERIFIED:
             draft.status = SectionStatus.FINALIZED
             updated[key] = draft.to_dict()
 
@@ -1179,7 +1228,9 @@ def _generate_changelog(
             new_sections=new_version.sections_count,
         )
 
-        llm = get_llm("flash", timeout_seconds=60)
+        llm = get_llm(
+            "flash", max_tokens=2048, timeout_seconds=60, thinking_enabled=False,
+        )
         changelog = llm_call_with_retry(
             llm, prompt,
             max_retries=2,

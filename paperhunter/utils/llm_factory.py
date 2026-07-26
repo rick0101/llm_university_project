@@ -53,9 +53,10 @@ class DeepSeekLLM(CustomLLM):
     api_key: str = Field(exclude=True, repr=False)
     max_tokens: int = 65536
     timeout: float = 1200.0
-    max_retries: int = 5
+    max_retries: int = 2
     thinking_enabled: bool = True
-    reasoning_effort: str = "max"
+    reasoning_effort: str = "high"
+    max_continuation_attempts: int = 2
     provider: str = "deepseek"
     temperature: float | None = None
     _client: Any = PrivateAttr(default=None)
@@ -67,7 +68,9 @@ class DeepSeekLLM(CustomLLM):
             api_key=self.api_key,
             base_url=self.api_base,
             timeout=self.timeout,
-            max_retries=self.max_retries,
+            # Retry ownership stays in ``llm_call_with_retry``. Enabling both
+            # layers multiplied a configured 6 attempts into up to 36 calls.
+            max_retries=0,
         )
 
     @property
@@ -80,16 +83,24 @@ class DeepSeekLLM(CustomLLM):
             model_name=self.model,
         )
 
-    def _call_api(self, prompt: str) -> tuple[str, str, dict[str, Any]]:
+    def _call_api(
+        self,
+        prompt: str,
+        *,
+        thinking_enabled: bool | None = None,
+    ) -> tuple[str, str, dict[str, Any]]:
         request: dict[str, Any] = {
             "model": self.model,
             "messages": [{"role": "user", "content": prompt}],
             "max_tokens": self.max_tokens,
             "stream": False,
         }
-        if self.thinking_enabled:
+        use_thinking = self.thinking_enabled if thinking_enabled is None else thinking_enabled
+        if use_thinking:
             request["reasoning_effort"] = self.reasoning_effort
             request["extra_body"] = {"thinking": {"type": "enabled"}}
+        else:
+            request["extra_body"] = {"thinking": {"type": "disabled"}}
 
         response = self._client.chat.completions.create(**request)
         if not response.choices:
@@ -98,8 +109,58 @@ class DeepSeekLLM(CustomLLM):
         choice = response.choices[0]
         text = choice.message.content or ""
         finish_reason = choice.finish_reason or "stop"
-        usage = response.usage.model_dump() if response.usage is not None else {}
+        if response.usage is None:
+            usage: dict[str, Any] = {}
+        elif hasattr(response.usage, "model_dump"):
+            usage = response.usage.model_dump()
+        else:
+            usage = dict(vars(response.usage))
         return text, finish_reason, usage
+
+    @staticmethod
+    def _reasoning_tokens(usage: dict[str, Any]) -> int:
+        """Extract billed reasoning tokens for diagnostics when available."""
+        details = usage.get("completion_tokens_details") or {}
+        if not isinstance(details, dict):
+            details = vars(details)
+        return int(details.get("reasoning_tokens", 0) or 0)
+
+    def _continue_without_thinking(
+        self,
+        prompt: str,
+        initial_text: str,
+        initial_usage: dict[str, Any],
+    ) -> tuple[str, str, dict[str, Any]]:
+        """Finish visible output with a small, bounded continuation budget."""
+        parts = [initial_text]
+        usage = dict(initial_usage)
+        for attempt in range(1, self.max_continuation_attempts + 1):
+            tail = "".join(parts)[-3000:]
+            continuation_prompt = (
+                f"{prompt}\n\n--- CONTINUATION {attempt} ---\n"
+                "The previous answer was truncated. Continue exactly where it "
+                "stopped. Do not restart, summarize, or repeat prior text.\n\n"
+                f"LAST VISIBLE TEXT:\n{tail}"
+            )
+            piece, finish_reason, part_usage = self._call_api(
+                continuation_prompt,
+                thinking_enabled=False,
+            )
+            if not piece.strip():
+                raise RuntimeError(
+                    "Continuation DeepSeek vuota: output rifiutato per evitare "
+                    "una sezione troncata."
+                )
+            parts.append(piece)
+            for key in ("prompt_tokens", "completion_tokens", "total_tokens"):
+                usage[key] = int(usage.get(key, 0) or 0) + int(part_usage.get(key, 0) or 0)
+            if finish_reason != "length":
+                return "".join(parts), finish_reason, usage
+
+        raise RuntimeError(
+            "Output DeepSeek ancora troncato dopo "
+            f"{self.max_continuation_attempts} continuation; output rifiutato."
+        )
 
     @llm_completion_callback()
     def complete(
@@ -109,6 +170,39 @@ class DeepSeekLLM(CustomLLM):
         **kwargs: Any,
     ) -> CompletionResponse:
         text, finish_reason, usage = self._call_api(prompt)
+
+        # Hidden reasoning and visible prose share DeepSeek's completion budget.
+        # If reasoning consumes all of it, perform one bounded recovery without
+        # thinking instead of repeating the same expensive failed request.
+        if not text.strip():
+            if not self.thinking_enabled:
+                raise RuntimeError(
+                    "Risposta DeepSeek vuota con thinking disabilitato "
+                    f"(finish_reason={finish_reason})."
+                )
+            logger.warning(
+                "DeepSeek senza output visibile (finish_reason=%s, "
+                "reasoning_tokens=%d): unico recovery senza thinking.",
+                finish_reason,
+                self._reasoning_tokens(usage),
+            )
+            text, finish_reason, usage = self._call_api(
+                prompt,
+                thinking_enabled=False,
+            )
+            if not text.strip():
+                raise RuntimeError(
+                    "Risposta DeepSeek vuota anche dopo il recovery senza "
+                    "thinking; nessun altro tentativo automatico eseguito."
+                )
+
+        if finish_reason == "length":
+            text, finish_reason, usage = self._continue_without_thinking(
+                prompt,
+                text,
+                usage,
+            )
+
         return CompletionResponse(
             text=text,
             additional_kwargs={
@@ -420,6 +514,8 @@ def get_flash_llm(
     timeout_seconds: Optional[float] = None,
     provider: Optional[str] = None,
     model_name: Optional[str] = None,
+    thinking_enabled: Optional[bool] = None,
+    reasoning_effort: Optional[str] = None,
 ):
     """Crea il tier Flash del provider selezionato.
 
@@ -449,8 +545,11 @@ def get_flash_llm(
             max_tokens=max_tokens or cfg.max_output_tokens_flash,
             timeout=timeout_seconds or cfg.timeout,
             max_retries=cfg.max_retries,
-            thinking_enabled=cfg.thinking_enabled,
-            reasoning_effort=cfg.reasoning_effort,
+            thinking_enabled=(
+                cfg.thinking_enabled if thinking_enabled is None else thinking_enabled
+            ),
+            reasoning_effort=reasoning_effort or cfg.reasoning_effort,
+            max_continuation_attempts=cfg.max_continuation_attempts,
         )
     if selected_provider != "google":
         raise ValueError(f"Provider LLM non valido: {selected_provider!r}")
@@ -481,6 +580,8 @@ def get_pro_llm(
     timeout_seconds: Optional[float] = None,
     provider: Optional[str] = None,
     model_name: Optional[str] = None,
+    thinking_enabled: Optional[bool] = None,
+    reasoning_effort: Optional[str] = None,
 ):
     """Crea il tier Pro del provider selezionato.
 
@@ -508,8 +609,11 @@ def get_pro_llm(
             max_tokens=max_tokens or cfg.max_output_tokens_pro,
             timeout=timeout_seconds or cfg.timeout,
             max_retries=cfg.max_retries,
-            thinking_enabled=cfg.thinking_enabled,
-            reasoning_effort=cfg.reasoning_effort,
+            thinking_enabled=(
+                cfg.thinking_enabled if thinking_enabled is None else thinking_enabled
+            ),
+            reasoning_effort=reasoning_effort or cfg.reasoning_effort,
+            max_continuation_attempts=cfg.max_continuation_attempts,
         )
     if selected_provider != "google":
         raise ValueError(f"Provider LLM non valido: {selected_provider!r}")
@@ -1007,14 +1111,18 @@ def llm_call_with_retry(
     from paperhunter.config import settings
 
     if getattr(llm, "provider", None) == "deepseek":
-        retries = max_retries if max_retries is not None else settings.deepseek.max_retries
+        requested_retries = (
+            max_retries if max_retries is not None else settings.deepseek.max_retries
+        )
+        # Callers historically requested up to six retries. Cap all DeepSeek
+        # traffic centrally so nested stages cannot recreate a retry cascade.
+        retries = min(requested_retries, settings.deepseek.max_retries)
         return _llm_call_deepseek(
             llm,
             prompt,
             retries=retries,
             base_delay=base_delay,
             max_delay=max_delay,
-            autonomous=settings.deepseek.retry_strategy == "autonomous",
         )
 
     strategy = settings.gemini.retry_strategy  # "autonomous" | "interactive"
@@ -1035,27 +1143,12 @@ def _llm_call_deepseek(
     retries: int,
     base_delay: float,
     max_delay: float,
-    autonomous: bool,
 ) -> str:
-    """Retry DeepSeek nativo senza fallback di provider o modello."""
+    """Retry DeepSeek nativo, sempre finito e senza fallback di provider."""
     attempt = 0
     while True:
         try:
             response = llm.complete(prompt)
-            finish_reason = response.additional_kwargs.get("finish_reason", "stop")
-            if finish_reason == "length":
-                logger.warning(
-                    "Output DeepSeek troncato; avvio continuazione controllata."
-                )
-                return _complete_with_continuation(
-                    llm,
-                    prompt,
-                    initial_text=response.text,
-                )
-            if not response.text.strip():
-                raise RuntimeError(
-                    f"Risposta DeepSeek vuota (finish_reason={finish_reason})"
-                )
             return response.text
         except Exception as exc:
             error_text = str(exc).lower()
@@ -1072,7 +1165,7 @@ def _llm_call_deepseek(
                 raise
 
             attempt += 1
-            if not autonomous and attempt > retries:
+            if attempt > retries:
                 raise RuntimeError(
                     f"DeepSeek fallito dopo {attempt} tentativi"
                 ) from exc

@@ -58,12 +58,13 @@ class DeepSeekConfig(BaseModel):
     flash_model: str = "deepseek-v4-pro"
     pro_model: str = "deepseek-v4-pro"
     thinking_enabled: bool = True
-    reasoning_effort: Literal["high", "max"] = "max"
+    reasoning_effort: Literal["high", "max"] = "high"
     max_output_tokens_flash: int = 32768
     max_output_tokens_pro: int = 65536
     timeout: int = 1200
-    max_retries: int = 5
-    retry_strategy: Literal["autonomous", "finite"] = "autonomous"
+    max_retries: int = 2
+    max_continuation_attempts: int = 2
+    retry_strategy: Literal["autonomous", "finite"] = "finite"
 
 
 class EmbeddingConfig(BaseModel):
@@ -307,8 +308,8 @@ class AgentsConfig(BaseModel):
     critic_model: str = "flash"
     assembler_model: str = "pro"
     writer_max_context_chars: int = 60_000  # Max chars contesto per singola sezione writer
-    writer_budget_mode: str = "proportional"  # "fixed" | "proportional"
-    writer_mode: str = "agentic"  # "static" (RAG pre-calcolato) | "agentic" (ReAct multi-step)
+    writer_budget_mode: str = "fixed"  # full evidence budget per section
+    writer_mode: str = "static"  # one grounded call, no repeated ReAct turns
     force_rewrite: bool = False  # Se True, riscrive tutto ignorando i checkpoint per-sezione
 
     # --- v3.6 Hardening (C4) ---

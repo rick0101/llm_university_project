@@ -155,17 +155,21 @@ class GeminiReranker:
 
         Usa un timeout di 90s (molto più corto del default 600s per Pro)
         perché il reranking con Flash è un task breve.
-        max_tokens=8192 perché Flash è un thinking model che consuma
-        token per il ragionamento interno prima di produrre l'output.
+        Reranking is a short deterministic JSON task, so thinking is disabled
+        to reserve the completion budget for the ranking itself.
         """
         if self._llm is None:
             from paperhunter.utils.llm_factory import get_flash_llm
             self._llm = get_flash_llm(
                 temperature=0.0,
                 timeout_seconds=90,
-                max_tokens=8192,
+                max_tokens=4096,
+                thinking_enabled=False,
             )
-            logger.debug("Reranker: LLM Flash inizializzato (temperature=0.0, timeout=90s, max_tokens=8192)")
+            logger.debug(
+                "Reranker: LLM Flash inizializzato "
+                "(thinking=off, timeout=90s, max_tokens=4096)"
+            )
         return self._llm
 
     def rerank(

@@ -15,18 +15,22 @@ recency_priority: true
 llm_provider: "deepseek"
 
 # --- DeepSeek API nativa ---
-# V4 Pro thinking/max viene usato per TUTTI i tier e gli agenti testuali.
+# V4 Pro is text-only. Reasoning is high for synthesis and disabled for small
+# deterministic JSON/editorial tasks so visible output has headroom.
 deepseek:
   api_base: "https://api.deepseek.com"
   flash_model: "deepseek-v4-pro"
   pro_model: "deepseek-v4-pro"
   thinking_enabled: true
-  reasoning_effort: "max"
+  # Prevent hidden reasoning from consuming the whole shared output budget.
+  reasoning_effort: "high"
   max_output_tokens_flash: 32768
   max_output_tokens_pro: 65536
   timeout: 1200
-  max_retries: 5
-  retry_strategy: "autonomous"
+  # Hard provider-wide cap; caller-level retry requests cannot exceed this.
+  max_retries: 2
+  max_continuation_attempts: 2
+  retry_strategy: "finite"
 
 # DeepSeek non offre embedding: con il default DeepSeek si usa BGE-M3 locale.
 # Le collezioni Qdrant vanno reindicizzate se erano state create con Gemini/3072d.
@@ -180,8 +184,12 @@ agents:
   critic_model: "flash"                        # Modello per il Critic (flash sufficiente)
   assembler_model: "pro"                       # Modello per l'Assembler
   writer_max_context_chars: 60000              # Max chars contesto per singola sezione writer
-  writer_budget_mode: "proportional"           # "fixed" | "proportional" (divide budget per N sezioni)
-  writer_mode: "prefetch_agentic"               # "static" | "agentic" | "prefetch_agentic" (pre-fetch + ReAct leggero)
+  # This is a per-section budget. Dividing it by 11 left only ~5.4k chars,
+  # making the 5-distinct-source quality gate structurally impossible.
+  writer_budget_mode: "fixed"
+  # Retrieval is precomputed and diversified; one grounded call avoids
+  # repeated reasoning/tool turns and makes cost/output predictable.
+  writer_mode: "static"
   # --- v3.6 Hardening (C4) ---
   citation_whitelist_strict: true              # Writer rifiuta citazioni di paper non citable
   critic_two_pass: true                        # Critic Pass 1 (atomic) + Pass 2 (holistic coherence)

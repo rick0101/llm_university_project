@@ -534,12 +534,19 @@ class TestFormattingHelpers:
 class TestGetAllRetrievalTools:
     """Test per get_all_retrieval_tools()."""
 
-    def test_returns_five_tools(self):
-        """Verifica che vengano restituiti esattamente 5 tool."""
+    def test_omits_figure_tools_when_visual_features_are_disabled(self):
+        """Il profilo DeepSeek-only non deve esporre tool visuali al ReAct agent."""
         from paperhunter.agents.tools.retrieval_tools import get_all_retrieval_tools
 
         tools = get_all_retrieval_tools()
-        assert len(tools) == 5
+        names = {t.metadata.name for t in tools}
+
+        assert len(tools) == 3
+        assert names == {
+            "search_vector_database",
+            "search_keyword_index",
+            "search_graph_communities",
+        }
 
     def test_tools_are_function_tools(self):
         """Verifica che ogni tool sia un FunctionTool di LlamaIndex."""
@@ -551,7 +558,7 @@ class TestGetAllRetrievalTools:
             assert isinstance(tool, FunctionTool)
 
     def test_tool_names(self):
-        """Verifica i nomi dei tool."""
+        """Verifica i nomi dei tool testuali disponibili nel profilo DeepSeek-only."""
         from paperhunter.agents.tools.retrieval_tools import get_all_retrieval_tools
 
         tools = get_all_retrieval_tools()
@@ -559,7 +566,8 @@ class TestGetAllRetrievalTools:
         assert "search_vector_database" in names
         assert "search_keyword_index" in names
         assert "search_graph_communities" in names
-        assert "search_figure_descriptions" in names
+        assert "search_figure_descriptions" not in names
+        assert "get_figure_for_section" not in names
 
     def test_tool_descriptions_not_empty(self):
         """Verifica che ogni tool abbia una description non vuota."""
@@ -569,6 +577,16 @@ class TestGetAllRetrievalTools:
         for tool in tools:
             assert tool.metadata.description
             assert len(tool.metadata.description) > 20
+
+    @patch("paperhunter.agents.tools.retrieval_tools._get_qdrant_store")
+    def test_visual_search_does_not_open_qdrant_when_visual_is_disabled(self, mock_store):
+        """Un chiamante legacy non deve riaprire Qdrant per feature hard-disabled."""
+        from paperhunter.agents.tools.retrieval_tools import search_figure_descriptions
+
+        result = search_figure_descriptions("attack success rate")
+
+        assert result == "NO_RESULTS: visual features disabled by configuration"
+        mock_store.assert_not_called()
 
     def test_tools_have_callable_fn(self):
         """Verifica che ogni tool abbia una fn callable."""

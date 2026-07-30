@@ -144,7 +144,7 @@ The following chunks were retrieved from the research paper corpus. Use ONLY inf
 
 1. **Style**: Formal academic prose. Third person. Present tense for established knowledge, past tense for specific study results.
 
-2. **Citations and coverage**: Every factual claim MUST include a citation in the format [bibtex_key]. Use at least 5 distinct sources in this section and, when the evidence genuinely supports the discussion, prefer broader coverage (roughly 8–15 distinct papers) over repeatedly citing the same work. Cite ONLY context explicitly marked CITABLE; BACKGROUND material may guide retrieval but must never be cited. Every key must support the exact adjacent claim—never add a citation merely to increase the count.
+2. **Citations and coverage**: Every factual claim MUST include a citation in the format [bibtex_key]. Write one atomic factual claim per sentence and attach a single source that directly supports the entire claim. Use a multi-source bracket only when each source independently supports that same complete claim; otherwise split the sentence into separately cited claims. Use at least 5 distinct sources in this section and, when the evidence genuinely supports the discussion, prefer broader coverage (roughly 8–15 distinct papers) over repeatedly citing the same work. Cite ONLY context explicitly marked CITABLE; BACKGROUND material may guide retrieval but must never be cited. Every key must support the exact adjacent claim—never add a citation merely to increase the count.
 
 3. **Temporal Context**: When discussing methods, explicitly state when they were proposed and how they relate to prior work. Use phrases like "Building on earlier work by [Author_YYYY]..." or "In YYYY, [Author] introduced..."
 

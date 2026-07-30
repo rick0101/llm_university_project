@@ -1972,13 +1972,23 @@ def _minimum_acceptable_revision_words(
     existing_draft: SectionDraft,
     outline: SectionOutline,
 ) -> int:
-    """Prevent legacy drafts with a stale zero count from being shortened."""
-    existing_words = existing_draft.word_count or _count_words(existing_draft.text or "")
-    return max(
+    """Compute the safe floor for an ordinary draft or evidence repair.
+
+    Legacy drafts without Critic feedback retain their full real length. Once
+    the Critic requests evidence repair, unsupported prose may be pruned down
+    to the same strict 80% target-length floor used by verification; otherwise
+    a long but unsupported draft can never converge.
+    """
+    recorded_words = int(existing_draft.word_count or 0)
+    actual_words = _count_words(existing_draft.text or "")
+    existing_words = max(recorded_words, actual_words)
+    target_floor = max(
         settings.agents.min_section_words,
         int(outline.target_length_words * 0.80),
-        existing_words,
     )
+    if existing_draft.critic_feedback.strip():
+        return target_floor
+    return max(target_floor, existing_words)
 
 
 def _run_agentic_writer_with_clean_retrieval(runner, /, *args, **kwargs):
@@ -2200,7 +2210,17 @@ def write_section(
     # Se c'è feedback del Critic, aggiungilo al prompt
     if critic_feedback:
         special_instructions += (
-            f"\n\n### CRITIC FEEDBACK (from previous iteration)\n\n"
+            "\n\n### STRICT EVIDENCE-REPAIR RULES\n\n"
+            "This is an evidence-repair revision, not a general expansion. "
+            "Use one atomic factual claim per sentence. Attach one citation "
+            "only when that source directly supports the complete adjacent "
+            "claim. Use multiple keys together only when each source "
+            "independently supports that same complete claim; otherwise split "
+            "the sentence. Remove unsupported claims and citation padding "
+            "instead of preserving them for length. Keep at least five "
+            "distinct, fully supported sources and stay at or above 80% of "
+            "the requested target length.\n"
+            f"\n### CRITIC FEEDBACK (from previous iteration)\n\n"
             f"The following feedback was provided by the Critic agent. "
             f"Address these issues in your rewrite:\n\n{critic_feedback}\n"
         )

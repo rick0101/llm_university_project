@@ -377,6 +377,38 @@ def test_revision_floor_recounts_legacy_draft_when_word_count_is_zero():
     assert _minimum_acceptable_revision_words(existing, outline) == 2000
 
 
+def test_revision_floor_allows_critic_directed_pruning_to_target_floor():
+    from paperhunter.agents.writer_agent import _minimum_acceptable_revision_words
+
+    existing = SectionDraft.model_validate(
+        {
+            "section_key": "body",
+            "title": "Body",
+            "text": "word " * 1750,
+            "word_count": 1750,
+            "critic_feedback": "Remove unsupported claims and citations.",
+            "status": SectionStatus.NEEDS_REVISION,
+        }
+    )
+    outline = SectionOutline.model_validate(
+        {
+            "key": "body",
+            "title": "Body",
+            "section_type": "body",
+            "target_length_words": 1500,
+        }
+    )
+    assert _minimum_acceptable_revision_words(existing, outline) == 1200
+
+
+def test_writer_prompt_requires_atomic_strict_citations():
+    from paperhunter.utils.prompt_loader import get_prompt
+
+    prompt = get_prompt("WRITER_PROMPT")
+    assert "one atomic factual claim" in prompt
+    assert "each source independently supports" in prompt
+
+
 def test_shorter_revision_cannot_replace_long_legacy_draft():
     import json
 

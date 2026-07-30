@@ -290,6 +290,71 @@ def test_writer_rejects_ambiguous_hashless_citation():
     assert errors
 
 
+def test_semicolon_citation_groups_are_supported_end_to_end():
+    """DeepSeek often emits ``[key1; key2]``; every citation stage must parse it."""
+    from paperhunter.agents.assembler_agent import (
+        _extract_citations_from_text as extract_assembler_citations,
+    )
+    from paperhunter.agents.critic_agent import (
+        _extract_citation_occurrences,
+        _extract_citations_from_text as extract_critic_citations,
+        _extract_claims_for_citation,
+    )
+    from paperhunter.agents.state import SectionOutline
+    from paperhunter.agents.writer_agent import _build_section_result
+    from paperhunter.config import settings
+    from paperhunter.postprocessing.bibliography_generator import (
+        _count_citations_in_text,
+    )
+    from paperhunter.postprocessing.latex_exporter import (
+        _convert_citations,
+        _extract_markdown_citation_keys,
+    )
+
+    first = "Abbas_2025_Small_ea340ecf"
+    second = "Zhu_2025_LLM_dbd8c508"
+    raw_text = f"Joint evidence [{first}; {second}]."
+
+    assert extract_critic_citations(raw_text) == [first, second]
+    assert len(_extract_claims_for_citation(raw_text, second)) == 1
+    assert [item["bibtex_key"] for item in _extract_citation_occurrences(raw_text)] == [
+        first,
+        second,
+    ]
+    assert [item.bibtex_key for item in extract_assembler_citations(raw_text)] == [
+        first,
+        second,
+    ]
+    assert _count_citations_in_text(raw_text) == {first: 1, second: 1}
+    assert _extract_markdown_citation_keys(raw_text) == {first, second}
+    assert _convert_citations(raw_text) == rf"Joint evidence \cite{{{first}, {second}}}."
+
+    outline = SectionOutline.model_validate(
+        {"key": "section", "title": "Section", "section_type": "body"}
+    )
+    parsed = {
+        "text": "Joint evidence [Abbas_2025_Small; Zhu_2025_LLM].",
+        "citations": [
+            {"bibtex_key": "Abbas_2025_Small", "claim": "joint"},
+            {"bibtex_key": "Zhu_2025_LLM", "claim": "joint"},
+        ],
+        "notes": "",
+    }
+    with patch.object(settings.agents, "citation_whitelist_strict", True):
+        result = _build_section_result(
+            parsed,
+            outline,
+            "section",
+            1,
+            0.1,
+            [],
+            citable_keys={first, second},
+        )
+    draft = result["sections"]["section"]
+    assert draft["text"] == f"Joint evidence [{first}, {second}]."
+    assert [item["bibtex_key"] for item in draft["citations"]] == [first, second]
+
+
 def test_revision_floor_recounts_legacy_draft_when_word_count_is_zero():
     from paperhunter.agents.writer_agent import _minimum_acceptable_revision_words
 

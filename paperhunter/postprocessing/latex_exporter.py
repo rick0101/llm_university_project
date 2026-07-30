@@ -79,7 +79,7 @@ def _extract_markdown_citation_keys(text: str) -> set[str]:
     for match in re.finditer(r"\[([^\]]+)\]", text):
         if match.end() < len(text) and text[match.end()] == "(":
             continue
-        for raw_key in match.group(1).split(","):
+        for raw_key in re.split(r"[,;]", match.group(1)):
             key = raw_key.strip()
             if any(key.startswith(prefix) for prefix in false_prefixes):
                 continue
@@ -451,7 +451,7 @@ def _convert_citations(text: str) -> str:
 
         # Ignora se contiene spazi e non sembra una lista di chiavi BibTeX
         # Le chiavi BibTeX tipiche: Author_YYYY_Word, autore2024keyword
-        keys = [k.strip() for k in inner.split(",")]
+        keys = [k.strip() for k in re.split(r"[,;]", inner)]
         bibtex_pattern = re.compile(r"^[A-Za-z][A-Za-z0-9_\-]+$")
         if all(bibtex_pattern.match(k) for k in keys if k):
             cite_keys = ", ".join(keys)

@@ -949,7 +949,7 @@ def _extract_citations_from_text(text: str) -> list[dict]:
     """Estrai citazioni [bibtex_key] dal testo con regex."""
     matches: list[str] = []
     for group in re.findall(r"\[([^\]]+)\]", text):
-        for raw_key in group.split(","):
+        for raw_key in re.split(r"[,;]", group):
             key = raw_key.strip()
             if re.fullmatch(r"[A-Za-z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+", key):
                 matches.append(key)
@@ -1744,7 +1744,7 @@ def _enforce_citation_whitelist(
 
     def _replace(match: "re.Match[str]") -> str:
         content = match.group(1)
-        raw_keys = [key.strip() for key in content.split(",")]
+        raw_keys = [key.strip() for key in re.split(r"[,;]", content)]
         is_citation_group = raw_keys and all(
             re.fullmatch(r"[A-Za-z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+", key)
             and any(char.isdigit() for char in key)
@@ -1873,7 +1873,7 @@ def _build_section_result(
     # provenance e bibliografia finale.
     text_citations: set[str] = set()
     for group in re.findall(r"\[([^\]]+)\]", section_text):
-        for raw_key in group.split(","):
+        for raw_key in re.split(r"[,;]", group):
             key = raw_key.strip()
             if re.fullmatch(r"[A-Za-z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+", key):
                 text_citations.add(key)

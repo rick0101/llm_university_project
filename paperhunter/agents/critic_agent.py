@@ -103,7 +103,7 @@ def _extract_citations_from_text(text: str) -> list[str]:
     # Chiavi singole e gruppi: [Key_2024_A, Other_2025_B].
     matches: list[str] = []
     for group in re.findall(r"\[([^\]]+)\]", text):
-        for raw_key in group.split(","):
+        for raw_key in re.split(r"[,;]", group):
             key = raw_key.strip()
             if re.fullmatch(r"[A-Za-z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+", key):
                 matches.append(key)
@@ -147,7 +147,9 @@ def _extract_claims_for_citation(
     citation_groups = [
         match
         for match in re.finditer(r"\[([^\]]+)\]", text)
-        if bibtex_key in {key.strip() for key in match.group(1).split(",")}
+        if bibtex_key in {
+            key.strip() for key in re.split(r"[,;]", match.group(1))
+        }
     ]
 
     for match in citation_groups:
@@ -183,7 +185,7 @@ def _extract_citation_occurrences(text: str, context_chars: int = 300) -> list[d
         r"^(Table|Figure|Section|Appendix|Algorithm|Equation|Step)_\d+$"
     )
     for match in re.finditer(r"\[([^\]]+)\]", text):
-        keys = [key.strip() for key in match.group(1).split(",")]
+        keys = [key.strip() for key in re.split(r"[,;]", match.group(1))]
         keys = [
             key for key in keys
             if re.fullmatch(r"[A-Za-z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+", key)

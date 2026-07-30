@@ -1093,7 +1093,7 @@ def _extract_citations_from_text(text: str) -> list:
 
     matches: list[str] = []
     for group in re.findall(r"\[([^\]]+)\]", text):
-        for raw_key in group.split(","):
+        for raw_key in re.split(r"[,;]", group):
             key = raw_key.strip()
             if re.fullmatch(r"[A-Za-z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+", key):
                 matches.append(key)

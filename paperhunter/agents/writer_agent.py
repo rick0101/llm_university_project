@@ -1692,6 +1692,30 @@ async def _run_react_agent(agent, user_msg: str, max_iterations: int = 7):
         return None
 
 
+def _canonicalize_citation_key(
+    key: str,
+    whitelist: set[str],
+) -> str | None:
+    """Resolve an omitted manifest hash only when the match is unambiguous.
+
+    DBLP-backed keys end with an eight-hex digest, for example
+    ``Abbas_2025_Small_ea340ecf``. Long generations sometimes copy the human
+    readable prefix but omit that digest. Recovering a unique exact prefix is
+    safe because the candidate still comes from the strict whitelist; multiple
+    candidates remain rejected so citation handling stays fail-closed.
+    """
+    if key in whitelist:
+        return key
+    prefix = f"{key}_"
+    candidates = [
+        candidate
+        for candidate in whitelist
+        if candidate.startswith(prefix)
+        and re.fullmatch(r"[0-9a-fA-F]{8}", candidate[len(prefix):])
+    ]
+    return candidates[0] if len(candidates) == 1 else None
+
+
 def _enforce_citation_whitelist(
     text: str,
     whitelist: set[str] | None,
@@ -1700,7 +1724,9 @@ def _enforce_citation_whitelist(
 
     Cerca pattern ``[bibtex_key]`` (con almeno un underscore + cifra, come
     nelle convenzioni del progetto) e:
-    - se ``bibtex_key`` è nella whitelist → lascia.
+    - se ``bibtex_key`` è nella whitelist → lascia;
+    - se manca solo l'hash DBLP e il prefisso identifica una singola chiave
+      verificata → ripristina la chiave completa;
     - altrimenti → rimuove la citazione (mantiene il testo circostante)
       e logga il caso per audit.
 
@@ -1728,13 +1754,14 @@ def _enforce_citation_whitelist(
             return match.group(0)
         kept: list[str] = []
         for key in raw_keys:
-            if key in whitelist:
-                kept.append(key)
-            else:
+            canonical = _canonicalize_citation_key(key, whitelist)
+            if canonical is None:
                 removed.append(key)
+            else:
+                kept.append(canonical)
         return f"[{', '.join(kept)}]" if kept else ""
 
-    cleaned = re.sub(r"\s*\[([^\]]+)\]", _replace, text)
+    cleaned = re.sub(r"\[([^\]]+)\]", _replace, text)
     # Compatta doppi spazi/spazi prima di punteggiatura
     cleaned = re.sub(r"[ \t]{2,}", " ", cleaned)
     cleaned = re.sub(r"\s+([,.;:!?])", r"\1", cleaned)
@@ -1856,11 +1883,17 @@ def _build_section_result(
         getattr(settings.agents, "citation_whitelist_strict", False)
         and citable_keys is not None
     ):
-        parsed_citations = [
-            citation
-            for citation in parsed_citations
-            if citation.get("bibtex_key") in citable_keys
-        ]
+        canonicalized_citations: list[dict] = []
+        for citation in parsed_citations:
+            canonical = _canonicalize_citation_key(
+                str(citation.get("bibtex_key") or ""),
+                citable_keys,
+            )
+            if canonical is not None:
+                canonicalized_citations.append(
+                    {**citation, "bibtex_key": canonical}
+                )
+        parsed_citations = canonicalized_citations
     parsed_citations = [
         citation
         for citation in parsed_citations

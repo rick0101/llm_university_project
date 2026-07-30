@@ -223,6 +223,73 @@ def test_writer_strips_disallowed_citations_from_text_and_records():
     ]
 
 
+def test_writer_canonicalizes_unique_hashless_citations_from_llm_output():
+    """A model may omit the manifest hash, but only an unambiguous key is recoverable."""
+    from paperhunter.agents.state import SectionOutline
+    from paperhunter.agents.writer_agent import _build_section_result
+    from paperhunter.config import settings
+
+    outline = SectionOutline.model_validate(
+        {"key": "section", "title": "Section", "section_type": "body"}
+    )
+    full_key = "Abbas_2025_Small_ea340ecf"
+    parsed = {
+        "text": "Supported claim [Abbas_2025_Small].",
+        "citations": [
+            {"bibtex_key": "Abbas_2025_Small", "claim": "supported claim"},
+        ],
+        "notes": "",
+    }
+    errors: list[str] = []
+    with patch.object(settings.agents, "citation_whitelist_strict", True):
+        result = _build_section_result(
+            parsed,
+            outline,
+            "section",
+            1,
+            0.1,
+            errors,
+            citable_keys={full_key},
+        )
+
+    draft = result["sections"]["section"]
+    assert draft["text"] == f"Supported claim [{full_key}]."
+    assert [item["bibtex_key"] for item in draft["citations"]] == [full_key]
+    assert errors == []
+
+
+def test_writer_rejects_ambiguous_hashless_citation():
+    """Prefix recovery remains fail-closed when more than one manifest key matches."""
+    from paperhunter.agents.state import SectionOutline
+    from paperhunter.agents.writer_agent import _build_section_result
+    from paperhunter.config import settings
+
+    outline = SectionOutline.model_validate(
+        {"key": "section", "title": "Section", "section_type": "body"}
+    )
+    parsed = {
+        "text": "Ambiguous claim [Lee_2025_Guard].",
+        "citations": [{"bibtex_key": "Lee_2025_Guard", "claim": "ambiguous"}],
+        "notes": "",
+    }
+    errors: list[str] = []
+    with patch.object(settings.agents, "citation_whitelist_strict", True):
+        result = _build_section_result(
+            parsed,
+            outline,
+            "section",
+            1,
+            0.1,
+            errors,
+            citable_keys={"Lee_2025_Guard_aaaaaaaa", "Lee_2025_Guard_bbbbbbbb"},
+        )
+
+    draft = result["sections"]["section"]
+    assert "Lee_2025_Guard" not in draft["text"]
+    assert draft["citations"] == []
+    assert errors
+
+
 def test_revision_floor_recounts_legacy_draft_when_word_count_is_zero():
     from paperhunter.agents.writer_agent import _minimum_acceptable_revision_words
 

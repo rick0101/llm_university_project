@@ -101,6 +101,11 @@ class MultimodalEmbedder:
     def __init__(self, model: str | None = None):
         from paperhunter.config import settings
 
+        if not settings.visual_features_enabled:
+            raise RuntimeError(
+                "DeepSeek-only mode disables visual processing and Gemini multimodal embeddings."
+            )
+
         self._model = model or settings.gemini.embedding_model
         self._client = self._create_client()
         self._limiter = get_gemini_limiter()
@@ -338,13 +343,14 @@ _instance: MultimodalEmbedder | None = None
 
 
 def get_multimodal_embedder() -> MultimodalEmbedder:
-    """Ottieni l'istanza singleton del MultimodalEmbedder.
+    """Il profilo DeepSeek-only non consente embedding multimodali."""
+    from paperhunter.config import settings
 
-    Lazy initialization: l'istanza viene creata al primo accesso.
+    if not settings.visual_features_enabled:
+        raise RuntimeError(
+            "DeepSeek-only mode disables visual processing and Gemini multimodal embeddings."
+        )
 
-    Returns:
-        Istanza condivisa di MultimodalEmbedder.
-    """
     global _instance
     if _instance is None:
         _instance = MultimodalEmbedder()

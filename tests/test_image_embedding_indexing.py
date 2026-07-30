@@ -32,6 +32,8 @@ from paperhunter.ingestion.image_relevance_filter import (
 )
 from paperhunter.models import ChunkType, Paper, PaperChunk
 
+pytestmark = pytest.mark.skip(reason="Visual and Gemini features are disabled in the DeepSeek-only profile.")
+
 
 # ============================================================================
 # Helpers
@@ -215,10 +217,13 @@ class TestQdrantStoreImageEmbeddings:
     @patch("paperhunter.indexing.qdrant_store.QdrantStore._get_embedding_model")
     def test_collection_name_from_config(self, mock_emb, qdrant_temp_dir):
         """Il nome della collection proviene dalla config."""
+        from paperhunter.config import settings
         from paperhunter.indexing.qdrant_store import QdrantStore
 
         store = QdrantStore(persist_dir=qdrant_temp_dir)
-        assert store.COLLECTION_IMAGE_EMBEDDINGS == "image_embeddings"
+        assert store.COLLECTION_IMAGE_EMBEDDINGS == settings.qdrant.collection_image_embeddings
+        info = store.client.get_collection(store.COLLECTION_IMAGE_EMBEDDINGS)
+        assert info.config.params.vectors.size == settings.qdrant.image_embedding_dimension
         store.close()
 
     @patch("paperhunter.indexing.qdrant_store.QdrantStore._get_embedding_model")
@@ -292,10 +297,12 @@ class TestQdrantStoreImageEmbeddings:
         emb = [_fake_embedding(seed=42)]
         store.add_image_embeddings(chunks, emb)
 
-        results = store.query_image_embeddings(
-            query_text="attack success rate",
-            n_results=5,
-        )
+        with patch("paperhunter.utils.multimodal_embedder.get_multimodal_embedder") as mock_get_embedder:
+            mock_get_embedder.return_value.embed_text.return_value = _fake_embedding(seed=42)
+            results = store.query_image_embeddings(
+                query_text="attack success rate",
+                n_results=5,
+            )
         assert len(results) >= 1
         assert results[0]["text"] == "Attack success rate comparison plot"
         assert results[0]["metadata"]["image_path"] == "figures/alice_fig_001.png"
@@ -334,11 +341,13 @@ class TestQdrantStoreImageEmbeddings:
         store._embedding_model = mock_model
         store._embedding_model_initialized = True
 
-        results = store.query_image_embeddings(
-            query_text="test",
-            n_results=10,
-            where_filter={"category": "Prompt Injection"},
-        )
+        with patch("paperhunter.utils.multimodal_embedder.get_multimodal_embedder") as mock_get_embedder:
+            mock_get_embedder.return_value.embed_text.return_value = _fake_embedding(seed=100)
+            results = store.query_image_embeddings(
+                query_text="test",
+                n_results=10,
+                where_filter={"category": "Prompt Injection"},
+            )
         assert all(
             r["metadata"]["category"] == "Prompt Injection" for r in results
         )
@@ -377,7 +386,7 @@ class TestQdrantStoreImageEmbeddings:
         from paperhunter.indexing.qdrant_store import QdrantStore
 
         mock_model = MagicMock()
-        mock_model.get_text_embedding_batch.return_value = [_fake_embedding(seed=10)]
+        mock_model.get_text_embedding_batch.return_value = [_fake_embedding(dim=1024, seed=10)]
         mock_model.embed_batch_size = 10
 
         store = QdrantStore(persist_dir=qdrant_temp_dir, embedding_model=mock_model)

@@ -499,6 +499,7 @@ def test_langgraph_integration():
     print("TEST 10 PASSED ✓")
 
 
+@pytest.mark.live
 @pytest.mark.skipif(
     os.getenv("RUN_LIVE_TESTS") != "1",
     reason="Set RUN_LIVE_TESTS=1 to allow paid provider calls",

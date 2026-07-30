@@ -2024,10 +2024,17 @@ def cmd_checkpoint(args: argparse.Namespace) -> int:
 
 def cmd_figures(args: argparse.Namespace) -> int:
     """Genera figure scientifiche per il survey paper."""
+    from paperhunter.config import settings
+
+    if not settings.visual_features_enabled:
+        _get_console().print(
+            "[yellow]Figure disabilitate: il profilo DeepSeek-only non elabora o genera immagini.[/yellow]"
+        )
+        return 2
+
     import json as _json
     from pathlib import Path as _Path
 
-    from paperhunter.config import settings
     from paperhunter.agents.figure_agent.planner import (
         plan_figures, save_figure_plan, load_figure_plan, FigurePlan,
     )

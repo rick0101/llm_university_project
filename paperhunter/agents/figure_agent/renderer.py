@@ -12,7 +12,7 @@ import json as _json
 import time
 from pathlib import Path
 
-from paperhunter.agents.figure_agent.planner import FigureSpec, FigureType
+from paperhunter.agents.figure_agent.planner import FigureSpec
 from paperhunter.config import settings
 from paperhunter.utils.logging_setup import get_logger
 
@@ -130,6 +130,8 @@ def _generate_image(
     """
     import json
 
+    if not settings.visual_features_enabled:
+        return False, "DeepSeek-only mode disables visual processing and figure generation."
     if settings.llm_provider != "google":
         return False, "Gemini Image disabilitato: provider selezionato non Google"
 
@@ -184,6 +186,8 @@ def _refine_image(
     Returns:
         (success, error_message)
     """
+    if not settings.visual_features_enabled:
+        return False, "DeepSeek-only mode disables visual processing and figure generation."
     if settings.llm_provider != "google":
         return False, "Gemini Image disabilitato: provider selezionato non Google"
 
@@ -228,6 +232,8 @@ def _vision_quality_check(
     spec: FigureSpec, png_path: Path,
 ) -> tuple[bool, str]:
     """Controlla la qualità visiva della figura usando Gemini Vision (Flash)."""
+    if not settings.visual_features_enabled:
+        return True, "Vision QC disabilitato dal profilo DeepSeek-only"
     if settings.llm_provider != "google":
         return True, "Vision QC saltato: provider non Google"
 
@@ -307,6 +313,9 @@ def render_figure(
     Returns:
         Tupla (success, png_path, None).
     """
+    if not settings.visual_features_enabled:
+        return False, None, "DeepSeek-only mode disables visual processing and figure generation."
+
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     output_path = output_dir / f"{spec.figure_id}.png"

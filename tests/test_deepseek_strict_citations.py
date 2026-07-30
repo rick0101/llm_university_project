@@ -12,6 +12,7 @@ from paperhunter.ingestion.dblp_lookup import DblpLookup, DblpResult
 from paperhunter.ingestion.bibtex_generator import enrich_paper_bibtex, save_master_bib
 from paperhunter.config import _build_settings
 from paperhunter.models import Paper
+from paperhunter.postprocessing import latex_exporter
 from paperhunter.postprocessing.latex_exporter import (
     CitationIntegrityError,
     validate_citation_integrity,
@@ -66,9 +67,11 @@ def test_deepseek_and_local_embeddings_do_not_use_gemini_rate_limits():
     assert isinstance(get_embedding_limiter("huggingface"), NoOpLimiter)
 
 
-def test_llm_provider_can_be_overridden_by_environment(monkeypatch):
+def test_google_llm_provider_is_rejected_by_environment(monkeypatch):
+    """Il profilo DeepSeek-only deve fallire prima di inizializzare Gemini."""
     monkeypatch.setenv("LLM_PROVIDER", "google")
-    assert _build_settings().llm_provider == "google"
+    with pytest.raises(ValueError, match="deepseek"):
+        _build_settings()
 
 
 def test_grouped_citations_are_individually_verified():
@@ -181,9 +184,11 @@ def test_final_integrity_gate_blocks_bibtex_drift(tmp_path):
         )
 
 
-def test_final_integrity_gate_blocks_missing_manifest(tmp_path):
+def test_final_integrity_gate_blocks_missing_manifest(tmp_path, monkeypatch):
     key, _, bib_path, manifest_path = _write_verified_fixture(tmp_path)
     manifest_path.unlink()
+    # Evita che un manifest di una run reale funga da fallback per il fixture.
+    monkeypatch.setattr(latex_exporter.settings.output, "base_dir", tmp_path)
 
     with pytest.raises(CitationIntegrityError, match="manifest DBLP assente"):
         validate_citation_integrity(

@@ -10,9 +10,11 @@
 # Se false, tutti i paper vengono trattati allo stesso modo indipendentemente dall'anno.
 recency_priority: true
 
-# Provider LLM testuale: "deepseek" (default) oppure "google".
-# Può essere sovrascritto con LLM_PROVIDER nel file .env.
+# Provider obbligatorio: DeepSeek API nativa.
+# Google/Gemini non è supportato in questo profilo.
 llm_provider: "deepseek"
+# Policy fail-closed: niente Vision, embedding multimodali o generazione immagini.
+visual_features_enabled: false
 
 # --- DeepSeek API nativa ---
 # V4 Pro is text-only. Reasoning is high for synthesis and disabled for small
@@ -32,32 +34,11 @@ deepseek:
   max_continuation_attempts: 2
   retry_strategy: "finite"
 
-# DeepSeek non offre embedding: con il default DeepSeek si usa BGE-M3 locale.
-# Le collezioni Qdrant vanno reindicizzate se erano state create con Gemini/3072d.
+# DeepSeek non offre embedding: viene usato BGE-M3 locale.
 embedding:
   provider: "huggingface"
   huggingface_model: "BAAI/bge-m3"
   dimension: 1024
-
-# --- Modelli LLM (Gemini Advanced) ---
-gemini:
-  flash_model: "gemini-3-flash-preview"      # Task semplici: classificazione, reranking, estrazione entità
-  pro_model: "gemini-3.1-pro-preview"          # Task complessi: summarization, writing, planning
-  embedding_model: "gemini-embedding-2-preview"     # Embedding 3072-dim
-  temperature_flash: 0.1                       # Bassa per task deterministici
-  temperature_pro: 0.3                         # Leggermente più alta per writing creativo
-  max_output_tokens_flash: 4096
-  max_output_tokens_pro: 8192
-  timeout: 600                                 # Timeout per singola chiamata (secondi) — thinking models richiedono più tempo
-  max_retries: 3                               # Retry con backoff esponenziale
-  # Strategia di retry in caso di errori Google API:
-  #   "autonomous" → Solo Google API, retry infiniti con delay incrementali.
-  #                   Il programma procede da solo senza intervento umano.
-  #                   Ideale quando non si è davanti al PC.
-  #   "interactive" → Dopo max_retries errori Google, chiede all'utente
-  #                   se usare OpenRouter come fallback (più veloce ma costa).
-  #                   Ideale quando si è davanti al PC e si vuole velocità.
-  retry_strategy: "autonomous"
 
 # --- GROBID (Docker) ---
 grobid:
@@ -87,8 +68,7 @@ qdrant:
   collection_l1_5_summaries: "l1_5_summaries_bge_m3"
   collection_graph_communities: "graph_communities_bge_m3"
   collection_figure_descriptions: "figure_descriptions_bge_m3"
-  collection_image_embeddings: "image_embeddings_gemini"  # solo profilo Google/vision
-  embedding_dimension: 1024                    # BGE-M3 locale (default DeepSeek)
+  embedding_dimension: 1024                    # BGE-M3 locale
   distance_metric: "Cosine"                    # Cosine | Euclid | Dot
 
 # --- Semantic Scholar API ---
@@ -142,18 +122,7 @@ clustering:
   max_cluster_size: 20          # Massimo numero di paper per cluster L1.5
   similarity_threshold: 0.75    # Soglia similarità coseno per il clustering
 
-# --- Figure Extraction (v3.1) ---
-# Estrazione e descrizione intelligente delle figure dai PDF.
-# Usa Gemini Flash Vision per generare descrizioni semantiche delle figure,
-# che vengono poi indicizzate in Qdrant come vettori testuali.
-figure_extraction:
-  # Da usare solo su richiesta — disabilitato per velocizzare l'ingestion
-  enabled: false                # Abilita/disabilita estrazione figure
-  vision_model: "gemini-3-flash-preview"  # Modello con supporto Vision multimodale
-  min_width: 150                # Larghezza minima immagine (pixel) — esclude icone
-  min_height: 150               # Altezza minima immagine (pixel) — esclude loghi
-  max_figures_per_paper: 10     # Massimo figure processate per paper (le più grandi)
-  figures_dir: "./output/figures"  # Directory dove salvare le immagini estratte
+# Vision e figure da PDF sono disabilitate dal profilo DeepSeek-only.
 
 # --- Hybrid Retrieval ---
 retrieval:
@@ -225,48 +194,12 @@ download:
   request_delay: 1.0
   playwright_delay: 2.0
 
-# --- OpenRouter Fallback ---
-# Se abilitato, quando tutte le retry con l'API Google falliscono,
-# il sistema usa automaticamente OpenRouter come provider di fallback.
-# Richiede OPENROUTER_API_KEY nel file .env
-openrouter:
-  enabled: false                               # DeepSeek usa esclusivamente l'API nativa
-  api_base: "https://openrouter.ai/api/v1"
-  flash_model: "google/gemini-3-flash-preview"   # Modello economico (equivalente Flash)
-  pro_model: "google/gemini-3.1-pro-preview" # Modello potente (equivalente Pro)
-  temperature_flash: 0.1
-  temperature_pro: 0.3
-  max_output_tokens_flash: 4096
-  max_output_tokens_pro: 8192
-  timeout: 300                                 # Timeout in secondi
-  max_retries: 3                               # Retry con OpenRouter
-
 # --- Rate Limiting Globale ---
 rate_limiting:
-  gemini_rpm: 15                               # Gemini free tier: ~15 RPM
-  gemini_daily_limit: 1500                     # Limite giornaliero approssimativo
   semantic_scholar_rpm: 100
   grobid_concurrent: 5                         # Richieste GROBID concorrenti
 
-# --- Image Filtering (Pipeline a 3 stadi) ---
-# Filtraggio intelligente delle immagini estratte dai PDF.
-# Stage 1: Filtro euristico locale (PIL + NumPy, zero costi API)
-# Stage 2: Filtro embedding multimodale (Gemini Embedding 2 Preview)
-# Stage 3: Descrizione Vision (solo immagini rilevanti)
-image_filtering:
-  enabled: true                          # Abilita/disabilita il filtraggio intelligente
-  # --- Filtro Euristico (Stage 1) ---
-  min_aspect_ratio: 0.3                  # Min w/h — filtra barre verticali
-  max_aspect_ratio: 4.0                  # Max w/h — filtra banner orizzontali
-  min_color_entropy: 3.0                 # Entropia Shannon minima (scala 0-8 per 8-bit)
-  min_edge_density: 0.05                 # Percentuale minima pixel bordo (0.0-1.0)
-  skip_first_page: true                  # Penalizza immagini dalla prima pagina (loghi)
-  skip_last_page: true                   # Penalizza immagini dall'ultima pagina (copyright)
-  relevance_threshold: 0.5               # Soglia punteggio combinato [0.0, 1.0]
-  # --- Filtro Embedding Multimodale (Stage 2) ---
-  # Da usare solo su richiesta — disabilitato per velocizzare l'ingestion
-  embedding_filter_enabled: false  # Abilita filtro via embedding multimodale
-  embedding_similarity_threshold: 0.3    # Soglia coseno minima vs riferimenti scientifici
+# Filtro e analisi immagini disabilitati dal profilo DeepSeek-only.
 
 # --- Logging ---
 logging:
@@ -285,16 +218,7 @@ evolution:
   max_overlay_chars: 2000                        # Lunghezza massima overlay in caratteri
   auto_prune: true                               # Prune automatico lezioni scadute a ogni record()
 
-# --- FigureAgent (Generazione automatica figure) ---
-figure_agent:
-  enabled: false                                   # Richiede Google Image; off nel default DeepSeek-only
-  min_figures: 3                                   # Minimo figure da generare
-  max_figures: 8                                   # Massimo figure da generare
-  max_iterations: 3                                # Massimo iterazioni codegen → render per figura
-  output_format: "markdown"                        # Formato output: "markdown" o "latex"
-  dpi: 300                                         # Risoluzione figure (DPI)
-  style: "seaborn-v0_8-paper"                      # Stile matplotlib
-  figures_dir: "./output/generated_figures"         # Directory output figure PNG
+# Generazione figure disabilitata dal profilo DeepSeek-only.
 
 # --- Skill Injection (Prompt Overlay persistenti) ---
 skills:

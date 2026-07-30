@@ -1750,63 +1750,38 @@ def _build_citable_keys_from_chunks(chunks: list[dict] | None) -> set[str]:
         meta = c.get("metadata", {}) or {}
         if meta.get("is_citable") and meta.get("bibtex_key"):
             out.add(meta["bibtex_key"])
-    return out
+    # I payload Qdrant possono essere antecedenti all'ultimo audit DBLP:
+    # interseca sempre il contesto con il master BibTeX fail-closed.
+    return out & _load_global_citable_keys()
 
 
 _CITABLE_KEYS_CACHE: set[str] | None = None
 
 
 def _load_global_citable_keys() -> set[str]:
-    """Carica (con cache) tutti i bibtex_keys citable dal vector store.
+    """Carica con cache le chiavi del master BibTeX verificato.
 
-    Usato come whitelist globale quando il writer gira in modalità
-    agentic/prefetch_agentic e non abbiamo i chunk locali.
+    Il master ``references.bib`` è la fonte di verità dell'export fail-closed:
+    Qdrant può contenere payload ``is_citable`` obsoleti rispetto all'ultimo
+    audit DBLP. Usare il master evita sia citazioni non esportabili sia l'apertura
+    concorrente del database Qdrant locale durante Writer e Critic.
     """
     global _CITABLE_KEYS_CACHE
     if _CITABLE_KEYS_CACHE is not None:
         return _CITABLE_KEYS_CACHE
-    try:
-        from paperhunter.indexing.qdrant_store import QdrantStore
-        from qdrant_client.http import models as qmodels
 
-        store = QdrantStore()
-        out: set[str] = set()
-        # Scroll attraverso tutte le collection rilevanti
-        for collection in [
-            store.COLLECTION_CHUNKS,
-            store.COLLECTION_L1,
-        ]:
-            try:
-                offset = None
-                while True:
-                    pts, offset = store.client.scroll(
-                        collection_name=collection,
-                        scroll_filter=qmodels.Filter(
-                            must=[
-                                qmodels.FieldCondition(
-                                    key="is_citable",
-                                    match=qmodels.MatchValue(value=True),
-                                )
-                            ]
-                        ),
-                        with_payload=["bibtex_key"],
-                        with_vectors=False,
-                        limit=512,
-                        offset=offset,
-                    )
-                    for p in pts:
-                        bk = (p.payload or {}).get("bibtex_key")
-                        if bk:
-                            out.add(bk)
-                    if offset is None:
-                        break
-            except Exception as exc:
-                logger.debug("scroll citable_keys fallito su %s: %s", collection, exc)
-        _CITABLE_KEYS_CACHE = out
-        logger.info("Citation whitelist globale caricata: %d bibtex_keys citable", len(out))
-        return out
+    try:
+        from paperhunter.ingestion.bibtex_generator import load_master_bib
+
+        master_path = Path(settings.output.base_dir) / "references.bib"
+        _CITABLE_KEYS_CACHE = set(load_master_bib(master_path))
+        logger.info(
+            "Citation whitelist globale caricata dal master BibTeX: %d chiavi verificate",
+            len(_CITABLE_KEYS_CACHE),
+        )
+        return _CITABLE_KEYS_CACHE
     except Exception as exc:
-        logger.warning("Impossibile caricare whitelist globale: %s", exc)
+        logger.error("Impossibile caricare il master BibTeX per la whitelist: %s", exc)
         _CITABLE_KEYS_CACHE = set()
         return _CITABLE_KEYS_CACHE
 
@@ -1864,6 +1839,18 @@ def _build_section_result(
             )
 
     word_count = _count_words(section_text)
+
+    # La fonte di verità del draft è il testo effettivamente conservato dopo
+    # l'enforcement. I record del JSON LLM possono ancora contenere citazioni
+    # appena rimosse dalla whitelist: salvarle renderebbe incoerenti Critic,
+    # provenance e bibliografia finale.
+    text_citations: set[str] = set()
+    for group in re.findall(r"\[([^\]]+)\]", section_text):
+        for raw_key in group.split(","):
+            key = raw_key.strip()
+            if re.fullmatch(r"[A-Za-z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+", key):
+                text_citations.add(key)
+
     parsed_citations = parsed.get("citations", [])
     if (
         getattr(settings.agents, "citation_whitelist_strict", False)
@@ -1874,6 +1861,11 @@ def _build_section_result(
             for citation in parsed_citations
             if citation.get("bibtex_key") in citable_keys
         ]
+    parsed_citations = [
+        citation
+        for citation in parsed_citations
+        if citation.get("bibtex_key") in text_citations
+    ]
 
     citation_records = [
         CitationRecord(
@@ -1885,13 +1877,7 @@ def _build_section_result(
         for c in parsed_citations
     ]
 
-    # Verifica che tutte le citazioni nel testo siano tracciate
-    text_citations: set[str] = set()
-    for group in re.findall(r"\[([^\]]+)\]", section_text):
-        for raw_key in group.split(","):
-            key = raw_key.strip()
-            if re.fullmatch(r"[A-Za-z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+", key):
-                text_citations.add(key)
+    # Verifica che tutte le citazioni nel testo siano tracciate.
     tracked_keys = {c.bibtex_key for c in citation_records}
     untracked = {
         k for k in text_citations
@@ -1960,6 +1946,23 @@ def _minimum_acceptable_revision_words(
         int(outline.target_length_words * 0.80),
         existing_words,
     )
+
+
+def _run_agentic_writer_with_clean_retrieval(runner, /, *args, **kwargs):
+    """Esegue un writer ReAct isolando i singleton Qdrant locali.
+
+    Qdrant in modalità embedded mantiene un lock esclusivo sulla directory.
+    Un agente ReAct può aprire il singleton dei retrieval tool mentre la
+    pipeline poi deve creare un HybridRetriever o il Critic. Reset esplicito
+    prima e dopo ogni sezione evita che il lock attraversi i nodi.
+    """
+    from paperhunter.agents.tools.retrieval_tools import reset_singletons
+
+    reset_singletons()
+    try:
+        return runner(*args, **kwargs)
+    finally:
+        reset_singletons()
 
 
 # ============================================================================
@@ -2049,7 +2052,8 @@ def write_section(
 
     if writer_mode == "agentic":
         logger.info(f"[agentic] Modalità ReAct attiva per '{section_key}'")
-        parsed = _write_section_agentic(
+        parsed = _run_agentic_writer_with_clean_retrieval(
+            _write_section_agentic,
             target_outline,
             force_model=force_model,
             critic_feedback=critic_feedback,
@@ -2072,7 +2076,8 @@ def write_section(
 
     elif writer_mode == "prefetch_agentic":
         logger.info(f"[prefetch_agentic] Modalità ibrida per '{section_key}'")
-        parsed = _write_section_prefetch_agentic(
+        parsed = _run_agentic_writer_with_clean_retrieval(
+            _write_section_prefetch_agentic,
             target_outline,
             force_model=force_model,
             critic_feedback=critic_feedback,

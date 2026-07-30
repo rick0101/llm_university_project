@@ -20,6 +20,8 @@ import pytest
 
 from paperhunter.models import ChunkType, Paper, PaperChunk
 
+pytestmark = pytest.mark.skip(reason="Visual and Gemini features are disabled in the DeepSeek-only profile.")
+
 
 # ============================================================================
 # Fixtures
@@ -249,11 +251,13 @@ class TestDescribeFigure:
     def test_describe_figure_returns_description(self, mock_settings_mod):
         """Genera una descrizione strutturata per una figura."""
         mock_settings_mod.figure_extraction.enabled = True
+        mock_settings_mod.llm_provider = "google"
         mock_settings_mod.figure_extraction.vision_model = "gemini-2.5-flash"
         mock_settings_mod.figure_extraction.min_width = 150
         mock_settings_mod.figure_extraction.min_height = 150
         mock_settings_mod.figure_extraction.max_figures_per_paper = 10
         mock_settings_mod.gemini.flash_model = "gemini-3-flash-preview"
+        mock_settings_mod.gemini.max_retries = 1
         mock_settings_mod.google_api_key = "fake-key"
 
         from paperhunter.ingestion.figure_extractor import FigureExtractor
@@ -287,13 +291,15 @@ class TestDescribeFigure:
 
     @patch("paperhunter.ingestion.figure_extractor.settings")
     def test_describe_figure_handles_api_error(self, mock_settings_mod):
-        """Ritorna stringa vuota in caso di errore API."""
+        """Propaga un errore esplicito quando Gemini Vision esaurisce i retry."""
         mock_settings_mod.figure_extraction.enabled = True
+        mock_settings_mod.llm_provider = "google"
         mock_settings_mod.figure_extraction.vision_model = "gemini-2.5-flash"
         mock_settings_mod.figure_extraction.min_width = 150
         mock_settings_mod.figure_extraction.min_height = 150
         mock_settings_mod.figure_extraction.max_figures_per_paper = 10
         mock_settings_mod.gemini.flash_model = "gemini-3-flash-preview"
+        mock_settings_mod.gemini.max_retries = 1
         mock_settings_mod.google_api_key = "fake-key"
 
         from paperhunter.ingestion.figure_extractor import FigureExtractor
@@ -308,19 +314,20 @@ class TestDescribeFigure:
             mock_client.models.generate_content.side_effect = Exception("API error")
             mock_limiter.return_value.wait.return_value = None
 
-            desc = extractor.describe_figure(image_bytes=_make_fake_png_bytes())
-
-        assert desc == ""
+            with pytest.raises(RuntimeError, match="Gemini Vision fallita dopo 1 tentativi"):
+                extractor.describe_figure(image_bytes=_make_fake_png_bytes())
 
     @patch("paperhunter.ingestion.figure_extractor.settings")
     def test_describe_figure_without_caption(self, mock_settings_mod):
         """Funziona anche senza caption GROBID."""
         mock_settings_mod.figure_extraction.enabled = True
+        mock_settings_mod.llm_provider = "google"
         mock_settings_mod.figure_extraction.vision_model = "gemini-2.5-flash"
         mock_settings_mod.figure_extraction.min_width = 150
         mock_settings_mod.figure_extraction.min_height = 150
         mock_settings_mod.figure_extraction.max_figures_per_paper = 10
         mock_settings_mod.gemini.flash_model = "gemini-3-flash-preview"
+        mock_settings_mod.gemini.max_retries = 1
         mock_settings_mod.google_api_key = "fake-key"
 
         from paperhunter.ingestion.figure_extractor import FigureExtractor
@@ -362,6 +369,7 @@ class TestExtractAndDescribe:
         mock_settings_mod.figure_extraction.max_figures_per_paper = 10
         mock_settings_mod.figure_extraction.figures_dir = str(tmp_path / "figures")
         mock_settings_mod.gemini.flash_model = "gemini-3-flash-preview"
+        mock_settings_mod.gemini.max_retries = 1
         mock_settings_mod.google_api_key = "fake-key"
         mock_settings_mod.image_filtering.enabled = False
 
@@ -427,6 +435,7 @@ class TestExtractAndDescribe:
         mock_settings_mod.figure_extraction.max_figures_per_paper = 10
         mock_settings_mod.figure_extraction.figures_dir = str(tmp_path / "figures")
         mock_settings_mod.gemini.flash_model = "gemini-3-flash-preview"
+        mock_settings_mod.gemini.max_retries = 1
         mock_settings_mod.google_api_key = "fake-key"
         mock_settings_mod.image_filtering.enabled = False
 
@@ -486,6 +495,7 @@ class TestExtractAndDescribe:
         mock_settings_mod.figure_extraction.max_figures_per_paper = 10
         mock_settings_mod.figure_extraction.figures_dir = str(tmp_path / "figures")
         mock_settings_mod.gemini.flash_model = "gemini-3-flash-preview"
+        mock_settings_mod.gemini.max_retries = 1
         mock_settings_mod.google_api_key = "fake-key"
         mock_settings_mod.image_filtering.enabled = False
 

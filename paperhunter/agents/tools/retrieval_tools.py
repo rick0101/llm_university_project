@@ -45,6 +45,7 @@ from typing import Optional
 
 from llama_index.core.tools import FunctionTool
 
+from paperhunter.config import settings
 from paperhunter.utils.logging_setup import get_logger
 
 logger = get_logger(__name__)
@@ -824,6 +825,10 @@ def search_figure_descriptions(
     t0 = time.time()
     top_k = min(max(top_k, 1), 10)
 
+    if not settings.visual_features_enabled:
+        logger.debug("[tool] search_figure_descriptions skipped: visual features disabled")
+        return "NO_RESULTS: visual features disabled by configuration"
+
     logger.info(
         f"[tool] search_figure_descriptions: query={query!r}, "
         f"category={category}, top_k={top_k}, "
@@ -833,7 +838,6 @@ def search_figure_descriptions(
     try:
         store = _get_qdrant_store()
 
-        from paperhunter.config import settings
         collection_desc = settings.qdrant.collection_figure_descriptions
         collection_img = settings.qdrant.collection_image_embeddings
 
@@ -971,6 +975,10 @@ def get_figure_for_section(
     if not paper_bibtex_key or not paper_bibtex_key.strip():
         return "NO_FIGURE_FOUND"
 
+    if not settings.visual_features_enabled:
+        logger.debug("get_figure_for_section skipped: visual features disabled")
+        return "NO_FIGURE_FOUND"
+
     if figure_type not in _VALID_FIGURE_TYPES:
         figure_type = "any"
 
@@ -1086,8 +1094,8 @@ def get_all_retrieval_tools(
         - ``search_vector_database``: ricerca vettoriale Qdrant
         - ``search_keyword_index``: ricerca BM25 keyword
         - ``search_graph_communities``: ricerca community graph
-        - ``search_figure_descriptions``: ricerca descrizioni figure
-        - ``get_figure_for_section``: recupero figure specifiche
+        - con ``visual_features_enabled=true``: ``search_figure_descriptions``
+          e ``get_figure_for_section``
 
     Example::
 
@@ -1171,36 +1179,36 @@ def get_all_retrieval_tools(
         )
     )
 
-    tools.append(
-        FunctionTool.from_defaults(
-            fn=fig_fn,
-            name="search_figure_descriptions",
-            description=(
-                "Search AI-generated descriptions of figures, diagrams, "
-                "plots, and tables from paper PDFs. Also searches "
-                "multimodal image embeddings for cross-modal retrieval. "
-                "Use when you need information about experimental results, "
-                "architectures, or visual data from papers. "
-                "Returns formatted text with [bibtex_key] citations "
-                "and source indicator [description] or [image_embedding]."
+    if settings.visual_features_enabled:
+        tools.extend([
+            FunctionTool.from_defaults(
+                fn=fig_fn,
+                name="search_figure_descriptions",
+                description=(
+                    "Search AI-generated descriptions of figures, diagrams, "
+                    "plots, and tables from paper PDFs. Also searches "
+                    "multimodal image embeddings for cross-modal retrieval. "
+                    "Use when you need information about experimental results, "
+                    "architectures, or visual data from papers. "
+                    "Returns formatted text with [bibtex_key] citations "
+                    "and source indicator [description] or [image_embedding]."
+                ),
             ),
-        )
-    )
-
-    tools.append(
-        FunctionTool.from_defaults(
-            fn=get_figure_for_section,
-            name="get_figure_for_section",
-            description=(
-                "Retrieve a specific figure from a paper to embed in the survey. "
-                "Use when you want to include a diagram, plot, or chart from a specific paper. "
-                "Call this BEFORE inserting a {{FIGURE:key:type}} tag in the text. "
-                "Returns JSON with figure metadata or 'NO_FIGURE_FOUND'. "
-                "Valid figure_types: any, results_plot, architecture_diagram, flowchart, "
-                "comparison_table, confusion_matrix, attack_diagram, defense_pipeline."
+            FunctionTool.from_defaults(
+                fn=get_figure_for_section,
+                name="get_figure_for_section",
+                description=(
+                    "Retrieve a specific figure from a paper to embed in the survey. "
+                    "Use when you want to include a diagram, plot, or chart from a specific paper. "
+                    "Call this BEFORE inserting a {{FIGURE:key:type}} tag in the text. "
+                    "Returns JSON with figure metadata or 'NO_FIGURE_FOUND'. "
+                    "Valid figure_types: any, results_plot, architecture_diagram, flowchart, "
+                    "comparison_table, confusion_matrix, attack_diagram, defense_pipeline."
+                ),
             ),
-        )
-    )
+        ])
+    else:
+        logger.debug("Retrieval visual tools omitted: visual features disabled")
 
     logger.info(
         f"Retrieval tools inizializzati: {len(tools)} tool "

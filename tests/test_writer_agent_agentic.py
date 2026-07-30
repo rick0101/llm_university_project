@@ -210,6 +210,69 @@ class TestBuildSectionResult:
         assert draft_data["rag_queries"] == ["query1", "query2"]
         assert draft_data["retrieved_chunk_ids"] == ["chunk_a", "chunk_b"]
 
+    def test_whitelist_keeps_tracked_citations_in_sync_with_clean_text(self):
+        """Le CitationRecord non devono contenere chiavi rimosse dal whitelist."""
+        from paperhunter.agents.writer_agent import _build_section_result
+
+        parsed = {
+            "text": (
+                "Verified evidence [Zou_2023_GCG], but an unverified claim "
+                "[Ghost_2024_Paper] must be removed."
+            ),
+            "citations": [
+                {"bibtex_key": "Zou_2023_GCG", "claim": "verified evidence"},
+                {"bibtex_key": "Ghost_2024_Paper", "claim": "unverified claim"},
+            ],
+            "notes": "",
+        }
+        result = _build_section_result(
+            parsed,
+            MOCK_OUTLINE,
+            "test_section",
+            iteration=1,
+            elapsed=1.0,
+            errors=[],
+            citable_keys={"Zou_2023_GCG"},
+        )
+
+        draft_data = result["sections"]["test_section"]
+        assert "Ghost_2024_Paper" not in draft_data["text"]
+        assert [c["bibtex_key"] for c in draft_data["citations"]] == ["Zou_2023_GCG"]
+
+
+class TestWriterRetrievalIntegrity:
+    """Regressioni per risorse Qdrant e whitelist di citazioni."""
+
+    def test_global_citable_keys_come_from_verified_master_bib(self, monkeypatch):
+        """La whitelist agentic deve usare il master BibTeX DBLP, non payload Qdrant stale."""
+        import paperhunter.agents.writer_agent as writer
+        import paperhunter.ingestion.bibtex_generator as bibtex_generator
+
+        monkeypatch.setattr(
+            bibtex_generator,
+            "load_master_bib",
+            lambda _path: {
+                "Zou_2023_GCG": "@article{Zou_2023_GCG,}",
+                "Li_2023_Halueval": "@article{Li_2023_Halueval,}",
+            },
+        )
+        monkeypatch.setattr(writer, "_CITABLE_KEYS_CACHE", None)
+
+        assert writer._load_global_citable_keys() == {"Zou_2023_GCG", "Li_2023_Halueval"}
+
+    def test_agentic_retrieval_singleton_is_released_after_runner(self, monkeypatch):
+        """Ogni esecuzione ReAct deve rilasciare Qdrant prima del nodo successivo."""
+        import paperhunter.agents.writer_agent as writer
+        import paperhunter.agents.tools.retrieval_tools as retrieval_tools
+
+        calls: list[str] = []
+        monkeypatch.setattr(retrieval_tools, "reset_singletons", lambda: calls.append("reset"))
+
+        result = writer._run_agentic_writer_with_clean_retrieval(lambda value: value.upper(), "ok")
+
+        assert result == "OK"
+        assert calls == ["reset", "reset"]
+
 
 # ============================================================================
 # TEST 2: _write_section_agentic con mock
@@ -656,11 +719,22 @@ class TestWriteAllSectionsAgentic:
 class TestAgenticE2E:
     """Test end-to-end del flusso agentic con tutti i mock."""
 
+    @patch(
+        "paperhunter.agents.writer_agent._load_global_citable_keys",
+        return_value={
+            "Perez_2022_PromptInject",
+            "Zou_2023_GCG",
+            "Jain_2023_Defense",
+            "Alon_2023_Sandwich",
+        },
+    )
     @patch("llama_index.core.agent.ReActAgent")
     @patch("paperhunter.agents.writer_agent.get_llm")
     @patch("paperhunter.agents.writer_agent.asyncio.run")
     @patch("paperhunter.agents.tools.retrieval_tools.get_all_retrieval_tools")
-    def test_full_agentic_flow(self, mock_tools, mock_asyncio_run, mock_get_llm, mock_react):
+    def test_full_agentic_flow(
+        self, mock_tools, mock_asyncio_run, mock_get_llm, mock_react, _mock_citable_keys,
+    ):
         """Flusso completo: config agentic → ReAct → SectionDraft."""
         from paperhunter.agents.writer_agent import write_section
 

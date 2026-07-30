@@ -147,6 +147,10 @@ class FigureExtractor:
             - ``page_width``: larghezza pagina in punti PDF
             - ``page_height``: altezza pagina in punti PDF
         """
+        if not settings.visual_features_enabled:
+            logger.info("Estrazione figure disabilitata dal profilo DeepSeek-only.")
+            return []
+
         pdf_path = Path(pdf_path)
         if not pdf_path.exists():
             raise FileNotFoundError(f"PDF non trovato: {pdf_path}")
@@ -274,6 +278,9 @@ class FigureExtractor:
         Returns:
             Descrizione testuale strutturata della figura.
         """
+        if not settings.visual_features_enabled:
+            logger.info("Descrizione Vision disabilitata dal profilo DeepSeek-only.")
+            return ""
         if settings.llm_provider != "google":
             logger.warning(
                 "Descrizione Vision saltata: provider %s, nessuna chiamata Google.",

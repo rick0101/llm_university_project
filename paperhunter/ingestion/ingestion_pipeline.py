@@ -1027,6 +1027,9 @@ class IngestionPipeline:
         Returns:
             Lista di PaperChunk con descrizioni figure.
         """
+        if not settings.visual_features_enabled:
+            logger.info("Estrazione figure disabilitata dal profilo DeepSeek-only.")
+            return []
         if not settings.figure_extraction.enabled:
             return []
         if settings.llm_provider != "google":

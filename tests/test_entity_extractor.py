@@ -15,6 +15,8 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+import pytest
+
 # Assicurati che il progetto sia nel path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -380,6 +382,7 @@ def test_build_from_raw():
 # Test 6: Estrazione LIVE con Gemini Flash (5 L1 mock)
 # ============================================================================
 
+@pytest.mark.live
 def test_live_extraction():
     """Test estrazione LIVE con Gemini Flash su 5 L1 mock realistici."""
     print("\n=== Test 6: Estrazione LIVE con Gemini Flash ===")

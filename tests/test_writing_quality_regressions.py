@@ -409,6 +409,27 @@ def test_writer_prompt_requires_atomic_strict_citations():
     assert "each source independently supports" in prompt
 
 
+def test_evidence_repair_instructions_set_numeric_length_and_citation_budget():
+    from paperhunter.agents.writer_agent import _build_critic_repair_instructions
+
+    outline = SectionOutline.model_validate(
+        {
+            "key": "body",
+            "title": "Body",
+            "section_type": "body",
+            "target_length_words": 1500,
+        }
+    )
+    instructions = _build_critic_repair_instructions(
+        outline,
+        "Remove Unsupported_2025_Key.",
+    )
+    assert "at least 1200 words" in instructions
+    assert "5-8 distinct citation keys" in instructions
+    assert "at most 12 citation occurrences" in instructions
+    assert "Remove Unsupported_2025_Key." in instructions
+
+
 def test_shorter_revision_cannot_replace_long_legacy_draft():
     import json
 

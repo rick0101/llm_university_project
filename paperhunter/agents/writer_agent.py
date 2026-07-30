@@ -813,6 +813,38 @@ def _get_special_instructions(section_type: str) -> str:
     return ""
 
 
+def _build_critic_repair_instructions(
+    outline: SectionOutline,
+    critic_feedback: str | None,
+) -> str:
+    """Build bounded instructions for a strict citation-repair revision."""
+    feedback = (critic_feedback or "").strip()
+    if not feedback:
+        return ""
+
+    minimum_words = max(
+        settings.agents.min_section_words,
+        int(outline.target_length_words * 0.80),
+    )
+    return (
+        "\n\n### STRICT EVIDENCE-REPAIR RULES\n\n"
+        "This is an evidence-repair revision, not a general expansion. "
+        "Use one atomic factual claim per sentence. Attach one citation only "
+        "when that source directly supports the complete adjacent claim. Use "
+        "multiple keys together only when each source independently supports "
+        "that same complete claim; otherwise split the sentence. Remove every "
+        "claim and citation identified as unsupported instead of replacing it "
+        "with an unrelated key. Prefer keys already marked SUPPORTED in the "
+        "feedback. Use 5-8 distinct citation keys and at most 12 citation "
+        "occurrences; do not pad coverage. Closely paraphrase the retrieved "
+        "evidence rather than adding broader claims. The final section must "
+        f"contain at least {minimum_words} words; count before finalizing.\n"
+        "\n### CRITIC FEEDBACK (from previous iteration)\n\n"
+        "Address every listed issue in the rewrite:\n\n"
+        f"{feedback}\n"
+    )
+
+
 # ============================================================================
 # Helper: Response parsing
 # ============================================================================
@@ -1147,13 +1179,10 @@ def _write_section_prefetch_agentic(
     # === FASE 2: ReAct leggero con contesto pre-caricato ===
 
     special_instructions = _get_special_instructions(outline.section_type)
-    critic_section = ""
-    if critic_feedback:
-        critic_section = (
-            "## CRITIC FEEDBACK (from previous iteration)\n\n"
-            "Address these issues in your rewrite:\n\n"
-            f"{critic_feedback}\n"
-        )
+    critic_section = _build_critic_repair_instructions(
+        outline,
+        critic_feedback,
+    )
 
     system_prompt = _PREFETCH_REACT_SYSTEM_PROMPT.format(
         title=outline.title,
@@ -1399,13 +1428,10 @@ def _write_section_agentic(
 
     # --- Costruisci system prompt ---
     special_instructions = _get_special_instructions(outline.section_type)
-    critic_section = ""
-    if critic_feedback:
-        critic_section = (
-            "## CRITIC FEEDBACK (from previous iteration)\n\n"
-            "Address these issues in your rewrite:\n\n"
-            f"{critic_feedback}\n"
-        )
+    critic_section = _build_critic_repair_instructions(
+        outline,
+        critic_feedback,
+    )
 
     system_prompt = _REACT_SYSTEM_PROMPT.format(
         title=outline.title,
@@ -2207,23 +2233,10 @@ def write_section(
 
     special_instructions = _get_special_instructions(target_outline.section_type)
 
-    # Se c'è feedback del Critic, aggiungilo al prompt
-    if critic_feedback:
-        special_instructions += (
-            "\n\n### STRICT EVIDENCE-REPAIR RULES\n\n"
-            "This is an evidence-repair revision, not a general expansion. "
-            "Use one atomic factual claim per sentence. Attach one citation "
-            "only when that source directly supports the complete adjacent "
-            "claim. Use multiple keys together only when each source "
-            "independently supports that same complete claim; otherwise split "
-            "the sentence. Remove unsupported claims and citation padding "
-            "instead of preserving them for length. Keep at least five "
-            "distinct, fully supported sources and stay at or above 80% of "
-            "the requested target length.\n"
-            f"\n### CRITIC FEEDBACK (from previous iteration)\n\n"
-            f"The following feedback was provided by the Critic agent. "
-            f"Address these issues in your rewrite:\n\n{critic_feedback}\n"
-        )
+    special_instructions += _build_critic_repair_instructions(
+        target_outline,
+        critic_feedback,
+    )
 
     prompt = _WRITER_PROMPT_TEMPLATE.format(
         title=target_outline.title,

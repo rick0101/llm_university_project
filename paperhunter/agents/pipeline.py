@@ -39,7 +39,7 @@ import json
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Optional, cast
 
 from langgraph.graph import END, START, StateGraph
 
@@ -51,6 +51,11 @@ from paperhunter.agents.state import (
     SectionOutline,
     SectionStatus,
     SurveyState,
+    _append_unique_errors,
+    _merge_agentic_stats,
+    _merge_retrieved_facts,
+    _merge_sections,
+    _merge_verification,
     create_initial_state,
     get_outline_from_state,
     get_pipeline_summary,
@@ -88,6 +93,52 @@ NODE_ASSEMBLE = "assemble"
 # Chiave per l'edge condizionale
 EDGE_REVISE = "revise"
 EDGE_DONE = "done"
+
+
+def _merge_state_update(
+    state: SurveyState,
+    update: dict[str, Any],
+) -> SurveyState:
+    """Apply ``SurveyState`` reducers outside LangGraph.
+
+    LangGraph invokes the reducers declared on ``SurveyState`` automatically,
+    but checkpoint serialization and the manual resume loop operate on plain
+    dictionaries. A shallow merge there silently dropped sections and
+    verification records omitted from a node's partial update.
+    """
+    merged: dict[str, Any] = {**state, **update}
+
+    if "sections" in update:
+        merged["sections"] = _merge_sections(
+            cast(Any, state.get("sections", {})),
+            cast(Any, update.get("sections", {})),
+        )
+    if "verification_results" in update:
+        merged["verification_results"] = _merge_verification(
+            cast(Any, state.get("verification_results", {})),
+            cast(Any, update.get("verification_results", {})),
+        )
+    if "errors" in update:
+        merged["errors"] = _append_unique_errors(
+            state.get("errors", []),
+            update.get("errors", []),
+        )
+    if "provenance" in update:
+        merged["provenance"] = list(state.get("provenance", [])) + list(
+            update.get("provenance", [])
+        )
+    if "retrieved_facts" in update:
+        merged["retrieved_facts"] = _merge_retrieved_facts(
+            state.get("retrieved_facts", {}),
+            update.get("retrieved_facts", {}),
+        )
+    if "agentic_stats" in update:
+        merged["agentic_stats"] = _merge_agentic_stats(
+            state.get("agentic_stats", {}),
+            update.get("agentic_stats", {}),
+        )
+
+    return cast(SurveyState, merged)
 
 
 # ============================================================================
@@ -376,10 +427,10 @@ def _make_node_with_checkpoint(
 
             # Salva checkpoint
             if save_checkpoints:
-                # Merge del risultato nello stato per il checkpoint
-                merged_state = {**state, **result}  # type: ignore[misc]
+                # Applica gli stessi reducer di LangGraph al checkpoint.
+                merged_state = _merge_state_update(state, result)
                 try:
-                    save_checkpoint(merged_state, node_name)  # type: ignore[arg-type]
+                    save_checkpoint(merged_state, node_name)
                 except Exception as e:
                     logger.warning(f"Errore salvataggio checkpoint '{node_name}': {e}")
 
@@ -723,8 +774,8 @@ def _resume_from_node(
         # Esegui il nodo
         try:
             result = nodes[node_name](current_state)
-            # Merge del risultato nello stato corrente
-            current_state = {**current_state, **result}  # type: ignore[misc]
+            # Il resume manuale deve applicare gli stessi reducer di LangGraph.
+            current_state = _merge_state_update(current_state, result)
         except Exception as e:
             err_msg = f"Errore critico nel nodo '{node_name}': {e}"
             logger.error(err_msg, exc_info=True)

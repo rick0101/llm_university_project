@@ -433,9 +433,40 @@ def test_make_node_with_checkpoint():
     print("[PASS] test_make_node_with_checkpoint — wrapper OK")
 
 
-# ============================================================================
-# Test 8: _make_node_with_checkpoint — error handling
-# ============================================================================
+def test_checkpoint_wrapper_preserves_sections_omitted_from_partial_update():
+    """Serialized checkpoints must apply the same reducers as LangGraph."""
+    from paperhunter.agents.pipeline import _make_node_with_checkpoint, load_checkpoint
+
+    state = _create_mock_state(include_outline=True, include_sections=True)
+    updated = dict(state["sections"]["prompt_injection"])
+    updated["text"] = "revised prompt-injection section"
+
+    def partial_write(_state):
+        return {
+            "sections": {"prompt_injection": updated},
+            "current_phase": "writing",
+        }
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        with patch("paperhunter.agents.pipeline.settings") as mock_settings:
+            mock_settings.output.checkpoints_dir = tmpdir
+            mock_settings.agents.max_writer_iterations = 3
+            wrapped = _make_node_with_checkpoint(
+                partial_write,
+                "write",
+                save_checkpoints=True,
+            )
+            wrapped(state)
+
+        latest = Path(tmpdir) / "checkpoint_write_latest.json"
+        _, checkpoint_state = load_checkpoint(latest)
+
+    assert set(checkpoint_state["sections"]) == set(state["sections"])
+    assert (
+        checkpoint_state["sections"]["prompt_injection"]["text"]
+        == "revised prompt-injection section"
+    )
+
 
 def test_make_node_error_handling():
     """Verifica che errori nel nodo vengono gestiti correttamente."""
@@ -895,6 +926,59 @@ def test_resume_from_node():
         assert final.get("final_paper") == "# Paper"
 
     print("[PASS] test_resume_from_node — resume corretto")
+
+
+def test_resume_manual_merge_preserves_untouched_verified_sections():
+    """Manual resume must honor SurveyState reducers between partial nodes."""
+    from paperhunter.agents.pipeline import _resume_from_node
+    from paperhunter.agents.state import PipelinePhase, SectionStatus
+
+    state = _create_mock_state(
+        include_outline=True,
+        include_sections=True,
+        all_verified=True,
+    )
+    revised = dict(state["sections"]["prompt_injection"])
+    revised["status"] = SectionStatus.NEEDS_REVISION.value
+    revised["critic_feedback"] = "Repair evidence."
+    state["sections"]["prompt_injection"] = revised
+    seen_by_assembler: set[str] = set()
+
+    def mock_write(_state):
+        update = dict(revised)
+        update["status"] = SectionStatus.DRAFTED.value
+        return {
+            "sections": {"prompt_injection": update},
+            "current_phase": PipelinePhase.WRITING.value,
+            "errors": [],
+        }
+
+    def mock_verify(_state):
+        update = dict(revised)
+        update["status"] = SectionStatus.VERIFIED.value
+        return {
+            "sections": {"prompt_injection": update},
+            "verification_results": {},
+            "current_phase": PipelinePhase.VERIFYING.value,
+            "errors": [],
+        }
+
+    def mock_assemble(assembled_state):
+        seen_by_assembler.update(assembled_state["sections"])
+        return {
+            "final_paper": "# Paper",
+            "current_phase": PipelinePhase.ASSEMBLING.value,
+        }
+
+    with patch("paperhunter.agents.pipeline.write", mock_write), \
+         patch("paperhunter.agents.pipeline.verify", mock_verify), \
+         patch("paperhunter.agents.pipeline.assemble", mock_assemble), \
+         patch("paperhunter.agents.pipeline.settings") as mock_settings:
+        mock_settings.agents.max_writer_iterations = 1
+        final = _resume_from_node(state, "write", save_checkpoints=False)
+
+    assert set(final["sections"]) == set(state["sections"])
+    assert seen_by_assembler == set(state["sections"])
 
 
 # ============================================================================

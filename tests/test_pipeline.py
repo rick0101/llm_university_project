@@ -222,6 +222,27 @@ def test_should_revise_max_iterations():
     print("[PASS] test_should_revise_max_iterations — max iter raggiunto → DONE")
 
 
+def test_should_revise_allows_one_extra_coherence_repair():
+    from paperhunter.agents.pipeline import EDGE_REVISE, _should_revise
+    from paperhunter.config import settings
+
+    state = _create_mock_state(
+        include_outline=True,
+        include_sections=True,
+        needs_revision=True,
+    )
+    state["iteration_count"] = settings.agents.max_writer_iterations
+    for section in state["sections"].values():
+        section["iteration"] = settings.agents.max_writer_iterations + 1
+    target = state["sections"]["prompt_injection"]
+    target["iteration"] = settings.agents.max_writer_iterations
+    target["critic_feedback"] = (
+        "[COHERENCE PASS — issues to fix]\nRemove duplicated prose."
+    )
+
+    assert _should_revise(state) == EDGE_REVISE
+
+
 def test_should_revise_uses_section_attempts_not_global_verify_cycles():
     """A resumable section must not lose retries to unrelated global cycles."""
     from paperhunter.agents.pipeline import _should_revise, EDGE_REVISE

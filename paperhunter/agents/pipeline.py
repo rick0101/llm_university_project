@@ -354,7 +354,9 @@ def _should_revise(state: SurveyState) -> str:
     retryable_sections = [
         key
         for key in incomplete_sections
-        if sections[key].iteration < max_iterations
+        if sections[key].iteration
+        < max_iterations
+        + int("[COHERENCE PASS" in (sections[key].critic_feedback or ""))
     ]
     missing_retryable = bool(missing_sections) and iteration_count < max_iterations
 

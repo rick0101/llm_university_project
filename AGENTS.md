@@ -122,6 +122,10 @@ Script standalone alla root: `run_writer_summaries_only.py`, `fix_hashes.py`, `f
   il dettaglio è in `citation_integrity_report.json`.
 - **Critic strict**: 100% dei claim citati deve risultare `SUPPORTED`, con
   almeno 5 fonti distinte per sezione; nessuna auto-accettazione al limite.
+  Le revisioni puramente citazionali preservano i claim già `SUPPORTED` tramite
+  retry semantico validato (mai concatenazione meccanica); una bocciatura di
+  coerenza può invece consolidarli o riscriverli, obbligandone la riverifica, e
+  dispone di un solo tentativo aggiuntivo oltre il budget Writer ordinario.
 - **Auto-invalidazione** dei summary quando i chunk a monte cambiano (`summarization/invalidation_manager.py`).
 - **Checkpoint + resume** in fase write (`postprocessing/checkpoint_manager.py`, `--resume`).
 - **Provenance tracking** per ogni claim nel survey (`postprocessing/provenance_tracker.py`).

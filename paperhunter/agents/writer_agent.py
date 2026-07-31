@@ -51,7 +51,7 @@ import re
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, Sequence
 
 from paperhunter.agents.state import (
     CitationRecord,
@@ -872,12 +872,27 @@ def _build_critic_repair_instructions(
     failed_block = "\n".join(failed) or "- (none recorded)"
     max_distinct_sources = max(8, len(ledger_keys))
     max_citation_occurrences = max(12, len(details))
+    coherence_repair = "[COHERENCE PASS" in feedback
+    preservation_rule = (
+        "The coherence review takes precedence over verbatim preservation: you "
+        "may remove, merge, narrow, or rephrase previously supported claims when "
+        "needed to eliminate duplication, contradiction, or outline drift. Keep "
+        "the supporting citation on any retained factual claim. Changed claims "
+        "will be reverified by the Critic. Never concatenate ledger sentences as "
+        "a block. "
+        if coherence_repair
+        else (
+            "Preserve supported sentences and citations verbatim unless a minimal "
+            "grammatical edit is required. "
+        )
+    )
 
     return (
         "\n\n### STRICT EVIDENCE-REPAIR RULES\n\n"
         "This is an EDIT of the delimited current draft, not a new section "
-        "written from memory. Preserve supported sentences and citations verbatim "
-        "unless a minimal grammatical edit is required. For every failed ledger "
+        "written from memory. "
+        f"{preservation_rule}"
+        "For every failed ledger "
         "entry, remove that exact claim or rewrite only its unsupported portion. "
         "Use one atomic factual claim per sentence. Attach one citation only when "
         "that source directly supports the complete adjacent claim. Use multiple "
@@ -2083,22 +2098,25 @@ def _minimum_acceptable_revision_words(
     return max(target_floor, existing_words)
 
 
-def _stabilize_revision_with_supported_evidence(
-    candidate: SectionDraft,
+def _fully_supported_prior_claims(
     existing_draft: SectionDraft,
     verification: Any | None,
-) -> SectionDraft:
-    """Carry forward prior supported claims that a stochastic rewrite dropped.
-
-    Evidence repair must be monotonic: a new draft may remove failed claims, but
-    it must not discard claim/source pairs that the strict Critic already marked
-    SUPPORTED.  Exact sentences and their chunk provenance are appended only when
-    they still occur in the prior draft and are absent from the candidate.
-    """
+    *,
+    include_coherence_repair_evidence: bool = False,
+) -> list[tuple[str, str, str | None]]:
+    """Return occurrence-specific prior claims whose complete citation group passed."""
+    if (
+        not include_coherence_repair_evidence
+        and "[COHERENCE PASS" in (existing_draft.critic_feedback or "")
+    ):
+        # A holistic repair must be able to remove, merge, or narrow even a
+        # source-supported sentence when it is duplicated or contradicts the
+        # surrounding section.  Changed claims are reverified by the Critic.
+        return []
     if verification is not None and hasattr(verification, "to_dict"):
         verification = verification.to_dict()
     if not isinstance(verification, dict):
-        return candidate
+        return []
 
     claim_verdicts: dict[str, dict[str, str]] = {}
     for raw_detail in verification.get("details", []):
@@ -2115,12 +2133,8 @@ def _stabilize_revision_with_supported_evidence(
             raw_detail.get("status") or ""
         ).split(".")[-1].upper()
 
-    stabilized = SectionDraft.from_dict(candidate.to_dict())
-    missing_claims: list[str] = []
-    missing_claim_identities: set[str] = set()
-    carried_records: list[CitationRecord] = []
+    supported: list[tuple[str, str, str | None]] = []
     seen_claims: set[tuple[str, str]] = set()
-
     for raw_detail in verification.get("details", []):
         if hasattr(raw_detail, "to_dict"):
             raw_detail = raw_detail.to_dict()
@@ -2147,13 +2161,89 @@ def _stabilize_revision_with_supported_evidence(
         seen_claims.add(identity)
         if claim not in existing_draft.text:
             continue
-        if (
-            claim not in stabilized.text
-            and normalized_claim not in missing_claim_identities
-        ):
-            missing_claims.append(claim)
-            missing_claim_identities.add(normalized_claim)
+        supported.append((key, claim, chunk_id))
+    return supported
 
+
+def _missing_supported_claims(
+    candidate: SectionDraft,
+    existing_draft: SectionDraft,
+    verification: Any | None,
+) -> list[str]:
+    """Find fully-supported prior claim sentences omitted by a revision."""
+    candidate_text = re.sub(r"\s+", " ", candidate.text).lower()
+    missing: list[str] = []
+    seen: set[str] = set()
+    for _, claim, _ in _fully_supported_prior_claims(existing_draft, verification):
+        identity = re.sub(r"\s+", " ", claim).lower()
+        if identity not in candidate_text and identity not in seen:
+            missing.append(claim)
+            seen.add(identity)
+    return missing
+
+
+def _build_revision_validation_retry_prompt(
+    original_prompt: str,
+    rejected_response: str,
+    missing_claims: Sequence[str],
+    *,
+    minimum_words: int | None = None,
+) -> str:
+    """Request one coherent full rewrite after deterministic validation fails."""
+    required = "\n".join(
+        f"<required_claim index=\"{index}\">{claim}</required_claim>"
+        for index, claim in enumerate(missing_claims, start=1)
+    )
+    length_requirement = (
+        f"- Produce at least {minimum_words} words.\n"
+        if minimum_words is not None
+        else ""
+    )
+    return f"""{original_prompt}
+
+<revision_validation_error>
+The attempted revision below failed deterministic quality validation.
+Return a COMPLETE replacement JSON response in the original schema.
+
+Requirements:
+- Preserve every <required_claim> sentence EXACTLY, including its citation bracket.
+- Integrate each required sentence once in its logically appropriate subsection.
+- Do NOT append the required sentences as a block at the end.
+- Remove duplicate or near-duplicate prose around the preserved sentences.
+- Keep the section coherent and follow the original outline.
+{length_requirement}
+
+{required}
+
+<rejected_response>
+{rejected_response}
+</rejected_response>
+</revision_validation_error>
+"""
+
+
+def _stabilize_revision_with_supported_evidence(
+    candidate: SectionDraft,
+    existing_draft: SectionDraft,
+    verification: Any | None,
+) -> SectionDraft:
+    """Restore provenance only for supported claims retained by the revision.
+
+    Missing prose is never concatenated mechanically: doing so across successive
+    full rewrites creates duplicated, incoherent sections.  The caller performs
+    one semantic repair retry when required claim sentences are missing.
+    """
+    stabilized = SectionDraft.from_dict(candidate.to_dict())
+    stabilized.word_count = _count_words(stabilized.text)
+    candidate_text = re.sub(r"\s+", " ", stabilized.text).lower()
+    carried_records: list[CitationRecord] = []
+    for key, claim, chunk_id in _fully_supported_prior_claims(
+        existing_draft,
+        verification,
+    ):
+        normalized_claim = re.sub(r"\s+", " ", claim).lower()
+        if normalized_claim not in candidate_text:
+            continue
         matched = next(
             (
                 record
@@ -2172,19 +2262,6 @@ def _stabilize_revision_with_supported_evidence(
                 chunk_id=chunk_id,
                 retrieval_score=0.0,
             )
-        )
-
-    if missing_claims:
-        stabilized.text = (
-            stabilized.text.rstrip() + "\n\n" + " ".join(missing_claims)
-        )
-        stabilized.word_count = _count_words(stabilized.text)
-        note_prefix = stabilized.writer_notes.strip()
-        stabilization_note = (
-            f"Preserved {len(missing_claims)} prior supported claim(s)."
-        )
-        stabilized.writer_notes = (
-            f"{note_prefix} {stabilization_note}".strip()
         )
 
     citation_identities = {
@@ -2282,7 +2359,12 @@ def write_section(
 
     # Determina il numero di iterazione
     current_iteration = (existing_draft.iteration + 1) if existing_draft else 1
-    max_iterations = settings.agents.max_writer_iterations
+    max_iterations = settings.agents.max_writer_iterations + int(
+        bool(
+            existing_draft
+            and "[COHERENCE PASS" in (existing_draft.critic_feedback or "")
+        )
+    )
 
     if current_iteration > max_iterations:
         logger.warning(
@@ -2407,6 +2489,15 @@ def write_section(
         related_categories=target_outline.related_categories or None,
     )
     citable_keys = set(_extract_citable_keys_from_formatted_context(context_text))
+    if existing_draft is not None:
+        citable_keys.update(
+            key
+            for key, _, _ in _fully_supported_prior_claims(
+                existing_draft,
+                verification,
+                include_coherence_repair_evidence=True,
+            )
+        )
     minimum_sources = settings.agents.min_citations_per_section
     if len(citable_keys) < minimum_sources:
         err = (
@@ -2504,6 +2595,7 @@ def write_section(
         return {"sections": {}, "provenance": [], "errors": errors}
 
     elapsed = time.time() - t0
+    candidate_errors_start = len(errors)
     result = _build_section_result(
         parsed, target_outline, section_key,
         current_iteration, elapsed, errors,
@@ -2517,12 +2609,6 @@ def write_section(
         candidate_data = result.get("sections", {}).get(section_key)
         if candidate_data:
             candidate = SectionDraft.from_dict(candidate_data)
-            candidate = _stabilize_revision_with_supported_evidence(
-                candidate,
-                existing_draft,
-                verification,
-            )
-            result["sections"][section_key] = candidate.to_dict()
             required_words = _minimum_acceptable_revision_words(
                 existing_draft,
                 target_outline,
@@ -2531,6 +2617,113 @@ def write_section(
                 int(existing_draft.word_count or 0),
                 _count_words(existing_draft.text or ""),
             )
+            missing_supported = _missing_supported_claims(
+                candidate,
+                existing_draft,
+                verification,
+            )
+            needs_length_repair = (
+                candidate.word_count < required_words
+                and candidate.word_count <= existing_words
+            )
+            if missing_supported or needs_length_repair:
+                # Diagnostics from the rejected response must not poison the
+                # accepted retry (or a preserved old draft).
+                del errors[candidate_errors_start:]
+                logger.warning(
+                    "Revision for '%s' failed deterministic validation "
+                    "(missing_supported=%d, words=%d, floor=%d); requesting "
+                    "one coherent semantic repair.",
+                    section_key,
+                    len(missing_supported),
+                    candidate.word_count,
+                    required_words,
+                )
+                preservation_prompt = _build_revision_validation_retry_prompt(
+                    prompt,
+                    raw_response,
+                    missing_supported,
+                    minimum_words=required_words if needs_length_repair else None,
+                )
+                try:
+                    repaired_response = llm_call_with_retry(
+                        llm,
+                        preservation_prompt,
+                        max_retries=max_retries,
+                        base_delay=base_delay,
+                        max_delay=120.0,
+                    )
+                except Exception as exc:
+                    message = (
+                        f"Revision for '{section_key}' preserved after deterministic "
+                        f"validation repair failed: {exc}"
+                    )
+                    logger.warning(message)
+                    preserved = SectionDraft.from_dict(existing_draft.to_dict())
+                    preserved.iteration = current_iteration
+                    preserved.status = SectionStatus.NEEDS_REVISION
+                    return {
+                        "sections": {section_key: preserved.to_dict()},
+                        "provenance": [],
+                        "current_phase": PipelinePhase.WRITING.value,
+                        "errors": [],
+                        "metadata": {
+                            "last_writer_time": round(time.time() - t0, 1),
+                            "last_writer_mode": "static",
+                            "revision_preserved": section_key,
+                            "revision_preserved_reason": "revision_validation_retry_failed",
+                        },
+                    }
+                repaired_parsed = _parse_writer_response(repaired_response, section_key)
+                if repaired_parsed is not None:
+                    elapsed = time.time() - t0
+                    result = _build_section_result(
+                        repaired_parsed,
+                        target_outline,
+                        section_key,
+                        current_iteration,
+                        elapsed,
+                        errors,
+                        mode="static",
+                        queries=queries,
+                        chunk_ids=chunk_ids,
+                        citable_keys=citable_keys,
+                    )
+                    candidate = SectionDraft.from_dict(
+                        result["sections"][section_key]
+                    )
+                missing_supported = _missing_supported_claims(
+                    candidate,
+                    existing_draft,
+                    verification,
+                )
+                if missing_supported:
+                    message = (
+                        f"Revision for '{section_key}' preserved: semantic repair "
+                        f"still omitted {len(missing_supported)} supported claim(s)."
+                    )
+                    logger.warning(message)
+                    preserved = SectionDraft.from_dict(existing_draft.to_dict())
+                    preserved.iteration = current_iteration
+                    preserved.status = SectionStatus.NEEDS_REVISION
+                    return {
+                        "sections": {section_key: preserved.to_dict()},
+                        "provenance": [],
+                        "current_phase": PipelinePhase.WRITING.value,
+                        "errors": [],
+                        "metadata": {
+                            "last_writer_time": round(time.time() - t0, 1),
+                            "last_writer_mode": "static",
+                            "revision_preserved": section_key,
+                            "revision_preserved_reason": "supported_claims_missing",
+                        },
+                    }
+            candidate = _stabilize_revision_with_supported_evidence(
+                candidate,
+                existing_draft,
+                verification,
+            )
+            result["sections"][section_key] = candidate.to_dict()
             if (
                 candidate.word_count < required_words
                 and candidate.word_count <= existing_words

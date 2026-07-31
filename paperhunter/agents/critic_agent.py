@@ -235,6 +235,8 @@ def _build_strict_supported_only_fallback(
     draft: SectionDraft,
     details: Sequence[VerificationDetail | dict],
     outline: SectionOutline | None,
+    *,
+    allow_incomplete_length: bool = False,
 ) -> tuple[SectionDraft, list[VerificationDetail]] | None:
     """Prune failed cited sentences at the final attempt, without inventing text.
 
@@ -253,7 +255,7 @@ def _build_strict_supported_only_fallback(
     for detail in normalized_details:
         if detail.status != VerificationStatus.SUPPORTED:
             claim = (detail.claim_text or "").strip()
-            if claim and claim not in failed_claims:
+            if claim:
                 failed_claims.append(claim)
     if not failed_claims:
         return None
@@ -261,13 +263,17 @@ def _build_strict_supported_only_fallback(
     pruned_text = draft.text
     for claim in failed_claims:
         if claim not in pruned_text:
-            return None
+            # The detail can be stale after a preserved/reducer-merged state.
+            # Remaining occurrences are validated below against a bounded
+            # multiset of SUPPORTED occurrence records, so skipping it cannot
+            # retain an unsupported citation.
+            continue
         pruned_text = pruned_text.replace(claim, "", 1)
     pruned_text = re.sub(r"(?<=\S)[ \t]{2,}", " ", pruned_text)
     pruned_text = re.sub(r"[ \t]+\n", "\n", pruned_text)
     pruned_text = re.sub(r"\n{3,}", "\n\n", pruned_text).strip()
 
-    supported_by_occurrence: dict[tuple[str, str], VerificationDetail] = {}
+    supported_by_occurrence: dict[tuple[str, str], list[VerificationDetail]] = {}
     for detail in normalized_details:
         if detail.status != VerificationStatus.SUPPORTED:
             continue
@@ -275,7 +281,7 @@ def _build_strict_supported_only_fallback(
             detail.citation_key,
             re.sub(r"\s+", " ", detail.claim_text or "").strip().lower(),
         )
-        supported_by_occurrence[identity] = detail
+        supported_by_occurrence.setdefault(identity, []).append(detail)
 
     kept_details: list[VerificationDetail] = []
     for occurrence in _extract_citation_occurrences(pruned_text):
@@ -283,10 +289,10 @@ def _build_strict_supported_only_fallback(
             occurrence["bibtex_key"],
             re.sub(r"\s+", " ", occurrence["claim"]).strip().lower(),
         )
-        detail = supported_by_occurrence.get(identity)
-        if detail is None:
+        matching_details = supported_by_occurrence.get(identity)
+        if not matching_details:
             return None
-        kept_details.append(detail)
+        kept_details.append(matching_details.pop(0))
 
     distinct_keys = {detail.citation_key for detail in kept_details}
     if len(distinct_keys) < settings.agents.min_citations_per_section:
@@ -296,7 +302,7 @@ def _build_strict_supported_only_fallback(
     pruned.text = pruned_text
     pruned.word_count = len(pruned_text.split())
     length_ok, _ = _check_section_length(pruned, outline, strict=True)
-    if not length_ok:
+    if not length_ok and not allow_incomplete_length:
         return None
     pruned.citations = [
         record for record in pruned.citations
@@ -1415,6 +1421,7 @@ def verify_section(
             draft,
             verification_details,
             target_outline,
+            allow_incomplete_length=True,
         )
         if fallback is not None:
             draft, verification_details = fallback

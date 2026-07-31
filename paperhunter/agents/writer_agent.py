@@ -990,26 +990,47 @@ def _parse_writer_response(
     except json.JSONDecodeError:
         pass
 
-    # Tentativo 2: estrai il primo oggetto JSON
-    match = re.search(r"\{.*\}", text, re.DOTALL)
-    if match:
+    # Tentativo 2: estrai l'ultimo oggetto JSON completo. Un modello può
+    # emettere una prima busta malformata, autocorreggersi, e poi produrre il
+    # JSON finale. Una regex greedy unirebbe entrambe le buste e farebbe
+    # trapelare tutto come prosa della sezione.
+    decoder = json.JSONDecoder()
+    complete_outputs: list[dict] = []
+    for start in (match.start() for match in re.finditer(r"\{", text)):
         try:
-            data = json.loads(match.group())
-            if isinstance(data, dict) and "text" in data:
-                return _normalize_writer_output(data)
+            data, _ = decoder.raw_decode(text[start:])
         except json.JSONDecodeError:
-            pass
+            continue
+        if isinstance(data, dict) and isinstance(data.get("text"), str):
+            complete_outputs.append(data)
+    if complete_outputs:
+        return _normalize_writer_output(complete_outputs[-1])
 
     # Tentativo 3: fix trailing commas e riprova
     cleaned = re.sub(r",\s*([}\]])", r"\1", text)
-    match = re.search(r"\{.*\}", cleaned, re.DOTALL)
-    if match:
+    complete_outputs = []
+    for start in (match.start() for match in re.finditer(r"\{", cleaned)):
         try:
-            data = json.loads(match.group())
-            if isinstance(data, dict) and "text" in data:
-                return _normalize_writer_output(data)
+            data, _ = decoder.raw_decode(cleaned[start:])
         except json.JSONDecodeError:
-            pass
+            continue
+        if isinstance(data, dict) and isinstance(data.get("text"), str):
+            complete_outputs.append(data)
+    if complete_outputs:
+        return _normalize_writer_output(complete_outputs[-1])
+
+    # A JSON-like envelope that cannot be recovered is not manuscript prose.
+    # Reject it so the bounded semantic retry/preservation path remains
+    # fail-closed instead of storing JSON, commentary, or hidden reasoning.
+    if text.lstrip().startswith("{") or (
+        re.search(r'"text"\s*:', text)
+        and re.search(r'"citations"\s*:', text)
+    ):
+        logger.warning(
+            f"Risposta JSON-like per '{section_key}' irrecuperabile; "
+            "risposta rifiutata senza fallback a testo puro."
+        )
+        return None
 
     # Tentativo 4: se non è JSON, tratta la risposta come testo puro
     # ed estrai citazioni con regex
@@ -2098,6 +2119,35 @@ def _minimum_acceptable_revision_words(
     return max(target_floor, existing_words)
 
 
+def _minimum_progress_revision_words(
+    existing_draft: SectionDraft,
+    outline: SectionOutline,
+) -> int:
+    """Lower fail-closed floor for a Critic-directed intermediate repair.
+
+    The strict 80% completeness gate is still enforced by the Critic.  This
+    floor only prevents the Writer from restoring a longer, less-grounded draft
+    when a bounded repair has safely removed unsupported prose.
+    """
+    if not existing_draft.critic_feedback.strip():
+        return _minimum_acceptable_revision_words(existing_draft, outline)
+    return max(
+        settings.agents.min_section_words,
+        int(outline.target_length_words * 0.50),
+    )
+
+
+def _extra_quality_repair_attempts(section: SectionDraft | None) -> int:
+    if section is None:
+        return 0
+    feedback = section.critic_feedback or ""
+    has_coherence = "[COHERENCE PASS" in feedback
+    has_length = "[LENGTH / COMPLETENESS]" in feedback
+    if has_length and "Holistic coherence repair attempted." in section.writer_notes:
+        return 2
+    return int(has_coherence or has_length)
+
+
 def _fully_supported_prior_claims(
     existing_draft: SectionDraft,
     verification: Any | None,
@@ -2359,11 +2409,9 @@ def write_section(
 
     # Determina il numero di iterazione
     current_iteration = (existing_draft.iteration + 1) if existing_draft else 1
-    max_iterations = settings.agents.max_writer_iterations + int(
-        bool(
-            existing_draft
-            and "[COHERENCE PASS" in (existing_draft.critic_feedback or "")
-        )
+    max_iterations = (
+        settings.agents.max_writer_iterations
+        + _extra_quality_repair_attempts(existing_draft)
     )
 
     if current_iteration > max_iterations:
@@ -2592,6 +2640,26 @@ def write_section(
         err = f"Impossibile parsare la risposta per '{section_key}'."
         logger.error(err)
         errors.append(err)
+        if existing_draft is not None:
+            preserved = SectionDraft.from_dict(existing_draft.to_dict())
+            preserved.iteration = current_iteration
+            preserved.status = (
+                SectionStatus.DRAFTED
+                if current_iteration >= max_iterations
+                else SectionStatus.NEEDS_REVISION
+            )
+            return {
+                "sections": {section_key: preserved.to_dict()},
+                "provenance": [],
+                "current_phase": PipelinePhase.WRITING.value,
+                "errors": errors,
+                "metadata": {
+                    "last_writer_time": round(time.time() - t0, 1),
+                    "last_writer_mode": "static",
+                    "revision_preserved": section_key,
+                    "revision_preserved_reason": "unparseable_response",
+                },
+            }
         return {"sections": {}, "provenance": [], "errors": errors}
 
     elapsed = time.time() - t0
@@ -2661,7 +2729,11 @@ def write_section(
                     logger.warning(message)
                     preserved = SectionDraft.from_dict(existing_draft.to_dict())
                     preserved.iteration = current_iteration
-                    preserved.status = SectionStatus.NEEDS_REVISION
+                    preserved.status = (
+                        SectionStatus.DRAFTED
+                        if current_iteration >= max_iterations
+                        else SectionStatus.NEEDS_REVISION
+                    )
                     return {
                         "sections": {section_key: preserved.to_dict()},
                         "provenance": [],
@@ -2705,7 +2777,11 @@ def write_section(
                     logger.warning(message)
                     preserved = SectionDraft.from_dict(existing_draft.to_dict())
                     preserved.iteration = current_iteration
-                    preserved.status = SectionStatus.NEEDS_REVISION
+                    preserved.status = (
+                        SectionStatus.DRAFTED
+                        if current_iteration >= max_iterations
+                        else SectionStatus.NEEDS_REVISION
+                    )
                     return {
                         "sections": {section_key: preserved.to_dict()},
                         "provenance": [],
@@ -2723,20 +2799,32 @@ def write_section(
                 existing_draft,
                 verification,
             )
+            if "[COHERENCE PASS" in (existing_draft.critic_feedback or ""):
+                marker = "Holistic coherence repair attempted."
+                if marker not in candidate.writer_notes:
+                    candidate.writer_notes = f"{candidate.writer_notes.strip()} {marker}".strip()
             result["sections"][section_key] = candidate.to_dict()
+            progress_floor = _minimum_progress_revision_words(
+                existing_draft,
+                target_outline,
+            )
             if (
-                candidate.word_count < required_words
+                candidate.word_count < progress_floor
                 and candidate.word_count <= existing_words
             ):
                 message = (
                     f"Revision for '{section_key}' rejected: {candidate.word_count} "
-                    f"words would regress below the preserved quality floor of "
-                    f"{required_words}."
+                    f"words would regress below the bounded repair floor of "
+                    f"{progress_floor}."
                 )
                 logger.warning(message)
                 preserved = SectionDraft.from_dict(existing_draft.to_dict())
                 preserved.iteration = current_iteration
-                preserved.status = SectionStatus.NEEDS_REVISION
+                preserved.status = (
+                    SectionStatus.DRAFTED
+                    if current_iteration >= max_iterations
+                    else SectionStatus.NEEDS_REVISION
+                )
                 return {
                     "sections": {section_key: preserved.to_dict()},
                     "provenance": [],

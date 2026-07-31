@@ -48,6 +48,7 @@ from paperhunter.agents.critic_agent import verify
 from paperhunter.agents.planner_agent import plan
 from paperhunter.agents.state import (
     PipelinePhase,
+    SectionDraft,
     SectionOutline,
     SectionStatus,
     SurveyState,
@@ -321,6 +322,15 @@ def print_budget_summary(
 # Conditional edge: should we revise (write↔verify loop)?
 # ============================================================================
 
+def _extra_quality_repair_attempts(section: SectionDraft) -> int:
+    feedback = section.critic_feedback or ""
+    has_coherence = "[COHERENCE PASS" in feedback
+    has_length = "[LENGTH / COMPLETENESS]" in feedback
+    if has_length and "Holistic coherence repair attempted." in section.writer_notes:
+        return 2
+    return int(has_coherence or has_length)
+
+
 def _should_revise(state: SurveyState) -> str:
     """Conditional edge: determina se servono ulteriori iterazioni write↔verify.
 
@@ -356,7 +366,7 @@ def _should_revise(state: SurveyState) -> str:
         for key in incomplete_sections
         if sections[key].iteration
         < max_iterations
-        + int("[COHERENCE PASS" in (sections[key].critic_feedback or ""))
+        + _extra_quality_repair_attempts(sections[key])
     ]
     missing_retryable = bool(missing_sections) and iteration_count < max_iterations
 

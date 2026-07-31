@@ -243,6 +243,53 @@ def test_should_revise_allows_one_extra_coherence_repair():
     assert _should_revise(state) == EDGE_REVISE
 
 
+def test_should_revise_allows_one_extra_length_completion_repair():
+    from paperhunter.agents.pipeline import EDGE_DONE, EDGE_REVISE, _should_revise
+    from paperhunter.config import settings
+
+    state = _create_mock_state(
+        include_outline=True,
+        include_sections=True,
+        needs_revision=True,
+    )
+    for section in state["sections"].values():
+        section["iteration"] = settings.agents.max_writer_iterations + 1
+    target = state["sections"]["prompt_injection"]
+    target["iteration"] = settings.agents.max_writer_iterations
+    target["critic_feedback"] = (
+        "[LENGTH / COMPLETENESS]\nSection has 700 words; minimum required is 800."
+    )
+
+    assert _should_revise(state) == EDGE_REVISE
+
+    target["iteration"] = settings.agents.max_writer_iterations + 1
+    assert _should_revise(state) == EDGE_DONE
+
+
+def test_should_revise_allows_length_completion_after_coherence_attempt():
+    from paperhunter.agents.pipeline import EDGE_DONE, EDGE_REVISE, _should_revise
+    from paperhunter.config import settings
+
+    state = _create_mock_state(
+        include_outline=True,
+        include_sections=True,
+        needs_revision=True,
+    )
+    for section in state["sections"].values():
+        section["iteration"] = settings.agents.max_writer_iterations + 2
+    target = state["sections"]["prompt_injection"]
+    target["iteration"] = settings.agents.max_writer_iterations + 1
+    target["critic_feedback"] = (
+        "[LENGTH / COMPLETENESS]\nExpand the supported-only coherence repair."
+    )
+    target["writer_notes"] = "Holistic coherence repair attempted."
+
+    assert _should_revise(state) == EDGE_REVISE
+
+    target["iteration"] = settings.agents.max_writer_iterations + 2
+    assert _should_revise(state) == EDGE_DONE
+
+
 def test_should_revise_uses_section_attempts_not_global_verify_cycles():
     """A resumable section must not lose retries to unrelated global cycles."""
     from paperhunter.agents.pipeline import _should_revise, EDGE_REVISE

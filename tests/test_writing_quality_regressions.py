@@ -356,6 +356,106 @@ def test_semicolon_citation_groups_are_supported_end_to_end():
     assert [item["bibtex_key"] for item in draft["citations"]] == [first, second]
 
 
+def test_parse_writer_response_salvages_last_complete_json_object():
+    from paperhunter.agents.writer_agent import _parse_writer_response
+
+    malformed_prefix = (
+        '{"text": "discarded draft", "citations": ['
+        '{"bibtex_key": "Bad_2025_Key"} // invalid commentary\n'
+        "I will now rewrite the response correctly.\n"
+    )
+    final = json.dumps(
+        {
+            "text": "Final grounded section [Good_2025_Key].",
+            "citations": [
+                {
+                    "bibtex_key": "Good_2025_Key",
+                    "claim": "Final grounded section [Good_2025_Key].",
+                    "chunk_id": "good_chunk",
+                }
+            ],
+            "notes": "final",
+        }
+    )
+
+    parsed = _parse_writer_response(malformed_prefix + final, "body")
+
+    assert parsed is not None
+    assert parsed["text"] == "Final grounded section [Good_2025_Key]."
+    assert "discarded draft" not in parsed["text"]
+    assert [item["bibtex_key"] for item in parsed["citations"]] == ["Good_2025_Key"]
+
+
+def test_parse_writer_response_rejects_unrecoverable_json_envelope():
+    from paperhunter.agents.writer_agent import _parse_writer_response
+
+    malformed = (
+        '{"text": "draft leaked as raw envelope", '
+        '"citations": [{"bibtex_key": "Bad_2025_Key"} // unfinished'
+    )
+
+    assert _parse_writer_response(malformed, "body") is None
+
+
+def test_unrecoverable_writer_json_preserves_revision_and_consumes_attempt():
+    from paperhunter.agents.writer_agent import write_section
+    from paperhunter.config import settings
+
+    outline = SectionOutline.model_validate(
+        {
+            "key": "body",
+            "title": "Body",
+            "section_type": "body",
+            "target_length_words": 600,
+        }
+    )
+    existing = SectionDraft.model_validate(
+        {
+            "section_key": "body",
+            "title": "Body",
+            "text": "Previously verified-enough draft " * 200,
+            "status": SectionStatus.NEEDS_REVISION,
+            "iteration": 1,
+            "critic_feedback": "Repair unsupported claims.",
+        }
+    )
+    state = create_initial_state(outline=[outline])
+    state["sections"] = {"body": existing.to_dict()}
+    chunks = [_chunk(f"Paper_{i}", f"c{i}", 1.0) for i in range(5)]
+
+    with (
+        patch.object(settings.agents, "writer_mode", "static"),
+        patch(
+            "paperhunter.agents.writer_agent._generate_rag_queries",
+            return_value=["query"],
+        ),
+        patch(
+            "paperhunter.agents.writer_agent._retrieve_context_for_section",
+            return_value=(chunks, [item["chunk_id"] for item in chunks]),
+        ),
+        patch("paperhunter.agents.writer_agent.get_llm", return_value=MagicMock()),
+        patch(
+            "paperhunter.agents.writer_agent.llm_call_with_retry",
+            return_value=(
+                '{"text": "broken replacement", '
+                '"citations": [{"bibtex_key": "Bad_2025_Key"} // unfinished'
+            ),
+        ),
+    ):
+        result = write_section(
+            state,
+            "body",
+            retriever=MagicMock(),
+            use_reranker=False,
+        )
+
+    preserved = result["sections"]["body"]
+    assert preserved["text"] == existing.text
+    assert preserved["iteration"] == 2
+    assert preserved["status"] == SectionStatus.NEEDS_REVISION.value
+    assert any("Impossibile parsare" in error for error in result["errors"])
+
+
 def test_revision_floor_recounts_legacy_draft_when_word_count_is_zero():
     from paperhunter.agents.writer_agent import _minimum_acceptable_revision_words
 
@@ -686,6 +786,81 @@ def test_length_validator_retries_shorter_evidence_repair_before_rejecting():
     assert not any("rejected" in error for error in result["errors"])
 
 
+def test_length_validator_keeps_grounded_progress_above_relaxed_repair_floor():
+    import json
+
+    from paperhunter.agents.writer_agent import write_section
+    from paperhunter.config import settings
+
+    outline = SectionOutline.model_validate(
+        {
+            "key": "body",
+            "title": "Body",
+            "section_type": "body",
+            "target_length_words": 1500,
+        }
+    )
+    state = create_initial_state(outline=[outline])
+    state["sections"] = {
+        "body": SectionDraft.model_validate(
+            {
+                "section_key": "body",
+                "title": "Body",
+                "text": "bloated unsupported prose " * 700,
+                "status": SectionStatus.NEEDS_REVISION,
+                "iteration": 1,
+                "critic_feedback": "Prune unsupported claims, then rebuild grounded coverage.",
+            }
+        ).to_dict()
+    }
+    responses = [
+        json.dumps(
+            {
+                "text": "concise grounded repair " * 260,
+                "citations": [],
+                "notes": "first repair",
+            }
+        ),
+        json.dumps(
+            {
+                "text": "expanded grounded repair " * 300,
+                "citations": [],
+                "notes": "bounded progress",
+            }
+        ),
+    ]
+    chunks = [_chunk(f"Paper_{i}", f"c{i}", 1.0) for i in range(5)]
+    with (
+        patch.object(settings.agents, "writer_mode", "static"),
+        patch.object(settings.agents, "min_citations_per_section", 5),
+        patch(
+            "paperhunter.agents.writer_agent._generate_rag_queries",
+            return_value=["query"],
+        ),
+        patch(
+            "paperhunter.agents.writer_agent._retrieve_context_for_section",
+            return_value=(chunks, [item["chunk_id"] for item in chunks]),
+        ),
+        patch("paperhunter.agents.writer_agent.get_llm", return_value=MagicMock()),
+        patch(
+            "paperhunter.agents.writer_agent.llm_call_with_retry",
+            side_effect=responses,
+        ),
+    ):
+        result = write_section(
+            state,
+            "body",
+            retriever=MagicMock(),
+            use_reranker=False,
+        )
+
+    candidate = result["sections"]["body"]
+    assert candidate["text"] == "expanded grounded repair " * 300
+    assert candidate["word_count"] == 900
+    assert candidate["status"] == SectionStatus.DRAFTED.value
+    assert not any("rejected" in error for error in result["errors"])
+
+
 def test_growing_evidence_repair_is_kept_even_before_absolute_word_floor():
     """Incremental repair must not stall when a longer draft is still under floor."""
     from paperhunter.agents.writer_agent import write_section
@@ -905,7 +1080,27 @@ def test_coherence_repair_may_rewrite_previously_supported_claims():
     ) == [("Smith_2025_Defense", claim, "smith_chunk")]
 
 
-def test_writer_executes_the_single_extra_coherence_repair_attempt():
+@pytest.mark.parametrize(
+    ("repair_feedback", "iteration_offset", "prior_writer_notes"),
+    [
+        ("[COHERENCE PASS — issues to fix]\nRemove duplicated prose.", 0, ""),
+        (
+            "[LENGTH / COMPLETENESS]\nExpand the supported-only draft to the strict floor.",
+            0,
+            "",
+        ),
+        (
+            "[LENGTH / COMPLETENESS]\nComplete the supported-only coherence repair.",
+            1,
+            "Holistic coherence repair attempted.",
+        ),
+    ],
+)
+def test_writer_executes_the_single_extra_quality_repair_attempt(
+    repair_feedback,
+    iteration_offset,
+    prior_writer_notes,
+):
     import json
 
     from paperhunter.agents.writer_agent import write_section
@@ -927,10 +1122,9 @@ def test_writer_executes_the_single_extra_coherence_repair_attempt():
                 "title": "Body",
                 "text": "old coherent-enough text " * 200,
                 "status": SectionStatus.NEEDS_REVISION,
-                "iteration": settings.agents.max_writer_iterations,
-                "critic_feedback": (
-                    "[COHERENCE PASS — issues to fix]\nRemove duplicated prose."
-                ),
+                "iteration": settings.agents.max_writer_iterations + iteration_offset,
+                "critic_feedback": repair_feedback,
+                "writer_notes": prior_writer_notes,
             }
         ).to_dict()
     }
@@ -969,9 +1163,11 @@ def test_writer_executes_the_single_extra_coherence_repair_attempt():
 
     assert call_llm.call_count == 1
     assert result["sections"]["body"]["iteration"] == (
-        settings.agents.max_writer_iterations + 1
+        settings.agents.max_writer_iterations + iteration_offset + 1
     )
     assert result["sections"]["body"]["text"] == "restructured coherent evidence " * 200
+    if "[COHERENCE PASS" in repair_feedback:
+        assert "Holistic coherence repair attempted." in result["sections"]["body"]["writer_notes"]
 
 
 def test_revision_retries_instead_of_appending_missing_supported_claims():
@@ -1073,7 +1269,10 @@ def test_revision_retries_instead_of_appending_missing_supported_claims():
     )
 
 
-def test_revision_preserves_old_draft_when_semantic_retry_still_drops_support():
+@pytest.mark.parametrize("final_attempt", [False, True])
+def test_revision_preserves_old_draft_when_semantic_retry_still_drops_support(
+    final_attempt,
+):
     import json
 
     from paperhunter.agents.state import CitationRecord
@@ -1096,7 +1295,9 @@ def test_revision_preserves_old_draft_when_semantic_retry_still_drops_support():
             "title": "Body",
             "text": f"Opening context. {supported_claim} Closing context.",
             "status": SectionStatus.NEEDS_REVISION,
-            "iteration": 1,
+            "iteration": (
+                settings.agents.max_writer_iterations - 1 if final_attempt else 1
+            ),
             "citations": [
                 CitationRecord(
                     bibtex_key="Smith_2025_Defense",
@@ -1155,7 +1356,8 @@ def test_revision_preserves_old_draft_when_semantic_retry_still_drops_support():
 
     assert call_llm.call_count == 2
     assert result["sections"]["body"]["text"] == existing.text
-    assert result["sections"]["body"]["status"] == SectionStatus.NEEDS_REVISION.value
+    expected_status = SectionStatus.DRAFTED if final_attempt else SectionStatus.NEEDS_REVISION
+    assert result["sections"]["body"]["status"] == expected_status.value
     assert result["metadata"]["revision_preserved_reason"] == "supported_claims_missing"
     assert result["errors"] == []
 
@@ -1299,6 +1501,173 @@ def test_strict_final_fallback_prunes_failed_claims_when_supported_text_is_compl
     assert pruned.word_count >= 800
 
 
+def test_strict_final_fallback_respects_duplicate_occurrence_counts():
+    from paperhunter.agents.critic_agent import _build_strict_supported_only_fallback
+
+    repeated = "Repeated grounded sentence [Shared_2025_Source]."
+    unique = [f"Unique grounded sentence {i} [Paper_{i}_2025]." for i in range(4)]
+    draft = SectionDraft.model_validate(
+        {
+            "section_key": "body",
+            "title": "Body",
+            "text": " ".join(unique + [repeated, repeated, repeated])
+            + " "
+            + ("careful synthesis " * 430),
+            "status": SectionStatus.NEEDS_REVISION,
+            "iteration": 4,
+        }
+    )
+    details = [
+        {
+            "citation_key": f"Paper_{i}_2025",
+            "claim_text": claim,
+            "source_chunk_id": f"chunk_{i}",
+            "status": "SUPPORTED",
+            "confidence": 0.95,
+            "reasoning": "Direct support.",
+        }
+        for i, claim in enumerate(unique)
+    ]
+    details.extend(
+        [
+            {
+                "citation_key": "Shared_2025_Source",
+                "claim_text": repeated,
+                "source_chunk_id": "shared_chunk",
+                "status": status,
+                "confidence": 0.95,
+                "reasoning": "Occurrence-specific verdict.",
+            }
+            for status in ("NOT_SUPPORTED", "SUPPORTED", "NOT_SUPPORTED")
+        ]
+    )
+    outline = SectionOutline.model_validate(
+        {
+            "key": "body",
+            "title": "Body",
+            "section_type": "body",
+            "target_length_words": 1000,
+        }
+    )
+
+    fallback = _build_strict_supported_only_fallback(draft, details, outline)
+
+    assert fallback is not None
+    pruned, kept_details = fallback
+    assert pruned.text.count(repeated) == 1
+    assert len(kept_details) == 5
+    assert sum(item.citation_key == "Shared_2025_Source" for item in kept_details) == 1
+
+
+def test_strict_final_fallback_ignores_stale_failed_detail_when_text_is_supported():
+    from paperhunter.agents.critic_agent import _build_strict_supported_only_fallback
+
+    supported = [f"Grounded finding {i} [Paper_{i}_2025]." for i in range(5)]
+    draft = SectionDraft.model_validate(
+        {
+            "section_key": "body",
+            "title": "Body",
+            "text": " ".join(supported) + " " + ("careful synthesis " * 430),
+            "status": SectionStatus.NEEDS_REVISION,
+            "iteration": 4,
+        }
+    )
+    details = [
+        {
+            "citation_key": f"Paper_{i}_2025",
+            "claim_text": claim,
+            "source_chunk_id": f"chunk_{i}",
+            "status": "SUPPORTED",
+            "confidence": 0.95,
+            "reasoning": "Direct support.",
+        }
+        for i, claim in enumerate(supported)
+    ]
+    details.append(
+        {
+            "citation_key": "Stale_2025_Failed",
+            "claim_text": "A failed claim that is no longer in the draft [Stale_2025_Failed].",
+            "source_chunk_id": "stale_chunk",
+            "status": "NOT_SUPPORTED",
+            "confidence": 0.95,
+            "reasoning": "Stale occurrence from prior verification.",
+        }
+    )
+    outline = SectionOutline.model_validate(
+        {
+            "key": "body",
+            "title": "Body",
+            "section_type": "body",
+            "target_length_words": 1000,
+        }
+    )
+
+    fallback = _build_strict_supported_only_fallback(draft, details, outline)
+
+    assert fallback is not None
+    pruned, kept_details = fallback
+    assert pruned.text == draft.text.strip()
+    assert len(kept_details) == 5
+
+
+def test_strict_final_fallback_can_return_supported_only_draft_below_length_floor():
+    from paperhunter.agents.critic_agent import _build_strict_supported_only_fallback
+
+    supported = [f"Grounded finding {i} [Paper_{i}_2025]." for i in range(5)]
+    failed = "Unsupported claim [Bad_2025_Claim]."
+    draft = SectionDraft.model_validate(
+        {
+            "section_key": "body",
+            "title": "Body",
+            "text": " ".join(supported + [failed]) + " " + ("synthesis " * 300),
+            "status": SectionStatus.NEEDS_REVISION,
+            "iteration": 4,
+        }
+    )
+    details = [
+        {
+            "citation_key": f"Paper_{i}_2025",
+            "claim_text": claim,
+            "source_chunk_id": f"chunk_{i}",
+            "status": "SUPPORTED",
+            "confidence": 0.95,
+            "reasoning": "Direct support.",
+        }
+        for i, claim in enumerate(supported)
+    ]
+    details.append(
+        {
+            "citation_key": "Bad_2025_Claim",
+            "claim_text": failed,
+            "source_chunk_id": "bad_chunk",
+            "status": "NOT_SUPPORTED",
+            "confidence": 0.95,
+            "reasoning": "Unsupported.",
+        }
+    )
+    outline = SectionOutline.model_validate(
+        {
+            "key": "body",
+            "title": "Body",
+            "section_type": "body",
+            "target_length_words": 1000,
+        }
+    )
+
+    fallback = _build_strict_supported_only_fallback(
+        draft,
+        details,
+        outline,
+        allow_incomplete_length=True,
+    )
+
+    assert fallback is not None
+    pruned, kept_details = fallback
+    assert failed not in pruned.text
+    assert pruned.word_count < 800
+    assert len(kept_details) == 5
+
+
 def test_verify_section_applies_strict_final_fallback_at_attempt_limit():
     from paperhunter.agents.critic_agent import verify_section
     from paperhunter.agents.state import CitationRecord
@@ -1404,6 +1773,99 @@ def test_verify_section_applies_strict_final_fallback_at_attempt_limit():
     assert failed_claim not in section["text"]
     assert verification["passed"] is True
     assert verification["pass_rate"] == 1.0
+
+
+def test_verify_section_keeps_supported_only_fallback_for_length_repair():
+    from paperhunter.agents.critic_agent import verify_section
+    from paperhunter.agents.state import CitationRecord
+    from paperhunter.config import settings
+
+    supported = [f"Grounded finding {i} [Paper_{i}_2025]." for i in range(5)]
+    failed = "Unsupported claim [Bad_2025_Claim]."
+    outline = SectionOutline.model_validate(
+        {
+            "key": "body",
+            "title": "Body",
+            "section_type": "body",
+            "target_length_words": 1000,
+        }
+    )
+    state = create_initial_state(outline=[outline])
+    claims = supported + [failed]
+    keys = [f"Paper_{i}_2025" for i in range(5)] + ["Bad_2025_Claim"]
+    state["sections"] = {
+        "body": SectionDraft.model_validate(
+            {
+                "section_key": "body",
+                "title": "Body",
+                "text": " ".join(claims) + " " + ("synthesis " * 300),
+                "status": SectionStatus.DRAFTED,
+                "iteration": settings.agents.max_writer_iterations,
+                "citations": [
+                    CitationRecord(
+                        bibtex_key=key,
+                        claim=claim,
+                        chunk_id=f"{key}_chunk",
+                        retrieval_score=1.0,
+                    ).to_dict()
+                    for key, claim in zip(keys, claims, strict=True)
+                ],
+            }
+        ).to_dict()
+    }
+    store = MagicMock()
+    store.get_paper_chunks.side_effect = lambda key, **_kwargs: [
+        {
+            "chunk_id": f"{key}_chunk",
+            "text": f"Source evidence for {key}.",
+            "metadata": {
+                "bibtex_key": key,
+                "source_role": "citable",
+                "is_citable": True,
+                "chunk_type": "results",
+            },
+        }
+    ]
+
+    def _batch_results(items, **_kwargs):
+        return [
+            {
+                "status": (
+                    "NOT_SUPPORTED"
+                    if item["bibtex_key"] == "Bad_2025_Claim"
+                    else "SUPPORTED"
+                ),
+                "confidence": 0.99,
+                "reasoning": "Deterministic test verdict.",
+            }
+            for item in items
+        ]
+
+    with (
+        patch.object(settings.agents, "critic_two_pass", False),
+        patch.object(settings.evolution, "enabled", False),
+        patch(
+            "paperhunter.agents.critic_agent._verify_citation_batch",
+            side_effect=_batch_results,
+        ),
+    ):
+        result = verify_section(
+            state,
+            "body",
+            store=store,
+            llm=MagicMock(),
+            strict=True,
+            generate_feedback=True,
+        )
+
+    section = result["sections"]["body"]
+    verification = result["verification_results"]["body"]
+    assert failed not in section["text"]
+    assert section["status"] == SectionStatus.NEEDS_REVISION.value
+    assert section["word_count"] < 800
+    assert verification["passed"] is False
+    assert verification["pass_rate"] == 1.0
+    assert "[LENGTH / COMPLETENESS]" in section["critic_feedback"]
 
 
 @pytest.mark.parametrize("chunks", [[], [_chunk(f"Paper_{i}", f"c{i}", 1.0) for i in range(4)]])

@@ -123,9 +123,15 @@ Script standalone alla root: `run_writer_summaries_only.py`, `fix_hashes.py`, `f
 - **Critic strict**: 100% dei claim citati deve risultare `SUPPORTED`, con
   almeno 5 fonti distinte per sezione; nessuna auto-accettazione al limite.
   Le revisioni puramente citazionali preservano i claim già `SUPPORTED` tramite
-  retry semantico validato (mai concatenazione meccanica); una bocciatura di
-  coerenza può invece consolidarli o riscriverli, obbligandone la riverifica, e
-  dispone di un solo tentativo aggiuntivo oltre il budget Writer ordinario.
+  retry semantico validato (mai concatenazione meccanica). Al limite, il Critic
+  può potare per occorrenza i claim falliti e restituire un draft supported-only
+  ancora corto per un unico repair di completezza; il gate 80% resta bloccante.
+  Una bocciatura di coerenza può consolidare o riscrivere i claim supportati,
+  obbligandone la riverifica, e dispone di un solo tentativo aggiuntivo; se quel
+  tentativo viene potato sotto il floor, è consentito un solo repair di
+  completezza finale distinto. Le risposte Writer JSON-like malformate non
+  diventano mai prosa: si recupera solo l'ultimo oggetto JSON completo oppure si
+  rifiuta la risposta fail-closed.
 - **Auto-invalidazione** dei summary quando i chunk a monte cambiano (`summarization/invalidation_manager.py`).
 - **Checkpoint + resume** in fase write (`postprocessing/checkpoint_manager.py`, `--resume`).
 - **Provenance tracking** per ogni claim nel survey (`postprocessing/provenance_tracker.py`).

@@ -2100,6 +2100,21 @@ def _stabilize_revision_with_supported_evidence(
     if not isinstance(verification, dict):
         return candidate
 
+    claim_verdicts: dict[str, dict[str, str]] = {}
+    for raw_detail in verification.get("details", []):
+        if hasattr(raw_detail, "to_dict"):
+            raw_detail = raw_detail.to_dict()
+        if not isinstance(raw_detail, dict):
+            continue
+        claim = str(raw_detail.get("claim_text") or "").strip()
+        key = str(raw_detail.get("citation_key") or "").strip()
+        if not claim or not key:
+            continue
+        claim_identity = re.sub(r"\s+", " ", claim).lower()
+        claim_verdicts.setdefault(claim_identity, {})[key] = str(
+            raw_detail.get("status") or ""
+        ).split(".")[-1].upper()
+
     stabilized = SectionDraft.from_dict(candidate.to_dict())
     missing_claims: list[str] = []
     missing_claim_identities: set[str] = set()
@@ -2117,13 +2132,21 @@ def _stabilize_revision_with_supported_evidence(
         key = str(raw_detail.get("citation_key") or "").strip()
         claim = str(raw_detail.get("claim_text") or "").strip()
         chunk_id = raw_detail.get("source_chunk_id")
-        identity = (key, re.sub(r"\s+", " ", claim).lower())
+        normalized_claim = re.sub(r"\s+", " ", claim).lower()
+        cited_keys = {
+            record["bibtex_key"] for record in _extract_citations_from_text(claim)
+        }
+        verdicts = claim_verdicts.get(normalized_claim, {})
+        if not cited_keys or any(
+            verdicts.get(cited_key) != "SUPPORTED" for cited_key in cited_keys
+        ):
+            continue
+        identity = (key, normalized_claim)
         if not key or not claim or identity in seen_claims:
             continue
         seen_claims.add(identity)
         if claim not in existing_draft.text:
             continue
-        normalized_claim = re.sub(r"\s+", " ", claim).lower()
         if (
             claim not in stabilized.text
             and normalized_claim not in missing_claim_identities

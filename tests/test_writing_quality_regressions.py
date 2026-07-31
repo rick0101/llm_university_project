@@ -724,6 +724,81 @@ def test_revision_stabilizer_preserves_only_prior_supported_evidence():
     )
 
 
+def test_revision_stabilizer_does_not_restore_mixed_status_citation_group():
+    from paperhunter.agents.state import CitationRecord
+    from paperhunter.agents.writer_agent import (
+        _stabilize_revision_with_supported_evidence,
+    )
+
+    grouped_claim = (
+        "The combined evidence proves robustness "
+        "[Smith_2025_Defense; Jones_2025_Benchmark]."
+    )
+    existing = SectionDraft.model_validate(
+        {
+            "section_key": "body",
+            "title": "Body",
+            "text": grouped_claim,
+            "status": SectionStatus.NEEDS_REVISION,
+            "iteration": 2,
+            "citations": [
+                CitationRecord(
+                    bibtex_key="Smith_2025_Defense",
+                    claim=grouped_claim,
+                    chunk_id="smith_chunk",
+                    retrieval_score=1.0,
+                ).to_dict(),
+                CitationRecord(
+                    bibtex_key="Jones_2025_Benchmark",
+                    claim=grouped_claim,
+                    chunk_id="jones_chunk",
+                    retrieval_score=1.0,
+                ).to_dict(),
+            ],
+        }
+    )
+    candidate = SectionDraft.model_validate(
+        {
+            "section_key": "body",
+            "title": "Body",
+            "text": "Replacement synthesis without the mixed claim.",
+            "status": SectionStatus.DRAFTED,
+            "iteration": 3,
+        }
+    )
+    verification = {
+        "details": [
+            {
+                "citation_key": "Smith_2025_Defense",
+                "claim_text": grouped_claim,
+                "source_chunk_id": "smith_chunk",
+                "status": "SUPPORTED",
+            },
+            {
+                "citation_key": "Jones_2025_Benchmark",
+                "claim_text": grouped_claim,
+                "source_chunk_id": "jones_chunk",
+                "status": "NOT_SUPPORTED",
+            },
+        ]
+    }
+
+    stabilized = _stabilize_revision_with_supported_evidence(
+        candidate,
+        existing,
+        verification,
+    )
+
+    assert grouped_claim not in stabilized.text
+    assert not any(
+        citation.bibtex_key in {
+            "Smith_2025_Defense",
+            "Jones_2025_Benchmark",
+        }
+        for citation in stabilized.citations
+    )
+
+
 def test_strict_final_fallback_prunes_failed_claims_when_supported_text_is_complete():
     from paperhunter.agents.critic_agent import (
         _build_strict_supported_only_fallback,

@@ -2405,7 +2405,14 @@ def write_section(
                 existing_draft,
                 target_outline,
             )
-            if candidate.word_count < required_words:
+            existing_words = max(
+                int(existing_draft.word_count or 0),
+                _count_words(existing_draft.text or ""),
+            )
+            if (
+                candidate.word_count < required_words
+                and candidate.word_count <= existing_words
+            ):
                 message = (
                     f"Revision for '{section_key}' rejected: {candidate.word_count} "
                     f"words would regress below the preserved quality floor of "

@@ -573,6 +573,69 @@ def test_shorter_revision_cannot_replace_long_legacy_draft():
     assert any("rejected" in error for error in result["errors"])
 
 
+def test_growing_evidence_repair_is_kept_even_before_absolute_word_floor():
+    """Incremental repair must not stall when a longer draft is still under floor."""
+    from paperhunter.agents.writer_agent import write_section
+    from paperhunter.config import settings
+
+    outline = SectionOutline.model_validate(
+        {
+            "key": "body",
+            "title": "Body",
+            "section_type": "body",
+            "target_length_words": 1000,
+        }
+    )
+    state = create_initial_state(outline=[outline])
+    state["sections"] = {
+        "body": SectionDraft.model_validate(
+            {
+                "section_key": "body",
+                "title": "Body",
+                "text": "original " * 700,
+                "status": SectionStatus.NEEDS_REVISION,
+                "iteration": 1,
+                "critic_feedback": "Expand the grounded section to the word floor.",
+            }
+        ).to_dict(),
+    }
+    chunks = [_chunk(f"Paper_{i}", f"c{i}", 1.0) for i in range(5)]
+    with (
+        patch.object(settings.agents, "writer_mode", "static"),
+        patch.object(settings.agents, "min_citations_per_section", 5),
+        patch(
+            "paperhunter.agents.writer_agent._generate_rag_queries",
+            return_value=["query"],
+        ),
+        patch(
+            "paperhunter.agents.writer_agent._retrieve_context_for_section",
+            return_value=(chunks, [item["chunk_id"] for item in chunks]),
+        ),
+        patch("paperhunter.agents.writer_agent.get_llm", return_value=MagicMock()),
+        patch(
+            "paperhunter.agents.writer_agent.llm_call_with_retry",
+            return_value=json.dumps(
+                {
+                    "text": "improved " * 750,
+                    "citations": [],
+                    "notes": "incremental repair",
+                }
+            ),
+        ),
+    ):
+        result = write_section(
+            state,
+            "body",
+            retriever=MagicMock(),
+            use_reranker=False,
+        )
+
+    candidate = result["sections"]["body"]
+    assert candidate["text"] == "improved " * 750
+    assert candidate["iteration"] == 2
+    assert not any("rejected" in error for error in result["errors"])
+
+
 @pytest.mark.parametrize("chunks", [[], [_chunk(f"Paper_{i}", f"c{i}", 1.0) for i in range(4)]])
 def test_writer_evidence_failures_return_uniform_state_without_llm(chunks):
     from paperhunter.agents.writer_agent import write_section

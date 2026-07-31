@@ -2083,6 +2083,99 @@ def _minimum_acceptable_revision_words(
     return max(target_floor, existing_words)
 
 
+def _stabilize_revision_with_supported_evidence(
+    candidate: SectionDraft,
+    existing_draft: SectionDraft,
+    verification: Any | None,
+) -> SectionDraft:
+    """Carry forward prior supported claims that a stochastic rewrite dropped.
+
+    Evidence repair must be monotonic: a new draft may remove failed claims, but
+    it must not discard claim/source pairs that the strict Critic already marked
+    SUPPORTED.  Exact sentences and their chunk provenance are appended only when
+    they still occur in the prior draft and are absent from the candidate.
+    """
+    if verification is not None and hasattr(verification, "to_dict"):
+        verification = verification.to_dict()
+    if not isinstance(verification, dict):
+        return candidate
+
+    stabilized = SectionDraft.from_dict(candidate.to_dict())
+    missing_claims: list[str] = []
+    missing_claim_identities: set[str] = set()
+    carried_records: list[CitationRecord] = []
+    seen_claims: set[tuple[str, str]] = set()
+
+    for raw_detail in verification.get("details", []):
+        if hasattr(raw_detail, "to_dict"):
+            raw_detail = raw_detail.to_dict()
+        if not isinstance(raw_detail, dict):
+            continue
+        status = str(raw_detail.get("status") or "").split(".")[-1].upper()
+        if status != "SUPPORTED":
+            continue
+        key = str(raw_detail.get("citation_key") or "").strip()
+        claim = str(raw_detail.get("claim_text") or "").strip()
+        chunk_id = raw_detail.get("source_chunk_id")
+        identity = (key, re.sub(r"\s+", " ", claim).lower())
+        if not key or not claim or identity in seen_claims:
+            continue
+        seen_claims.add(identity)
+        if claim not in existing_draft.text:
+            continue
+        normalized_claim = re.sub(r"\s+", " ", claim).lower()
+        if (
+            claim not in stabilized.text
+            and normalized_claim not in missing_claim_identities
+        ):
+            missing_claims.append(claim)
+            missing_claim_identities.add(normalized_claim)
+
+        matched = next(
+            (
+                record
+                for record in existing_draft.citations
+                if record.bibtex_key == key
+                and (not chunk_id or record.chunk_id == chunk_id)
+            ),
+            None,
+        )
+        carried_records.append(
+            matched
+            if matched is not None
+            else CitationRecord(
+                bibtex_key=key,
+                claim=claim,
+                chunk_id=chunk_id,
+                retrieval_score=0.0,
+            )
+        )
+
+    if missing_claims:
+        stabilized.text = (
+            stabilized.text.rstrip() + "\n\n" + " ".join(missing_claims)
+        )
+        stabilized.word_count = _count_words(stabilized.text)
+        note_prefix = stabilized.writer_notes.strip()
+        stabilization_note = (
+            f"Preserved {len(missing_claims)} prior supported claim(s)."
+        )
+        stabilized.writer_notes = (
+            f"{note_prefix} {stabilization_note}".strip()
+        )
+
+    citation_identities = {
+        (record.bibtex_key, record.claim, record.chunk_id)
+        for record in stabilized.citations
+    }
+    for record in carried_records:
+        identity = (record.bibtex_key, record.claim, record.chunk_id)
+        if identity not in citation_identities:
+            stabilized.citations.append(record)
+            citation_identities.add(identity)
+    return stabilized
+
+
 def _run_agentic_writer_with_clean_retrieval(runner, /, *args, **kwargs):
     """Esegue un writer ReAct isolando i singleton Qdrant locali.
 
@@ -2401,6 +2494,12 @@ def write_section(
         candidate_data = result.get("sections", {}).get(section_key)
         if candidate_data:
             candidate = SectionDraft.from_dict(candidate_data)
+            candidate = _stabilize_revision_with_supported_evidence(
+                candidate,
+                existing_draft,
+                verification,
+            )
+            result["sections"][section_key] = candidate.to_dict()
             required_words = _minimum_acceptable_revision_words(
                 existing_draft,
                 target_outline,

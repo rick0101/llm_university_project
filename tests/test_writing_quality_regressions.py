@@ -636,6 +636,265 @@ def test_growing_evidence_repair_is_kept_even_before_absolute_word_floor():
     assert not any("rejected" in error for error in result["errors"])
 
 
+def test_revision_stabilizer_preserves_only_prior_supported_evidence():
+    from paperhunter.agents.state import CitationRecord
+    from paperhunter.agents.writer_agent import (
+        _stabilize_revision_with_supported_evidence,
+    )
+
+    supported_claim = (
+        "The defense blocks the attack "
+        "[Smith_2025_Defense; Lee_2025_Defense]."
+    )
+    failed_claim = "The defense is perfect [Jones_2025_Benchmark]."
+    existing = SectionDraft.model_validate(
+        {
+            "section_key": "body",
+            "title": "Body",
+            "text": f"{supported_claim} {failed_claim}",
+            "status": SectionStatus.NEEDS_REVISION,
+            "iteration": 2,
+            "citations": [
+                CitationRecord(
+                    bibtex_key="Smith_2025_Defense",
+                    claim=supported_claim,
+                    chunk_id="smith_chunk",
+                    retrieval_score=0.0,
+                ).to_dict(),
+                CitationRecord(
+                    bibtex_key="Lee_2025_Defense",
+                    claim=supported_claim,
+                    chunk_id="lee_chunk",
+                    retrieval_score=0.0,
+                ).to_dict(),
+                CitationRecord(
+                    bibtex_key="Jones_2025_Benchmark",
+                    claim=failed_claim,
+                    chunk_id="jones_chunk",
+                    retrieval_score=0.0,
+                ).to_dict(),
+            ],
+        }
+    )
+    candidate = SectionDraft.model_validate(
+        {
+            "section_key": "body",
+            "title": "Body",
+            "text": "A new grounded synthesis [Brown_2025_System].",
+            "status": SectionStatus.DRAFTED,
+            "iteration": 3,
+        }
+    )
+    verification = {
+        "details": [
+            {
+                "citation_key": "Smith_2025_Defense",
+                "claim_text": supported_claim,
+                "source_chunk_id": "smith_chunk",
+                "status": "SUPPORTED",
+            },
+            {
+                "citation_key": "Lee_2025_Defense",
+                "claim_text": supported_claim,
+                "source_chunk_id": "lee_chunk",
+                "status": "SUPPORTED",
+            },
+            {
+                "citation_key": "Jones_2025_Benchmark",
+                "claim_text": failed_claim,
+                "source_chunk_id": "jones_chunk",
+                "status": "NOT_SUPPORTED",
+            },
+        ]
+    }
+
+    stabilized = _stabilize_revision_with_supported_evidence(
+        candidate,
+        existing,
+        verification,
+    )
+    assert supported_claim in stabilized.text
+    assert stabilized.text.count(supported_claim) == 1
+    assert failed_claim not in stabilized.text
+    assert stabilized.word_count == len(stabilized.text.split())
+    assert any(
+        citation.bibtex_key == "Smith_2025_Defense"
+        and citation.chunk_id == "smith_chunk"
+        for citation in stabilized.citations
+    )
+
+
+def test_strict_final_fallback_prunes_failed_claims_when_supported_text_is_complete():
+    from paperhunter.agents.critic_agent import (
+        _build_strict_supported_only_fallback,
+    )
+
+    supported_claims = [
+        f"Grounded finding {i} [Paper_{i}_2025]." for i in range(5)
+    ]
+    failed_claim = "Unsupported perfection claim [Bad_2025_Claim]."
+    draft = SectionDraft.model_validate(
+        {
+            "section_key": "body",
+            "title": "Body",
+            "text": (
+                " ".join(supported_claims)
+                + " "
+                + failed_claim
+                + " "
+                + ("careful synthesis " * 430)
+            ),
+            "status": SectionStatus.NEEDS_REVISION,
+            "iteration": 4,
+        }
+    )
+    details = [
+        {
+            "citation_key": f"Paper_{i}_2025",
+            "claim_text": claim,
+            "source_chunk_id": f"chunk_{i}",
+            "status": "SUPPORTED",
+            "confidence": 0.95,
+            "reasoning": "Direct support.",
+        }
+        for i, claim in enumerate(supported_claims)
+    ]
+    details.append(
+        {
+            "citation_key": "Bad_2025_Claim",
+            "claim_text": failed_claim,
+            "source_chunk_id": "bad_chunk",
+            "status": "NOT_SUPPORTED",
+            "confidence": 0.99,
+            "reasoning": "The source does not support perfection.",
+        }
+    )
+    outline = SectionOutline.model_validate(
+        {
+            "key": "body",
+            "title": "Body",
+            "section_type": "body",
+            "target_length_words": 1000,
+        }
+    )
+
+    fallback = _build_strict_supported_only_fallback(draft, details, outline)
+    assert fallback is not None
+    pruned, kept_details = fallback
+    assert failed_claim not in pruned.text
+    assert "  " not in pruned.text
+    assert all(claim in pruned.text for claim in supported_claims)
+    assert len(kept_details) == 5
+    assert pruned.word_count >= 800
+
+
+def test_verify_section_applies_strict_final_fallback_at_attempt_limit():
+    from paperhunter.agents.critic_agent import verify_section
+    from paperhunter.agents.state import CitationRecord
+    from paperhunter.config import settings
+
+    supported_claims = [
+        f"Grounded finding {i} [Paper_{i}_2025]." for i in range(5)
+    ]
+    failed_claim = "Unsupported perfection claim [Bad_2025_Claim]."
+    outline = SectionOutline.model_validate(
+        {
+            "key": "body",
+            "title": "Body",
+            "section_type": "body",
+            "target_length_words": 1000,
+        }
+    )
+    state = create_initial_state(outline=[outline])
+    citation_keys = [f"Paper_{i}_2025" for i in range(5)] + ["Bad_2025_Claim"]
+    state["sections"] = {
+        "body": SectionDraft.model_validate(
+            {
+                "section_key": "body",
+                "title": "Body",
+                "text": (
+                    " ".join(supported_claims)
+                    + " "
+                    + failed_claim
+                    + " "
+                    + ("careful synthesis " * 430)
+                ),
+                "status": SectionStatus.DRAFTED,
+                "iteration": settings.agents.max_writer_iterations,
+                "citations": [
+                    CitationRecord(
+                        bibtex_key=key,
+                        claim=(
+                            failed_claim
+                            if key == "Bad_2025_Claim"
+                            else supported_claims[int(key.split("_")[1])]
+                        ),
+                        chunk_id=f"{key}_chunk",
+                        retrieval_score=1.0,
+                    ).to_dict()
+                    for key in citation_keys
+                ],
+            }
+        ).to_dict()
+    }
+
+    store = MagicMock()
+
+    def _paper_chunks(key, **_kwargs):
+        return [
+            {
+                "chunk_id": f"{key}_chunk",
+                "text": f"Source evidence for {key}.",
+                "metadata": {
+                    "bibtex_key": key,
+                    "source_role": "citable",
+                    "is_citable": True,
+                    "chunk_type": "results",
+                },
+            }
+        ]
+
+    store.get_paper_chunks.side_effect = _paper_chunks
+
+    def _batch_results(items, **_kwargs):
+        return [
+            {
+                "status": (
+                    "NOT_SUPPORTED"
+                    if item["bibtex_key"] == "Bad_2025_Claim"
+                    else "SUPPORTED"
+                ),
+                "confidence": 0.99,
+                "reasoning": "Deterministic test verdict.",
+            }
+            for item in items
+        ]
+
+    with (
+        patch.object(settings.agents, "critic_two_pass", False),
+        patch.object(settings.evolution, "enabled", False),
+        patch(
+            "paperhunter.agents.critic_agent._verify_citation_batch",
+            side_effect=_batch_results,
+        ),
+    ):
+        result = verify_section(
+            state,
+            "body",
+            store=store,
+            llm=MagicMock(),
+            strict=True,
+            generate_feedback=False,
+        )
+
+    section = result["sections"]["body"]
+    verification = result["verification_results"]["body"]
+    assert section["status"] == SectionStatus.VERIFIED.value
+    assert failed_claim not in section["text"]
+    assert verification["passed"] is True
+    assert verification["pass_rate"] == 1.0
+
+
 @pytest.mark.parametrize("chunks", [[], [_chunk(f"Paper_{i}", f"c{i}", 1.0) for i in range(4)]])
 def test_writer_evidence_failures_return_uniform_state_without_llm(chunks):
     from paperhunter.agents.writer_agent import write_section

@@ -36,7 +36,7 @@ import json
 import re
 import time
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any, Sequence
 
 from paperhunter.agents.state import (
     PipelinePhase,
@@ -229,6 +229,83 @@ def _check_section_length(
         f"Section is too short or truncated: {actual} words; minimum {required} "
         f"words (80% of the {target}-word outline target)."
     )
+
+
+def _build_strict_supported_only_fallback(
+    draft: SectionDraft,
+    details: Sequence[VerificationDetail | dict],
+    outline: SectionOutline | None,
+) -> tuple[SectionDraft, list[VerificationDetail]] | None:
+    """Prune failed cited sentences at the final attempt, without inventing text.
+
+    This fallback is deliberately fail-closed.  It succeeds only when every
+    failed claim can be removed exactly, every remaining citation occurrence has
+    an already-SUPPORTED detail, source diversity is still sufficient, and the
+    pruned draft remains above the strict length floor.
+    """
+    normalized_details = [
+        detail
+        if isinstance(detail, VerificationDetail)
+        else VerificationDetail.from_dict(detail)
+        for detail in details
+    ]
+    failed_claims: list[str] = []
+    for detail in normalized_details:
+        if detail.status != VerificationStatus.SUPPORTED:
+            claim = (detail.claim_text or "").strip()
+            if claim and claim not in failed_claims:
+                failed_claims.append(claim)
+    if not failed_claims:
+        return None
+
+    pruned_text = draft.text
+    for claim in failed_claims:
+        if claim not in pruned_text:
+            return None
+        pruned_text = pruned_text.replace(claim, "", 1)
+    pruned_text = re.sub(r"(?<=\S)[ \t]{2,}", " ", pruned_text)
+    pruned_text = re.sub(r"[ \t]+\n", "\n", pruned_text)
+    pruned_text = re.sub(r"\n{3,}", "\n\n", pruned_text).strip()
+
+    supported_by_occurrence: dict[tuple[str, str], VerificationDetail] = {}
+    for detail in normalized_details:
+        if detail.status != VerificationStatus.SUPPORTED:
+            continue
+        identity = (
+            detail.citation_key,
+            re.sub(r"\s+", " ", detail.claim_text or "").strip().lower(),
+        )
+        supported_by_occurrence[identity] = detail
+
+    kept_details: list[VerificationDetail] = []
+    for occurrence in _extract_citation_occurrences(pruned_text):
+        identity = (
+            occurrence["bibtex_key"],
+            re.sub(r"\s+", " ", occurrence["claim"]).strip().lower(),
+        )
+        detail = supported_by_occurrence.get(identity)
+        if detail is None:
+            return None
+        kept_details.append(detail)
+
+    distinct_keys = {detail.citation_key for detail in kept_details}
+    if len(distinct_keys) < settings.agents.min_citations_per_section:
+        return None
+
+    pruned = SectionDraft.from_dict(draft.to_dict())
+    pruned.text = pruned_text
+    pruned.word_count = len(pruned_text.split())
+    length_ok, _ = _check_section_length(pruned, outline, strict=True)
+    if not length_ok:
+        return None
+    pruned.citations = [
+        record for record in pruned.citations
+        if record.bibtex_key in distinct_keys
+    ]
+    pruned.status = SectionStatus.DRAFTED
+    note = "Strict final fallback pruned unsupported cited sentences."
+    pruned.writer_notes = f"{pruned.writer_notes.strip()} {note}".strip()
+    return pruned, kept_details
 
 
 # ============================================================================
@@ -1328,6 +1405,51 @@ def verify_section(
     if strict and not length_passed:
         vr.passed = False
         length_notes = f"\n\n[LENGTH / COMPLETENESS]\n{length_message}"
+
+    if (
+        strict
+        and draft.iteration >= settings.agents.max_writer_iterations
+        and not vr.passed
+    ):
+        fallback = _build_strict_supported_only_fallback(
+            draft,
+            verification_details,
+            target_outline,
+        )
+        if fallback is not None:
+            draft, verification_details = fallback
+            text_citations = _extract_citations_from_text(draft.text)
+            distinct_citations = len(set(text_citations))
+            vr = _build_verification_result(
+                section_key,
+                verification_details,
+                draft.iteration,
+                strict=True,
+            )
+            coverage_notes = ""
+            if distinct_citations < settings.agents.min_citations_per_section:
+                vr.passed = False
+                coverage_notes = (
+                    "\n\n[CITATION COVERAGE]\n"
+                    f"Found {distinct_citations} distinct sources after strict "
+                    "pruning."
+                )
+            length_passed, length_message = _check_section_length(
+                draft,
+                target_outline,
+                strict=True,
+            )
+            length_notes = ""
+            if not length_passed:
+                vr.passed = False
+                length_notes = f"\n\n[LENGTH / COMPLETENESS]\n{length_message}"
+            logger.info(
+                "Strict final fallback for '%s': %d supported occurrences, "
+                "%d words",
+                section_key,
+                len(verification_details),
+                draft.word_count,
+            )
 
     # --- v3.6 Pass 2: Holistic coherence (C4) ---
     coherence_notes = ""

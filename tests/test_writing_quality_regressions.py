@@ -8,6 +8,7 @@ incomplete or unverified paper.
 
 from __future__ import annotations
 
+import json
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
@@ -420,14 +421,90 @@ def test_evidence_repair_instructions_set_numeric_length_and_citation_budget():
             "target_length_words": 1500,
         }
     )
+    existing = SectionDraft.model_validate(
+        {
+            "section_key": "body",
+            "title": "Body",
+            "text": (
+                "A verified result remains stable [Supported_2025_Key]. "
+                "An overstated result must be repaired [Unsupported_2025_Key]."
+            ),
+            "status": SectionStatus.NEEDS_REVISION,
+            "iteration": 1,
+        }
+    )
+    verification = {
+        "details": [
+            {
+                "citation_key": "Supported_2025_Key",
+                "claim_text": "A verified result remains stable [Supported_2025_Key].",
+                "status": "SUPPORTED",
+                "confidence": 0.95,
+                "reasoning": "Directly stated in the source.",
+            },
+            {
+                "citation_key": "Unsupported_2025_Key",
+                "claim_text": "An overstated result must be repaired [Unsupported_2025_Key].",
+                "status": "NOT_SUPPORTED",
+                "confidence": 0.99,
+                "reasoning": "The source reports a narrower result.",
+            },
+        ]
+    }
     instructions = _build_critic_repair_instructions(
         outline,
         "Remove Unsupported_2025_Key.",
+        existing_draft=existing,
+        verification=verification,
     )
     assert "at least 1200 words" in instructions
     assert "5-8 distinct citation keys" in instructions
     assert "at most 12 citation occurrences" in instructions
     assert "Remove Unsupported_2025_Key." in instructions
+    assert "CURRENT DRAFT TO REPAIR" in instructions
+    assert existing.text in instructions
+    assert "SUPPORTED EVIDENCE TO PRESERVE" in instructions
+    assert "A verified result remains stable" in instructions
+    assert "FAILED EVIDENCE TO REMOVE OR REWRITE" in instructions
+    assert "An overstated result must be repaired" in instructions
+    assert "The source reports a narrower result" in instructions
+
+
+def test_evidence_repair_budget_never_conflicts_with_supported_ledger():
+    from paperhunter.agents.writer_agent import _build_critic_repair_instructions
+
+    outline = SectionOutline.model_validate(
+        {
+            "key": "body",
+            "title": "Body",
+            "section_type": "body",
+            "target_length_words": 1500,
+        }
+    )
+    details = [
+        {
+            "citation_key": f"Paper_{i % 15}_2025_Key",
+            "claim_text": f"Supported claim {i} [Paper_{i % 15}_2025_Key].",
+            "status": "SUPPORTED",
+            "reasoning": "Direct match.",
+        }
+        for i in range(30)
+    ]
+    instructions = _build_critic_repair_instructions(
+        outline,
+        "Preserve all supported claims.",
+        existing_draft=SectionDraft.model_validate(
+            {
+                "section_key": "body",
+                "title": "Body",
+                "text": "draft",
+                "status": SectionStatus.NEEDS_REVISION,
+            }
+        ),
+        verification={"details": details},
+    )
+    assert "5-15 distinct citation keys" in instructions
+    assert "at most 30 citation occurrences" in instructions
 
 
 def test_shorter_revision_cannot_replace_long_legacy_draft():
@@ -488,7 +565,10 @@ def test_shorter_revision_cannot_replace_long_legacy_draft():
             use_reranker=False,
         )
 
-    assert result["sections"] == {}
+    preserved = result["sections"]["body"]
+    assert preserved["text"] == "original " * 2000
+    assert preserved["iteration"] == 2
+    assert preserved["status"] == SectionStatus.NEEDS_REVISION.value
     assert state["sections"]["body"]["text"] == "original " * 2000
     assert any("rejected" in error for error in result["errors"])
 
@@ -820,3 +900,126 @@ def test_atomic_claim_selection_requires_meaningful_overlap():
     ]
     assert _select_best_atomic_claim(claim, candidates) == candidates[1]
     assert _select_best_atomic_claim(claim, [candidates[0]]) is None
+
+
+def test_critic_matches_repeated_key_to_occurrence_specific_provenance():
+    """Two claims from one paper must not collapse to the last chunk record."""
+    from paperhunter.agents.critic_agent import _select_tracked_citation_record
+
+    records = [
+        {
+            "bibtex_key": "Smith_2025_System",
+            "claim": "The detector identifies poisoned training examples.",
+            "chunk_id": "poisoning_chunk",
+        },
+        {
+            "bibtex_key": "Smith_2025_System",
+            "claim": "The benchmark contains twelve evaluation tasks.",
+            "chunk_id": "benchmark_chunk",
+        },
+    ]
+    selected = _select_tracked_citation_record(
+        records,
+        "Smith_2025_System",
+        "The detector identifies poisoned training examples.",
+    )
+    assert selected is not None
+    assert selected["chunk_id"] == "poisoning_chunk"
+    assert _select_tracked_citation_record(
+        [
+            {"bibtex_key": "Smith_2025_System", "claim": "", "chunk_id": "a"},
+            {"bibtex_key": "Smith_2025_System", "claim": "", "chunk_id": "b"},
+        ],
+        "Smith_2025_System",
+        "A claim with no provenance match.",
+    ) is None
+
+
+def test_critic_batch_prompt_keeps_full_ranked_source_context():
+    """Relevant evidence after character 2,000 must reach the batch verifier."""
+    from paperhunter.agents.critic_agent import _verify_citation_batch
+
+    marker = "DIRECT_SUPPORT_MARKER_AFTER_THE_OLD_TRUNCATION_BOUNDARY"
+    source = ("background " * 260) + marker
+    llm = MagicMock()
+    llm.complete.return_value = json.dumps(
+        [
+            {
+                "citation_index": 0,
+                "bibtex_key": "Smith_2025_System",
+                "status": "SUPPORTED",
+                "confidence": 0.99,
+                "reasoning": "Direct match.",
+            }
+        ]
+    )
+    _verify_citation_batch(
+        [
+            {
+                "bibtex_key": "Smith_2025_System",
+                "claim": "The method has direct support.",
+                "source_text": source,
+            }
+        ],
+        llm=llm,
+    )
+    prompt = llm.complete.call_args.args[0]
+    assert marker in prompt
+
+
+def test_critic_retrieval_does_not_drop_late_paper_chunks_before_ranking():
+    """Methods/results evidence after the first 30 chunks must remain available."""
+    from paperhunter.agents.critic_agent import _retrieve_source_chunks
+
+    chunks = [
+        {
+            "chunk_id": f"chunk_{i}",
+            "text": f"paper passage {i}",
+            "metadata": {
+                "bibtex_key": "Smith_2025_System",
+                "chunk_type": "original",
+                "is_citable": True,
+            },
+        }
+        for i in range(45)
+    ]
+    store = MagicMock()
+    store.get_paper_chunks.side_effect = [chunks, []]
+    retrieved = _retrieve_source_chunks("Smith_2025_System", store=store)
+    assert len(retrieved) == 45
+    assert retrieved[-1]["chunk_id"] == "chunk_44"
+
+
+def test_critic_caches_only_unchanged_supported_occurrences():
+    """Strict repair must converge monotonically for claims left verbatim."""
+    from paperhunter.agents.critic_agent import _build_supported_verification_cache
+
+    previous = {
+        "details": [
+            {
+                "citation_key": "Smith_2025_System",
+                "claim_text": "The method blocks the attack [Smith_2025_System].",
+                "source_chunk_id": "chunk_supported",
+                "source_text_excerpt": "The method blocks the attack.",
+                "status": "SUPPORTED",
+                "confidence": 0.98,
+                "reasoning": "Direct match.",
+            },
+            {
+                "citation_key": "Jones_2024_Benchmark",
+                "claim_text": "The benchmark has 99 tasks [Jones_2024_Benchmark].",
+                "source_chunk_id": "chunk_failed",
+                "source_text_excerpt": "The benchmark has 12 tasks.",
+                "status": "NOT_SUPPORTED",
+                "confidence": 0.99,
+                "reasoning": "Wrong number.",
+            },
+        ]
+    }
+    cache = _build_supported_verification_cache(previous)
+    assert len(cache) == 1
+    cached = cache[(
+        "Smith_2025_System",
+        "the method blocks the attack [smith_2025_system].",
+    )]
+    assert cached["source_chunk_id"] == "chunk_supported"

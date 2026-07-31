@@ -205,7 +205,7 @@ def test_should_revise_needs_revision():
 
 
 def test_should_revise_max_iterations():
-    """Se iter >= max anche con sezioni NEEDS_REVISION → DONE."""
+    """A section stops only after its own writer-attempt budget is exhausted."""
     from paperhunter.agents.pipeline import _should_revise, EDGE_DONE
     from paperhunter.config import settings
 
@@ -214,10 +214,28 @@ def test_should_revise_max_iterations():
         needs_revision=True,
     )
     state["iteration_count"] = settings.agents.max_writer_iterations
+    for section in state["sections"].values():
+        section["iteration"] = settings.agents.max_writer_iterations
 
     result = _should_revise(state)
     assert result == EDGE_DONE, f"Expected DONE (max iter), got {result}"
     print("[PASS] test_should_revise_max_iterations — max iter raggiunto → DONE")
+
+
+def test_should_revise_uses_section_attempts_not_global_verify_cycles():
+    """A resumable section must not lose retries to unrelated global cycles."""
+    from paperhunter.agents.pipeline import _should_revise, EDGE_REVISE
+    from paperhunter.config import settings
+
+    state = _create_mock_state(
+        include_outline=True,
+        include_sections=True,
+        needs_revision=True,
+    )
+    state["iteration_count"] = settings.agents.max_writer_iterations
+    state["sections"]["prompt_injection"]["iteration"] = 2
+
+    assert _should_revise(state) == EDGE_REVISE
 
 
 def test_should_revise_no_sections():

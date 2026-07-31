@@ -238,16 +238,17 @@ def _check_section_length(
 def _retrieve_source_chunks(
     bibtex_key: str,
     store=None,
-    max_chunks: int = 30,
+    max_chunks: int | None = None,
 ) -> list[dict]:
-    """Recupera fino a 30 chunk del paper; il claim selector ne userà sei.
+    """Retrieve all paper chunks before claim-specific ranking.
 
     Cerca nelle collezioni paper_chunks e l1_summaries.
 
     Args:
         bibtex_key: Chiave BibTeX del paper.
         store: QdrantStore instance (lazy-init se None).
-        max_chunks: Numero massimo di chunk da recuperare.
+        max_chunks: Optional emergency cap. ``None`` keeps all chunks so a
+            relevant methods/results passage is not discarded before ranking.
 
     Returns:
         Lista di dict con chunk_id, text e metadata.
@@ -280,7 +281,7 @@ def _retrieve_source_chunks(
 
     # Ordina per rilevanza: L1 summaries prima, poi chunk originali
     def _sort_key(c: dict) -> int:
-        ct = c.get("metadata", {}).get("chunk_type", "original")
+        ct = str(c.get("metadata", {}).get("chunk_type", "original")).lower()
         if ct == "l1_summary":
             return 0
         section = c.get("metadata", {}).get("section_name", "").lower()
@@ -295,7 +296,77 @@ def _retrieve_source_chunks(
         return 5
 
     all_chunks.sort(key=_sort_key)
-    return all_chunks[:max_chunks]
+    return all_chunks if max_chunks is None else all_chunks[:max_chunks]
+
+
+def _select_tracked_citation_record(
+    records: list[dict],
+    bibtex_key: str,
+    claim: str,
+) -> dict | None:
+    """Match one citation occurrence to its writer-provided provenance record.
+
+    A dict keyed only by ``bibtex_key`` collapsed repeated uses of the same paper
+    to the final record.  Earlier occurrences were then verified against the wrong
+    chunk.  Claim overlap retains occurrence-level provenance without trusting the
+    Writer's support judgment.
+    """
+    candidates = [
+        record for record in records
+        if str(record.get("bibtex_key") or "") == bibtex_key
+    ]
+    if not candidates:
+        return None
+
+    claim_terms = set(re.findall(r"[a-z0-9]+", claim.lower()))
+
+    def _score(record: dict) -> tuple[float, int]:
+        tracked_claim = str(record.get("claim") or "")
+        tracked_terms = set(re.findall(r"[a-z0-9]+", tracked_claim.lower()))
+        union = claim_terms | tracked_terms
+        similarity = len(claim_terms & tracked_terms) / max(1, len(union))
+        return similarity, int(bool(record.get("chunk_id")))
+
+    best = max(candidates, key=_score)
+    if len(candidates) > 1 and _score(best)[0] == 0:
+        return None
+    return best
+
+
+def _verification_cache_key(bibtex_key: str, claim: str) -> tuple[str, str]:
+    """Create a stable key for a verbatim citation occurrence."""
+    normalized_claim = re.sub(r"\s+", " ", claim).strip().lower()
+    return bibtex_key, normalized_claim
+
+
+def _build_supported_verification_cache(
+    verification: VerificationResult | dict | None,
+) -> dict[tuple[str, str], dict]:
+    """Cache only prior SUPPORTED judgments for unchanged claim/source pairs.
+
+    Failed claims are always rechecked after repair.  A supported sentence kept
+    verbatim, however, has the same paper and evidence; asking a stochastic judge
+    again can turn progress backwards without any source change.
+    """
+    if verification is None:
+        return {}
+    if isinstance(verification, VerificationResult):
+        verification = verification.to_dict()
+    cache: dict[tuple[str, str], dict] = {}
+    for raw_detail in verification.get("details", []):
+        detail = (
+            raw_detail.to_dict()
+            if isinstance(raw_detail, VerificationDetail)
+            else dict(raw_detail)
+        )
+        status = str(detail.get("status") or "").split(".")[-1].upper()
+        if status != VerificationStatus.SUPPORTED.value:
+            continue
+        key = str(detail.get("citation_key") or "")
+        claim = str(detail.get("claim_text") or "")
+        if key and claim:
+            cache[_verification_cache_key(key, claim)] = detail
+    return cache
 
 
 def _select_source_chunks_for_claim(
@@ -894,7 +965,7 @@ def _verify_citation_batch(
             f"### Citation {i}\n"
             f"**Bibtex Key:** [{cd['bibtex_key']}]\n"
             f"**Claim:** \"{cd['claim'][:500]}\"\n"
-            f"**Source Text:**\n{cd['source_text'][:2000]}\n"
+            f"**Source Text:**\n{cd['source_text'][:8000]}\n"
         )
         blocks.append(block)
 
@@ -1013,8 +1084,11 @@ def verify_section(
     text_citations = _extract_citations_from_text(draft.text)
     citation_occurrences = _extract_citation_occurrences(draft.text)
 
-    # Unisci con le citazioni tracciate dal Writer (che hanno chunk_id)
-    tracked_citations = {c.bibtex_key: c for c in draft.citations}
+    # Keep occurrence-level provenance.  Repeated uses of one paper can point to
+    # different chunks and must not collapse into a dict keyed only by bibtex key.
+    tracked_citations = [c.to_dict() for c in draft.citations]
+    previous_verification = (state.get("verification_results") or {}).get(section_key)
+    supported_cache = _build_supported_verification_cache(previous_verification)
 
     if not text_citations:
         logger.warning("Nessuna citazione trovata in '%s'.", section_key)
@@ -1104,6 +1178,27 @@ def verify_section(
         bibtex_key = occurrence["bibtex_key"]
         claim_text = occurrence["claim"]
 
+        tracked = _select_tracked_citation_record(
+            tracked_citations,
+            bibtex_key,
+            claim_text,
+        )
+        specific_chunk_id = tracked.get("chunk_id") if tracked else None
+
+        cached = supported_cache.get(
+            _verification_cache_key(bibtex_key, claim_text)
+        )
+        cached_chunk_id = cached.get("source_chunk_id") if cached else None
+        if (
+            cached is not None
+            and specific_chunk_id
+            and cached_chunk_id == specific_chunk_id
+        ):
+            cached_detail = VerificationDetail.from_dict(cached)
+            cached_detail.claim_text = claim_text[:500]
+            verification_details.append(cached_detail)
+            continue
+
         # Multiple claim checks for the same paper share one Qdrant read.
         if bibtex_key not in source_cache:
             source_cache[bibtex_key] = _retrieve_source_chunks(bibtex_key, store=store)
@@ -1138,9 +1233,6 @@ def verify_section(
             ))
             continue
         # Cerca anche per chunk_id specifico (se il Writer l'ha tracciato)
-        tracked = tracked_citations.get(bibtex_key)
-        specific_chunk_id = tracked.chunk_id if tracked else None
-
         source_chunks = _select_source_chunks_for_claim(
             all_source_chunks,
             claim_text,

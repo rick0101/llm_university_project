@@ -347,18 +347,20 @@ def _should_revise(state: SurveyState) -> str:
         for key in sorted(required_keys & set(sections))
         if sections[key].status not in (SectionStatus.VERIFIED, SectionStatus.FINALIZED)
     ]
-    needs_revision = [
-        key for key, value in sections.items()
-        if value.status == SectionStatus.NEEDS_REVISION
-    ]
-
     if not missing_sections and not incomplete_sections:
         logger.info("Tutte le sezioni pianificate sono presenti e verificate.")
         return EDGE_DONE
 
-    if iteration_count >= max_iterations:
+    retryable_sections = [
+        key
+        for key in incomplete_sections
+        if sections[key].iteration < max_iterations
+    ]
+    missing_retryable = bool(missing_sections) and iteration_count < max_iterations
+
+    if not retryable_sections and not missing_retryable:
         logger.warning(
-            "Raggiunto il limite di %d iterazioni: missing=%s incomplete=%s",
+            "Attempt budget exhausted (%d): missing=%s incomplete=%s",
             max_iterations,
             missing_sections,
             incomplete_sections,
@@ -373,7 +375,7 @@ def _should_revise(state: SurveyState) -> str:
         "Iterazione %d/%d: %d da riscrivere, %d mancanti, %d incomplete.",
         iteration_count + 1,
         max_iterations,
-        len(needs_revision),
+        len(retryable_sections),
         len(missing_sections),
         len(incomplete_sections),
     )

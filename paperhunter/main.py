@@ -1163,7 +1163,7 @@ def cmd_write(args: argparse.Namespace) -> int:
             logger.info(f"Pipeline completata in {elapsed:.0f}s")
 
         if not args.no_export:
-            _auto_export(state, args, logger)
+            _auto_export_if_ready(state, args, logger)
 
         return 0 if summary.get("phase") == "COMPLETED" else 1
 
@@ -1197,9 +1197,26 @@ def _write_resume(args, logger) -> int:
     logger.info(f"Resume completato in {elapsed:.0f}s")
 
     if not args.no_export:
-        _auto_export(state, args, logger)
+        _auto_export_if_ready(state, args, logger)
 
     return 0 if summary.get("phase") == "COMPLETED" else 1
+
+
+def _auto_export_if_ready(state, args, logger) -> bool:
+    """Run post-processing only for a successfully assembled manuscript.
+
+    A failed Assembler intentionally returns an empty ``final_paper``.  Exporting
+    that state used to overwrite the last valid BibTeX/provenance artifacts even
+    though the CLI correctly returned exit code 1.
+    """
+    phase = str(state.get("current_phase") or "").lower()
+    if phase == "failed" or not str(state.get("final_paper") or "").strip():
+        logger.warning(
+            "Auto-export skipped: pipeline did not produce an assembled manuscript."
+        )
+        return False
+    _auto_export(state, args, logger)
+    return True
 
 
 def _auto_export(state, args, logger) -> None:

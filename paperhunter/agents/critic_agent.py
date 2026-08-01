@@ -253,10 +253,31 @@ def _extract_citation_occurrences(
         if prior_groups:
             previous_end = sentence_start + prior_groups[-1].end()
             bridge = text[previous_end:match.start()]
-            leading_separator = re.match(r"\s*[,;:]\s*", bridge)
-            claim_start = previous_end + (
-                leading_separator.end() if leading_separator else 0
+            bridge_content = re.sub(
+                r"\b(?:and|or|nor|but|so|yet|although|whereas|while)\b",
+                "",
+                bridge,
+                flags=re.IGNORECASE,
             )
+            previous_occurrence = next(
+                (
+                    occurrence
+                    for occurrence in reversed(occurrences)
+                    if occurrence["citation_end"] == previous_end
+                ),
+                None,
+            )
+            if not re.search(r"[A-Za-z0-9]", bridge_content):
+                claim_start = (
+                    previous_occurrence["claim_start"]
+                    if previous_occurrence is not None
+                    else sentence_start
+                )
+            else:
+                leading_separator = re.match(r"\s*[,;:]\s*", bridge)
+                claim_start = previous_end + (
+                    leading_separator.end() if leading_separator else 0
+                )
 
         following_group = next(
             (
@@ -269,16 +290,7 @@ def _extract_citation_occurrences(
             ),
             None,
         )
-        following_clause = re.match(
-            r"\s*(?:[,;:]\s*)?(?:and|but|while|whereas|although)\b",
-            text[match.end():sentence_end],
-            flags=re.IGNORECASE,
-        )
-        claim_end = (
-            match.end()
-            if following_group is not None or following_clause is not None
-            else sentence_end
-        )
+        claim_end = match.end() if following_group is not None else sentence_end
         sentence = text[claim_start:claim_end].strip()
         for key in keys:
             occurrences.append(
@@ -468,13 +480,23 @@ def _remove_failed_citation_occurrences(
                     if following_separator:
                         edit_end += following_separator.end()
             else:
-                following_separator = re.match(r"\s*[,;]\s*", suffix)
-                if following_separator:
-                    edit_end += following_separator.end()
-                    replacement = " "
-                elif suffix.startswith((".", "!", "?")):
+                coordinated_suffix = re.match(
+                    r"\s*[,;:]\s*(?:and|or|nor|but|so|yet)\b",
+                    suffix,
+                    flags=re.IGNORECASE,
+                )
+                left_line = prefix.rsplit("\n", 1)[-1]
+                if coordinated_suffix and left_line.strip():
                     while edit_start > 0 and repaired[edit_start - 1] in " \t":
                         edit_start -= 1
+                else:
+                    following_separator = re.match(r"\s*[,;]\s*", suffix)
+                    if following_separator:
+                        edit_end += following_separator.end()
+                        replacement = " "
+                    elif suffix.startswith((".", "!", "?")):
+                        while edit_start > 0 and repaired[edit_start - 1] in " \t":
+                            edit_start -= 1
         repaired = f"{repaired[:edit_start]}{replacement}{repaired[edit_end:]}"
 
     return repaired
@@ -542,13 +564,21 @@ def _build_strict_supported_only_fallback(
             return None
         if new_occurrence["bibtex_key"] != old_occurrence["bibtex_key"]:
             return None
-        if _claim_identity_without_citations(
-            new_occurrence["claim"]
-        ) != _claim_identity_without_citations(old_occurrence["claim"]):
+        old_identity = _claim_identity_without_citations(old_occurrence["claim"])
+        new_identity = _claim_identity_without_citations(new_occurrence["claim"])
+        if not old_identity or old_identity not in new_identity:
             return None
         refreshed = VerificationDetail.from_dict(detail.to_dict())
         refreshed.occurrence_id = new_occurrence["occurrence_id"]
-        refreshed.claim_text = new_occurrence["claim"][:500]
+        # Use the reparsed text when only bracket composition changed (for
+        # example a mixed grouped citation). If removing a separate occurrence
+        # broadens sentence context, preserve the exact local proposition that
+        # was actually verified instead of upgrading it to a broader claim.
+        refreshed.claim_text = (
+            new_occurrence["claim"][:500]
+            if old_identity == new_identity
+            else old_occurrence["claim"][:500]
+        )
         kept_details.append(refreshed)
 
     distinct_keys = {detail.citation_key for detail in kept_details}

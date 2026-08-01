@@ -1866,10 +1866,95 @@ def test_citation_occurrences_scope_sequential_citations_to_local_clauses():
     ]
 
     uncited_following_clause = text.replace(" [Mamun_2025_LLMs]", "")
-    assert _extract_citation_occurrences(uncited_following_clause)[0]["claim"] == (
-        "Backdoors can be introduced during SFT, RLHF, or pre-training "
-        "[Souly_2025_LLMs]"
+    assert (
+        _extract_citation_occurrences(uncited_following_clause)[0]["claim"]
+        == uncited_following_clause
     )
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "SFT, RLHF, or pre-training are all vulnerable [Key1_2025_A].",
+        "The attack works on SFT, RLHF, or pre-trained models [Key1_2025_A].",
+        "SFT, RLHF, and pre-training are all vulnerable [Key1_2025_A].",
+        "Moreover, and importantly, X is vulnerable [Key1_2025_A].",
+    ],
+)
+def test_single_citation_does_not_split_lists_or_discourse_lead_ins(text):
+    """Clause scoping must not weaken a lone citation through comma heuristics."""
+    from paperhunter.agents.critic_agent import _extract_citation_occurrences
+
+    assert _extract_citation_occurrences(text)[0]["claim"] == text
+
+
+def test_earlier_citation_removal_preserves_coordinated_prose():
+    """Removing the first key preserves prose and contains the verified later claim."""
+    from paperhunter.agents.critic_agent import (
+        _extract_citation_occurrences,
+        _remove_failed_citation_occurrences,
+    )
+
+    text = (
+        "Backdoors arise during training [Key1_2025_A], and federated learning "
+        "adds malicious-client vectors [Key2_2025_B]."
+    )
+    occurrences = _extract_citation_occurrences(text)
+    repaired = _remove_failed_citation_occurrences(text, occurrences, {0})
+
+    assert repaired == (
+        "Backdoors arise during training, and federated learning adds "
+        "malicious-client vectors [Key2_2025_B]."
+    )
+    assert occurrences[1]["claim"] in _extract_citation_occurrences(repaired)[0]["claim"]
+
+
+@pytest.mark.parametrize("conjunction", ["or", "nor", "so", "yet"])
+def test_later_citation_removal_preserves_coordinated_prose(conjunction):
+    """Removing the later key preserves prose containing the verified first claim."""
+    from paperhunter.agents.critic_agent import (
+        _extract_citation_occurrences,
+        _remove_failed_citation_occurrences,
+    )
+
+    text = (
+        f"System X [Key1_2025_A] {conjunction} "
+        "system Y [Key2_2025_B]."
+    )
+    occurrences = _extract_citation_occurrences(text)
+    repaired = _remove_failed_citation_occurrences(text, occurrences, {1})
+
+    assert repaired == f"System X [Key1_2025_A] {conjunction} system Y."
+    assert occurrences[0]["claim"] in _extract_citation_occurrences(repaired)[0]["claim"]
+
+
+@pytest.mark.parametrize("conjunction", ["although", "whereas", "while"])
+def test_subordinate_or_ambiguous_clause_stays_in_cited_claim(conjunction):
+    """Qualifiers without their own citation remain part of the verified claim."""
+    from paperhunter.agents.critic_agent import _extract_citation_occurrences
+
+    text = (
+        f"Fine-tuning is safe [Key1_2025_A], {conjunction} "
+        "some attacks still succeed."
+    )
+
+    assert _extract_citation_occurrences(text)[0]["claim"] == text
+
+
+@pytest.mark.parametrize(
+    "bridge",
+    [" ", " and ", ", and "],
+)
+def test_adjacent_citation_groups_never_create_claim_without_proposition(bridge):
+    """A second source-only bracket inherits the preceding local claim."""
+    from paperhunter.agents.critic_agent import _extract_citation_occurrences
+
+    occurrences = _extract_citation_occurrences(
+        f"A and B are vulnerable [Key1_2025_A]{bridge}[Key2_2025_B]."
+    )
+
+    assert len(occurrences) == 2
+    assert occurrences[1]["claim"].startswith("A and B are vulnerable")
 
 
 def test_citation_occurrences_keep_markdown_table_rows_isolated():
@@ -2049,6 +2134,7 @@ def test_citation_only_repair_targets_failed_bracket_occurrence_not_first_match(
     assert len(shared) == 1
     assert shared[0].occurrence_id == 0
     assert shared[0].status == VerificationStatus.SUPPORTED
+    assert shared[0].claim_text == shared_occurrences[0]["claim"]
 
 
 def test_citation_only_repair_targets_failed_repeated_sentence_occurrence():

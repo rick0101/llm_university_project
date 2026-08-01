@@ -126,9 +126,17 @@ Script standalone alla root: `run_writer_summaries_only.py`, `fix_hashes.py`, `f
   Il Critic opera come citation-audit indipendente per occorrenza: dopo ogni
   verifica strict, non soltanto all'ultimo tentativo, corregge deterministicamente
   ogni singola occorrenza tramite un `occurrence_id` 0-based assegnato durante il
-  parsing e propagato nel ledger. Gruppi citazionali sequenziali nella stessa
-  frase vengono verificati sui rispettivi segmenti di clausola, così una fonte
-  non risponde di una proposizione successiva dotata di una citazione distinta.
+  parsing e propagato nel ledger. Una citazione singola viene verificata
+  fail-closed sull'intera frase o riga Markdown; il parser non usa congiunzioni
+  o virgole per restringerne euristicamente il claim. Soltanto gruppi citazionali
+  sequenziali nella stessa frase vengono verificati sui rispettivi segmenti di
+  clausola, così una fonte non risponde di una proposizione successiva dotata di
+  una citazione distinta. Se due gruppi sono adiacenti o separati soltanto da
+  punteggiatura e congiunzioni, il secondo eredita il claim precedente invece di
+  produrre un claim privo di proposizione. Dopo un repair, un dettaglio supportato
+  può essere riusato soltanto se il vecchio claim locale non vuoto è ancora
+  contenuto integralmente nel contesto riparsato; il ledger conserva il claim
+  effettivamente verificato e non lo amplia automaticamente.
   Per una citazione fallita rimuove soltanto la chiave della parentesi associata a
   quello specifico ID, preservando la prosa generale e le eventuali chiavi
   `SUPPORTED` dello stesso gruppo. Dettagli legacy senza ID vengono accettati

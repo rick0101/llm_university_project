@@ -456,6 +456,13 @@ class TestExtractAbstract:
         md = "# Title\n\n## ABSTRACT\n\nAbs text.\n\n## Intro"
         assert _extract_abstract_from_md(md) is not None
 
+    def test_trailing_markdown_rule_is_not_part_of_abstract(self):
+        md = "# Title\n\n## Abstract\n\nAbs text.\n\n---\n\n## Intro"
+
+        abstract = _extract_abstract_from_md(md)
+
+        assert abstract == "Abs text."
+
 
 # ============================================================================
 # Test _convert_body (pipeline completa)

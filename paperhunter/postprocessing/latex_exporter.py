@@ -1044,7 +1044,12 @@ def _extract_abstract_from_md(md_content: str) -> str | None:
         re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )
     if match:
-        return match.group(1).strip()
+        abstract = match.group(1).strip()
+        # A horizontal separator often delimits the abstract from front matter;
+        # keeping it inside the narrower abstract environment creates an
+        # overfull rule. It is presentation markup, not abstract prose.
+        abstract = re.sub(r"\n\s*(?:-{3,}|\*{3,}|_{3,})\s*$", "", abstract)
+        return abstract.strip()
     return None
 
 

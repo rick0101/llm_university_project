@@ -9,6 +9,34 @@ from types import SimpleNamespace
 import pytest
 
 
+def test_runtime_profile_uses_v4_flash_for_every_pipeline_stage_with_high_reasoning():
+    """Il profilo economico non deve poter instradare una fase verso V4 Pro."""
+    from paperhunter.config import settings
+    from paperhunter.utils.llm_factory import get_flash_llm, get_pro_llm
+
+    assert settings.deepseek.flash_model == "deepseek-v4-flash"
+    assert settings.deepseek.pro_model == "deepseek-v4-flash"
+    assert settings.deepseek.thinking_enabled is True
+    assert settings.deepseek.reasoning_effort == "high"
+    assert {
+        settings.agents.planner_model,
+        settings.agents.writer_model,
+        settings.agents.critic_model,
+        settings.agents.assembler_model,
+    } == {"flash"}
+    assert settings.summarization.use_pro_for_l1 is False
+    assert settings.summarization.use_pro_for_l2 is False
+
+    flash = get_flash_llm()
+    legacy_pro_tier = get_pro_llm()
+    assert flash.model == "deepseek-v4-flash"
+    assert legacy_pro_tier.model == "deepseek-v4-flash"
+    assert flash.thinking_enabled is True
+    assert legacy_pro_tier.thinking_enabled is True
+    assert flash.reasoning_effort == "high"
+    assert legacy_pro_tier.reasoning_effort == "high"
+
+
 def test_runtime_profile_disables_google_and_all_image_features():
     """Il profilo versionato non deve abilitare provider Google o percorsi immagini."""
     from paperhunter.config import settings

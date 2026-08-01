@@ -10,8 +10,8 @@ class _StopAfterLlmConstruction(Exception):
     """Stops the planner after observing the requested LLM token budget."""
 
 
-def test_deepseek_planner_uses_configured_pro_token_budget(monkeypatch):
-    """The planner must not cap DeepSeek reasoning output at the legacy 16k limit."""
+def test_deepseek_planner_uses_configured_flash_token_budget(monkeypatch):
+    """A Flash-routed planner must use the bounded Flash completion cap."""
     captured = {}
 
     def fake_get_llm(tier, *, max_tokens):
@@ -35,5 +35,5 @@ def test_deepseek_planner_uses_configured_pro_token_budget(monkeypatch):
 
     assert captured == {
         "tier": planner_agent.settings.agents.planner_model,
-        "max_tokens": planner_agent.settings.deepseek.max_output_tokens_pro,
+        "max_tokens": planner_agent.settings.deepseek.max_output_tokens_flash,
     }

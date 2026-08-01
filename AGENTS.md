@@ -77,9 +77,10 @@ Script standalone alla root: `run_writer_summaries_only.py`, `fix_hashes.py`, `f
 
 ## 4. Stack tecnologico chiave
 
-- **LLM testuale**: solo API nativa DeepSeek (`deepseek-v4-pro` per tutti i tier),
-  con thinking + reasoning `high` per i task complessi e thinking disabilitato
-  per quelli deterministici. Google AI Studio e OpenRouter sono disabilitati.
+- **LLM testuale**: solo API nativa DeepSeek (`deepseek-v4-flash` per tutti i
+  tier e per tutte le fasi della pipeline), con thinking + reasoning `high`.
+  Anche il tier logico `pro` risolve a V4 Flash per impedire regressioni di costo;
+  Google AI Studio e OpenRouter sono disabilitati.
 - **Embedding**: BGE-M3 locale (1024d); gli embedding Gemini e multimodali sono
   hard-disabled.
 - **RAG framework**: LlamaIndex (≥0.14).

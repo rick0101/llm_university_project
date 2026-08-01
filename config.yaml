@@ -21,8 +21,10 @@ visual_features_enabled: false
 # deterministic JSON/editorial tasks so visible output has headroom.
 deepseek:
   api_base: "https://api.deepseek.com"
-  flash_model: "deepseek-v4-pro"
-  pro_model: "deepseek-v4-pro"
+  # Profilo economico: entrambi i tier logici usano V4 Flash, così eventuali
+  # call site legacy che chiedono "pro" non riattivano il modello costoso.
+  flash_model: "deepseek-v4-flash"
+  pro_model: "deepseek-v4-flash"
   thinking_enabled: true
   # Prevent hidden reasoning from consuming the whole shared output budget.
   reasoning_effort: "high"
@@ -104,8 +106,8 @@ summarization:
   l1_max_tokens: 2000                          # Max token per summary L1
   l2_max_tokens: 6000                          # Max token per summary L2 (4-6k)
   l2_invalidation_threshold: 1                 # Minimo nuovi paper per triggerare rigenerazione L2
-  use_pro_for_l1: true                         # Usa Pro per L1 (raccomandato)
-  use_pro_for_l2: true                         # Usa Pro per L2 (raccomandato)
+  use_pro_for_l1: false                        # V4 Flash con reasoning high
+  use_pro_for_l2: false                        # V4 Flash con reasoning high
   allow_flash_fallback: false                   # Se false, insisti con Pro senza degradare a Flash
   pro_max_retries: 6                           # Retry pazienti per Pro (delay lunghi)
   pro_base_delay: 15                           # Delay base (sec) tra retry Pro
@@ -148,10 +150,10 @@ agents:
   max_section_words: 3000                      # Massimo parole per sezione
   verification_threshold: 1.0                  # Tutte le citazioni devono risultare supportate
   min_citations_per_section: 5                 # Copertura minima, senza sacrificare accuratezza
-  planner_model: "pro"                         # Modello per il Planner (pro raccomandato)
-  writer_model: "pro"                          # Modello per il Writer
-  critic_model: "flash"                        # Modello per il Critic (flash sufficiente)
-  assembler_model: "pro"                       # Modello per l'Assembler
+  planner_model: "flash"                       # V4 Flash, reasoning high
+  writer_model: "flash"                        # V4 Flash, reasoning high
+  critic_model: "flash"                        # V4 Flash, reasoning high
+  assembler_model: "flash"                     # V4 Flash, reasoning high
   writer_max_context_chars: 60000              # Max chars contesto per singola sezione writer
   # This is a per-section budget. Dividing it by 11 left only ~5.4k chars,
   # making the 5-distinct-source quality gate structurally impossible.

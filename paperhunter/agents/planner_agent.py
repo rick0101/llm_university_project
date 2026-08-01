@@ -605,10 +605,14 @@ def generate_outline(
     base_delay = settings.summarization.pro_base_delay
     max_delay = 120.0
 
-    # Con DeepSeek il budget di output include il reasoning. Il vecchio limite
-    # fisso di 16k poteva esaurirsi prima che il modello producesse l'outline.
+    # Hidden reasoning shares the completion budget, but a Flash-routed planner
+    # must not silently inherit the larger (and potentially more expensive) Pro cap.
     planner_max_tokens = (
-        settings.deepseek.max_output_tokens_pro
+        (
+            settings.deepseek.max_output_tokens_flash
+            if tier == "flash"
+            else settings.deepseek.max_output_tokens_pro
+        )
         if settings.llm_provider == "deepseek"
         else 16384
     )

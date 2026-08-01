@@ -55,8 +55,8 @@ class DeepSeekConfig(BaseModel):
     """Configurazione API DeepSeek nativa (OpenAI-compatible)."""
 
     api_base: str = "https://api.deepseek.com"
-    flash_model: str = "deepseek-v4-pro"
-    pro_model: str = "deepseek-v4-pro"
+    flash_model: str = "deepseek-v4-flash"
+    pro_model: str = "deepseek-v4-flash"
     thinking_enabled: bool = True
     reasoning_effort: Literal["high", "max"] = "high"
     max_output_tokens_flash: int = 32768

@@ -194,6 +194,7 @@ _TEMPLATE_ACL = r"""\documentclass[11pt,a4paper]{{article}}
 \usepackage{{microtype}}
 \usepackage{{natbib}}
 \usepackage{{hyperref}}
+\hypersetup{{hidelinks}}
 \usepackage{{cleveref}}
 
 \title{{{title}}}
@@ -224,6 +225,7 @@ _TEMPLATE_IEEETRAN = r"""\documentclass[conference]{{IEEEtran}}
 \usepackage[T1]{{fontenc}}
 \usepackage[utf8]{{inputenc}}
 \usepackage{{hyperref}}
+\hypersetup{{hidelinks}}
 \usepackage{{url}}
 
 \title{{{title}}}
@@ -253,6 +255,7 @@ _TEMPLATE_PLAIN = r"""\documentclass[12pt,a4paper]{{article}}
 \usepackage[T1]{{fontenc}}
 \usepackage[utf8]{{inputenc}}
 \usepackage{{hyperref}}
+\hypersetup{{hidelinks}}
 
 \title{{{title}}}
 \author{{{author}}}

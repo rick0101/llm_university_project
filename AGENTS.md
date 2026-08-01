@@ -133,7 +133,9 @@ Script standalone alla root: `run_writer_summaries_only.py`, `fix_hashes.py`, `f
   verdetti misti per duplicati ambigui falliscono chiusi. Anche la cache dei
   verdetti `SUPPORTED` è vincolata a chiave, claim normalizzato, `occurrence_id` e
   `source_chunk_id`: un duplicato o una provenienza diversa deve tornare al
-  verificatore e non può ereditare il giudizio di un'altra occorrenza. Non è
+  verificatore e non può ereditare il giudizio di un'altra occorrenza. I record
+  di provenienza Writer vengono inoltre consumati uno-a-uno, così occorrenze
+  duplicate non possono condividere implicitamente il primo chunk. Non è
   consentito sostituire liberamente una citazione fallita con un'altra chiave. La
   prosa survey-level generale (spiegazioni concettuali, organizzazione,
   transizioni e sintesi non attribuite a uno studio specifico) può restare senza

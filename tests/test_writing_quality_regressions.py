@@ -2401,7 +2401,13 @@ def test_supported_cache_does_not_relabel_failed_duplicate_on_next_iteration():
                     CitationRecord(
                         bibtex_key="Shared_2025_Source",
                         claim=shared_sentence,
-                        chunk_id="shared_chunk",
+                        chunk_id="shared_chunk_1",
+                        retrieval_score=1.0,
+                    ).to_dict(),
+                    CitationRecord(
+                        bibtex_key="Shared_2025_Source",
+                        claim=shared_sentence,
+                        chunk_id="shared_chunk_2",
                         retrieval_score=1.0,
                     ).to_dict(),
                     CitationRecord(
@@ -2430,7 +2436,7 @@ def test_supported_cache_does_not_relabel_failed_duplicate_on_next_iteration():
                     "occurrence_id": 0,
                     "citation_key": "Shared_2025_Source",
                     "claim_text": shared_sentence,
-                    "source_chunk_id": "shared_chunk",
+                    "source_chunk_id": "shared_chunk_1",
                     "status": "SUPPORTED",
                     "confidence": 0.99,
                     "reasoning": "Supported first twin.",
@@ -2439,7 +2445,7 @@ def test_supported_cache_does_not_relabel_failed_duplicate_on_next_iteration():
                     "occurrence_id": 1,
                     "citation_key": "Shared_2025_Source",
                     "claim_text": shared_sentence,
-                    "source_chunk_id": "shared_chunk",
+                    "source_chunk_id": "shared_chunk_2",
                     "status": "NOT_SUPPORTED",
                     "confidence": 0.99,
                     "reasoning": "Failed second twin.",
@@ -2451,26 +2457,34 @@ def test_supported_cache_does_not_relabel_failed_duplicate_on_next_iteration():
     }
 
     store = MagicMock()
-    store.get_paper_chunks.side_effect = lambda key, **_kwargs: [
-        {
-            "chunk_id": {
-                "Shared_2025_Source": "shared_chunk",
-                "NewA_2025_Source": "new_a_chunk",
-                "NewB_2025_Source": "new_b_chunk",
-            }[key],
-            "text": f"Evidence for {key}.",
-            "metadata": {
-                "bibtex_key": key,
-                "source_role": "citable",
-                "is_citable": True,
-                "chunk_type": "results",
-            },
-        }
-    ]
-    verified_batches: list[list[int]] = []
+
+    def _paper_chunks(key, **_kwargs):
+        chunk_ids = {
+            "Shared_2025_Source": ["shared_chunk_1", "shared_chunk_2"],
+            "NewA_2025_Source": ["new_a_chunk"],
+            "NewB_2025_Source": ["new_b_chunk"],
+        }[key]
+        return [
+            {
+                "chunk_id": chunk_id,
+                "text": f"Evidence from {chunk_id} for {key}.",
+                "metadata": {
+                    "bibtex_key": key,
+                    "source_role": "citable",
+                    "is_citable": True,
+                    "chunk_type": "results",
+                },
+            }
+            for chunk_id in chunk_ids
+        ]
+
+    store.get_paper_chunks.side_effect = _paper_chunks
+    verified_batches: list[list[tuple[int, str | None]]] = []
 
     def _batch_results(items, **_kwargs):
-        verified_batches.append([item["occurrence_id"] for item in items])
+        verified_batches.append(
+            [(item["occurrence_id"], item.get("chunk_id")) for item in items]
+        )
         return [
             {
                 "status": "SUPPORTED",
@@ -2497,7 +2511,13 @@ def test_supported_cache_does_not_relabel_failed_duplicate_on_next_iteration():
             generate_feedback=False,
         )
 
-    assert verified_batches == [[1, 2, 3]]
+    assert verified_batches == [
+        [
+            (1, "shared_chunk_2"),
+            (2, "new_a_chunk"),
+            (3, "new_b_chunk"),
+        ]
+    ]
 
 
 def test_verify_section_applies_strict_final_fallback_at_attempt_limit():

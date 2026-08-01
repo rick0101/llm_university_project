@@ -588,17 +588,21 @@ def _select_tracked_citation_record(
     records: list[dict],
     bibtex_key: str,
     claim: str,
+    *,
+    consumed_record_ids: set[int] | None = None,
 ) -> dict | None:
-    """Match one citation occurrence to its writer-provided provenance record.
+    """Match one unused writer provenance record to one occurrence.
 
     A dict keyed only by ``bibtex_key`` collapsed repeated uses of the same paper
-    to the final record.  Earlier occurrences were then verified against the wrong
-    chunk.  Claim overlap retains occurrence-level provenance without trusting the
-    Writer's support judgment.
+    to the final record. Claim overlap chooses the best unused record; the caller
+    consumes it so identical repeated claims cannot all inherit the first chunk.
     """
+    if consumed_record_ids is None:
+        consumed_record_ids = set()
     candidates = [
         record for record in records
         if str(record.get("bibtex_key") or "") == bibtex_key
+        and id(record) not in consumed_record_ids
     ]
     if not candidates:
         return None
@@ -1392,6 +1396,7 @@ def verify_section(
     # Keep occurrence-level provenance.  Repeated uses of one paper can point to
     # different chunks and must not collapse into a dict keyed only by bibtex key.
     tracked_citations = [c.to_dict() for c in draft.citations]
+    consumed_tracked_record_ids: set[int] = set()
     previous_verification = (state.get("verification_results") or {}).get(section_key)
     supported_cache = _build_supported_verification_cache(previous_verification)
 
@@ -1489,8 +1494,11 @@ def verify_section(
             tracked_citations,
             bibtex_key,
             claim_text,
+            consumed_record_ids=consumed_tracked_record_ids,
         )
-        specific_chunk_id = tracked.get("chunk_id") if tracked else None
+        if tracked is not None:
+            consumed_tracked_record_ids.add(id(tracked))
+        specific_chunk_id = str(tracked.get("chunk_id") or "") if tracked else ""
 
         cached = None
         if specific_chunk_id:

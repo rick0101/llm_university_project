@@ -150,6 +150,11 @@ class SectionOutline(BaseModel):
 
 class VerificationDetail(BaseModel):
     """Verification result for a single citation within a section."""
+    occurrence_id: Optional[int] = Field(
+        None,
+        ge=0,
+        description="Indice 0-based dell'occorrenza citazionale nel testo della sezione",
+    )
     citation_key: str = Field(..., description="Chiave BibTeX verificata")
     claim_text: str = Field("", description="Testo del claim verificato")
     source_chunk_id: Optional[str] = Field(None, description="Chunk ID sorgente")

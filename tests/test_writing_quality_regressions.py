@@ -1858,10 +1858,19 @@ def test_citation_occurrences_keep_markdown_table_rows_isolated():
 
     occurrences = _extract_citation_occurrences(text)
 
-    assert occurrences == [
-        {"bibtex_key": "Alpha_2025_Test", "claim": first_row},
-        {"bibtex_key": "Beta_2025_Test", "claim": second_row},
+    assert [
+        (occurrence["bibtex_key"], occurrence["claim"])
+        for occurrence in occurrences
+    ] == [
+        ("Alpha_2025_Test", first_row),
+        ("Beta_2025_Test", second_row),
     ]
+    assert [occurrence["occurrence_id"] for occurrence in occurrences] == [0, 1]
+    assert all(
+        text[occurrence["citation_start"]:occurrence["citation_end"]]
+        == f"[{occurrence['bibtex_key']}]"
+        for occurrence in occurrences
+    )
 
 
 def test_strict_fallback_removes_only_failed_citation_and_preserves_general_prose():
@@ -1940,6 +1949,137 @@ def test_citation_only_repair_keeps_separators_between_individual_brackets():
 
     assert changed is True
     assert repaired == "A general taxonomy [Good_2025_A], [Other_2025_C]."
+
+
+def test_citation_only_repair_targets_failed_bracket_occurrence_not_first_match():
+    """Mixed verdicts for one key must remove the exact failed bracket."""
+    from paperhunter.agents.critic_agent import _build_strict_supported_only_fallback
+    from paperhunter.agents.state import (
+        SectionDraft,
+        SectionOutline,
+        VerificationDetail,
+        VerificationStatus,
+    )
+
+    text = "System X [Shared_2025_S] and system Y [Shared_2025_S]."
+    draft = SectionDraft(
+        section_key="body",
+        title="Body",
+        text=text,
+        word_count=len(text.split()),
+        citations=[],
+    )
+    outline = SectionOutline(
+        key="body", title="Body", target_length_words=100, section_type="body"
+    )
+    details = [
+        VerificationDetail(
+            citation_key="Shared_2025_S",
+            claim_text=text,
+            occurrence_id=0,
+            status=VerificationStatus.SUPPORTED,
+        ),
+        VerificationDetail(
+            citation_key="Shared_2025_S",
+            claim_text=text,
+            occurrence_id=1,
+            status=VerificationStatus.NOT_SUPPORTED,
+        ),
+    ]
+    for index in range(4):
+        key = f"Good_2025_{index}"
+        claim = f"Grounded {index} [{key}]."
+        draft.text += f" {claim}"
+        details.append(
+            VerificationDetail(
+                citation_key=key,
+                claim_text=claim,
+                occurrence_id=index + 2,
+                status=VerificationStatus.SUPPORTED,
+            )
+        )
+    draft.word_count = len(draft.text.split())
+
+    fallback = _build_strict_supported_only_fallback(
+        draft,
+        details,
+        outline,
+        allow_incomplete_length=True,
+    )
+
+    assert fallback is not None
+    repaired, kept = fallback
+    assert "System X [Shared_2025_S] and system Y." in repaired.text
+    assert "System X and system Y [Shared_2025_S]." not in repaired.text
+    shared = [detail for detail in kept if detail.citation_key == "Shared_2025_S"]
+    assert len(shared) == 1
+    assert shared[0].occurrence_id == 0
+    assert shared[0].status == VerificationStatus.SUPPORTED
+
+
+def test_citation_only_repair_targets_failed_repeated_sentence_occurrence():
+    """Identical repeated claims keep the supported occurrence, never the failed one."""
+    from paperhunter.agents.critic_agent import _build_strict_supported_only_fallback
+    from paperhunter.agents.state import (
+        SectionDraft,
+        SectionOutline,
+        VerificationDetail,
+        VerificationStatus,
+    )
+
+    repeated = "Alpha [Shared_2025_S]."
+    draft = SectionDraft(
+        section_key="body",
+        title="Body",
+        text=f"{repeated} {repeated}",
+        word_count=4,
+        citations=[],
+    )
+    outline = SectionOutline(
+        key="body", title="Body", target_length_words=100, section_type="body"
+    )
+    details = [
+        VerificationDetail(
+            citation_key="Shared_2025_S",
+            claim_text=repeated,
+            occurrence_id=0,
+            status=VerificationStatus.SUPPORTED,
+        ),
+        VerificationDetail(
+            citation_key="Shared_2025_S",
+            claim_text=repeated,
+            occurrence_id=1,
+            status=VerificationStatus.NOT_SUPPORTED,
+        ),
+    ]
+    for index in range(4):
+        key = f"Good_2025_{index}"
+        claim = f"Grounded {index} [{key}]."
+        draft.text += f" {claim}"
+        details.append(
+            VerificationDetail(
+                citation_key=key,
+                claim_text=claim,
+                occurrence_id=index + 2,
+                status=VerificationStatus.SUPPORTED,
+            )
+        )
+    draft.word_count = len(draft.text.split())
+
+    fallback = _build_strict_supported_only_fallback(
+        draft,
+        details,
+        outline,
+        allow_incomplete_length=True,
+    )
+
+    assert fallback is not None
+    repaired, kept = fallback
+    assert repaired.text.startswith("Alpha [Shared_2025_S]. Alpha.")
+    assert not repaired.text.startswith("Alpha. Alpha [Shared_2025_S].")
+    shared = [detail for detail in kept if detail.citation_key == "Shared_2025_S"]
+    assert len(shared) == 1
+    assert shared[0].occurrence_id == 0
 
 
 def test_strict_fallback_removes_only_failed_key_from_grouped_citation():
@@ -2028,6 +2168,7 @@ def test_strict_final_fallback_respects_duplicate_occurrence_counts():
     )
     details = [
         {
+            "occurrence_id": i,
             "citation_key": f"Paper_{i}_2025",
             "claim_text": claim,
             "source_chunk_id": f"chunk_{i}",
@@ -2040,6 +2181,7 @@ def test_strict_final_fallback_respects_duplicate_occurrence_counts():
     details.extend(
         [
             {
+                "occurrence_id": occurrence_id,
                 "citation_key": "Shared_2025_Source",
                 "claim_text": repeated,
                 "source_chunk_id": "shared_chunk",
@@ -2047,7 +2189,10 @@ def test_strict_final_fallback_respects_duplicate_occurrence_counts():
                 "confidence": 0.95,
                 "reasoning": "Occurrence-specific verdict.",
             }
-            for status in ("NOT_SUPPORTED", "SUPPORTED", "NOT_SUPPORTED")
+            for occurrence_id, status in enumerate(
+                ("NOT_SUPPORTED", "SUPPORTED", "NOT_SUPPORTED"),
+                start=4,
+            )
         ]
     )
     outline = SectionOutline.model_validate(
@@ -2115,7 +2260,7 @@ def test_strict_final_fallback_ignores_stale_failed_detail_when_text_is_supporte
 
     assert fallback is not None
     pruned, kept_details = fallback
-    assert pruned.text == draft.text.strip()
+    assert pruned.text == draft.text
     assert len(kept_details) == 5
 
 
@@ -2282,6 +2427,9 @@ def test_verify_section_applies_strict_final_fallback_at_attempt_limit():
     assert failed_claim not in section["text"]
     assert verification["passed"] is True
     assert verification["pass_rate"] == 1.0
+    assert [detail["occurrence_id"] for detail in verification["details"]] == list(
+        range(5)
+    )
 
 
 def test_verify_section_prunes_failed_citations_before_attempt_limit_for_length_repair():
@@ -2374,6 +2522,9 @@ def test_verify_section_prunes_failed_citations_before_attempt_limit_for_length_
     assert section["word_count"] < 800
     assert verification["passed"] is False
     assert verification["pass_rate"] == 1.0
+    assert [detail["occurrence_id"] for detail in verification["details"]] == list(
+        range(5)
+    )
     assert "[LENGTH / COMPLETENESS]" in section["critic_feedback"]
 
 

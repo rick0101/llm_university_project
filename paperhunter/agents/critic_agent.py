@@ -36,7 +36,7 @@ import json
 import re
 import time
 from datetime import datetime
-from typing import Any, Sequence
+from typing import Any, Sequence, TypedDict
 
 from paperhunter.agents.state import (
     PipelinePhase,
@@ -170,7 +170,20 @@ def _extract_claims_for_citation(
     return claims if claims else [f"(Citation [{bibtex_key}] used in the section)"]
 
 
-def _extract_citation_occurrences(text: str, context_chars: int = 300) -> list[dict[str, str]]:
+class CitationOccurrence(TypedDict):
+    occurrence_id: int
+    bibtex_key: str
+    claim: str
+    claim_start: int
+    claim_end: int
+    citation_start: int
+    citation_end: int
+
+
+def _extract_citation_occurrences(
+    text: str,
+    context_chars: int = 300,
+) -> list[CitationOccurrence]:
     """Return every claim-source occurrence in textual order.
 
     ``_extract_citations_from_text`` intentionally deduplicates keys for
@@ -180,7 +193,7 @@ def _extract_citation_occurrences(text: str, context_chars: int = 300) -> list[d
     """
     if not text:
         return []
-    occurrences: list[dict[str, str]] = []
+    occurrences: list[CitationOccurrence] = []
     false_positive = re.compile(
         r"^(Table|Figure|Section|Appendix|Algorithm|Equation|Step)_\d+$"
     )
@@ -213,7 +226,17 @@ def _extract_citation_occurrences(text: str, context_chars: int = 300) -> list[d
             sentence_end = min(ending_candidates)
         sentence = text[sentence_start:sentence_end].strip()
         for key in keys:
-            occurrences.append({"bibtex_key": key, "claim": sentence})
+            occurrences.append(
+                {
+                    "occurrence_id": len(occurrences),
+                    "bibtex_key": key,
+                    "claim": sentence,
+                    "claim_start": sentence_start,
+                    "claim_end": sentence_end,
+                    "citation_start": match.start(),
+                    "citation_end": match.end(),
+                }
+            )
     return occurrences
 
 
@@ -287,6 +310,116 @@ def _strip_failed_citation_key_once(
     return text, False
 
 
+def _align_details_to_occurrences(
+    details: list[VerificationDetail],
+    occurrences: list[CitationOccurrence],
+) -> dict[int, VerificationDetail] | None:
+    """Bind each verdict to one textual occurrence, rejecting ambiguous legacy data."""
+
+    def matches(detail: VerificationDetail, occurrence: CitationOccurrence) -> bool:
+        return (
+            detail.citation_key == occurrence["bibtex_key"]
+            and (detail.claim_text or "").strip()
+            == occurrence["claim"][:500].strip()
+        )
+
+    explicit_ids = [detail.occurrence_id for detail in details]
+    if any(occurrence_id is not None for occurrence_id in explicit_ids):
+        if any(occurrence_id is None for occurrence_id in explicit_ids):
+            return None
+        aligned: dict[int, VerificationDetail] = {}
+        for detail in details:
+            occurrence_id = detail.occurrence_id
+            if occurrence_id is None or occurrence_id in aligned:
+                return None
+            if occurrence_id >= len(occurrences):
+                return None
+            if not matches(detail, occurrences[occurrence_id]):
+                return None
+            aligned[occurrence_id] = detail
+        if set(aligned) != set(range(len(occurrences))):
+            return None
+        return aligned
+
+    # Legacy details lacked occurrence IDs. Accept only an unambiguous text-order
+    # alignment; mixed verdicts for duplicate key+claim identities fail closed.
+    occurrence_identities = [
+        (
+            occurrence["bibtex_key"],
+            occurrence["claim"][:500].strip(),
+        )
+        for occurrence in occurrences
+    ]
+    relevant = [
+        detail
+        for detail in details
+        if (detail.citation_key, (detail.claim_text or "").strip())
+        in occurrence_identities
+    ]
+    verdicts_by_identity: dict[tuple[str, str], set[VerificationStatus]] = {}
+    for detail in relevant:
+        identity = (detail.citation_key, (detail.claim_text or "").strip())
+        verdicts_by_identity.setdefault(identity, set()).add(detail.status)
+    if any(len(verdicts) > 1 for verdicts in verdicts_by_identity.values()):
+        return None
+    if len(relevant) != len(occurrences):
+        return None
+    aligned = {}
+    for occurrence_id, (detail, occurrence) in enumerate(zip(relevant, occurrences)):
+        if not matches(detail, occurrence):
+            return None
+        refreshed = VerificationDetail.from_dict(detail.to_dict())
+        refreshed.occurrence_id = occurrence_id
+        aligned[occurrence_id] = refreshed
+    return aligned
+
+
+def _remove_failed_citation_occurrences(
+    text: str,
+    occurrences: list[CitationOccurrence],
+    failed_ids: set[int],
+) -> str:
+    """Remove exact failed bracket members by immutable source offsets."""
+    by_span: dict[tuple[int, int], list[CitationOccurrence]] = {}
+    for occurrence in occurrences:
+        span = (occurrence["citation_start"], occurrence["citation_end"])
+        by_span.setdefault(span, []).append(occurrence)
+
+    repaired = text
+    failed_spans = {
+        span
+        for span, span_occurrences in by_span.items()
+        if any(occurrence["occurrence_id"] in failed_ids for occurrence in span_occurrences)
+    }
+    for start, end in sorted(failed_spans, reverse=True):
+        span_occurrences = by_span[(start, end)]
+        remaining_keys = [
+            occurrence["bibtex_key"]
+            for occurrence in span_occurrences
+            if occurrence["occurrence_id"] not in failed_ids
+        ]
+        edit_start = start
+        edit_end = end
+        replacement = f"[{', '.join(remaining_keys)}]" if remaining_keys else ""
+        if not remaining_keys:
+            prefix = repaired[:edit_start]
+            suffix = repaired[edit_end:]
+            preceding_separator = re.search(r"[,;]\s*$", prefix)
+            if preceding_separator:
+                edit_start = preceding_separator.start()
+            else:
+                following_separator = re.match(r"\s*[,;]\s*", suffix)
+                if following_separator:
+                    edit_end += following_separator.end()
+                    replacement = " "
+                elif suffix.startswith((".", "!", "?")):
+                    while edit_start > 0 and repaired[edit_start - 1] in " \t":
+                        edit_start -= 1
+        repaired = f"{repaired[:edit_start]}{replacement}{repaired[edit_end:]}"
+
+    return repaired
+
+
 def _build_strict_supported_only_fallback(
     draft: SectionDraft,
     details: Sequence[VerificationDetail | dict],
@@ -310,48 +443,52 @@ def _build_strict_supported_only_fallback(
         else VerificationDetail.from_dict(detail)
         for detail in details
     ]
-    failed_details = [
-        detail
+    occurrences = _extract_citation_occurrences(draft.text)
+    if not any(
+        detail.status != VerificationStatus.SUPPORTED
         for detail in normalized_details
-        if detail.status != VerificationStatus.SUPPORTED
-        and (detail.claim_text or "").strip()
-    ]
-    if not failed_details:
+    ):
+        return None
+    aligned_details = _align_details_to_occurrences(normalized_details, occurrences)
+    if aligned_details is None:
         return None
 
-    repaired_text = draft.text
-    for detail in failed_details:
-        repaired_text, _ = _strip_failed_citation_key_once(
-            repaired_text,
-            (detail.claim_text or "").strip(),
-            detail.citation_key,
-        )
-    repaired_text = re.sub(r"(?<=\S)[ \t]{2,}", " ", repaired_text)
-    repaired_text = re.sub(r"[ \t]+\n", "\n", repaired_text)
-    repaired_text = re.sub(r"\n{3,}", "\n\n", repaired_text).strip()
+    failed_ids = {
+        occurrence_id
+        for occurrence_id, detail in aligned_details.items()
+        if detail.status != VerificationStatus.SUPPORTED
+    }
 
-    supported_by_occurrence: dict[tuple[str, str], list[VerificationDetail]] = {}
-    for detail in normalized_details:
-        if detail.status != VerificationStatus.SUPPORTED:
-            continue
-        identity = (
-            detail.citation_key,
-            _claim_identity_without_citations(detail.claim_text or ""),
-        )
-        supported_by_occurrence.setdefault(identity, []).append(detail)
+    repaired_text = _remove_failed_citation_occurrences(
+        draft.text,
+        occurrences,
+        failed_ids,
+    )
+    surviving = [
+        (occurrence, aligned_details[occurrence["occurrence_id"]])
+        for occurrence in occurrences
+        if occurrence["occurrence_id"] not in failed_ids
+    ]
+    repaired_occurrences = _extract_citation_occurrences(repaired_text)
+    if len(repaired_occurrences) != len(surviving):
+        return None
 
     kept_details: list[VerificationDetail] = []
-    for occurrence in _extract_citation_occurrences(repaired_text):
-        identity = (
-            occurrence["bibtex_key"],
-            _claim_identity_without_citations(occurrence["claim"]),
-        )
-        matching_details = supported_by_occurrence.get(identity)
-        if not matching_details:
+    for new_occurrence, (old_occurrence, detail) in zip(
+        repaired_occurrences,
+        surviving,
+    ):
+        if detail.status != VerificationStatus.SUPPORTED:
             return None
-        matched = matching_details.pop(0)
-        refreshed = VerificationDetail.from_dict(matched.to_dict())
-        refreshed.claim_text = occurrence["claim"]
+        if new_occurrence["bibtex_key"] != old_occurrence["bibtex_key"]:
+            return None
+        if _claim_identity_without_citations(
+            new_occurrence["claim"]
+        ) != _claim_identity_without_citations(old_occurrence["claim"]):
+            return None
+        refreshed = VerificationDetail.from_dict(detail.to_dict())
+        refreshed.occurrence_id = new_occurrence["occurrence_id"]
+        refreshed.claim_text = new_occurrence["claim"][:500]
         kept_details.append(refreshed)
 
     distinct_keys = {detail.citation_key for detail in kept_details}
@@ -1285,6 +1422,7 @@ def verify_section(
             # Senza store, tutte le citazioni → SOURCE_NOT_FOUND
             details = [
                 VerificationDetail(
+                    occurrence_id=occurrence["occurrence_id"],
                     citation_key=occurrence["bibtex_key"],
                     claim_text=occurrence["claim"],
                     source_chunk_id=None,
@@ -1318,6 +1456,7 @@ def verify_section(
     source_cache: dict[str, list[dict]] = {}
 
     for occurrence in citation_occurrences:
+        occurrence_id = occurrence["occurrence_id"]
         bibtex_key = occurrence["bibtex_key"]
         claim_text = occurrence["claim"]
 
@@ -1338,6 +1477,7 @@ def verify_section(
             and cached_chunk_id == specific_chunk_id
         ):
             cached_detail = VerificationDetail.from_dict(cached)
+            cached_detail.occurrence_id = occurrence_id
             cached_detail.claim_text = claim_text[:500]
             verification_details.append(cached_detail)
             continue
@@ -1349,6 +1489,7 @@ def verify_section(
 
         if not all_source_chunks:
             verification_details.append(VerificationDetail(
+                occurrence_id=occurrence_id,
                 citation_key=bibtex_key,
                 claim_text=claim_text[:500],
                 source_chunk_id=None,
@@ -1363,6 +1504,7 @@ def verify_section(
         # DBLP-backed corpus. Reject it before spending a verifier call.
         if all_source_chunks and not _source_chunks_are_citable(all_source_chunks):
             verification_details.append(VerificationDetail(
+                occurrence_id=occurrence_id,
                 citation_key=bibtex_key,
                 claim_text=claim_text[:500],
                 source_chunk_id=None,
@@ -1389,6 +1531,7 @@ def verify_section(
             source_text = _augment_source_with_atomic_claim(source_text, claim_text)
 
         citations_to_verify.append({
+            "occurrence_id": occurrence_id,
             "bibtex_key": bibtex_key,
             "claim": claim_text,
             "source_text": source_text,
@@ -1442,6 +1585,7 @@ def verify_section(
                 source_excerpt = cd["source_chunks"][0].get("text", "")[:300]
 
             detail = VerificationDetail(
+                occurrence_id=cd["occurrence_id"],
                 citation_key=cd["bibtex_key"],
                 claim_text=cd["claim"][:500],
                 source_chunk_id=source_chunk_id,

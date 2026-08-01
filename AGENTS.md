@@ -125,20 +125,23 @@ Script standalone alla root: `run_writer_summaries_only.py`, `fix_hashes.py`, `f
   almeno 5 fonti distinte per sezione; nessuna auto-accettazione al limite.
   Il Critic opera come citation-audit indipendente per occorrenza: dopo ogni
   verifica strict, non soltanto all'ultimo tentativo, corregge deterministicamente
-  ogni singola occorrenza tramite il ledger occurrence-counted. Per una citazione
-  fallita rimuove soltanto la chiave non supportata dalla parentesi, preservando
-  byte-per-byte la prosa generale e le eventuali chiavi `SUPPORTED` dello stesso
-  gruppo; non gli è consentito sostituire liberamente una citazione fallita con
-  un'altra chiave. La prosa survey-level generale (spiegazioni concettuali,
-  organizzazione, transizioni e sintesi non attribuite a uno studio specifico)
-  può restare senza citazione. Quando una citazione è presente, invece, il claim
-  adiacente e i metadati bibliografici devono essere corretti al 100%; risultati
-  empirici, numeri, metodi nominati e attribuzioni ad autori/paper richiedono
-  supporto puntuale. Se il core verificato è sotto il floor, il Writer usa un
-  targeted extension pass additivo: il core resta byte-per-byte immutabile e una
-  sola chiamata produce esclusivamente nuovi paragrafi generali e/o citati. Output
-  vuoti, citazioni fuori allowlist o testo che ripete il core sono rifiutati senza
-  una seconda chiamata a pagamento. Tutte le nuove occorrenze citazionali vengono
+  ogni singola occorrenza tramite un `occurrence_id` 0-based assegnato durante il
+  parsing e propagato nel ledger. Per una citazione fallita rimuove soltanto la
+  chiave della parentesi associata a quello specifico ID, preservando la prosa
+  generale e le eventuali chiavi `SUPPORTED` dello stesso gruppo. Dettagli legacy
+  senza ID vengono accettati soltanto quando l'allineamento testuale è univoco;
+  verdetti misti per duplicati ambigui falliscono chiusi. Non è consentito
+  sostituire liberamente una citazione fallita con un'altra chiave. La prosa
+  survey-level generale (spiegazioni concettuali, organizzazione, transizioni e
+  sintesi non attribuite a uno studio specifico) può restare senza citazione.
+  Quando una citazione è presente, invece, il claim adiacente e i metadati
+  bibliografici devono essere corretti al 100%; risultati empirici, numeri,
+  metodi nominati e attribuzioni ad autori/paper richiedono supporto puntuale.
+  Se il core verificato è sotto il floor, il Writer usa un targeted extension
+  pass additivo: il core resta byte-per-byte immutabile e una sola chiamata
+  produce esclusivamente nuovi paragrafi generali e/o citati. Output vuoti,
+  citazioni fuori allowlist o testo che ripete il core sono rifiutati senza una
+  seconda chiamata a pagamento. Tutte le nuove occorrenze citazionali vengono
   riverificate dal Critic e quelle fallite vengono corrette una alla volta. Le
   revisioni non puramente additive preservano i claim già `SUPPORTED` tramite
   retry semantico validato (mai concatenazione meccanica).

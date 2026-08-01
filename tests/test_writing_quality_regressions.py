@@ -1864,7 +1864,7 @@ def test_citation_occurrences_keep_markdown_table_rows_isolated():
     ]
 
 
-def test_strict_final_fallback_prunes_failed_claims_when_supported_text_is_complete():
+def test_strict_fallback_removes_only_failed_citation_and_preserves_general_prose():
     from paperhunter.agents.critic_agent import (
         _build_strict_supported_only_fallback,
     )
@@ -1920,12 +1920,94 @@ def test_strict_final_fallback_prunes_failed_claims_when_supported_text_is_compl
 
     fallback = _build_strict_supported_only_fallback(draft, details, outline)
     assert fallback is not None
-    pruned, kept_details = fallback
-    assert failed_claim not in pruned.text
-    assert "  " not in pruned.text
-    assert all(claim in pruned.text for claim in supported_claims)
+    repaired, kept_details = fallback
+    assert "Unsupported perfection claim." in repaired.text
+    assert "Bad_2025_Claim" not in repaired.text
+    assert all(claim in repaired.text for claim in supported_claims)
     assert len(kept_details) == 5
-    assert pruned.word_count >= 800
+    assert repaired.word_count >= 800
+
+
+def test_citation_only_repair_keeps_separators_between_individual_brackets():
+    from paperhunter.agents.critic_agent import _strip_failed_citation_key_once
+
+    claim = "A general taxonomy [Good_2025_A], [Bad_2025_B], [Other_2025_C]."
+    repaired, changed = _strip_failed_citation_key_once(
+        claim,
+        claim,
+        "Bad_2025_B",
+    )
+
+    assert changed is True
+    assert repaired == "A general taxonomy [Good_2025_A], [Other_2025_C]."
+
+
+def test_strict_fallback_removes_only_failed_key_from_grouped_citation():
+    from paperhunter.agents.critic_agent import _build_strict_supported_only_fallback
+
+    grouped = "A general relation is useful [Good_2025_Source, Bad_2025_Source]."
+    expected = "A general relation is useful [Good_2025_Source]."
+    unique = [f"Grounded finding {i} [Paper_{i}_2025]." for i in range(4)]
+    draft = SectionDraft.model_validate(
+        {
+            "section_key": "body",
+            "title": "Body",
+            "text": " ".join(unique + [grouped]) + " " + ("general synthesis " * 430),
+            "status": SectionStatus.NEEDS_REVISION,
+            "iteration": 4,
+        }
+    )
+    details = [
+        {
+            "citation_key": f"Paper_{i}_2025",
+            "claim_text": claim,
+            "source_chunk_id": f"chunk_{i}",
+            "status": "SUPPORTED",
+            "confidence": 0.95,
+            "reasoning": "Direct support.",
+        }
+        for i, claim in enumerate(unique)
+    ]
+    details.extend(
+        [
+            {
+                "citation_key": "Good_2025_Source",
+                "claim_text": grouped,
+                "source_chunk_id": "good_chunk",
+                "status": "SUPPORTED",
+                "confidence": 0.95,
+                "reasoning": "Direct support.",
+            },
+            {
+                "citation_key": "Bad_2025_Source",
+                "claim_text": grouped,
+                "source_chunk_id": "bad_chunk",
+                "status": "NOT_SUPPORTED",
+                "confidence": 0.99,
+                "reasoning": "No support.",
+            },
+        ]
+    )
+    outline = SectionOutline.model_validate(
+        {
+            "key": "body",
+            "title": "Body",
+            "section_type": "body",
+            "target_length_words": 1000,
+        }
+    )
+
+    fallback = _build_strict_supported_only_fallback(draft, details, outline)
+
+    assert fallback is not None
+    repaired, kept_details = fallback
+    assert expected in repaired.text
+    assert "Bad_2025_Source" not in repaired.text
+    assert len(kept_details) == 5
+    good_detail = next(
+        item for item in kept_details if item.citation_key == "Good_2025_Source"
+    )
+    assert good_detail.claim_text == expected
 
 
 def test_strict_final_fallback_respects_duplicate_occurrence_counts():

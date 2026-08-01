@@ -237,6 +237,56 @@ def _check_section_length(
     )
 
 
+_CITATION_GROUP_RE = re.compile(
+    r"\[([A-Za-z][A-Za-z0-9_]*(?:\s*[,;]\s*[A-Za-z][A-Za-z0-9_]*)*)\]"
+)
+
+
+def _claim_identity_without_citations(claim: str) -> str:
+    """Normalize claim prose while ignoring citation-bracket composition."""
+    without_citations = _CITATION_GROUP_RE.sub("", claim or "")
+    without_citations = re.sub(r"\s+([.,;:!?])", r"\1", without_citations)
+    return re.sub(r"\s+", " ", without_citations).strip().lower()
+
+
+def _strip_failed_citation_key_once(
+    text: str,
+    claim: str,
+    citation_key: str,
+) -> tuple[str, bool]:
+    """Remove one failed key from its exact claim while preserving all prose."""
+    claim_start = text.find(claim)
+    if claim_start < 0:
+        return text, False
+
+    for match in _CITATION_GROUP_RE.finditer(claim):
+        keys = [
+            key.strip()
+            for key in re.split(r"[,;]", match.group(1))
+            if key.strip()
+        ]
+        if citation_key not in keys:
+            continue
+        remaining = [key for key in keys if key != citation_key]
+        prefix = claim[:match.start()]
+        suffix = claim[match.end():]
+        if remaining:
+            replacement = f"[{', '.join(remaining)}]"
+        else:
+            replacement = ""
+            if re.search(r"[,;]\s*$", prefix):
+                prefix = re.sub(r"[,;]\s*$", "", prefix)
+            elif re.match(r"\s*[,;]\s*", suffix):
+                suffix = re.sub(r"^\s*[,;]\s*", " ", suffix, count=1)
+        repaired_claim = f"{prefix}{replacement}{suffix}"
+        repaired_claim = re.sub(r"\s+([.,;:!?])", r"\1", repaired_claim)
+        repaired_text = (
+            f"{text[:claim_start]}{repaired_claim}{text[claim_start + len(claim):]}"
+        )
+        return repaired_text, True
+    return text, False
+
+
 def _build_strict_supported_only_fallback(
     draft: SectionDraft,
     details: Sequence[VerificationDetail | dict],
@@ -244,14 +294,15 @@ def _build_strict_supported_only_fallback(
     *,
     allow_incomplete_length: bool = False,
 ) -> tuple[SectionDraft, list[VerificationDetail]] | None:
-    """Prune failed cited claims occurrence-by-occurrence without inventing text.
+    """Remove failed citation keys occurrence-by-occurrence without rewriting prose.
 
-    This fallback is deliberately fail-closed and can run after every strict
+    This repair is deliberately fail-closed and can run after every strict
     verification. It succeeds only when every remaining citation occurrence can
     consume one already-SUPPORTED detail and source diversity remains sufficient.
-    The caller may explicitly transport a supported-only draft below the strict
-    length floor for one bounded targeted-completeness repair; it is never marked
-    verified until the unchanged length and coherence gates pass.
+    General survey prose is preserved; supported keys in grouped citations remain.
+    The caller may explicitly transport a repaired draft below the strict length
+    floor for one bounded targeted-completeness repair; it is never marked verified
+    until the unchanged length and coherence gates pass.
     """
     normalized_details = [
         detail
@@ -259,27 +310,25 @@ def _build_strict_supported_only_fallback(
         else VerificationDetail.from_dict(detail)
         for detail in details
     ]
-    failed_claims: list[str] = []
-    for detail in normalized_details:
-        if detail.status != VerificationStatus.SUPPORTED:
-            claim = (detail.claim_text or "").strip()
-            if claim:
-                failed_claims.append(claim)
-    if not failed_claims:
+    failed_details = [
+        detail
+        for detail in normalized_details
+        if detail.status != VerificationStatus.SUPPORTED
+        and (detail.claim_text or "").strip()
+    ]
+    if not failed_details:
         return None
 
-    pruned_text = draft.text
-    for claim in failed_claims:
-        if claim not in pruned_text:
-            # The detail can be stale after a preserved/reducer-merged state.
-            # Remaining occurrences are validated below against a bounded
-            # multiset of SUPPORTED occurrence records, so skipping it cannot
-            # retain an unsupported citation.
-            continue
-        pruned_text = pruned_text.replace(claim, "", 1)
-    pruned_text = re.sub(r"(?<=\S)[ \t]{2,}", " ", pruned_text)
-    pruned_text = re.sub(r"[ \t]+\n", "\n", pruned_text)
-    pruned_text = re.sub(r"\n{3,}", "\n\n", pruned_text).strip()
+    repaired_text = draft.text
+    for detail in failed_details:
+        repaired_text, _ = _strip_failed_citation_key_once(
+            repaired_text,
+            (detail.claim_text or "").strip(),
+            detail.citation_key,
+        )
+    repaired_text = re.sub(r"(?<=\S)[ \t]{2,}", " ", repaired_text)
+    repaired_text = re.sub(r"[ \t]+\n", "\n", repaired_text)
+    repaired_text = re.sub(r"\n{3,}", "\n\n", repaired_text).strip()
 
     supported_by_occurrence: dict[tuple[str, str], list[VerificationDetail]] = {}
     for detail in normalized_details:
@@ -287,39 +336,42 @@ def _build_strict_supported_only_fallback(
             continue
         identity = (
             detail.citation_key,
-            re.sub(r"\s+", " ", detail.claim_text or "").strip().lower(),
+            _claim_identity_without_citations(detail.claim_text or ""),
         )
         supported_by_occurrence.setdefault(identity, []).append(detail)
 
     kept_details: list[VerificationDetail] = []
-    for occurrence in _extract_citation_occurrences(pruned_text):
+    for occurrence in _extract_citation_occurrences(repaired_text):
         identity = (
             occurrence["bibtex_key"],
-            re.sub(r"\s+", " ", occurrence["claim"]).strip().lower(),
+            _claim_identity_without_citations(occurrence["claim"]),
         )
         matching_details = supported_by_occurrence.get(identity)
         if not matching_details:
             return None
-        kept_details.append(matching_details.pop(0))
+        matched = matching_details.pop(0)
+        refreshed = VerificationDetail.from_dict(matched.to_dict())
+        refreshed.claim_text = occurrence["claim"]
+        kept_details.append(refreshed)
 
     distinct_keys = {detail.citation_key for detail in kept_details}
     if len(distinct_keys) < settings.agents.min_citations_per_section:
         return None
 
-    pruned = SectionDraft.from_dict(draft.to_dict())
-    pruned.text = pruned_text
-    pruned.word_count = len(pruned_text.split())
-    length_ok, _ = _check_section_length(pruned, outline, strict=True)
+    repaired = SectionDraft.from_dict(draft.to_dict())
+    repaired.text = repaired_text
+    repaired.word_count = len(repaired_text.split())
+    length_ok, _ = _check_section_length(repaired, outline, strict=True)
     if not length_ok and not allow_incomplete_length:
         return None
-    pruned.citations = [
-        record for record in pruned.citations
+    repaired.citations = [
+        record for record in repaired.citations
         if record.bibtex_key in distinct_keys
     ]
-    pruned.status = SectionStatus.DRAFTED
-    note = "Strict final fallback pruned unsupported cited sentences."
-    pruned.writer_notes = f"{pruned.writer_notes.strip()} {note}".strip()
-    return pruned, kept_details
+    repaired.status = SectionStatus.DRAFTED
+    note = "Strict citation repair removed only unsupported citation keys."
+    repaired.writer_notes = f"{repaired.writer_notes.strip()} {note}".strip()
+    return repaired, kept_details
 
 
 # ============================================================================
@@ -1454,7 +1506,7 @@ def verify_section(
                 coverage_notes = (
                     "\n\n[CITATION COVERAGE]\n"
                     f"Found {distinct_citations} distinct sources after strict "
-                    "pruning."
+                    "citation repair."
                 )
             length_passed, length_message = _check_section_length(
                 draft,
@@ -1466,7 +1518,7 @@ def verify_section(
                 vr.passed = False
                 length_notes = f"\n\n[LENGTH / COMPLETENESS]\n{length_message}"
             logger.info(
-                "Strict supported-only fallback for '%s': %d supported occurrences, "
+                "Strict citation-only repair for '%s': %d supported occurrences, "
                 "%d words",
                 section_key,
                 len(verification_details),

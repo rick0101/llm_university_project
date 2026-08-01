@@ -130,18 +130,21 @@ Script standalone alla root: `run_writer_summaries_only.py`, `fix_hashes.py`, `f
   chiave della parentesi associata a quello specifico ID, preservando la prosa
   generale e le eventuali chiavi `SUPPORTED` dello stesso gruppo. Dettagli legacy
   senza ID vengono accettati soltanto quando l'allineamento testuale è univoco;
-  verdetti misti per duplicati ambigui falliscono chiusi. Non è consentito
-  sostituire liberamente una citazione fallita con un'altra chiave. La prosa
-  survey-level generale (spiegazioni concettuali, organizzazione, transizioni e
-  sintesi non attribuite a uno studio specifico) può restare senza citazione.
-  Quando una citazione è presente, invece, il claim adiacente e i metadati
-  bibliografici devono essere corretti al 100%; risultati empirici, numeri,
-  metodi nominati e attribuzioni ad autori/paper richiedono supporto puntuale.
-  Se il core verificato è sotto il floor, il Writer usa un targeted extension
-  pass additivo: il core resta byte-per-byte immutabile e una sola chiamata
-  produce esclusivamente nuovi paragrafi generali e/o citati. Output vuoti,
-  citazioni fuori allowlist o testo che ripete il core sono rifiutati senza una
-  seconda chiamata a pagamento. Tutte le nuove occorrenze citazionali vengono
+  verdetti misti per duplicati ambigui falliscono chiusi. Anche la cache dei
+  verdetti `SUPPORTED` è vincolata a chiave, claim normalizzato, `occurrence_id` e
+  `source_chunk_id`: un duplicato o una provenienza diversa deve tornare al
+  verificatore e non può ereditare il giudizio di un'altra occorrenza. Non è
+  consentito sostituire liberamente una citazione fallita con un'altra chiave. La
+  prosa survey-level generale (spiegazioni concettuali, organizzazione,
+  transizioni e sintesi non attribuite a uno studio specifico) può restare senza
+  citazione. Quando una citazione è presente, invece, il claim adiacente e i
+  metadati bibliografici devono essere corretti al 100%; risultati empirici,
+  numeri, metodi nominati e attribuzioni ad autori/paper richiedono supporto
+  puntuale. Se il core verificato è sotto il floor, il Writer usa un targeted
+  extension pass additivo: il core resta byte-per-byte immutabile e una sola
+  chiamata produce esclusivamente nuovi paragrafi generali e/o citati. Output
+  vuoti, citazioni fuori allowlist o testo che ripete il core sono rifiutati senza
+  una seconda chiamata a pagamento. Tutte le nuove occorrenze citazionali vengono
   riverificate dal Critic e quelle fallite vengono corrette una alla volta. Le
   revisioni non puramente additive preservano i claim già `SUPPORTED` tramite
   retry semantico validato (mai concatenazione meccanica).

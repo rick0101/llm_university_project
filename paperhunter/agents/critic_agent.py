@@ -407,6 +407,11 @@ def _remove_failed_citation_occurrences(
             preceding_separator = re.search(r"[,;]\s*$", prefix)
             if preceding_separator:
                 edit_start = preceding_separator.start()
+                left_line = prefix[:edit_start].rsplit("\n", 1)[-1]
+                if not left_line.strip():
+                    following_separator = re.match(r"\s*[,;]\s*", suffix)
+                    if following_separator:
+                        edit_end += following_separator.end()
             else:
                 following_separator = re.match(r"\s*[,;]\s*", suffix)
                 if following_separator:
@@ -613,26 +618,31 @@ def _select_tracked_citation_record(
     return best
 
 
-def _verification_cache_key(bibtex_key: str, claim: str) -> tuple[str, str]:
-    """Create a stable key for a verbatim citation occurrence."""
+def _verification_cache_key(
+    bibtex_key: str,
+    claim: str,
+    occurrence_id: int,
+    source_chunk_id: str,
+) -> tuple[str, str, int, str]:
+    """Key one unchanged textual occurrence and its exact provenance chunk."""
     normalized_claim = re.sub(r"\s+", " ", claim).strip().lower()
-    return bibtex_key, normalized_claim
+    return bibtex_key, normalized_claim, occurrence_id, source_chunk_id
 
 
 def _build_supported_verification_cache(
     verification: VerificationResult | dict | None,
-) -> dict[tuple[str, str], dict]:
-    """Cache only prior SUPPORTED judgments for unchanged claim/source pairs.
+) -> dict[tuple[str, str, int, str], dict]:
+    """Cache prior support only for an unchanged occurrence and source chunk.
 
-    Failed claims are always rechecked after repair.  A supported sentence kept
-    verbatim, however, has the same paper and evidence; asking a stochastic judge
-    again can turn progress backwards without any source change.
+    The occurrence ID prevents one SUPPORTED duplicate from being reused for a
+    sibling occurrence that previously failed. The source ID prevents stale
+    provenance from being copied when Writer tracking changes between iterations.
     """
     if verification is None:
         return {}
     if isinstance(verification, VerificationResult):
         verification = verification.to_dict()
-    cache: dict[tuple[str, str], dict] = {}
+    cache: dict[tuple[str, str, int, str], dict] = {}
     for raw_detail in verification.get("details", []):
         detail = (
             raw_detail.to_dict()
@@ -644,8 +654,23 @@ def _build_supported_verification_cache(
             continue
         key = str(detail.get("citation_key") or "")
         claim = str(detail.get("claim_text") or "")
-        if key and claim:
-            cache[_verification_cache_key(key, claim)] = detail
+        occurrence_id = detail.get("occurrence_id")
+        source_chunk_id = str(detail.get("source_chunk_id") or "")
+        if (
+            key
+            and claim
+            and isinstance(occurrence_id, int)
+            and not isinstance(occurrence_id, bool)
+            and source_chunk_id
+        ):
+            cache[
+                _verification_cache_key(
+                    key,
+                    claim,
+                    occurrence_id,
+                    source_chunk_id,
+                )
+            ] = detail
     return cache
 
 
@@ -1467,9 +1492,16 @@ def verify_section(
         )
         specific_chunk_id = tracked.get("chunk_id") if tracked else None
 
-        cached = supported_cache.get(
-            _verification_cache_key(bibtex_key, claim_text)
-        )
+        cached = None
+        if specific_chunk_id:
+            cached = supported_cache.get(
+                _verification_cache_key(
+                    bibtex_key,
+                    claim_text,
+                    occurrence_id,
+                    specific_chunk_id,
+                )
+            )
         cached_chunk_id = cached.get("source_chunk_id") if cached else None
         if (
             cached is not None

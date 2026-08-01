@@ -2322,6 +2322,184 @@ def test_strict_final_fallback_can_return_supported_only_draft_below_length_floo
     assert len(kept_details) == 5
 
 
+def test_citation_only_repair_does_not_leave_leading_separator():
+    from paperhunter.agents.critic_agent import (
+        _extract_citation_occurrences,
+        _remove_failed_citation_occurrences,
+    )
+
+    text = "; [Bad_2025_Key], General survey prose remains."
+    occurrences = _extract_citation_occurrences(text)
+
+    repaired = _remove_failed_citation_occurrences(text, occurrences, {0})
+
+    assert repaired == "General survey prose remains."
+
+
+def test_supported_cache_is_bound_to_exact_source_chunk():
+    from paperhunter.agents.critic_agent import (
+        _build_supported_verification_cache,
+        _verification_cache_key,
+    )
+
+    claim = "Grounded claim [Paper_2025_Key]."
+    cache = _build_supported_verification_cache(
+        {
+            "details": [
+                {
+                    "occurrence_id": 0,
+                    "citation_key": "Paper_2025_Key",
+                    "claim_text": claim,
+                    "source_chunk_id": "old_chunk",
+                    "status": "SUPPORTED",
+                    "confidence": 0.99,
+                    "reasoning": "Supported against old chunk.",
+                }
+            ]
+        }
+    )
+
+    assert _verification_cache_key(
+        "Paper_2025_Key", claim, 0, "old_chunk"
+    ) in cache
+    assert _verification_cache_key(
+        "Paper_2025_Key", claim, 0, "new_chunk"
+    ) not in cache
+
+
+def test_supported_cache_does_not_relabel_failed_duplicate_on_next_iteration():
+    """A SUPPORTED twin must not cache-hit a NOT_SUPPORTED occurrence ID."""
+    from paperhunter.agents.critic_agent import verify_section
+    from paperhunter.agents.state import CitationRecord
+    from paperhunter.config import settings
+
+    shared_sentence = "Alpha [Shared_2025_Source]."
+    shared_claim = f"{shared_sentence} {shared_sentence}"
+    new_claims = [
+        "New grounded finding A [NewA_2025_Source].",
+        "New grounded finding B [NewB_2025_Source].",
+    ]
+    outline = SectionOutline.model_validate(
+        {
+            "key": "body",
+            "title": "Body",
+            "section_type": "body",
+            "target_length_words": 100,
+        }
+    )
+    state = create_initial_state(outline=[outline])
+    text = f"{shared_claim} {' '.join(new_claims)} " + ("general synthesis " * 60)
+    state["sections"] = {
+        "body": SectionDraft.model_validate(
+            {
+                "section_key": "body",
+                "title": "Body",
+                "text": text,
+                "status": SectionStatus.DRAFTED,
+                "iteration": 2,
+                "citations": [
+                    CitationRecord(
+                        bibtex_key="Shared_2025_Source",
+                        claim=shared_sentence,
+                        chunk_id="shared_chunk",
+                        retrieval_score=1.0,
+                    ).to_dict(),
+                    CitationRecord(
+                        bibtex_key="NewA_2025_Source",
+                        claim=new_claims[0],
+                        chunk_id="new_a_chunk",
+                        retrieval_score=1.0,
+                    ).to_dict(),
+                    CitationRecord(
+                        bibtex_key="NewB_2025_Source",
+                        claim=new_claims[1],
+                        chunk_id="new_b_chunk",
+                        retrieval_score=1.0,
+                    ).to_dict(),
+                ],
+            }
+        ).to_dict()
+    }
+    state["verification_results"] = {
+        "body": {
+            "section_key": "body",
+            "passed": False,
+            "pass_rate": 0.5,
+            "details": [
+                {
+                    "occurrence_id": 0,
+                    "citation_key": "Shared_2025_Source",
+                    "claim_text": shared_sentence,
+                    "source_chunk_id": "shared_chunk",
+                    "status": "SUPPORTED",
+                    "confidence": 0.99,
+                    "reasoning": "Supported first twin.",
+                },
+                {
+                    "occurrence_id": 1,
+                    "citation_key": "Shared_2025_Source",
+                    "claim_text": shared_sentence,
+                    "source_chunk_id": "shared_chunk",
+                    "status": "NOT_SUPPORTED",
+                    "confidence": 0.99,
+                    "reasoning": "Failed second twin.",
+                },
+            ],
+            "feedback": "",
+            "iteration": 1,
+        }
+    }
+
+    store = MagicMock()
+    store.get_paper_chunks.side_effect = lambda key, **_kwargs: [
+        {
+            "chunk_id": {
+                "Shared_2025_Source": "shared_chunk",
+                "NewA_2025_Source": "new_a_chunk",
+                "NewB_2025_Source": "new_b_chunk",
+            }[key],
+            "text": f"Evidence for {key}.",
+            "metadata": {
+                "bibtex_key": key,
+                "source_role": "citable",
+                "is_citable": True,
+                "chunk_type": "results",
+            },
+        }
+    ]
+    verified_batches: list[list[int]] = []
+
+    def _batch_results(items, **_kwargs):
+        verified_batches.append([item["occurrence_id"] for item in items])
+        return [
+            {
+                "status": "SUPPORTED",
+                "confidence": 0.99,
+                "reasoning": "Fresh verifier call.",
+            }
+            for _ in items
+        ]
+
+    with (
+        patch.object(settings.agents, "critic_two_pass", False),
+        patch.object(settings.evolution, "enabled", False),
+        patch(
+            "paperhunter.agents.critic_agent._verify_citation_batch",
+            side_effect=_batch_results,
+        ),
+    ):
+        verify_section(
+            state,
+            "body",
+            store=store,
+            llm=MagicMock(),
+            strict=False,
+            generate_feedback=False,
+        )
+
+    assert verified_batches == [[1, 2, 3]]
+
+
 def test_verify_section_applies_strict_final_fallback_at_attempt_limit():
     from paperhunter.agents.critic_agent import verify_section
     from paperhunter.agents.state import CitationRecord
@@ -2952,6 +3130,7 @@ def test_critic_caches_only_unchanged_supported_occurrences():
     previous = {
         "details": [
             {
+                "occurrence_id": 0,
                 "citation_key": "Smith_2025_System",
                 "claim_text": "The method blocks the attack [Smith_2025_System].",
                 "source_chunk_id": "chunk_supported",
@@ -2961,6 +3140,7 @@ def test_critic_caches_only_unchanged_supported_occurrences():
                 "reasoning": "Direct match.",
             },
             {
+                "occurrence_id": 1,
                 "citation_key": "Jones_2024_Benchmark",
                 "claim_text": "The benchmark has 99 tasks [Jones_2024_Benchmark].",
                 "source_chunk_id": "chunk_failed",
@@ -2976,5 +3156,7 @@ def test_critic_caches_only_unchanged_supported_occurrences():
     cached = cache[(
         "Smith_2025_System",
         "the method blocks the attack [smith_2025_system].",
+        0,
+        "chunk_supported",
     )]
     assert cached["source_chunk_id"] == "chunk_supported"

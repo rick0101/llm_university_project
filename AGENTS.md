@@ -123,10 +123,20 @@ Script standalone alla root: `run_writer_summaries_only.py`, `fix_hashes.py`, `f
   il dettaglio è in `citation_integrity_report.json`.
 - **Critic strict**: 100% dei claim citati deve risultare `SUPPORTED`, con
   almeno 5 fonti distinte per sezione; nessuna auto-accettazione al limite.
-  Le revisioni puramente citazionali preservano i claim già `SUPPORTED` tramite
-  retry semantico validato (mai concatenazione meccanica). Al limite, il Critic
-  può potare per occorrenza i claim falliti e restituire un draft supported-only
-  ancora corto per un unico repair di completezza; il gate 80% resta bloccante.
+  Il Critic opera come citation-audit indipendente per occorrenza: dopo ogni
+  verifica strict, non soltanto all'ultimo tentativo, pota deterministicamente
+  ogni singolo claim fallito tramite il ledger occurrence-counted. Il Writer
+  riceve quindi soltanto un core supported-only; non gli è consentito sostituire
+  liberamente una citazione fallita con un'altra chiave. Se il core verificato è
+  sotto il floor, il Writer usa un targeted extension pass additivo: il core resta
+  byte-for-byte immutabile, una sola chiamata produce esclusivamente nuovi
+  paragrafi citati, e output vuoti, privi di citazioni o che ripetano il core sono
+  rifiutati senza una seconda chiamata a pagamento. Tutte le nuove occorrenze
+  vengono riverificate dal Critic e quelle fallite vengono nuovamente potate una
+  alla volta. Le revisioni non puramente additive preservano i claim già
+  `SUPPORTED` tramite retry semantico validato (mai concatenazione meccanica).
+  Il draft supported-only può restare corto per un repair di completezza bounded;
+  il gate 80% resta bloccante.
   Una bocciatura di coerenza può consolidare o riscrivere i claim supportati,
   obbligandone la riverifica, e dispone di un solo tentativo aggiuntivo; se quel
   tentativo viene potato sotto il floor, è consentito un solo repair di

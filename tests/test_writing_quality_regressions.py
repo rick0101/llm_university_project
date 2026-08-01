@@ -1076,6 +1076,137 @@ def test_length_completion_keeps_longest_valid_candidate_when_retry_regresses():
     assert candidate["word_count"] == 790
 
 
+def test_targeted_length_extension_preserves_verified_core_and_uses_one_call():
+    """A short 100%-supported draft must grow by addition, never by full rewrite."""
+    from paperhunter.agents.state import CitationRecord
+    from paperhunter.agents.writer_agent import write_section
+    from paperhunter.config import settings
+
+    supported_claim = "The verified core finding is retained [Paper_0]."
+    core = supported_claim + " " + ("grounded core " * 346)
+    extension = (
+        "A complementary experiment broadens the evidence [Paper_1]. "
+        + ("grounded extension " * 70)
+    )
+    outline = SectionOutline.model_validate(
+        {
+            "key": "body",
+            "title": "Body",
+            "section_type": "body",
+            "target_length_words": 1000,
+        }
+    )
+    state = create_initial_state(outline=[outline])
+    state["sections"] = {
+        "body": SectionDraft.model_validate(
+            {
+                "section_key": "body",
+                "title": "Body",
+                "text": core,
+                "status": SectionStatus.NEEDS_REVISION,
+                "iteration": 2,
+                "critic_feedback": (
+                    "[LENGTH / COMPLETENESS]\n"
+                    "Section is fully supported but below the 800-word floor."
+                ),
+                "citations": [
+                    CitationRecord(
+                        bibtex_key="Paper_0",
+                        claim=supported_claim,
+                        chunk_id="c0",
+                        retrieval_score=1.0,
+                    ).to_dict()
+                ],
+            }
+        ).to_dict()
+    }
+    state["verification_results"] = {
+        "body": {
+            "section_key": "body",
+            "total_citations": 1,
+            "supported": 1,
+            "details": [
+                {
+                    "citation_key": "Paper_0",
+                    "claim_text": supported_claim,
+                    "source_chunk_id": "c0",
+                    "status": "SUPPORTED",
+                    "confidence": 1.0,
+                }
+            ],
+            "pass_rate": 1.0,
+            "passed": False,
+            "iteration": 2,
+        }
+    }
+    chunks = [_chunk(f"Paper_{i}", f"c{i}", 1.0) for i in range(5)]
+    response = json.dumps(
+        {
+            "text": extension,
+            "citations": [
+                {
+                    "bibtex_key": "Paper_1",
+                    "claim": "A complementary experiment broadens the evidence.",
+                    "chunk_id": "c1",
+                }
+            ],
+            "notes": "targeted extension only",
+        }
+    )
+
+    with (
+        patch.object(settings.agents, "writer_mode", "static"),
+        patch.object(settings.agents, "min_citations_per_section", 5),
+        patch(
+            "paperhunter.agents.writer_agent._generate_rag_queries",
+            return_value=["query"],
+        ),
+        patch(
+            "paperhunter.agents.writer_agent._retrieve_context_for_section",
+            return_value=(chunks, [item["chunk_id"] for item in chunks]),
+        ),
+        patch("paperhunter.agents.writer_agent.get_llm", return_value=MagicMock()),
+        patch(
+            "paperhunter.agents.writer_agent.llm_call_with_retry",
+            return_value=response,
+        ) as call_llm,
+    ):
+        result = write_section(
+            state,
+            "body",
+            retriever=MagicMock(),
+            use_reranker=False,
+        )
+
+    candidate = result["sections"]["body"]
+    assert call_llm.call_count == 1
+    assert candidate["text"].startswith(core)
+    assert extension.strip() in candidate["text"]
+    assert candidate["word_count"] > len(core.split())
+    assert candidate["iteration"] == 3
+
+
+def test_targeted_extension_rejects_uncited_new_prose():
+    """Length padding without a traceable citation must never enter the verified core."""
+    from paperhunter.agents.writer_agent import _merge_targeted_extension
+
+    assert _merge_targeted_extension(
+        "Verified core [Paper_0].",
+        "This is a long factual extension with no evidence marker.",
+    ) is None
+
+
+def test_targeted_extension_rejects_citations_outside_the_evidence_allowlist():
+    """A fabricated key cannot become uncited padding after whitelist stripping."""
+    from paperhunter.agents.writer_agent import _merge_targeted_extension
+
+    assert _merge_targeted_extension(
+        "Verified core [Paper_0].",
+        "A fabricated extension [Invented_999].",
+        citable_keys={"Paper_0"},
+    ) is None
+
+
 def test_revision_stabilizer_carries_provenance_only_for_supported_evidence_already_present():
     from paperhunter.agents.state import CitationRecord
     from paperhunter.agents.writer_agent import (
@@ -2035,7 +2166,7 @@ def test_verify_section_applies_strict_final_fallback_at_attempt_limit():
     assert verification["pass_rate"] == 1.0
 
 
-def test_verify_section_keeps_supported_only_fallback_for_length_repair():
+def test_verify_section_prunes_failed_citations_before_attempt_limit_for_length_repair():
     from paperhunter.agents.critic_agent import verify_section
     from paperhunter.agents.state import CitationRecord
     from paperhunter.config import settings
@@ -2060,7 +2191,7 @@ def test_verify_section_keeps_supported_only_fallback_for_length_repair():
                 "title": "Body",
                 "text": " ".join(claims) + " " + ("synthesis " * 300),
                 "status": SectionStatus.DRAFTED,
-                "iteration": settings.agents.max_writer_iterations,
+                "iteration": settings.agents.max_writer_iterations - 1,
                 "citations": [
                     CitationRecord(
                         bibtex_key=key,

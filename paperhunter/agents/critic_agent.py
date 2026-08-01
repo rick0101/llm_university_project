@@ -1418,10 +1418,17 @@ def verify_section(
         vr.passed = False
         length_notes = f"\n\n[LENGTH / COMPLETENESS]\n{length_message}"
 
+    has_failed_occurrences = any(
+        detail.status != VerificationStatus.SUPPORTED
+        for detail in verification_details
+    )
     if (
         strict
-        and draft.iteration >= settings.agents.max_writer_iterations
         and not vr.passed
+        and (
+            has_failed_occurrences
+            or draft.iteration >= settings.agents.max_writer_iterations
+        )
     ):
         fallback = _build_strict_supported_only_fallback(
             draft,
@@ -1457,7 +1464,7 @@ def verify_section(
                 vr.passed = False
                 length_notes = f"\n\n[LENGTH / COMPLETENESS]\n{length_message}"
             logger.info(
-                "Strict final fallback for '%s': %d supported occurrences, "
+                "Strict supported-only fallback for '%s': %d supported occurrences, "
                 "%d words",
                 section_key,
                 len(verification_details),

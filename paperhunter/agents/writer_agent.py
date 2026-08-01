@@ -813,6 +813,97 @@ def _get_special_instructions(section_type: str) -> str:
     return ""
 
 
+def _is_fully_supported_length_repair(
+    existing_draft: SectionDraft | None,
+    verification: Any | None,
+) -> bool:
+    """Return True only for a short draft whose cited occurrences are all verified."""
+    if existing_draft is None:
+        return False
+    feedback = existing_draft.critic_feedback or ""
+    if "[LENGTH / COMPLETENESS]" not in feedback or "[COHERENCE PASS" in feedback:
+        return False
+    if verification is not None and hasattr(verification, "to_dict"):
+        verification = verification.to_dict()
+    if not isinstance(verification, dict):
+        return False
+    details = verification.get("details") or []
+    if not details:
+        return False
+    for raw_detail in details:
+        if hasattr(raw_detail, "to_dict"):
+            raw_detail = raw_detail.to_dict()
+        if not isinstance(raw_detail, dict):
+            return False
+        status = str(raw_detail.get("status") or "").split(".")[-1].upper()
+        if status != "SUPPORTED":
+            return False
+    return True
+
+
+def _build_targeted_extension_instructions(
+    outline: SectionOutline,
+    existing_draft: SectionDraft,
+) -> str:
+    """Build an additive-only completion brief that freezes the verified core."""
+    required_words = max(
+        settings.agents.min_section_words,
+        int(outline.target_length_words * 0.80),
+    )
+    existing_words = max(
+        int(existing_draft.word_count or 0),
+        _count_words(existing_draft.text or ""),
+    )
+    requested_words = max(80, int((required_words - existing_words) * 1.15))
+    return (
+        "\n\n### TARGETED VERIFIED-CORE EXTENSION\n\n"
+        "The current draft below is already citation-verified and IMMUTABLE. "
+        "Return ONLY new paragraphs for an additive extension in the JSON `text` "
+        "field; do not repeat, paraphrase, summarize, edit, or delete any part of "
+        "the verified core. The application will append your `text` after that core. "
+        f"Write approximately {requested_words} new words so the combined section "
+        f"reaches at least {required_words} words. Every new factual sentence must "
+        "contain an adjacent citation from the retrieved evidence, and every citation "
+        "must directly support the complete sentence. Use atomic claims; if evidence "
+        "is insufficient, omit the claim instead of guessing. Return citation records "
+        "only for the new paragraphs. Do not emit headings that duplicate the section "
+        "title.\n\n"
+        "<verified_core immutable=\"true\">\n"
+        f"{existing_draft.text.strip()}\n"
+        "</verified_core>\n"
+    )
+
+
+def _merge_targeted_extension(
+    core: str,
+    extension: str,
+    *,
+    citable_keys: set[str] | None = None,
+) -> str | None:
+    """Append only genuinely new cited prose while preserving the core byte-for-byte."""
+    core_text = core or ""
+    extension_text = (extension or "").strip()
+    if citable_keys is not None:
+        extension_text, _ = _enforce_citation_whitelist(
+            extension_text,
+            citable_keys,
+        )
+    if not core_text.strip() or not extension_text:
+        return None
+    normalized_core = core_text.rstrip()
+    if extension_text.startswith(normalized_core):
+        extension_text = extension_text[len(normalized_core):].strip()
+    elif normalized_core in extension_text:
+        return None
+    if not extension_text or not re.search(
+        r"\[[A-Za-z][A-Za-z0-9_]*(?:[,;]\s*[A-Za-z][A-Za-z0-9_]*)*\]",
+        extension_text,
+    ):
+        return None
+    separator = "\n" if core_text.endswith("\n") else "\n\n"
+    return f"{core_text}{separator}{extension_text}"
+
+
 def _build_critic_repair_instructions(
     outline: SectionOutline,
     critic_feedback: str | None,
@@ -2557,14 +2648,24 @@ def write_section(
         logger.warning(err)
         return {"sections": {}, "provenance": [], "errors": [err]}
 
-    special_instructions = _get_special_instructions(target_outline.section_type)
-
-    special_instructions += _build_critic_repair_instructions(
-        target_outline,
-        critic_feedback,
-        existing_draft=existing_draft,
-        verification=verification,
+    targeted_extension = _is_fully_supported_length_repair(
+        existing_draft,
+        verification,
     )
+    special_instructions = _get_special_instructions(target_outline.section_type)
+    if targeted_extension:
+        assert existing_draft is not None
+        special_instructions += _build_targeted_extension_instructions(
+            target_outline,
+            existing_draft,
+        )
+    else:
+        special_instructions += _build_critic_repair_instructions(
+            target_outline,
+            critic_feedback,
+            existing_draft=existing_draft,
+            verification=verification,
+        )
 
     prompt = _WRITER_PROMPT_TEMPLATE.format(
         title=target_outline.title,
@@ -2662,6 +2763,53 @@ def write_section(
             }
         return {"sections": {}, "provenance": [], "errors": errors}
 
+    if targeted_extension:
+        assert existing_draft is not None
+        merged_text = _merge_targeted_extension(
+            existing_draft.text,
+            str(parsed.get("text") or ""),
+            citable_keys=citable_keys,
+        )
+        if merged_text is None:
+            logger.warning(
+                "Targeted extension for '%s' was empty, uncited, or repeated the "
+                "verified core; preserving the core without a second paid call.",
+                section_key,
+            )
+            preserved = SectionDraft.from_dict(existing_draft.to_dict())
+            preserved.iteration = current_iteration
+            preserved.status = (
+                SectionStatus.DRAFTED
+                if current_iteration >= max_iterations
+                else SectionStatus.NEEDS_REVISION
+            )
+            return {
+                "sections": {section_key: preserved.to_dict()},
+                "provenance": [],
+                "current_phase": PipelinePhase.WRITING.value,
+                "errors": [],
+                "metadata": {
+                    "last_writer_time": round(time.time() - t0, 1),
+                    "last_writer_mode": "static-targeted-extension",
+                    "revision_preserved": section_key,
+                    "revision_preserved_reason": "invalid_targeted_extension",
+                },
+            }
+        parsed = dict(parsed)
+        parsed["text"] = merged_text
+        parsed["citations"] = [
+            citation.to_dict() for citation in existing_draft.citations
+        ] + list(parsed.get("citations") or [])
+        parsed["notes"] = (
+            "[targeted-extension] " + str(parsed.get("notes") or "")
+        ).strip()
+        logger.info(
+            "Targeted extension for '%s' preserved %d core words and added %d words.",
+            section_key,
+            _count_words(existing_draft.text),
+            _count_words(merged_text) - _count_words(existing_draft.text),
+        )
+
     elapsed = time.time() - t0
     candidate_errors_start = len(errors)
     result = _build_section_result(
@@ -2695,6 +2843,10 @@ def write_section(
             )
             needs_length_repair = (
                 candidate.word_count < required_words
+                and not (
+                    targeted_extension
+                    and candidate.word_count > existing_words
+                )
                 and (
                     is_explicit_length_repair
                     or candidate.word_count <= existing_words

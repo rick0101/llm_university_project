@@ -30,3 +30,12 @@ def test_completed_manuscript_runs_auto_export():
 
     assert exported is True
     auto_export.assert_called_once_with(state, args, logger)
+
+
+def test_cli_completion_uses_current_phase_from_pipeline_summary():
+    from paperhunter.main import _pipeline_summary_completed
+
+    assert _pipeline_summary_completed({"current_phase": "completed"}) is True
+    assert _pipeline_summary_completed({"current_phase": "COMPLETED"}) is True
+    assert _pipeline_summary_completed({"current_phase": "assembling"}) is False
+    assert _pipeline_summary_completed({"phase": "COMPLETED"}) is False

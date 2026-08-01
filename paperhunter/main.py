@@ -1103,6 +1103,12 @@ def _build_communities(args, logger) -> int:
 # Subcommand: write
 # ═══════════════════════════════════════════════════════════════════════════
 
+
+def _pipeline_summary_completed(summary: dict) -> bool:
+    """Return whether the canonical summary phase denotes successful completion."""
+    return str(summary.get("current_phase") or "").lower() == "completed"
+
+
 def cmd_write(args: argparse.Namespace) -> int:
     """Esegue la pipeline agentica completa (LangGraph)."""
     logger = _get_logger("paperhunter.write")
@@ -1165,7 +1171,7 @@ def cmd_write(args: argparse.Namespace) -> int:
         if not args.no_export:
             _auto_export_if_ready(state, args, logger)
 
-        return 0 if summary.get("phase") == "COMPLETED" else 1
+        return 0 if _pipeline_summary_completed(summary) else 1
 
     except Exception as e:
         logger.error(f"Errore pipeline: {e}", exc_info=True)
@@ -1199,7 +1205,7 @@ def _write_resume(args, logger) -> int:
     if not args.no_export:
         _auto_export_if_ready(state, args, logger)
 
-    return 0 if summary.get("phase") == "COMPLETED" else 1
+    return 0 if _pipeline_summary_completed(summary) else 1
 
 
 def _auto_export_if_ready(state, args, logger) -> bool:

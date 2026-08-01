@@ -521,10 +521,10 @@ def step_write() -> dict:
             "final_paper_length": len(state.get("final_paper", "")),
         }
 
-        ok = summary.get("phase") == "COMPLETED" and state.get("final_paper")
+        ok = str(summary.get("current_phase") or "").lower() == "completed" and state.get("final_paper")
         log_step("write", "OK" if ok else "WARNING", details)
 
-        logger.info(f"Pipeline: phase={summary.get('phase')}, "
+        logger.info(f"Pipeline: phase={summary.get('current_phase')}, "
                      f"sections={summary.get('total_sections')}, "
                      f"citations={summary.get('total_citations')}, "
                      f"{elapsed:.0f}s")

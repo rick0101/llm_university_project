@@ -224,15 +224,70 @@ def _extract_citation_occurrences(
             ending_candidates.append(newline)
         if ending_candidates:
             sentence_end = min(ending_candidates)
-        sentence = text[sentence_start:sentence_end].strip()
+
+        # Sequential citation groups in one grammatical sentence commonly cite
+        # separate clauses. Verify each group against only its local clause so a
+        # source is not penalized for a later, separately cited proposition.
+        def _is_citation_group(candidate: re.Match[str]) -> bool:
+            candidate_keys = [
+                item.strip() for item in re.split(r"[,;]", candidate.group(1))
+            ]
+            return any(
+                re.fullmatch(
+                    r"[A-Za-z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+",
+                    item,
+                )
+                and not false_positive.match(item)
+                for item in candidate_keys
+            )
+
+        prior_groups = [
+            candidate
+            for candidate in re.finditer(
+                r"\[([^\]]+)\]",
+                text[sentence_start:match.start()],
+            )
+            if _is_citation_group(candidate)
+        ]
+        claim_start = sentence_start
+        if prior_groups:
+            previous_end = sentence_start + prior_groups[-1].end()
+            bridge = text[previous_end:match.start()]
+            leading_separator = re.match(r"\s*[,;:]\s*", bridge)
+            claim_start = previous_end + (
+                leading_separator.end() if leading_separator else 0
+            )
+
+        following_group = next(
+            (
+                candidate
+                for candidate in re.finditer(
+                    r"\[([^\]]+)\]",
+                    text[match.end():sentence_end],
+                )
+                if _is_citation_group(candidate)
+            ),
+            None,
+        )
+        following_clause = re.match(
+            r"\s*(?:[,;:]\s*)?(?:and|but|while|whereas|although)\b",
+            text[match.end():sentence_end],
+            flags=re.IGNORECASE,
+        )
+        claim_end = (
+            match.end()
+            if following_group is not None or following_clause is not None
+            else sentence_end
+        )
+        sentence = text[claim_start:claim_end].strip()
         for key in keys:
             occurrences.append(
                 {
                     "occurrence_id": len(occurrences),
                     "bibtex_key": key,
                     "claim": sentence,
-                    "claim_start": sentence_start,
-                    "claim_end": sentence_end,
+                    "claim_start": claim_start,
+                    "claim_end": claim_end,
                     "citation_start": match.start(),
                     "citation_end": match.end(),
                 }

@@ -1842,6 +1842,36 @@ def test_revision_stabilizer_does_not_restore_mixed_status_citation_group():
     )
 
 
+def test_citation_occurrences_scope_sequential_citations_to_local_clauses():
+    """Separate citations in one sentence must not inherit each other's claims."""
+    from paperhunter.agents.critic_agent import _extract_citation_occurrences
+
+    text = (
+        "Backdoors can be introduced during SFT, RLHF, or pre-training "
+        "[Souly_2025_LLMs], and federated learning adds poisoning vectors via "
+        "malicious clients [Mamun_2025_LLMs]."
+    )
+
+    occurrences = _extract_citation_occurrences(text)
+
+    assert [item["claim"] for item in occurrences] == [
+        (
+            "Backdoors can be introduced during SFT, RLHF, or pre-training "
+            "[Souly_2025_LLMs]"
+        ),
+        (
+            "and federated learning adds poisoning vectors via malicious clients "
+            "[Mamun_2025_LLMs]."
+        ),
+    ]
+
+    uncited_following_clause = text.replace(" [Mamun_2025_LLMs]", "")
+    assert _extract_citation_occurrences(uncited_following_clause)[0]["claim"] == (
+        "Backdoors can be introduced during SFT, RLHF, or pre-training "
+        "[Souly_2025_LLMs]"
+    )
+
+
 def test_citation_occurrences_keep_markdown_table_rows_isolated():
     """A table citation claim must stop at its row, not consume later rows/prose."""
     from paperhunter.agents.critic_agent import _extract_citation_occurrences
@@ -1953,7 +1983,10 @@ def test_citation_only_repair_keeps_separators_between_individual_brackets():
 
 def test_citation_only_repair_targets_failed_bracket_occurrence_not_first_match():
     """Mixed verdicts for one key must remove the exact failed bracket."""
-    from paperhunter.agents.critic_agent import _build_strict_supported_only_fallback
+    from paperhunter.agents.critic_agent import (
+        _build_strict_supported_only_fallback,
+        _extract_citation_occurrences,
+    )
     from paperhunter.agents.state import (
         SectionDraft,
         SectionOutline,
@@ -1962,6 +1995,7 @@ def test_citation_only_repair_targets_failed_bracket_occurrence_not_first_match(
     )
 
     text = "System X [Shared_2025_S] and system Y [Shared_2025_S]."
+    shared_occurrences = _extract_citation_occurrences(text)
     draft = SectionDraft(
         section_key="body",
         title="Body",
@@ -1975,13 +2009,13 @@ def test_citation_only_repair_targets_failed_bracket_occurrence_not_first_match(
     details = [
         VerificationDetail(
             citation_key="Shared_2025_S",
-            claim_text=text,
+            claim_text=shared_occurrences[0]["claim"],
             occurrence_id=0,
             status=VerificationStatus.SUPPORTED,
         ),
         VerificationDetail(
             citation_key="Shared_2025_S",
-            claim_text=text,
+            claim_text=shared_occurrences[1]["claim"],
             occurrence_id=1,
             status=VerificationStatus.NOT_SUPPORTED,
         ),

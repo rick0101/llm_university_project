@@ -1601,8 +1601,9 @@ def verify_all_sections(
     # Filtra sezioni da verificare
     sections_to_verify = [
         (k, v) for k, v in sections.items()
-        if v.status == SectionStatus.DRAFTED
-        and outline_map.get(k, SectionOutline(key=k, title=k)).section_type not in skip_types
+        if k in outline_map
+        and v.status == SectionStatus.DRAFTED
+        and outline_map[k].section_type not in skip_types
     ]
 
     if not sections_to_verify:

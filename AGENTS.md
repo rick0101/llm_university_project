@@ -129,11 +129,16 @@ Script standalone alla root: `run_writer_summaries_only.py`, `fix_hashes.py`, `f
   Una bocciatura di coerenza può consolidare o riscrivere i claim supportati,
   obbligandone la riverifica, e dispone di un solo tentativo aggiuntivo; se quel
   tentativo viene potato sotto il floor, è consentito un solo repair di
-  completezza finale distinto. Le risposte Writer JSON-like malformate non
-  diventano mai prosa: si recupera solo l'ultimo oggetto JSON completo oppure si
-  rifiuta la risposta fail-closed.
+  completezza finale distinto. Un repair marcato `[LENGTH / COMPLETENESS]` che
+  cresce ma resta sotto l'80% attiva comunque il retry semantico deterministico,
+  senza consumare una nuova iterazione Writer. Le risposte Writer JSON-like
+  malformate non diventano mai prosa: si recupera solo l'ultimo oggetto JSON
+  completo oppure si rifiuta la risposta fail-closed.
 - **Auto-invalidazione** dei summary quando i chunk a monte cambiano (`summarization/invalidation_manager.py`).
-- **Checkpoint + resume** in fase write (`postprocessing/checkpoint_manager.py`, `--resume`).
+- **Checkpoint + resume** in fase write (`postprocessing/checkpoint_manager.py`, `--resume`):
+  i checkpoint Writer per-sezione, le revisioni Writer e le verifiche Critic
+  sono sempre filtrati sulle chiavi dell'outline corrente, così cache di outline
+  precedenti non entrano nello stato né consumano chiamate LLM.
 - **Provenance tracking** per ogni claim nel survey (`postprocessing/provenance_tracker.py`).
 - **Self-evolution**: `evolution/` apprende dai fallimenti del Critic e produce overlay di prompt + skill.
 - **Recency priority** globale (config) → paper recenti pesati di più in ingestion/retrieval/L2.

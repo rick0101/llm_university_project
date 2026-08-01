@@ -2690,9 +2690,15 @@ def write_section(
                 existing_draft,
                 verification,
             )
+            is_explicit_length_repair = (
+                "[LENGTH / COMPLETENESS]" in (existing_draft.critic_feedback or "")
+            )
             needs_length_repair = (
                 candidate.word_count < required_words
-                and candidate.word_count <= existing_words
+                and (
+                    is_explicit_length_repair
+                    or candidate.word_count <= existing_words
+                )
             )
             if missing_supported or needs_length_repair:
                 # Diagnostics from the rejected response must not poison the
@@ -3016,17 +3022,28 @@ def write_all_sections(
 
     # --- Carica checkpoint per-sezione esistenti (resume) ---
     resumed_count = 0
+    resumed_keys: list[str] = []
     if not settings.agents.force_rewrite:
         cached_sections = _load_section_checkpoints()
+        resumable_outline_keys = {
+            item.key for item in outline if item.section_type not in skip_types
+        }
+        stale_checkpoint_keys = sorted(set(cached_sections) - resumable_outline_keys)
+        if stale_checkpoint_keys:
+            logger.warning(
+                "[checkpoint] Ignorati checkpoint Writer estranei all'outline corrente: "
+                f"{stale_checkpoint_keys}"
+            )
         if cached_sections:
             for key, data in cached_sections.items():
-                if key not in existing_sections:
+                if key in resumable_outline_keys and key not in existing_sections:
                     all_sections[key] = data
                     resumed_count += 1
+                    resumed_keys.append(key)
             if resumed_count:
                 logger.info(
                     f"[checkpoint] Ripristinate {resumed_count} sezioni da checkpoint: "
-                    f"{list(cached_sections.keys())}"
+                    f"{resumed_keys}"
                 )
                 print_success(
                     f"Ripristinate {resumed_count} sezioni da checkpoint precedente"
@@ -3198,11 +3215,12 @@ def write(state: SurveyState) -> dict[str, Any]:
         f"L2: {len(l2_summaries)} categorie"
     )
 
-    # Identifica sezioni che necessitano riscrittura (feedback dal Critic)
+    # Identifica sezioni dell'outline corrente che necessitano riscrittura.
     existing = get_sections_from_state(state)
+    outline_keys = {item.key for item in outline}
     needs_revision = {
         k: v for k, v in existing.items()
-        if v.status == SectionStatus.NEEDS_REVISION
+        if k in outline_keys and v.status == SectionStatus.NEEDS_REVISION
     }
 
     if needs_revision:

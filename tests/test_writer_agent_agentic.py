@@ -710,6 +710,41 @@ class TestWriteAllSectionsAgentic:
         assert "sections" in result
         mock_write_section.assert_called_once()
 
+    @patch("paperhunter.agents.writer_agent._load_section_checkpoints")
+    @patch("paperhunter.agents.writer_agent.write_section")
+    def test_write_all_ignores_cached_sections_outside_current_outline(
+        self,
+        mock_write_section,
+        mock_checkpoints,
+    ):
+        """Checkpoint Writer di outline precedenti non devono contaminare lo stato."""
+        from paperhunter.agents.writer_agent import write_all_sections
+
+        current = {
+            "section_key": "prompt_injection_attacks",
+            "title": "Prompt Injection Attacks",
+            "text": "Current outline draft.",
+            "citations": [],
+            "word_count": 3,
+            "status": "drafted",
+            "iteration": 1,
+            "rag_queries": [],
+            "retrieved_chunk_ids": [],
+            "writer_notes": "",
+            "critic_feedback": "",
+            "drafted_at": datetime.now().isoformat(),
+        }
+        stale = {**current, "section_key": "legacy_outline_section", "title": "Legacy"}
+        mock_checkpoints.return_value = {
+            "prompt_injection_attacks": current,
+            "legacy_outline_section": stale,
+        }
+
+        result = write_all_sections(_make_state_with_outline())
+
+        assert set(result["sections"]) == {"prompt_injection_attacks"}
+        mock_write_section.assert_not_called()
+
 
 # ============================================================================
 # TEST 8: Integrazione end-to-end agentic (mock completo)

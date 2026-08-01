@@ -924,6 +924,82 @@ def test_growing_evidence_repair_is_kept_even_before_absolute_word_floor():
     assert not any("rejected" in error for error in result["errors"])
 
 
+def test_length_completion_retries_growth_that_still_misses_strict_floor():
+    """Un repair esplicitamente di completezza deve raggiungere davvero il floor 80%."""
+    from paperhunter.agents.writer_agent import write_section
+    from paperhunter.config import settings
+
+    outline = SectionOutline.model_validate(
+        {
+            "key": "body",
+            "title": "Body",
+            "section_type": "body",
+            "target_length_words": 1000,
+        }
+    )
+    state = create_initial_state(outline=[outline])
+    state["sections"] = {
+        "body": SectionDraft.model_validate(
+            {
+                "section_key": "body",
+                "title": "Body",
+                "text": "original " * 700,
+                "status": SectionStatus.NEEDS_REVISION,
+                "iteration": settings.agents.max_writer_iterations,
+                "critic_feedback": (
+                    "[LENGTH / COMPLETENESS]\n"
+                    "Section has 700 words; minimum required is 800."
+                ),
+            }
+        ).to_dict(),
+    }
+    chunks = [_chunk(f"Paper_{i}", f"c{i}", 1.0) for i in range(5)]
+    responses = [
+        json.dumps(
+            {
+                "text": "partial improvement " * 375,
+                "citations": [],
+                "notes": "still short",
+            }
+        ),
+        json.dumps(
+            {
+                "text": "complete improvement " * 425,
+                "citations": [],
+                "notes": "meets strict floor",
+            }
+        ),
+    ]
+    with (
+        patch.object(settings.agents, "writer_mode", "static"),
+        patch.object(settings.agents, "min_citations_per_section", 5),
+        patch(
+            "paperhunter.agents.writer_agent._generate_rag_queries",
+            return_value=["query"],
+        ),
+        patch(
+            "paperhunter.agents.writer_agent._retrieve_context_for_section",
+            return_value=(chunks, [item["chunk_id"] for item in chunks]),
+        ),
+        patch("paperhunter.agents.writer_agent.get_llm", return_value=MagicMock()),
+        patch(
+            "paperhunter.agents.writer_agent.llm_call_with_retry",
+            side_effect=responses,
+        ) as call_llm,
+    ):
+        result = write_section(
+            state,
+            "body",
+            retriever=MagicMock(),
+            use_reranker=False,
+        )
+
+    candidate = result["sections"]["body"]
+    assert call_llm.call_count == 2
+    assert candidate["text"] == "complete improvement " * 425
+    assert candidate["word_count"] == 850
+
+
 def test_revision_stabilizer_carries_provenance_only_for_supported_evidence_already_present():
     from paperhunter.agents.state import CitationRecord
     from paperhunter.agents.writer_agent import (
@@ -1360,6 +1436,92 @@ def test_revision_preserves_old_draft_when_semantic_retry_still_drops_support(
     assert result["sections"]["body"]["status"] == expected_status.value
     assert result["metadata"]["revision_preserved_reason"] == "supported_claims_missing"
     assert result["errors"] == []
+
+
+def test_critic_ignores_drafted_sections_outside_current_outline():
+    """I checkpoint Writer obsoleti non devono consumare verifiche Critic a pagamento."""
+    from paperhunter.agents.critic_agent import verify_all_sections
+
+    outline = SectionOutline.model_validate(
+        {"key": "current", "title": "Current", "section_type": "body"}
+    )
+    current = SectionDraft.model_validate(
+        {
+            "section_key": "current",
+            "title": "Current",
+            "text": "Current verified section.",
+            "status": SectionStatus.VERIFIED,
+        }
+    )
+    stale = SectionDraft.model_validate(
+        {
+            "section_key": "legacy",
+            "title": "Legacy",
+            "text": "Legacy draft [Legacy_2024_Source].",
+            "status": SectionStatus.DRAFTED,
+        }
+    )
+    state = create_initial_state(outline=[outline])
+    state["sections"] = {
+        "current": current.to_dict(),
+        "legacy": stale.to_dict(),
+    }
+
+    with patch("paperhunter.agents.critic_agent.verify_section", return_value={}) as verify_one:
+        result = verify_all_sections(
+            state,
+            store=MagicMock(),
+            llm=MagicMock(),
+            coherence_llm=MagicMock(),
+        )
+
+    verify_one.assert_not_called()
+    assert "verification_results" not in result
+
+
+def test_writer_ignores_revision_sections_outside_current_outline():
+    """Le sezioni obsolete non devono entrare nel loop Writer di revisione."""
+    from paperhunter.agents.writer_agent import write
+    from paperhunter.config import settings
+
+    outline = SectionOutline.model_validate(
+        {"key": "current", "title": "Current", "section_type": "body"}
+    )
+    current = SectionDraft.model_validate(
+        {
+            "section_key": "current",
+            "title": "Current",
+            "text": "Current verified section.",
+            "status": SectionStatus.VERIFIED,
+        }
+    )
+    stale = SectionDraft.model_validate(
+        {
+            "section_key": "legacy",
+            "title": "Legacy",
+            "text": "Legacy section requiring revision.",
+            "status": SectionStatus.NEEDS_REVISION,
+            "iteration": 1,
+        }
+    )
+    state = create_initial_state(outline=[outline])
+    state["sections"] = {
+        "current": current.to_dict(),
+        "legacy": stale.to_dict(),
+    }
+
+    with (
+        patch.object(settings.neo4j, "enabled", False),
+        patch("paperhunter.indexing.reranker.GeminiReranker", return_value=MagicMock()),
+        patch("paperhunter.agents.writer_agent.write_section", return_value={}) as write_one,
+        patch(
+            "paperhunter.agents.writer_agent.write_all_sections",
+            return_value={"current_phase": "writing"},
+        ),
+    ):
+        write(state)
+
+    write_one.assert_not_called()
 
 
 def test_revision_stabilizer_does_not_restore_mixed_status_citation_group():

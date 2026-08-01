@@ -745,6 +745,48 @@ class TestWriteAllSectionsAgentic:
         assert set(result["sections"]) == {"prompt_injection_attacks"}
         mock_write_section.assert_not_called()
 
+    @patch("paperhunter.agents.writer_agent._load_section_checkpoints")
+    @patch("paperhunter.agents.writer_agent.write_section")
+    def test_explicit_pipeline_resume_does_not_hydrate_unscoped_section_cache(
+        self,
+        mock_write_section,
+        mock_checkpoints,
+    ):
+        """The explicit pipeline checkpoint is authoritative over global Writer files."""
+        from paperhunter.agents.writer_agent import write_all_sections
+
+        stale_same_key = {
+            "section_key": "prompt_injection_attacks",
+            "title": "Prompt Injection Attacks",
+            "text": "Draft from another run with the same section key.",
+            "citations": [],
+            "word_count": 9,
+            "status": "drafted",
+            "iteration": 1,
+            "rag_queries": [],
+            "retrieved_chunk_ids": [],
+            "writer_notes": "",
+            "critic_feedback": "",
+            "drafted_at": datetime.now().isoformat(),
+        }
+        fresh = {**stale_same_key, "text": "Fresh checkpoint-scoped draft."}
+        mock_checkpoints.return_value = {
+            "prompt_injection_attacks": stale_same_key,
+        }
+        mock_write_section.return_value = {
+            "sections": {"prompt_injection_attacks": fresh},
+            "errors": [],
+        }
+        state = _make_state_with_outline()
+        state["metadata"] = {"explicit_pipeline_checkpoint_resume": True}
+
+        with patch("paperhunter.agents.writer_agent._save_section_checkpoint"):
+            result = write_all_sections(state)
+
+        mock_checkpoints.assert_not_called()
+        mock_write_section.assert_called_once()
+        assert result["sections"]["prompt_injection_attacks"]["text"] == fresh["text"]
+
 
 # ============================================================================
 # TEST 8: Integrazione end-to-end agentic (mock completo)

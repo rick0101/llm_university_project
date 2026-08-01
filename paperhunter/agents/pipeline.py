@@ -710,6 +710,18 @@ def run_pipeline_from_checkpoint(
 
     logger.info(f"Ripresa dal nodo: {next_node}")
 
+    # The explicit pipeline checkpoint is authoritative.  Mark the state so the
+    # Writer does not hydrate global per-section files from unrelated runs.
+    state = SurveyState(
+        **{
+            **state,
+            "metadata": {
+                **(state.get("metadata") or {}),
+                "explicit_pipeline_checkpoint_resume": True,
+            },
+        }
+    )
+
     # Costruisci il grafo completo
     compiled_graph = build_pipeline(
         save_checkpoints=save_checkpoints,
@@ -773,6 +785,9 @@ def _resume_from_node(
     }
 
     current_state = state
+    explicit_pipeline_resume = bool(
+        (state.get("metadata") or {}).get("explicit_pipeline_checkpoint_resume")
+    )
     node_sequence = [NODE_PLAN, NODE_WRITE, NODE_VERIFY, NODE_ASSEMBLE]
 
     try:
@@ -784,6 +799,11 @@ def _resume_from_node(
     i = start_idx
     while i < len(node_sequence):
         node_name = node_sequence[i]
+        if explicit_pipeline_resume:
+            current_state["metadata"] = {
+                **(current_state.get("metadata") or {}),
+                "explicit_pipeline_checkpoint_resume": True,
+            }
 
         # Esegui il nodo
         try:

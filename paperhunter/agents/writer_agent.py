@@ -2700,6 +2700,9 @@ def write_section(
                     or candidate.word_count <= existing_words
                 )
             )
+            pre_retry_result = result
+            pre_retry_candidate = SectionDraft.from_dict(candidate.to_dict())
+            pre_retry_missing_supported = list(missing_supported)
             if missing_supported or needs_length_repair:
                 # Diagnostics from the rejected response must not poison the
                 # accepted retry (or a preserved old draft).
@@ -2775,6 +2778,24 @@ def write_section(
                     existing_draft,
                     verification,
                 )
+                if (
+                    is_explicit_length_repair
+                    and not pre_retry_missing_supported
+                    and (
+                        missing_supported
+                        or pre_retry_candidate.word_count > candidate.word_count
+                    )
+                ):
+                    logger.info(
+                        "Length repair retry for '%s' regressed from %d to %d "
+                        "words; keeping the longest semantically valid candidate.",
+                        section_key,
+                        pre_retry_candidate.word_count,
+                        candidate.word_count,
+                    )
+                    result = pre_retry_result
+                    candidate = pre_retry_candidate
+                    missing_supported = pre_retry_missing_supported
                 if missing_supported:
                     message = (
                         f"Revision for '{section_key}' preserved: semantic repair "
@@ -3021,9 +3042,15 @@ def write_all_sections(
     all_sections: dict[str, dict] = {}
 
     # --- Carica checkpoint per-sezione esistenti (resume) ---
+    # An explicit pipeline checkpoint already contains the authoritative state.
+    # Writer checkpoint files are global/unscoped and may belong to another run,
+    # even when section keys happen to match the current outline.
     resumed_count = 0
     resumed_keys: list[str] = []
-    if not settings.agents.force_rewrite:
+    explicit_pipeline_resume = bool(
+        (state.get("metadata") or {}).get("explicit_pipeline_checkpoint_resume")
+    )
+    if not settings.agents.force_rewrite and not explicit_pipeline_resume:
         cached_sections = _load_section_checkpoints()
         resumable_outline_keys = {
             item.key for item in outline if item.section_type not in skip_types
@@ -3048,6 +3075,11 @@ def write_all_sections(
                 print_success(
                     f"Ripristinate {resumed_count} sezioni da checkpoint precedente"
                 )
+    elif explicit_pipeline_resume:
+        logger.info(
+            "[checkpoint] Checkpoint Writer per-sezione ignorati: "
+            "lo stato proviene da un checkpoint pipeline esplicito."
+        )
     else:
         logger.info("[force_rewrite] Checkpoint sezione ignorati — riscrittura forzata")
 

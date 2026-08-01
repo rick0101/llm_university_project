@@ -1000,6 +1000,82 @@ def test_length_completion_retries_growth_that_still_misses_strict_floor():
     assert candidate["word_count"] == 850
 
 
+def test_length_completion_keeps_longest_valid_candidate_when_retry_regresses():
+    """A bounded semantic retry must not erase measurable length progress."""
+    from paperhunter.agents.writer_agent import write_section
+    from paperhunter.config import settings
+
+    outline = SectionOutline.model_validate(
+        {
+            "key": "body",
+            "title": "Body",
+            "section_type": "body",
+            "target_length_words": 1000,
+        }
+    )
+    state = create_initial_state(outline=[outline])
+    state["sections"] = {
+        "body": SectionDraft.model_validate(
+            {
+                "section_key": "body",
+                "title": "Body",
+                "text": "original " * 700,
+                "status": SectionStatus.NEEDS_REVISION,
+                "iteration": settings.agents.max_writer_iterations,
+                "critic_feedback": (
+                    "[LENGTH / COMPLETENESS]\n"
+                    "Section has 700 words; minimum required is 800."
+                ),
+            }
+        ).to_dict(),
+    }
+    chunks = [_chunk(f"Paper_{i}", f"c{i}", 1.0) for i in range(5)]
+    responses = [
+        json.dumps(
+            {
+                "text": "best progress " * 395,
+                "citations": [],
+                "notes": "closest to floor",
+            }
+        ),
+        json.dumps(
+            {
+                "text": "regressed retry " * 380,
+                "citations": [],
+                "notes": "semantic retry regressed",
+            }
+        ),
+    ]
+    with (
+        patch.object(settings.agents, "writer_mode", "static"),
+        patch.object(settings.agents, "min_citations_per_section", 5),
+        patch(
+            "paperhunter.agents.writer_agent._generate_rag_queries",
+            return_value=["query"],
+        ),
+        patch(
+            "paperhunter.agents.writer_agent._retrieve_context_for_section",
+            return_value=(chunks, [item["chunk_id"] for item in chunks]),
+        ),
+        patch("paperhunter.agents.writer_agent.get_llm", return_value=MagicMock()),
+        patch(
+            "paperhunter.agents.writer_agent.llm_call_with_retry",
+            side_effect=responses,
+        ) as call_llm,
+    ):
+        result = write_section(
+            state,
+            "body",
+            retriever=MagicMock(),
+            use_reranker=False,
+        )
+
+    candidate = result["sections"]["body"]
+    assert call_llm.call_count == 2
+    assert candidate["text"] == "best progress " * 395
+    assert candidate["word_count"] == 790
+
+
 def test_revision_stabilizer_carries_provenance_only_for_supported_evidence_already_present():
     from paperhunter.agents.state import CitationRecord
     from paperhunter.agents.writer_agent import (
@@ -1597,6 +1673,28 @@ def test_revision_stabilizer_does_not_restore_mixed_status_citation_group():
         }
         for citation in stabilized.citations
     )
+
+
+def test_citation_occurrences_keep_markdown_table_rows_isolated():
+    """A table citation claim must stop at its row, not consume later rows/prose."""
+    from paperhunter.agents.critic_agent import _extract_citation_occurrences
+
+    first_row = "| Poisoning | Backdoor benchmark | ASR | [Alpha_2025_Test] |"
+    second_row = "| Jailbreak | Red-team suite | refusal | [Beta_2025_Test] |"
+    text = (
+        "| Category | Benchmark | Metric | Source |\n"
+        "|---|---|---|---|\n"
+        f"{first_row}\n"
+        f"{second_row}\n\n"
+        "Following prose remains separate."
+    )
+
+    occurrences = _extract_citation_occurrences(text)
+
+    assert occurrences == [
+        {"bibtex_key": "Alpha_2025_Test", "claim": first_row},
+        {"bibtex_key": "Beta_2025_Test", "claim": second_row},
+    ]
 
 
 def test_strict_final_fallback_prunes_failed_claims_when_supported_text_is_complete():

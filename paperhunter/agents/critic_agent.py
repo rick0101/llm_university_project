@@ -202,9 +202,15 @@ def _extract_citation_occurrences(text: str, context_chars: int = 300) -> list[d
             if pos >= 0:
                 sentence_start = max(sentence_start, pos + len(separator))
         sentence_end = len(text)
+        ending_candidates: list[int] = []
         ending = re.search(r"[.!?](?=\s|$)", text[match.end():])
         if ending:
-            sentence_end = match.end() + ending.end()
+            ending_candidates.append(match.end() + ending.end())
+        newline = text.find("\n", match.end())
+        if newline >= 0:
+            ending_candidates.append(newline)
+        if ending_candidates:
+            sentence_end = min(ending_candidates)
         sentence = text[sentence_start:sentence_end].strip()
         for key in keys:
             occurrences.append({"bibtex_key": key, "claim": sentence})

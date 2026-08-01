@@ -1081,8 +1081,12 @@ def test_run_pipeline_from_checkpoint():
     # Crea stato come se il planner avesse completato
     state = _create_mock_state(include_outline=True, include_l2=True)
     state["current_phase"] = PipelinePhase.PLANNING.value
+    seen_resume_markers = []
 
     def mock_write(state):
+        seen_resume_markers.append(
+            state.get("metadata", {}).get("explicit_pipeline_checkpoint_resume")
+        )
         return {
             "sections": {"s1": {"section_key": "s1", "status": "drafted", "title": "S1",
                                 "text": "text " * 50, "citations": [], "word_count": 50,
@@ -1147,6 +1151,8 @@ def test_run_pipeline_from_checkpoint():
             )
 
             assert final.get("final_paper") == "# Resumed Paper"
+            assert seen_resume_markers
+            assert all(marker is True for marker in seen_resume_markers)
             # Plan NON deve essere stato chiamato (resume da dopo plan)
             mock_plan_not_called.assert_not_called()
 

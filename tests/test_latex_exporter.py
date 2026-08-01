@@ -248,7 +248,7 @@ class TestConvertTables:
         md = "| H1 | H2 |\n|---|---|\n| A | B |\n| C | D |"
         result = _convert_tables(md)
         assert r"\begin{table}" in result
-        assert r"\begin{tabular}" in result
+        assert r"\begin{tabularx}{\textwidth}" in result
         assert r"\toprule" in result
         assert r"\midrule" in result
         assert r"\bottomrule" in result
@@ -259,7 +259,7 @@ class TestConvertTables:
     def test_three_column_table(self):
         md = "| A | B | C |\n|---|---|---|\n| 1 | 2 | 3 |"
         result = _convert_tables(md)
-        assert r"{lll}" in result
+        assert r"*{3}{>{\raggedright\arraybackslash}X}" in result
         assert "A & B & C" in result
 
     def test_no_table(self):
@@ -276,7 +276,7 @@ class TestConvertTables:
         result = _convert_tables(md)
 
         assert r"Faithfulness \& Citation Verification & CogniBench & Accuracy" in result
-        assert r"\begin{tabular}{lll}" in result
+        assert r"\begin{tabularx}{\textwidth}" in result
 
 
 class TestSanitizeLatex:

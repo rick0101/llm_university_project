@@ -185,6 +185,7 @@ _TEMPLATE_ACL = r"""\documentclass[11pt,a4paper]{{article}}
 \usepackage{{latexsym}}
 \usepackage{{graphicx}}
 \usepackage{{booktabs}}
+\usepackage{{tabularx}}
 \usepackage{{amsmath}}
 \usepackage{{amssymb}}
 \usepackage{{url}}
@@ -215,6 +216,7 @@ _TEMPLATE_IEEETRAN = r"""\documentclass[conference]{{IEEEtran}}
 \usepackage{{amsmath,amssymb,amsfonts}}
 \usepackage{{graphicx}}
 \usepackage{{booktabs}}
+\usepackage{{tabularx}}
 \usepackage{{textcomp}}
 \usepackage{{xcolor}}
 \usepackage[T1]{{fontenc}}
@@ -240,6 +242,7 @@ _TEMPLATE_IEEETRAN = r"""\documentclass[conference]{{IEEEtran}}
 _TEMPLATE_PLAIN = r"""\documentclass[12pt,a4paper]{{article}}
 \usepackage{{graphicx}}
 \usepackage{{booktabs}}
+\usepackage{{tabularx}}
 \usepackage{{amsmath}}
 \usepackage{{amssymb}}
 \usepackage{{url}}
@@ -648,13 +651,15 @@ def _markdown_table_to_latex(table_lines: list[str]) -> str:
         return "\n".join(table_lines)
 
     n_cols = len(header_cells)
-    col_spec = "l" * n_cols
+    col_spec = rf"@{{}}*{{{n_cols}}}{{>{{\raggedright\arraybackslash}}X}}@{{}}"
 
-    # Costruisci LaTeX
+    # Costruisci LaTeX. ``tabularx`` constrains the table to the text width and
+    # wraps long benchmark descriptions instead of emitting off-page boxes.
     latex_lines = [
         "\\begin{table}[htbp]",
         "\\centering",
-        f"\\begin{{tabular}}{{{col_spec}}}",
+        "\\small",
+        f"\\begin{{tabularx}}{{\\textwidth}}{{{col_spec}}}",
         "\\toprule",
         " & ".join(header_cells) + " \\\\",
         "\\midrule",
@@ -668,7 +673,7 @@ def _markdown_table_to_latex(table_lines: list[str]) -> str:
 
     latex_lines.extend([
         "\\bottomrule",
-        "\\end{tabular}",
+        "\\end{tabularx}",
         "\\end{table}",
     ])
 

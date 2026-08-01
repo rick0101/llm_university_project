@@ -302,6 +302,22 @@ def _sanitize_latex(latex_content: str, bib_keys: set[str] | None = None) -> str
     """
     text = latex_content
 
+    # Normalize Unicode typography and symbols unsupported by the legacy Times
+    # font used by the article templates. Keep replacements deterministic and
+    # LaTeX-native so the generated source compiles without dropped glyphs.
+    unicode_replacements = {
+        "\u00d7": r"$\times$",
+        "\u03c4": r"$\tau$",
+        "\u2011": "-",
+        "\u2018": "'",
+        "\u2019": "'",
+        "\u201c": "``",
+        "\u201d": "''",
+        "\u202f": " ",
+    }
+    for source, replacement in unicode_replacements.items():
+        text = text.replace(source, replacement)
+
     # Unicode dashes → LaTeX dashes
     text = text.replace("\u2014", "---")   # em-dash
     text = text.replace("\u2013", "--")     # en-dash
@@ -611,6 +627,10 @@ def _markdown_table_to_latex(table_lines: list[str]) -> str:
         """Verifica se la riga è un separatore (es. |---|---|)."""
         return bool(re.match(r"^\s*\|[\s\-:]+(\|[\s\-:]+)*\|\s*$", line))
 
+    def _escape_cell(cell: str) -> str:
+        """Escape separators that are literal Markdown-cell content in LaTeX."""
+        return re.sub(r"(?<!\\)&", r"\\&", cell)
+
     # Parse righe
     header_cells: list[str] = []
     data_rows: list[list[str]] = []
@@ -618,7 +638,7 @@ def _markdown_table_to_latex(table_lines: list[str]) -> str:
     for idx, line in enumerate(table_lines):
         if _is_separator(line):
             continue
-        cells = _parse_row(line)
+        cells = [_escape_cell(cell) for cell in _parse_row(line)]
         if not header_cells:
             header_cells = cells
         else:

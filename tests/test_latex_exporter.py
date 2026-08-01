@@ -36,6 +36,7 @@ from paperhunter.postprocessing.latex_exporter import (
     _extract_abstract_from_md,
     _extract_title_from_md,
     _markdown_table_to_latex,
+    _sanitize_latex,
     export_latex,
     export_latex_from_state,
     get_export_stats,
@@ -264,6 +265,28 @@ class TestConvertTables:
     def test_no_table(self):
         text = "No table here."
         assert _convert_tables(text) == text
+
+    def test_ampersand_inside_cell_is_escaped_not_treated_as_column(self):
+        md = (
+            "| Category | Benchmark | Metrics |\n"
+            "|---|---|---|\n"
+            "| Faithfulness & Citation Verification | CogniBench | Accuracy |"
+        )
+
+        result = _convert_tables(md)
+
+        assert r"Faithfulness \& Citation Verification & CogniBench & Accuracy" in result
+        assert r"\begin{tabular}{lll}" in result
+
+
+class TestSanitizeLatex:
+    def test_unicode_typography_and_symbols_are_compile_safe(self):
+        text = 'τ‑bench × 2; ‘quoted’ and “double” with narrow\u202fspace'
+
+        result = _sanitize_latex(text)
+
+        assert result == r"$\tau$-bench $\times$ 2; 'quoted' and ``double'' with narrow space"
+        assert all(ord(char) < 128 for char in result)
 
 
 class TestMarkdownTableToLatex:

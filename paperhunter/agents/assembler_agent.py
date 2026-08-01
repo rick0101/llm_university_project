@@ -748,7 +748,7 @@ def assemble_paper(
         - bibliography: chiavi .bib usate
         - final_paper: documento Markdown assemblato
         - version_info: metadati versione
-        - current_phase: ASSEMBLING
+        - current_phase: COMPLETED
         - provenance: record di provenance (se presenti nello stato)
         - errors: eventuali errori
         - metadata: metadati aggiuntivi
@@ -881,7 +881,7 @@ def assemble_paper(
         "bibliography": bib_keys,
         "final_paper": document,
         "version_info": version_dict,
-        "current_phase": PipelinePhase.ASSEMBLING.value,
+        "current_phase": PipelinePhase.COMPLETED.value,
         "provenance": [],  # Non aggiunge nuovi record, li preserva
         "errors": errors if errors else [],
         "metadata": {

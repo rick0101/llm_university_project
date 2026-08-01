@@ -712,7 +712,7 @@ def test_assemble_paper_mock():
     assert result["final_paper"]  # Non vuoto
     assert "## Abstract" in result["final_paper"]
     assert "current_phase" in result
-    assert result["current_phase"] == "assembling"
+    assert result["current_phase"] == "completed"
     assert "sections" in result
     assert "abstract" in result["sections"]
     assert "introduction" in result["sections"]
@@ -775,10 +775,10 @@ def test_assemble_langgraph_node():
         from paperhunter.agents.assembler_agent import assemble
         result = assemble(state)
 
-    assert result["current_phase"] == "assembling"
+    assert result["current_phase"] == "completed"
     assert result.get("final_paper")
 
-    print("  ✓ assemble nodo LangGraph: phase=assembling, documento generato")
+    print("  ✓ assemble nodo LangGraph: phase=completed, documento generato")
 
 
 def test_assemble_no_sections():

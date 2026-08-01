@@ -120,7 +120,10 @@ Script standalone alla root: `run_writer_summaries_only.py`, `fix_hashes.py`, `f
   e L2, così Planner, Writer e Critic condividono la stessa provenance.
 - **Export finale fail-closed**: il LaTeX non viene scritto se una chiave è
   assente/duplicata/non verificata o se il BibTeX diverge dal manifest DBLP;
-  il dettaglio è in `citation_integrity_report.json`.
+  il dettaglio è in `citation_integrity_report.json`. Il master BibTeX viene
+  parsato con scansione a parentesi graffe bilanciate: caratteri `@` nei valori
+  (per esempio `SemEval@ACL`) e campi con graffe annidate non devono troncare
+  un'entry né alterarne l'hash verificato.
 - **Critic strict**: 100% dei claim citati deve risultare `SUPPORTED`, con
   almeno 5 fonti distinte per sezione; nessuna auto-accettazione al limite.
   Il Critic opera come citation-audit indipendente per occorrenza: dopo ogni

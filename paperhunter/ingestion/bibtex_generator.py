@@ -1068,17 +1068,41 @@ def load_master_bib(bib_path: str | Path) -> dict[str, str]:
 
     content = bib_path.read_text(encoding="utf-8")
 
-    # Split sulle entry (ogni @tipo{...} è un'entry)
-    # Regex: trova ogni blocco @type{key, ... }
+    # Scan balanced entry braces instead of splitting on ``@``. DBLP values may
+    # legitimately contain at-signs (for example ``SemEval@ACL``) and nested
+    # braces (for example ``{LLM}``); the former regex truncated such entries.
     entries: dict[str, str] = {}
-    pattern = r'(@\w+\{[^@]+\})'
-    matches = re.findall(pattern, content, re.DOTALL)
+    entry_start = re.compile(r"@\w+\s*\{")
+    position = 0
+    while True:
+        match = entry_start.search(content, position)
+        if match is None:
+            break
+        line_start = content.rfind("\n", 0, match.start()) + 1
+        if content[line_start:match.start()].lstrip().startswith("%"):
+            position = match.end()
+            continue
 
-    for match in matches:
-        key_match = re.search(r'@\w+\{([^,]+),', match)
+        depth = 1
+        cursor = match.end()
+        while cursor < len(content) and depth:
+            char = content[cursor]
+            escaped = cursor > 0 and content[cursor - 1] == "\\"
+            if not escaped:
+                if char == "{":
+                    depth += 1
+                elif char == "}":
+                    depth -= 1
+            cursor += 1
+        if depth:
+            logger.warning("Entry BibTeX non chiusa in %s", bib_path)
+            break
+
+        entry = content[match.start():cursor].strip()
+        key_match = re.match(r"@\w+\s*\{([^,]+),", entry)
         if key_match:
-            key = key_match.group(1).strip()
-            entries[key] = match.strip()
+            entries[key_match.group(1).strip()] = entry
+        position = cursor
 
     logger.debug("Caricate %d entry da %s", len(entries), bib_path)
     return entries

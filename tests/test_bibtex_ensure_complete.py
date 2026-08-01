@@ -9,6 +9,7 @@ import pytest
 
 from paperhunter.ingestion.bibtex_generator import (
     ensure_complete_bibtex,
+    load_master_bib,
     validate_bibtex_completeness,
 )
 from paperhunter.models import Paper
@@ -189,3 +190,29 @@ def test_ensure_bibtex_never_returns_none_entry():
 
     assert result.bibtex_entry is not None
     assert len(result.bibtex_entry) > 10
+
+
+def test_load_master_bib_preserves_at_signs_and_nested_braces(tmp_path):
+    """An @ inside a field value must not truncate the surrounding entry."""
+    first = """@inproceedings{Elchafei_2025_LLM,
+  author = {Omar El Chafei and Jane Doe},
+  title = {Hallucination Detectives for {LLM}-Generated Answers},
+  booktitle = {SemEval@ACL 2025},
+  year = {2025},
+  url = {https://aclanthology.org/2025.semeval-1.84/}
+}"""
+    second = """@article{Other_2025_Paper,
+  author = {Alice Smith},
+  title = {A Complete Second Entry},
+  journal = {CoRR},
+  year = {2025}
+}"""
+    bib_path = tmp_path / "references.bib"
+    bib_path.write_text(f"% header\n\n{first}\n\n{second}\n", encoding="utf-8")
+
+    loaded = load_master_bib(bib_path)
+
+    assert set(loaded) == {"Elchafei_2025_LLM", "Other_2025_Paper"}
+    assert loaded["Elchafei_2025_LLM"] == first
+    assert "booktitle = {SemEval@ACL 2025}" in loaded["Elchafei_2025_LLM"]
+    assert loaded["Other_2025_Paper"] == second

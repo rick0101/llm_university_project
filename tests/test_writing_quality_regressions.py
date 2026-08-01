@@ -502,12 +502,21 @@ def test_revision_floor_allows_critic_directed_pruning_to_target_floor():
     assert _minimum_acceptable_revision_words(existing, outline) == 1200
 
 
-def test_writer_prompt_requires_atomic_strict_citations():
+def test_writer_prompts_allow_general_survey_prose_but_require_strict_cited_claims():
     from paperhunter.utils.prompt_loader import get_prompt
 
-    prompt = get_prompt("WRITER_PROMPT")
-    assert "one atomic factual claim" in prompt
-    assert "each source independently supports" in prompt
+    for prompt_name in (
+        "WRITER_PROMPT",
+        "REACT_SYSTEM_PROMPT",
+        "PREFETCH_REACT_SYSTEM_PROMPT",
+    ):
+        prompt = get_prompt(prompt_name)
+        assert "General survey-level conceptual exposition may remain uncited" in prompt
+        assert "Whenever a citation is present" in prompt
+        assert "Every factual claim MUST include a citation" not in prompt
+    static_prompt = get_prompt("WRITER_PROMPT")
+    assert "one atomic factual claim" in static_prompt
+    assert "each source independently supports" in static_prompt
 
 
 def test_evidence_repair_instructions_set_numeric_length_and_citation_budget():
@@ -1186,14 +1195,41 @@ def test_targeted_length_extension_preserves_verified_core_and_uses_one_call():
     assert candidate["iteration"] == 3
 
 
-def test_targeted_extension_rejects_uncited_new_prose():
-    """Length padding without a traceable citation must never enter the verified core."""
+def test_targeted_extension_accepts_uncited_general_survey_prose():
+    """General synthesis may extend a verified core without adding a citation."""
     from paperhunter.agents.writer_agent import _merge_targeted_extension
 
-    assert _merge_targeted_extension(
-        "Verified core [Paper_0].",
-        "This is a long factual extension with no evidence marker.",
-    ) is None
+    core = "Verified core [Paper_0]."
+    extension = (
+        "At a conceptual level, this threat family can be organized around "
+        "the stage of the model lifecycle in which control is exercised."
+    )
+    assert _merge_targeted_extension(core, extension) == f"{core}\n\n{extension}"
+
+
+def test_targeted_extension_prompt_allows_general_prose_but_is_strict_when_citing():
+    from paperhunter.agents.writer_agent import _build_targeted_extension_instructions
+
+    draft = SectionDraft.model_validate(
+        {
+            "section_key": "body",
+            "title": "Body",
+            "text": "Verified core [Paper_0].",
+            "status": SectionStatus.NEEDS_REVISION,
+        }
+    )
+    outline = SectionOutline.model_validate(
+        {
+            "key": "body",
+            "title": "Body",
+            "section_type": "body",
+            "target_length_words": 1500,
+        }
+    )
+    instructions = _build_targeted_extension_instructions(outline, draft)
+    assert "General survey-level conceptual exposition may remain uncited" in instructions
+    assert "Whenever a citation is present" in instructions
+    assert "Every new factual sentence must" not in instructions
 
 
 def test_targeted_extension_rejects_citations_outside_the_evidence_allowlist():

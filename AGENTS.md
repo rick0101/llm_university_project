@@ -127,14 +127,20 @@ Script standalone alla root: `run_writer_summaries_only.py`, `fix_hashes.py`, `f
   verifica strict, non soltanto all'ultimo tentativo, pota deterministicamente
   ogni singolo claim fallito tramite il ledger occurrence-counted. Il Writer
   riceve quindi soltanto un core supported-only; non gli è consentito sostituire
-  liberamente una citazione fallita con un'altra chiave. Se il core verificato è
-  sotto il floor, il Writer usa un targeted extension pass additivo: il core resta
-  byte-for-byte immutabile, una sola chiamata produce esclusivamente nuovi
-  paragrafi citati, e output vuoti, privi di citazioni o che ripetano il core sono
-  rifiutati senza una seconda chiamata a pagamento. Tutte le nuove occorrenze
-  vengono riverificate dal Critic e quelle fallite vengono nuovamente potate una
-  alla volta. Le revisioni non puramente additive preservano i claim già
-  `SUPPORTED` tramite retry semantico validato (mai concatenazione meccanica).
+  liberamente una citazione fallita con un'altra chiave. La prosa survey-level
+  generale (spiegazioni concettuali, organizzazione, transizioni e sintesi non
+  attribuite a uno studio specifico) può restare senza citazione. Quando una
+  citazione è presente, invece, il claim adiacente e i metadati bibliografici
+  devono essere corretti al 100%; risultati empirici, numeri, metodi nominati e
+  attribuzioni ad autori/paper richiedono supporto puntuale. Se il core verificato
+  è sotto il floor, il Writer usa un targeted extension pass additivo: il core
+  resta byte-for-byte immutabile e una sola chiamata produce esclusivamente nuovi
+  paragrafi generali e/o citati. Output vuoti, citazioni fuori allowlist o testo
+  che ripete il core sono rifiutati senza una seconda chiamata a pagamento. Tutte
+  le nuove occorrenze citazionali vengono riverificate dal Critic e quelle fallite
+  vengono nuovamente potate una alla volta. Le revisioni non puramente additive
+  preservano i claim già `SUPPORTED` tramite retry semantico validato (mai
+  concatenazione meccanica).
   Il draft supported-only può restare corto per un repair di completezza bounded;
   il gate 80% resta bloccante.
   Una bocciatura di coerenza può consolidare o riscrivere i claim supportati,

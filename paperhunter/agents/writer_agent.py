@@ -862,12 +862,17 @@ def _build_targeted_extension_instructions(
         "field; do not repeat, paraphrase, summarize, edit, or delete any part of "
         "the verified core. The application will append your `text` after that core. "
         f"Write approximately {requested_words} new words so the combined section "
-        f"reaches at least {required_words} words. Every new factual sentence must "
-        "contain an adjacent citation from the retrieved evidence, and every citation "
-        "must directly support the complete sentence. Use atomic claims; if evidence "
-        "is insufficient, omit the claim instead of guessing. Return citation records "
-        "only for the new paragraphs. Do not emit headings that duplicate the section "
-        "title.\n\n"
+        f"reaches at least {required_words} words. General survey-level conceptual "
+        "exposition may remain uncited when it explains, organizes, or synthesizes "
+        "the topic without attributing a result to a particular paper. Whenever a "
+        "citation is present, it must directly support the complete adjacent claim. "
+        "Specific empirical results, numbers, named methods, paper-specific "
+        "contributions, and statements about authors, titles, or publication years "
+        "require an adjacent citation from the retrieved evidence. Use atomic cited "
+        "claims; if evidence is insufficient for a specific attribution, omit that "
+        "attribution instead of guessing. Return citation records only for citations "
+        "actually used in the new paragraphs. Do not emit headings that duplicate "
+        "the section title.\n\n"
         "<verified_core immutable=\"true\">\n"
         f"{existing_draft.text.strip()}\n"
         "</verified_core>\n"
@@ -880,9 +885,17 @@ def _merge_targeted_extension(
     *,
     citable_keys: set[str] | None = None,
 ) -> str | None:
-    """Append only genuinely new cited prose while preserving the core byte-for-byte."""
+    """Append genuinely new survey prose while preserving the core byte-for-byte.
+
+    Uncited conceptual exposition is allowed. If the extension chooses to cite,
+    at least one allowlisted citation must survive deterministic sanitization.
+    """
     core_text = core or ""
     extension_text = (extension or "").strip()
+    citation_pattern = (
+        r"\[[A-Za-z][A-Za-z0-9_]*(?:[,;]\s*[A-Za-z][A-Za-z0-9_]*)*\]"
+    )
+    submitted_with_citations = bool(re.search(citation_pattern, extension_text))
     if citable_keys is not None:
         extension_text, _ = _enforce_citation_whitelist(
             extension_text,
@@ -895,10 +908,9 @@ def _merge_targeted_extension(
         extension_text = extension_text[len(normalized_core):].strip()
     elif normalized_core in extension_text:
         return None
-    if not extension_text or not re.search(
-        r"\[[A-Za-z][A-Za-z0-9_]*(?:[,;]\s*[A-Za-z][A-Za-z0-9_]*)*\]",
-        extension_text,
-    ):
+    if not extension_text:
+        return None
+    if submitted_with_citations and not re.search(citation_pattern, extension_text):
         return None
     separator = "\n" if core_text.endswith("\n") else "\n\n"
     return f"{core_text}{separator}{extension_text}"

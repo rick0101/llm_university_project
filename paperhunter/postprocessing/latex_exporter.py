@@ -200,6 +200,8 @@ _TEMPLATE_ACL = r"""\documentclass[11pt,a4paper]{{article}}
 \author{{{author}}}
 \date{{{date}}}
 
+\setlength{{\emergencystretch}}{{3em}}
+
 \begin{{document}}
 \maketitle
 
@@ -228,6 +230,8 @@ _TEMPLATE_IEEETRAN = r"""\documentclass[conference]{{IEEEtran}}
 \author{{{author}}}
 \date{{{date}}}
 
+\setlength{{\emergencystretch}}{{3em}}
+
 \begin{{document}}
 \maketitle
 
@@ -253,6 +257,8 @@ _TEMPLATE_PLAIN = r"""\documentclass[12pt,a4paper]{{article}}
 \title{{{title}}}
 \author{{{author}}}
 \date{{{date}}}
+
+\setlength{{\emergencystretch}}{{3em}}
 
 \begin{{document}}
 \maketitle

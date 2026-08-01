@@ -525,6 +525,12 @@ class TestMarkdownToLatex:
         result = markdown_to_latex(self.SAMPLE_MD, template="plain")
         assert r"\documentclass[12pt,a4paper]{article}" in result
 
+    @pytest.mark.parametrize("template", ["acl", "ieeetran", "plain"])
+    def test_templates_allow_emergency_line_break_stretch(self, template):
+        result = markdown_to_latex(self.SAMPLE_MD, template=template)
+
+        assert r"\setlength{\emergencystretch}{3em}" in result
+
     def test_invalid_template(self):
         with pytest.raises(ValueError, match="non supportato"):
             markdown_to_latex(self.SAMPLE_MD, template="unknown")

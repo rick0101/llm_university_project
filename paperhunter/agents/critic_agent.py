@@ -244,12 +244,14 @@ def _build_strict_supported_only_fallback(
     *,
     allow_incomplete_length: bool = False,
 ) -> tuple[SectionDraft, list[VerificationDetail]] | None:
-    """Prune failed cited sentences at the final attempt, without inventing text.
+    """Prune failed cited claims occurrence-by-occurrence without inventing text.
 
-    This fallback is deliberately fail-closed.  It succeeds only when every
-    failed claim can be removed exactly, every remaining citation occurrence has
-    an already-SUPPORTED detail, source diversity is still sufficient, and the
-    pruned draft remains above the strict length floor.
+    This fallback is deliberately fail-closed and can run after every strict
+    verification. It succeeds only when every remaining citation occurrence can
+    consume one already-SUPPORTED detail and source diversity remains sufficient.
+    The caller may explicitly transport a supported-only draft below the strict
+    length floor for one bounded targeted-completeness repair; it is never marked
+    verified until the unchanged length and coherence gates pass.
     """
     normalized_details = [
         detail

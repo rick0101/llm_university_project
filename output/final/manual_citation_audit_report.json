@@ -27,7 +27,7 @@
     "adjacent_duplicate_citation_groups": 0,
     "exact_repeated_key_and_claim_pairs": 0,
     "undefined_latex_citations": 0,
-    "pdf_pages": 50,
+    "pdf_pages": 51,
     "unresolved_pdf_markers": 0
   },
   "representative_primary_source_repairs": [
@@ -40,42 +40,18 @@
     "Unsupported or generic secondary attributions were removed or rewritten without a false citation."
   ],
   "strict_dblp_manifest": {
-    "status": "incomplete_after_manual_repair",
-    "existing_verified_records_matching_old_manifest": 91,
-    "new_primary_records_not_yet_recorded_in_manifest": 30,
-    "meaning": "The semantic and primary-source audit is complete, but the automated pinned-hash DBLP gate cannot yet certify all 121 entries until the manifest is regenerated.",
-    "unrecorded_keys": [
-      "Anil_2024_ManyShot_08d20dea",
-      "Carlini_2024_WebScalePoisoning",
-      "Chao_2025_PAIR_590bf40a",
-      "Chen_2024_SecAlign",
-      "Chen_2024_StruQ",
-      "Debenedetti_2024_AgentDojo_349884ff",
-      "Greshake_2023_IndirectPI_428e23e8",
-      "Huang_2024_GenerationExploitation",
-      "Hubinger_2024_SleeperAgents",
-      "Li_2023_HaluEval",
-      "Liao_2024_AmpleGCG_938d71d1",
-      "Liu_2024_AutoDAN_1d6cff47",
-      "Manakul_2023_SelfCheckGPT",
-      "Mazeika_2024_HarmBench",
-      "Mehrotra_2024_TAP_b0ffafed",
-      "Paulus_2025_AdvPrompter_d888b27b",
-      "Pearce_2022_Copilot_3b1bf6d6",
-      "Piet_2023_Jatmo",
-      "Qi_2024_FineTuningSafety",
-      "Qi_2025_ShallowAlignment",
-      "Shen_2024_DoAnything_0f50aa08",
-      "Souly_2024_StrongREJECT",
-      "Tran_2018_SpectralSignatures",
-      "Wallace_2024_InstructionHierarchy",
-      "Wang_2024_RLHFPoison",
-      "Zhan_2024_InjecAgent_49e6e6a4",
-      "Zhang_2024_TruthX",
-      "Zhu_2023_AutoDAN_2563e630",
-      "Zou_2023_Universal_ab8745c2",
-      "Zou_2025_PoisonedRAG_f4ff19ff"
-    ]
+    "status": "complete",
+    "verified_cited_records": 121,
+    "previously_verified_records_rechecked_live": 91,
+    "new_primary_records_added": 30,
+    "manifest_records_total": 263,
+    "metadata_hash_revisions": 0,
+    "missing_verified_records": 0,
+    "hash_mismatches": 0,
+    "strict_gate_passed": true,
+    "manifest": "references_dblp_manifest.json",
+    "verification_report": "references_dblp_verification_report.json",
+    "meaning": "All 121 cited BibTeX entries were rebuilt from canonical live DBLP records, pinned by SHA-256 in the manifest, and accepted by PaperHunter's strict citation-integrity gate."
   },
-  "assurance": "The audit verifies direct textual support and primary-source attribution; it does not independently reproduce the cited experiments. Mechanical duplicate and cross-reference checks pass. Absolute cryptographic DBLP-manifest closure remains pending for 30 newly introduced primary records."
+  "assurance": "The audit verifies direct textual support and primary-source attribution; it does not independently reproduce the cited experiments. Mechanical duplicate and cross-reference checks pass. All 121 cited entries now have canonical DBLP metadata and pinned SHA-256 verification, and the strict DBLP-manifest gate passes."
 }

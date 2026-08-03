@@ -1,0 +1,87 @@
+{
+  "audit_type": "manual_primary_source_attribution_audit",
+  "scope": {
+    "original_citation_occurrences_checked": 322,
+    "original_distinct_cited_keys": 99,
+    "sections_audited": [
+      "Introduction and Background",
+      "Training-Time Threats",
+      "Inference-Time Threats",
+      "Hallucinations and Cross-Cutting Defenses",
+      "Testing, Discussion, and Conclusion"
+    ],
+    "method": "Five parallel section audits followed by independent consolidation against primary paper full text, arXiv/DBLP/ACL/NeurIPS metadata, and the existing provenance ledger."
+  },
+  "changes": {
+    "changed_text_hunks": 35,
+    "old_lines_changed": 51,
+    "new_lines_changed": 51,
+    "citation_occurrences_removed_or_replaced": 66,
+    "primary_citation_occurrences_added": 38,
+    "final_citation_occurrences": 294,
+    "new_primary_keys_added": 24,
+    "misattributed_or_unused_keys_removed": 6,
+    "final_distinct_cited_keys": 117,
+    "added_keys": [
+      "Anil_2024_ManyShot",
+      "Carlini_2024_WebScalePoisoning",
+      "Chao_2023_PAIR",
+      "Chen_2024_SecAlign",
+      "Chen_2024_StruQ",
+      "Huang_2024_GenerationExploitation",
+      "Hubinger_2024_SleeperAgents",
+      "Li_2023_HaluEval",
+      "Liu_2024_AutoDAN",
+      "Manakul_2023_SelfCheckGPT",
+      "Mazeika_2024_HarmBench",
+      "Mehrotra_2024_TAP",
+      "Paulus_2024_AdvPrompter",
+      "Pearce_2022_Copilot",
+      "Piet_2023_Jatmo",
+      "Qi_2024_FineTuningSafety",
+      "Qi_2025_ShallowAlignment",
+      "Souly_2024_StrongREJECT",
+      "Tran_2018_SpectralSignatures",
+      "Wallace_2024_InstructionHierarchy",
+      "Wang_2024_RLHFPoison",
+      "Zhang_2024_TruthX",
+      "Zou_2023_GCG",
+      "Zou_2024_PoisonedRAG"
+    ],
+    "removed_keys": [
+      "Abbas_2025_Small_ea340ecf",
+      "Alizadeh_2025_LLM_821eedd9",
+      "Chen_2025_Defending_a14b0d1f",
+      "Rubel_2024_LLM_86f8e99d",
+      "Wang_2026_LLM_627df593",
+      "Zhang_2025_Defense_e165b506"
+    ]
+  },
+  "representative_corrections": [
+    "GCG now cites Zou et al. rather than TwinBreak/related-work passages.",
+    "AutoDAN, PAIR, TAP, AdvPrompter, many-shot jailbreaking, HarmBench, and StrongREJECT now cite their original papers.",
+    "Spectral signatures now cite Tran, Li, and Madry rather than later papers that mentioned the method.",
+    "RankPoison now cites RLHFPoison rather than an unrelated poisoning paper.",
+    "The web-scale poisoning claim now cites Carlini et al.; sleeper agents cite Hubinger et al.",
+    "HaluEval, SelfCheckGPT, TruthX, StruQ, SecAlign, Jatmo, and the Instruction Hierarchy now cite their primary papers.",
+    "Unsupported or generic secondary attributions were removed or rewritten without a false citation.",
+    "Several malformed or overclaimed sentences were corrected, including the ANAH sentence, RMCBench construction, the Sanitizer trade-off, and a dangling conclusion fragment."
+  ],
+  "validation": {
+    "markdown_citation_occurrences": 294,
+    "latex_citation_occurrences": 294,
+    "markdown_distinct_keys": 117,
+    "latex_distinct_keys": 117,
+    "bibtex_entries": 117,
+    "missing_bibtex_entries": 0,
+    "unused_bibtex_entries": 0,
+    "duplicate_bibtex_keys": 0,
+    "markdown_latex_key_delta": 0,
+    "citation_integrity_without_stale_dblp_manifest": "passed",
+    "pdf_compilation": "passed",
+    "pdf_pages": 48,
+    "undefined_latex_citations": 0,
+    "missing_pdf_characters": 0
+  },
+  "note": "The pipeline's pre-existing provenance.json and DBLP manifest describe the pre-audit 99-source version and are superseded for the manually corrected artifact. The final ZIP contains the corrected Markdown, LaTeX, PDF, BibTeX, and this manual audit report."
+}

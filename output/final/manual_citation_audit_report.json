@@ -10,7 +10,15 @@
       "Hallucinations and Cross-Cutting Defenses",
       "Testing, Discussion, and Conclusion"
     ],
-    "method": "Five parallel section audits followed by independent consolidation against primary paper full text, arXiv/DBLP/ACL/NeurIPS metadata, and the existing provenance ledger."
+    "section_occurrence_counts": {
+      "Introduction and Background": 79,
+      "Training-Time Threats": 40,
+      "Inference-Time Threats": 54,
+      "Hallucinations and Cross-Cutting Defenses": 56,
+      "Testing, Discussion, and Conclusion": 93
+    },
+    "method": "Five parallel section audits produced the primary-source evidence but reached the 600-second runtime limit before or while emitting their final summaries. A second five-agent recovery pass loaded the complete transcripts and surviving scratch evidence, completed the outstanding checks, and consolidated all five sections against primary paper full text, arXiv/DBLP/ACL/NeurIPS metadata, and the existing provenance ledger.",
+    "execution_note": "The timeout status of the first fan-out describes summary delivery, not loss of its completed API calls or scratch evidence. Completion is based on the recovery pass plus the main-agent verification of the initially pending Nika, Kusaka, FullCert, OSeqL/spectral-signature, and replacement-BibTeX cases."
   },
   "changes": {
     "changed_text_hunks": 35,

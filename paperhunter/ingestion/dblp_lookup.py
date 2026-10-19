@@ -2,7 +2,9 @@
 DBLP Lookup — Verifica e recupero BibTeX ufficiali da dblp.org.
 
 Cerca ogni paper su DBLP per titolo/autore/DOI e, se trovato come
-pubblicazione in conferenza o journal, scarica il .bib ufficiale.
+pubblicazione in conferenza o journal, ricostruisce il .bib ufficiale.
+Le query passano dall'endpoint SPARQL pubblico (vedi ``dblp_sparql.py``):
+search API e ``/rec/<key>.bib`` sono dietro l'anti-bot Anubis.
 Preferisce pubblicazioni formali (conferenze, journal) rispetto a
 preprint informali. Se non trovato, restituisce None e il chiamante
 può usare il fallback locale.
@@ -28,15 +30,13 @@ import hashlib
 import html
 import json
 import re
-import time
 import unicodedata
 from dataclasses import dataclass
 from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Optional
 
-import httpx
-
+from paperhunter.ingestion.dblp_sparql import DblpSparqlClient, DblpSparqlError
 from paperhunter.utils.logging_setup import get_logger
 
 logger = get_logger(__name__)
@@ -45,14 +45,14 @@ logger = get_logger(__name__)
 # Costanti
 # ---------------------------------------------------------------------------
 
-_DBLP_SEARCH_URL = "https://dblp.org/search/publ/api"
-_DBLP_BIB_URL = "https://dblp.org/rec/{key}.bib"
-
-_REQUEST_TIMEOUT = 20.0
-_MIN_REQUEST_INTERVAL = 2.0  # secondi tra richieste (rispetta fair use DBLP)
-_MAX_RETRIES = 3
-_RETRY_BACKOFF = 3.0  # secondi di backoff iniziale (raddoppia ad ogni retry)
-_RATE_LIMIT_COOLDOWN = 30.0  # secondi di attesa dopo un 429
+# Parole iniziali del titolo usate come prefisso nella ricerca SPARQL: prima
+# un prefisso lungo (pochi candidati), poi uno corto se il titolo DBLP diverge
+# più avanti (refusi, sottotitoli).
+_TITLE_PREFIX_WORDS = (6, 3)
+# Candidati per titolo di cui leggere i metadati completi (2 query ciascuno)
+_MAX_TITLE_CANDIDATES = 8
+# Pre-filtro sui titoli restituiti dal prefisso, prima delle soglie strict
+_TITLE_PREFILTER_SIM = 0.75
 
 # Soglie di similarità titolo
 _TITLE_SIM_THRESHOLD_WITH_AUTHOR = 0.82
@@ -279,7 +279,7 @@ def _strip_dblp_fields(bibtex: str) -> str:
 class DblpLookup:
     """Client per verificare e recuperare BibTeX ufficiali da DBLP.
 
-    Implementa cache su disco e rate limiting.
+    Implementa cache su disco; rate limiting e retry sono nel client SPARQL.
 
     Args:
         cache_dir: Directory per la cache. Default: ``cache/dblp``.
@@ -292,7 +292,6 @@ class DblpLookup:
         enabled: bool = True,
     ) -> None:
         self._enabled = enabled
-        self._last_request_time = 0.0
 
         if cache_dir is None:
             cache_dir = Path("cache") / "dblp"
@@ -301,11 +300,10 @@ class DblpLookup:
         self._cache_file = self._cache_dir / "dblp_cache.json"
         self._cache: dict[str, dict] = self._load_cache()
 
-        self._client = httpx.Client(
-            timeout=_REQUEST_TIMEOUT,
-            follow_redirects=True,
-            headers={"User-Agent": "PaperHunter/2.0 (academic survey tool)"},
-        )
+        self._client = DblpSparqlClient()
+        # Candidati per titolo già letti in questo processo: le strategie
+        # titolo+autore e solo-titolo condividono la stessa ricerca.
+        self._title_candidates_memo: dict[str, list[dict]] = {}
 
         self._stats = {"hits": 0, "misses": 0, "errors": 0, "cache_hits": 0}
 
@@ -335,101 +333,66 @@ class DblpLookup:
             logger.warning("Errore scrittura cache DBLP: %s", exc)
 
     # ------------------------------------------------------------------
-    # Rate limiting
+    # Query DBLP (SPARQL)
     # ------------------------------------------------------------------
 
-    def _wait_rate_limit(self) -> None:
-        """Attende il tempo necessario per rispettare il rate limit DBLP."""
-        elapsed = time.time() - self._last_request_time
-        if elapsed < _MIN_REQUEST_INTERVAL:
-            sleep_time = _MIN_REQUEST_INTERVAL - elapsed
-            time.sleep(sleep_time)
-        self._last_request_time = time.time()
-
-    # ------------------------------------------------------------------
-    # API calls
-    # ------------------------------------------------------------------
-
-    def _request_with_retry(self, method: str, url: str, **kwargs) -> httpx.Response:
-        """Esegue una richiesta HTTP con retry automatico su errori di connessione.
-
-        Gestisce disconnessioni del server DBLP e 429 Too Many Requests.
-        """
-        last_exc = None
-        for attempt in range(_MAX_RETRIES):
-            self._wait_rate_limit()
+    def _records(self, keys: list[str]) -> list[dict]:
+        """Metadati dei record DBLP nel formato hit della vecchia search API."""
+        hits: list[dict] = []
+        for key in keys:
             try:
-                resp = self._client.get(url, **kwargs) if method == "GET" else self._client.request(method, url, **kwargs)
-                if resp.status_code == 429:
-                    logger.debug("DBLP 429 rate limited (attempt %d/%d), waiting %ds", attempt + 1, _MAX_RETRIES, _RATE_LIMIT_COOLDOWN)
-                    self._recreate_client()
-                    time.sleep(_RATE_LIMIT_COOLDOWN)
-                    continue
-                return resp
-            except httpx.RemoteProtocolError as exc:
-                last_exc = exc
-                logger.debug("DBLP connection reset (attempt %d/%d): %s", attempt + 1, _MAX_RETRIES, exc)
-                self._recreate_client()
-                time.sleep(_RETRY_BACKOFF * (2 ** attempt))
-            except httpx.RequestError as exc:
-                last_exc = exc
-                logger.debug("DBLP request error (attempt %d/%d): %s", attempt + 1, _MAX_RETRIES, exc)
-                time.sleep(_RETRY_BACKOFF * (2 ** attempt))
-        if last_exc:
-            raise last_exc
-        raise httpx.RequestError("DBLP max retries exceeded")
+                hit = self._client.get_record(key)
+            except DblpSparqlError as exc:
+                logger.warning("DBLP SPARQL record error per key=%s: %s", key, exc)
+                self._stats["errors"] += 1
+                continue
+            if hit:
+                hits.append(hit)
+        return hits
 
-    def _recreate_client(self) -> None:
-        """Ricrea il client HTTP (utile dopo disconnessioni)."""
+    def _search_doi(self, doi: str) -> list[dict]:
+        """Record DBLP con questo DOI (match esatto sull'IRI)."""
         try:
-            self._client.close()
-        except Exception:
-            pass
-        self._client = httpx.Client(
-            timeout=_REQUEST_TIMEOUT,
-            follow_redirects=True,
-            headers={"User-Agent": "PaperHunter/2.0 (academic survey tool)"},
-        )
+            keys = self._client.find_by_doi(doi)
+        except DblpSparqlError as exc:
+            logger.warning("DBLP SPARQL DOI error: %s — doi: %s", exc, doi)
+            self._stats["errors"] += 1
+            return []
+        return self._records(keys)
 
-    def _search_dblp(self, query: str, max_hits: int = 5) -> list[dict]:
-        """Esegue una ricerca sull'API DBLP.
+    def _search_title(self, title: str) -> list[dict]:
+        """Record DBLP con titolo simile, cercati per prefisso del titolo.
 
-        Args:
-            query: Stringa di ricerca.
-            max_hits: Numero massimo di risultati.
-
-        Returns:
-            Lista di hit (dict con info del paper).
+        Il prefisso restringe i candidati sull'indice; tra questi vengono letti
+        per esteso solo i più simili, poi ``_select_best_hit`` applica le
+        soglie strict su titolo, autori e anno.
         """
-        try:
-            resp = self._request_with_retry(
-                "GET",
-                _DBLP_SEARCH_URL,
-                params={"q": query, "format": "json", "h": str(max_hits)},
+        clean_title = re.sub(r"\s+", " ", _strip_title_noise(title)).strip()
+        if clean_title in self._title_candidates_memo:
+            return self._title_candidates_memo[clean_title]
+
+        hits: list[dict] = []
+        for n_words in _TITLE_PREFIX_WORDS:
+            try:
+                rows = self._client.find_by_title(clean_title, n_words=n_words)
+            except DblpSparqlError as exc:
+                logger.warning("DBLP SPARQL title error: %s — %s", exc, clean_title[:60])
+                self._stats["errors"] += 1
+                rows = []
+            scored = sorted(
+                ((key, _title_similarity(clean_title, dblp_title)) for key, dblp_title in rows),
+                key=lambda item: -item[1],
             )
-            resp.raise_for_status()
-            data = resp.json()
+            keys = [key for key, sim in scored if sim >= _TITLE_PREFILTER_SIM]
+            if keys:
+                hits = self._records(keys[:_MAX_TITLE_CANDIDATES])
+                break
 
-            hits_data = data.get("result", {}).get("hits", {})
-            hit_list = hits_data.get("hit", [])
-
-            # DBLP restituisce un singolo dict se c'è un solo risultato
-            if isinstance(hit_list, dict):
-                hit_list = [hit_list]
-
-            return [h.get("info", {}) for h in hit_list if "info" in h]
-
-        except httpx.HTTPStatusError as exc:
-            logger.warning("DBLP search HTTP error %d: %s", exc.response.status_code, query)
-            self._stats["errors"] += 1
-            return []
-        except (httpx.RequestError, json.JSONDecodeError, KeyError) as exc:
-            logger.warning("DBLP search error: %s — query: %s", exc, query)
-            self._stats["errors"] += 1
-            return []
+        self._title_candidates_memo[clean_title] = hits
+        return hits
 
     def _fetch_bibtex(self, dblp_key: str) -> str | None:
-        """Scarica il BibTeX ufficiale di un record DBLP.
+        """Ricostruisce il BibTeX in stile DBLP di un record.
 
         Args:
             dblp_key: Chiave DBLP (es. ``conf/nips/VaswaniSPUJGKP17``).
@@ -437,19 +400,16 @@ class DblpLookup:
         Returns:
             Stringa BibTeX o None se errore.
         """
-        url = _DBLP_BIB_URL.format(key=dblp_key)
         try:
-            resp = self._request_with_retry("GET", url)
-            resp.raise_for_status()
-            bibtex = resp.text.strip()
-            if bibtex and bibtex.startswith("@"):
-                return bibtex
-            logger.warning("DBLP BibTeX vuoto o invalido per key=%s", dblp_key)
-            return None
-        except (httpx.HTTPStatusError, httpx.RequestError) as exc:
+            bibtex = self._client.get_bibtex(dblp_key)
+        except DblpSparqlError as exc:
             logger.warning("DBLP fetch bibtex error per key=%s: %s", dblp_key, exc)
             self._stats["errors"] += 1
             return None
+        if bibtex and bibtex.startswith("@"):
+            return bibtex
+        logger.warning("DBLP BibTeX vuoto o invalido per key=%s", dblp_key)
+        return None
 
     # ------------------------------------------------------------------
     # Selezione miglior match
@@ -667,8 +627,7 @@ class DblpLookup:
         require_author: bool, require_exact_year: bool,
     ) -> DblpResult | None:
         """Cerca su DBLP per DOI."""
-        query = doi.strip()
-        hits = self._search_dblp(query, max_hits=3)
+        hits = self._search_doi(doi)
         if not hits:
             return None
         best, sim = self._select_best_hit(
@@ -686,28 +645,24 @@ class DblpLookup:
         authors: list[str], min_similarity: float,
         require_author: bool, require_exact_year: bool,
     ) -> DblpResult | None:
-        """Cerca su DBLP per titolo + primo autore.
+        """Cerca su DBLP per titolo, accettando solo record con autori in comune.
 
-        Prova prima con 10 parole, poi con 6 se non trova nulla
-        (DBLP usa AND logic, quindi troppe parole possono causare miss).
+        L'autore non fa parte della query SPARQL (che filtra per prefisso del
+        titolo): il vincolo sul cognome è applicato da ``_select_best_hit``.
         """
-        clean_title = re.sub(r"[^\w\s]", " ", _strip_title_noise(title))
-        all_words = clean_title.split()
-
-        for n_words in (10, 6):
-            words = all_words[:n_words]
-            query = " ".join(words) + " " + first_author_surname
-            hits = self._search_dblp(query, max_hits=7)
-            if hits:
-                best, sim = self._select_best_hit(
-                    hits, title, year,
-                    threshold=max(_TITLE_SIM_THRESHOLD_WITH_AUTHOR, min_similarity),
-                    target_authors=authors,
-                    require_author_match=require_author,
-                    require_exact_year=require_exact_year,
-                )
-                if best:
-                    return self._build_result(best, sim)
+        hits = self._search_title(title)
+        if not hits:
+            return None
+        target_authors = authors or [first_author_surname]
+        best, sim = self._select_best_hit(
+            hits, title, year,
+            threshold=max(_TITLE_SIM_THRESHOLD_WITH_AUTHOR, min_similarity),
+            target_authors=target_authors,
+            require_author_match=True,
+            require_exact_year=require_exact_year,
+        )
+        if best:
+            return self._build_result(best, sim)
         return None
 
     def _try_title_only_lookup(
@@ -715,27 +670,19 @@ class DblpLookup:
         authors: list[str], min_similarity: float,
         require_author: bool, require_exact_year: bool,
     ) -> DblpResult | None:
-        """Cerca su DBLP solo per titolo (soglia più alta).
-
-        Prova con 12 parole, poi 7 se non trova nulla.
-        """
-        clean_title = re.sub(r"[^\w\s]", " ", _strip_title_noise(title))
-        all_words = clean_title.split()
-
-        for n_words in (12, 7):
-            words = all_words[:n_words]
-            query = " ".join(words)
-            hits = self._search_dblp(query, max_hits=5)
-            if hits:
-                best, sim = self._select_best_hit(
-                    hits, title, year,
-                    threshold=max(_TITLE_SIM_THRESHOLD_TITLE_ONLY, min_similarity),
-                    target_authors=authors,
-                    require_author_match=require_author,
-                    require_exact_year=require_exact_year,
-                )
-                if best:
-                    return self._build_result(best, sim)
+        """Cerca su DBLP solo per titolo (soglia più alta)."""
+        hits = self._search_title(title)
+        if not hits:
+            return None
+        best, sim = self._select_best_hit(
+            hits, title, year,
+            threshold=max(_TITLE_SIM_THRESHOLD_TITLE_ONLY, min_similarity),
+            target_authors=authors,
+            require_author_match=require_author,
+            require_exact_year=require_exact_year,
+        )
+        if best:
+            return self._build_result(best, sim)
         return None
 
     def _build_result(self, hit: dict, similarity: float) -> DblpResult | None:
@@ -804,7 +751,7 @@ class DblpLookup:
         return dict(self._stats)
 
     def close(self) -> None:
-        """Chiude il client HTTP."""
+        """Chiude il client SPARQL."""
         self._client.close()
 
     def __del__(self) -> None:

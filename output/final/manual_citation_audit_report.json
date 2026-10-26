@@ -1,0 +1,57 @@
+{
+  "audit_type": "manual_primary_source_attribution_audit",
+  "audit_date": "2026-08-03",
+  "scope": {
+    "initial_occurrences_checked": 322,
+    "initial_distinct_cited_keys": 99,
+    "sections_audited": [
+      "Introduction and Background",
+      "Training-Time Threats",
+      "Inference-Time Threats",
+      "Hallucinations and Cross-Cutting Defenses",
+      "Testing, Discussion, and Conclusion"
+    ],
+    "follow_up": "Inference-Time Threats was re-audited occurrence by occurrence for direct support and primary-source attribution.",
+    "method": "Five section audits plus follow-up verification against primary paper full text and authoritative arXiv, DBLP, ACL, NeurIPS, USENIX, IEEE, ACM, OpenReview and PMLR metadata. Secondary carrier citations were replaced with original papers, rewritten as current-paper results, or removed from generic synthesis."
+  },
+  "final_artifact": {
+    "citation_occurrences": 293,
+    "distinct_cited_keys": 121,
+    "bibtex_entries": 121,
+    "markdown_latex_occurrence_delta": 0,
+    "markdown_latex_key_delta": 0,
+    "missing_bibtex_entries": 0,
+    "unused_bibtex_entries": 0,
+    "duplicate_bibtex_keys": 0,
+    "duplicate_keys_within_same_citation_group": 0,
+    "adjacent_duplicate_citation_groups": 0,
+    "exact_repeated_key_and_claim_pairs": 0,
+    "undefined_latex_citations": 0,
+    "pdf_pages": 51,
+    "unresolved_pdf_markers": 0
+  },
+  "representative_primary_source_repairs": [
+    "GCG now cites Zou et al.'s original paper rather than related-work carrier passages.",
+    "The two distinct AutoDAN methods are disambiguated and cite their respective original papers.",
+    "PAIR, TAP, AdvPrompter, many-shot jailbreaking, HarmBench and StrongREJECT cite their original papers.",
+    "Spectral signatures cite Tran, Li and Madry rather than later papers that mention the method.",
+    "RankPoison cites RLHFPoison; web-scale poisoning cites Carlini et al.; sleeper agents cite Hubinger et al.",
+    "HaluEval, SelfCheckGPT, TruthX, StruQ, SecAlign, Jatmo, AgentDojo, InjecAgent, PoisonedRAG and Instruction Hierarchy cite their primary papers.",
+    "Unsupported or generic secondary attributions were removed or rewritten without a false citation."
+  ],
+  "strict_dblp_manifest": {
+    "status": "complete",
+    "verified_cited_records": 121,
+    "previously_verified_records_rechecked_live": 91,
+    "new_primary_records_added": 30,
+    "manifest_records_total": 263,
+    "metadata_hash_revisions": 0,
+    "missing_verified_records": 0,
+    "hash_mismatches": 0,
+    "strict_gate_passed": true,
+    "manifest": "references_dblp_manifest.json",
+    "verification_report": "references_dblp_verification_report.json",
+    "meaning": "All 121 cited BibTeX entries were rebuilt from canonical live DBLP records, pinned by SHA-256 in the manifest, and accepted by PaperHunter's strict citation-integrity gate."
+  },
+  "assurance": "The audit verifies direct textual support and primary-source attribution; it does not independently reproduce the cited experiments. Mechanical duplicate and cross-reference checks pass. All 121 cited entries now have canonical DBLP metadata and pinned SHA-256 verification, and the strict DBLP-manifest gate passes."
+}

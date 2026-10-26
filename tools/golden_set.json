@@ -1,0 +1,26 @@
+{
+  "_doc": "Golden set per retrieval evaluation — v3.6. Cura manualmente queste voci: per ogni query, elenca i bibtex_keys dei paper che il retrieval DEVE trovare nei top-k. Usato da tools/eval_survey_quality.py --golden.",
+  "_template_status": "TEMPLATE — sostituire le voci di esempio con casi reali del corpus.",
+  "queries": [
+    {
+      "query": "indirect prompt injection via document context",
+      "expected_bibtex_keys": [
+        "greshake_2023a",
+        "perez_2022a"
+      ],
+      "notes": "Esempio: paper noti del settore; sostituire con bibtex_key reali del tuo corpus."
+    },
+    {
+      "query": "jailbreak attacks on LLaMA-2 safety alignment",
+      "expected_bibtex_keys": [
+        "zou_2023a"
+      ],
+      "notes": "Aggiungi 5-10 paper attesi per query."
+    },
+    {
+      "query": "RLHF defense against adversarial prompts",
+      "expected_bibtex_keys": [],
+      "notes": "POPOLARE: cerca nel corpus i paper che parlano di RLHF defense."
+    }
+  ]
+}

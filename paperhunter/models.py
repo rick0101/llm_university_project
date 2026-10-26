@@ -1,0 +1,486 @@
+"""
+Pydantic models for data validation in PaperHunter.
+
+Modelli di dominio per l'intero workflow: ingestion, summarization,
+indexing, agentic writing, post-processing.
+"""
+
+from datetime import datetime
+from enum import Enum
+from typing import Any, Literal, Optional
+
+from pydantic import BaseModel, Field, HttpUrl
+
+
+# ============================================================================
+# Enums
+# ============================================================================
+
+class SourceType(str, Enum):
+    """Enum representing the source of a paper."""
+    ARXIV = "arxiv"
+    SEMANTIC_SCHOLAR = "semantic_scholar"
+    HUGGINGFACE = "huggingface"
+
+
+class ChunkType(str, Enum):
+    """Tipo di chunk nel vector store."""
+    ORIGINAL = "original"          # Testo originale dal PDF
+    L1_SUMMARY = "l1_summary"      # Summary L1 singolo paper
+    L2_SUMMARY = "l2_summary"      # Meta-summary L2 per categoria
+    IMAGE_EMBEDDING = "image_embedding"  # Embedding multimodale immagine
+
+
+class VerificationStatus(str, Enum):
+    """Stato di verifica di una citazione."""
+    SUPPORTED = "SUPPORTED"
+    PARTIALLY_SUPPORTED = "PARTIALLY_SUPPORTED"
+    NOT_SUPPORTED = "NOT_SUPPORTED"
+    SOURCE_NOT_FOUND = "SOURCE_NOT_FOUND"
+
+
+# ============================================================================
+# Paper (esteso per il nuovo workflow)
+# ============================================================================
+
+class Paper(BaseModel):
+    """Represents a scientific paper with its metadata.
+
+    Esteso con campi per: GROBID processing, S2 enrichment,
+    BibTeX generation, categorizzazione, ingestion tracking.
+    """
+
+    title: str = Field(..., description="The title of the paper")
+    authors: list[str] = Field(default_factory=list, description="List of author names")
+    abstract: str = Field(default="", description="The paper's abstract")
+    url: str = Field(..., description="URL to the paper's page")
+    pdf_url: Optional[str] = Field(None, description="Direct URL to the PDF")
+    source: SourceType = Field(default=SourceType.ARXIV, description="Source where the paper was found")
+    published_date: Optional[datetime] = Field(None, description="Publication date")
+    arxiv_id: Optional[str] = Field(None, description="ArXiv ID if available")
+    doi: Optional[str] = Field(None, description="DOI if available")
+    github_url: Optional[str] = Field(None, description="Associated GitHub repository URL")
+    categories: list[str] = Field(default_factory=list, description="Paper categories/tags")
+    citations: Optional[int] = Field(None, description="Number of citations")
+
+    # --- Nuovi campi (v2.0) ---
+    venue: Optional[str] = Field(None, description="Venue di pubblicazione (es. NeurIPS, ACL)")
+    journal: Optional[str] = Field(None, description="Journal se applicabile")
+    year: Optional[int] = Field(None, description="Anno di pubblicazione")
+    month: Optional[int] = Field(None, ge=1, le=12, description="Mese di pubblicazione")
+    citation_velocity: Optional[float] = Field(None, description="Citazioni per anno (calcolato)")
+    influential_citation_count: Optional[int] = Field(None, description="Citazioni influenti (S2)")
+    fields_of_study: list[str] = Field(default_factory=list, description="Campi di studio (S2)")
+
+    # Semantic Scholar
+    semantic_scholar_id: Optional[str] = Field(None, description="S2 paper ID")
+
+    # BibTeX
+    bibtex_key: Optional[str] = Field(None, description="Chiave BibTeX (es. Zou_2023_GCG)")
+    bibtex_entry: Optional[str] = Field(None, description="Entry BibTeX completa")
+    bibtex_source: Optional[str] = Field(None, description="Provenienza entry BibTeX: 'dblp', 'local', ecc.")
+
+    # Ingestion tracking
+    pdf_path: Optional[str] = Field(None, description="Percorso locale del PDF")
+    pdf_hash: Optional[str] = Field(None, description="SHA-256 hash del PDF")
+    category: Optional[str] = Field(None, description="Categoria assegnata (es. prompt_injection)")
+    grobid_processed: bool = Field(False, description="Se il PDF è stato processato da GROBID")
+    ingested_at: Optional[datetime] = Field(None, description="Timestamp dell'ingestion")
+
+    # Metadata enrichment (Task 1.3)
+    metadata_confidence: float = Field(0.0, ge=0.0, le=1.0, description="Affidabilità stimata dei metadati (0.0-1.0)")
+    year_source: Optional[str] = Field(None, description="Fonte da cui è stato estratto l'anno (es. 's2_publication_date', 'grobid', 'filename')")
+
+    # --- Citability (v3.6 Two-Tier Corpus) ---
+    # Un paper è "citable" se il writer può inserire [bibtex_key] nel survey.
+    # Tutti i paper vengono comunque ingeriti per alimentare retrieval/L1/L1.5/L2,
+    # ma solo i citable finiscono nel master .bib.
+    is_citable: bool = Field(False, description="Se True, il writer può citare questo paper nel survey")
+    dblp_verified: bool = Field(False, description="Entry BibTeX verificata su DBLP")
+    dblp_key: Optional[str] = Field(None, description="Chiave canonica del record DBLP")
+    dblp_url: Optional[str] = Field(None, description="URL canonico del record DBLP")
+    dblp_title: Optional[str] = Field(None, description="Titolo restituito dal record DBLP")
+    dblp_similarity: Optional[float] = Field(
+        None,
+        ge=0.0,
+        le=1.0,
+        description="Similarità tra titolo sorgente e titolo DBLP verificato",
+    )
+    citation_tier: str = Field(
+        "uncited_context",
+        description="Tier di citabilità: 'dblp', 's2_high_conf', 'preprint', 'uncited_context'",
+    )
+
+    class Config:
+        use_enum_values = True
+
+
+# ============================================================================
+# GROBID Output
+# ============================================================================
+
+class GROBIDSection(BaseModel):
+    """Una sezione estratta da GROBID."""
+    title: str = Field("", description="Titolo della sezione")
+    text: str = Field("", description="Testo della sezione")
+    level: int = Field(1, ge=1, le=4, description="Livello heading (1=sezione, 2=sotto-sezione)")
+
+
+class GROBIDReference(BaseModel):
+    """Un riferimento bibliografico estratto da GROBID."""
+    id: Optional[str] = Field(None, description="ID del riferimento nel TEI-XML")
+    title: Optional[str] = Field(None, description="Titolo del paper citato")
+    authors: list[str] = Field(default_factory=list, description="Autori del paper citato")
+    year: Optional[int] = Field(None, description="Anno di pubblicazione")
+    venue: Optional[str] = Field(None, description="Venue/journal")
+    doi: Optional[str] = Field(None, description="DOI")
+    raw_text: Optional[str] = Field(None, description="Testo grezzo della citazione")
+
+
+class GROBIDOutput(BaseModel):
+    """Output strutturato da GROBID per un singolo PDF.
+
+    Contiene il testo estratto, suddiviso in sezioni, con
+    riferimenti bibliografici, figure captions e tabelle.
+    """
+    paper_id: Optional[str] = Field(None, description="ID del paper associato")
+    title: str = Field("", description="Titolo estratto dall'header")
+    authors: list[str] = Field(default_factory=list, description="Autori estratti")
+    abstract: str = Field("", description="Abstract estratto")
+    sections: list[GROBIDSection] = Field(default_factory=list, description="Sezioni del paper")
+    references: list[GROBIDReference] = Field(default_factory=list, description="Riferimenti bibliografici")
+    figure_captions: list[str] = Field(default_factory=list, description="Didascalie delle figure")
+    table_captions: list[str] = Field(default_factory=list, description="Didascalie delle tabelle")
+    full_text: str = Field("", description="Testo completo (fallback)")
+    processing_time: Optional[float] = Field(None, description="Tempo di processing GROBID (secondi)")
+    success: bool = Field(True, description="Se il processing è andato a buon fine")
+    error_message: Optional[str] = Field(None, description="Errore se success=False")
+    # Estrazione robusta anno (Task 1.1)
+    extracted_year: Optional[int] = Field(None, description="Anno estratto con strategia multi-source")
+    year_extraction_source: Optional[str] = Field(None, description="Fonte da cui è stato estratto l'anno (es. 'tei_header_date', 'doi_year', 'text_regex', 'citation_median')")
+
+
+# ============================================================================
+# PaperChunk (per vector store)
+# ============================================================================
+
+class PaperChunk(BaseModel):
+    """Chunk di testo indicizzato nel vector store.
+
+    Ogni chunk ha metadata ricchi per il retrieval ibrido
+    con filtri per categoria, anno, tipo.
+    """
+    chunk_id: str = Field(..., description="ID univoco del chunk (hash di bibtex_key::section::index)")
+    text: str = Field(..., description="Contenuto testuale del chunk")
+    chunk_type: ChunkType = Field(ChunkType.ORIGINAL, description="Tipo: original, l1_summary, l2_summary")
+
+    # Metadata per retrieval
+    paper_id: Optional[str] = Field(None, description="ID del paper di origine")
+    bibtex_key: Optional[str] = Field(None, description="Chiave BibTeX del paper")
+    section_name: Optional[str] = Field(None, description="Nome della sezione di origine")
+    category: Optional[str] = Field(None, description="Categoria del paper")
+    year: Optional[int] = Field(None, description="Anno di pubblicazione")
+    month: Optional[int] = Field(None, description="Mese di pubblicazione")
+    chunk_index: int = Field(0, description="Indice del chunk nella sezione")
+    image_path: Optional[str] = Field(None, description="Percorso relativo all'immagine estratta (solo per Figure_Description)")
+    venue: Optional[str] = Field(None, description="Venue/journal del paper di origine (es. NeurIPS, ACL, arXiv)")
+
+    # --- Citability passthrough (v3.6) ---
+    is_citable: bool = Field(False, description="Se True, questo paper può essere citato dal writer")
+    citation_tier: str = Field("uncited_context", description="Tier: dblp | s2_high_conf | preprint | uncited_context")
+
+    # --- Tassonomia di dominio (v3.6, popolata per L1 chunks) ---
+    attack_vector: list[str] = Field(default_factory=list, description="Vettori d'attacco (vocabolario controllato)")
+    defense_type: list[str] = Field(default_factory=list, description="Tipi di difesa (vocabolario controllato)")
+    target_models: list[str] = Field(default_factory=list, description="Modelli target testati")
+    evaluation_metrics: list[str] = Field(default_factory=list, description="Metriche di valutazione")
+    datasets: list[str] = Field(default_factory=list, description="Dataset/benchmark usati")
+    threat_model: Optional[str] = Field(None, description="Modello di minaccia (testo libero)")
+
+    # Embedding (opzionale, calcolato separatamente)
+    embedding: Optional[list[float]] = Field(None, exclude=True, description="Vettore embedding")
+
+    def to_metadata_dict(self) -> dict[str, Any]:
+        """Converte i metadata in un dict per il vector store."""
+        return {
+            "chunk_id": self.chunk_id,
+            "chunk_type": self.chunk_type.value if isinstance(self.chunk_type, ChunkType) else self.chunk_type,
+            "paper_id": self.paper_id or "",
+            "bibtex_key": self.bibtex_key or "",
+            "section_name": self.section_name or "",
+            "category": self.category or "",
+            "year": self.year or 0,
+            "month": self.month or 0,
+            "chunk_index": self.chunk_index,
+            "image_path": self.image_path or "",
+            "venue": self.venue or "",
+            # Citability (v3.6)
+            "is_citable": self.is_citable,
+            "citation_tier": self.citation_tier,
+            # Tassonomia (v3.6) — payload filterable in Qdrant
+            "attack_vector": list(self.attack_vector),
+            "defense_type": list(self.defense_type),
+            "target_models": list(self.target_models),
+            "evaluation_metrics": list(self.evaluation_metrics),
+            "datasets": list(self.datasets),
+            "threat_model": self.threat_model or "",
+        }
+
+
+# ============================================================================
+# Summarization (L1 e L2)
+# ============================================================================
+
+class ClaimAtomic(BaseModel):
+    """Claim atomico fact-checkabile estratto da un paper.
+
+    Ogni claim è una singola affermazione verificabile (numerica o
+    metodologica) che il critic può confrontare individualmente con
+    i chunk sorgente. Permette verifica chirurgica vs paragrafi interi.
+    """
+    text: str = Field(..., description="Testo del claim in una frase atomica")
+    claim_type: Literal["empirical", "methodological", "theoretical"] = Field(
+        "empirical",
+        description="empirical (risultato numerico), methodological (come funziona), theoretical (proprietà formale)",
+    )
+    evidence_chunk_ids: list[str] = Field(
+        default_factory=list,
+        description="ID dei chunk del paper sorgente che supportano il claim",
+    )
+
+
+class L1Summary(BaseModel):
+    """Summary L1 — singolo paper.
+
+    Estratto da Gemini Pro con prompt strutturato.
+    Contiene obbligatoriamente la testing_methodology.
+    """
+    paper_id: str = Field(..., description="ID del paper originale")
+    bibtex_key: Optional[str] = Field(None, description="Chiave BibTeX")
+    category: Optional[str] = Field(None, description="Categoria del paper")
+    year: Optional[int] = Field(None, description="Anno di pubblicazione")
+
+    key_contributions: list[str] = Field(
+        default_factory=list,
+        description="Contributi principali (max 5 bullet points)"
+    )
+    methodology: str = Field("", description="Approccio tecnico dettagliato")
+    testing_methodology: str = Field(
+        "",
+        description="CAMPO CRITICO: benchmark, dataset, metriche, prompt usati per testare"
+    )
+    temporal_context: str = Field(
+        "",
+        description="Quando proposto, differenze col passato, posizione nella timeline SOTA"
+    )
+    results_summary: str = Field("", description="Risultati quantitativi principali")
+    limitations: str = Field("", description="Limiti dichiarati o impliciti")
+
+    # --- Tassonomia di dominio (v3.6 — vocabolari controllati) ---
+    threat_model: str = Field("", description="Chi attacca cosa (es. 'external attacker, black-box LLM API')")
+    attack_vector: list[str] = Field(
+        default_factory=list,
+        description="Vettori d'attacco da vocabolario controllato (taxonomy.ATTACK_VECTORS)",
+    )
+    defense_type: list[str] = Field(
+        default_factory=list,
+        description="Tipi di difesa da vocabolario controllato (taxonomy.DEFENSE_TYPES)",
+    )
+    target_models: list[str] = Field(
+        default_factory=list,
+        description="Modelli LLM testati (es. ['gpt-4', 'llama-2-7b'])",
+    )
+    evaluation_metrics: list[str] = Field(
+        default_factory=list,
+        description="Metriche di valutazione (es. ['ASR', 'BLEU', 'F1'])",
+    )
+    datasets: list[str] = Field(
+        default_factory=list,
+        description="Dataset/benchmark usati (es. ['AdvBench', 'HarmBench'])",
+    )
+    subcategory_freeform: str = Field(
+        "",
+        description="Sotto-categoria libera quando il vocabolario non copre il caso",
+    )
+
+    # --- Atomic claims (v3.6 — verifica chirurgica) ---
+    claims: list[ClaimAtomic] = Field(
+        default_factory=list,
+        description="Claim atomici fact-checkabili individualmente dal critic",
+    )
+
+    # --- Citability passthrough (v3.6) ---
+    is_citable: bool = Field(False, description="Se True, paper citable dal writer")
+    citation_tier: str = Field("uncited_context", description="Tier di citabilità")
+
+    l1_char_count: Optional[int] = Field(
+        None,
+        description="Numero totale di caratteri del summary (per tracking budget)"
+    )
+    compression_tier: Optional[str] = Field(
+        None,
+        description="Tier di compressione usato (standard/concise/compressed)"
+    )
+    citation_count: Optional[int] = Field(
+        None,
+        description="Conteggio citazioni (da S2) per citation-weighted budget L2"
+    )
+    generated_at: Optional[datetime] = Field(None, description="Timestamp di generazione")
+    model_used: Optional[str] = Field(None, description="Modello Gemini usato (flash/pro)")
+
+
+class L1_5Summary(BaseModel):
+    """Summary L1.5 — meta-summary intermedio per cluster RAPTOR.
+
+    Livello intermedio tra L1 e L2: un meta-summary per ogni cluster
+    semantico (~20 paper ciascuno). Riduce da ~1.000 L1 a ~50 cluster
+    summary, permettendo all'L2 di rientrare nel budget token.
+
+    Generato da ``level1_5_summarizer.py`` a partire dai cluster
+    prodotti da ``clustering_utils.py``.
+    """
+    cluster_id: int = Field(..., description="ID del cluster (da clustering_utils)")
+    category: str = Field(..., description="Categoria di appartenenza (es. Prompt Injection)")
+    paper_ids: list[str] = Field(
+        default_factory=list,
+        description="Lista dei paper_id o bibtex_key dei paper inclusi nel cluster"
+    )
+    paper_count: int = Field(0, description="Numero di paper nel cluster")
+    common_theme: str = Field("", description="Tema comune identificato dal LLM")
+    shared_methodologies: str = Field("", description="Metodologie condivise tra i paper del cluster")
+    key_findings: str = Field("", description="Risultati principali aggregati")
+    testing_overview: str = Field("", description="Panoramica delle metodologie di testing")
+    temporal_span: str = Field("", description="Range temporale (es. '2022-2025')")
+    citable_paper_ids: list[str] = Field(
+        default_factory=list,
+        description="Subset di paper_ids che sono is_citable=True (utile al writer)",
+    )
+    generated_at: str = Field("", description="Timestamp ISO di generazione")
+    model_used: Optional[str] = Field(None, description="Modello Gemini usato (flash/pro)")
+
+
+class L2Summary(BaseModel):
+    """Summary L2 — meta-summary per categoria.
+
+    Sintetizza tutti gli L1 di una categoria, evidenziando
+    trend temporali, gap, e convergenze metodologiche.
+    """
+    category: str = Field(..., description="Categoria (es. prompt_injection)")
+    paper_ids: list[str] = Field(default_factory=list, description="ID dei paper sintetizzati")
+    paper_count: int = Field(0, description="Numero di paper sintetizzati")
+    version: int = Field(1, description="Versione del summary (incrementale)")
+
+    temporal_trends: str = Field("", description="Evoluzione temporale (es. 2019→2026)")
+    taxonomy: str = Field("", description="Tassonomia delle sotto-aree")
+    gaps_filled: str = Field("", description="Gap colmati dalla letteratura")
+    open_gaps: str = Field("", description="Gap ancora aperti")
+    methodological_convergences: str = Field("", description="Convergenze e divergenze metodologiche")
+    testing_overview: str = Field("", description="Panoramica delle testing methodologies più usate")
+    synthesis: str = Field("", description="Sintesi complessiva della categoria")
+
+    citable_paper_ids: list[str] = Field(
+        default_factory=list,
+        description="Subset di paper_ids che sono is_citable=True (whitelist per writer)",
+    )
+
+    invalidated: bool = Field(False, description="Se il summary è stato invalidato da nuovi paper")
+    generated_at: Optional[datetime] = Field(None, description="Timestamp di generazione")
+    model_used: Optional[str] = Field(None, description="Modello Gemini usato")
+
+
+# ============================================================================
+# Provenance & Verification
+# ============================================================================
+
+class ProvenanceRecord(BaseModel):
+    """Record di provenance per una singola citazione nel survey.
+
+    Mappa ogni claim nel paper generato alla sua fonte originale
+    nel corpus di paper, con stato di verifica.
+    """
+    section: str = Field("", description="Sezione del survey in cui appare il claim")
+    claim_text: str = Field("", description="Testo del claim nel survey")
+    citation_key: str = Field("", description="Chiave BibTeX citata (es. Zou_2023_GCG)")
+    source_chunk_id: Optional[str] = Field(None, description="ID del chunk sorgente")
+    source_text_excerpt: str = Field("", description="Estratto del testo sorgente")
+    verification_status: VerificationStatus = Field(
+        VerificationStatus.SOURCE_NOT_FOUND,
+        description="Stato di verifica della citazione"
+    )
+    confidence: float = Field(
+        0.0, ge=0.0, le=1.0,
+        description="Confidenza della verifica (0-1)"
+    )
+
+
+# ============================================================================
+# Survey Versioning
+# ============================================================================
+
+class SurveyVersion(BaseModel):
+    """Metadata di una versione del survey generato."""
+    version_number: str = Field("1.0", description="Numero versione (es. 1.0, 1.1)")
+    timestamp: datetime = Field(default_factory=datetime.now, description="Timestamp di generazione")
+    paper_count: int = Field(0, description="Numero totale di paper nel corpus")
+    categories: list[str] = Field(default_factory=list, description="Categorie coperte")
+    changelog: str = Field("", description="Descrizione delle modifiche dalla versione precedente")
+    l1_count: int = Field(0, description="Numero di L1 summary generati")
+    l2_count: int = Field(0, description="Numero di L2 summary generati")
+    sections_count: int = Field(0, description="Numero di sezioni nel survey")
+    total_citations: int = Field(0, description="Numero totale di citazioni nel survey")
+    verified_citations: int = Field(0, description="Citazioni verificate con provenance")
+
+
+# ============================================================================
+# Modelli legacy (mantenuti per backward compatibility)
+# ============================================================================
+
+class RelevanceResult(BaseModel):
+    """Result of LLM relevance analysis."""
+
+    is_relevant: bool = Field(..., description="Whether the paper is relevant to the criteria")
+    reasoning: str = Field(..., description="Explanation for the relevance decision")
+    confidence: float = Field(
+        default=0.0,
+        ge=0.0,
+        le=1.0,
+        description="Confidence score of the relevance decision (0-1)"
+    )
+
+
+class FilteredPaper(BaseModel):
+    """A paper that has been processed through the relevance filter."""
+
+    paper: Paper = Field(..., description="The original paper")
+    relevance: RelevanceResult = Field(..., description="The relevance analysis result")
+
+
+class DownloadResult(BaseModel):
+    """Result of a download attempt."""
+
+    success: bool = Field(..., description="Whether the download was successful")
+    file_path: Optional[str] = Field(None, description="Path to the downloaded file")
+    method: Optional[str] = Field(None, description="Method used for download (direct/playwright)")
+    error_message: Optional[str] = Field(None, description="Error message if download failed")
+    skipped: bool = Field(default=False, description="Whether the download was skipped because the paper already exists locally")
+
+
+class SearchQuery(BaseModel):
+    """Search query configuration."""
+
+    keywords: str = Field(..., description="Broad search keywords")
+    filtering_criteria: str = Field(..., description="Specific filtering criteria for LLM")
+    max_results_per_source: int = Field(default=20, ge=1, le=100, description="Max results per source")
+    categories: list[str] = Field(
+        default_factory=lambda: ["cs.CL", "cs.AI"],
+        description="ArXiv categories to search"
+    )
+
+
+class SearchResult(BaseModel):
+    """Aggregated search results from all sources."""
+
+    papers: list[Paper] = Field(default_factory=list, description="List of found papers")
+    total_found: int = Field(default=0, description="Total number of papers found")
+    sources_queried: list[str] = Field(default_factory=list, description="Sources that were queried")
+    errors: list[str] = Field(default_factory=list, description="Errors encountered during search")

@@ -1,0 +1,4 @@
+# Single-dependency stack — solo client HTTP per parlare con Ollama locale.
+# Nessuna API key, nessun SDK cloud, nessuna libreria di plotting (i grafici
+# si generano off-line dai JSON di output).
+requests>=2.31

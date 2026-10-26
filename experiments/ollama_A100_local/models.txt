@@ -1,0 +1,48 @@
+# Lista dei modelli Ollama da testare in sequenza.
+#
+# Formato: una riga = un tag-modello Ollama (qualsiasi cosa accettata da
+#                     `ollama pull` / `ollama run`).
+# - Le righe vuote e quelle che iniziano con `#` vengono ignorate.
+# - Per ogni modello viene eseguito l'INTERO ciclo di valutazione (19 prompt
+#   × 31 attacchi × 11 difese = 6.479 test). Il modello giudice è SEMPRE lo
+#   stesso modello sotto test (chiamata separata post-generazione).
+# - Al termine di un modello si passa al successivo. I risultati di ciascun
+#   modello finiscono in `results/eval_<modello>_<timestamp>.json`.
+#
+# Tutti questi modelli stanno comodamente in 80 GB di VRAM (A100). Edita
+# liberamente: aggiungi/rimuovi/commenta righe a piacere.
+
+# === Modelli "piccoli" (≤ 10B) ============================================
+qwen3.5:4b
+qwen3.5:9b
+gemma4:e4b
+#llama3.1:8b
+#qwen2.5:7b
+#mistral:7b
+#gemma2:9b
+#phi3:14b
+
+# === Modelli medi (10-40B) ================================================
+qwen3.5:27b
+qwen3.6:35b
+gemma4:31b
+qwen3.5:35b
+qwen3.6:27b
+gemma4:26b
+deepseek-r1:32b
+# nemotron3:33b
+
+# === Modelli grandi (40-80B) — entrano in 80 GB con quantizzazione Q4 ====
+deepseek-r1:70b
+# llama4:16x17b
+#llama3.1:70b
+#qwen2.5:72b
+# mixtral:8x7b
+# command-r-plus:104b   # NON entra in 80 GB anche quantizzato — escluso
+
+# === Modelli reasoning / safety-tuned =====================================
+# deepseek-r1:32b
+# llama-guard3:8b      # solo come modello giudice — non testarlo come target
+
+#domanda: I modelli posso scaricarli tutti e poi runnarli o ogni volta che finisco un modello lo
+#disinstallo e scarico il successivo?

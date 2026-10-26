@@ -1,0 +1,246 @@
+# ============================================================================
+# LLM Security Survey Generator — Configurazione Centralizzata
+# ============================================================================
+# API keys vanno nel file .env (mai commitare!)
+# Tutto il resto è configurabile qui.
+# ============================================================================
+
+# --- Priorità Recency (globale) ---
+# Se true, i paper più recenti ricevono priorità durante ingestion, retrieval e L2 summarization.
+# Se false, tutti i paper vengono trattati allo stesso modo indipendentemente dall'anno.
+recency_priority: true
+
+# Provider obbligatorio: DeepSeek API nativa.
+# Google/Gemini non è supportato in questo profilo.
+llm_provider: "deepseek"
+# Policy fail-closed: niente Vision, embedding multimodali o generazione immagini.
+visual_features_enabled: false
+
+# --- DeepSeek API nativa ---
+# V4 Pro is text-only. Reasoning is high for synthesis and disabled for small
+# deterministic JSON/editorial tasks so visible output has headroom.
+deepseek:
+  api_base: "https://api.deepseek.com"
+  # Profilo economico: entrambi i tier logici usano V4 Flash, così eventuali
+  # call site legacy che chiedono "pro" non riattivano il modello costoso.
+  flash_model: "deepseek-v4-flash"
+  pro_model: "deepseek-v4-flash"
+  thinking_enabled: true
+  # Prevent hidden reasoning from consuming the whole shared output budget.
+  reasoning_effort: "high"
+  max_output_tokens_flash: 32768
+  max_output_tokens_pro: 65536
+  timeout: 1200
+  # Hard provider-wide cap; caller-level retry requests cannot exceed this.
+  max_retries: 2
+  max_continuation_attempts: 2
+  retry_strategy: "finite"
+
+# DeepSeek non offre embedding: viene usato BGE-M3 locale.
+embedding:
+  provider: "huggingface"
+  huggingface_model: "BAAI/bge-m3"
+  dimension: 1024
+
+# --- GROBID (Docker) ---
+grobid:
+  base_url: "http://localhost:8070"
+  timeout: 120                                 # Timeout per singolo PDF (secondi)
+  batch_size: 10                               # PDF processati in parallelo
+  consolidate_header: true                     # Consolidamento header con citations
+  consolidate_citations: true                  # Consolidamento citazioni
+  include_raw_citations: true                  # Includere citazioni raw nel TEI-XML
+  # Docker: docker run --rm -p 8070:8070 lfoppiano/grobid:0.8.2-full
+
+# --- Neo4j (Community Edition, opzionale) ---
+neo4j:
+  enabled: true                               # Impostare a true quando Neo4j è disponibile
+  uri: "bolt://localhost:7687"
+  username: "neo4j"
+  password: "password"                         # Cambiare in produzione
+  database: "neo4j"
+  # Docker: docker run --rm -p 7474:7474 -p 7687:7687 -e NEO4J_AUTH=neo4j/password neo4j:5-community
+
+# --- Qdrant (Vector DB locale, no server needed) ---
+qdrant:
+  persist_dir: "./qdrant_db"                          # Storage locale su disco
+  collection_paper_chunks: "paper_chunks_bge_m3"
+  collection_l1_summaries: "l1_summaries_bge_m3"
+  collection_l2_summaries: "l2_summaries_bge_m3"
+  collection_l1_5_summaries: "l1_5_summaries_bge_m3"
+  collection_graph_communities: "graph_communities_bge_m3"
+  collection_figure_descriptions: "figure_descriptions_bge_m3"
+  embedding_dimension: 1024                    # BGE-M3 locale
+  distance_metric: "Cosine"                    # Cosine | Euclid | Dot
+
+# --- Semantic Scholar API ---
+semantic_scholar:
+  base_url: "https://api.semanticscholar.org/graph/v1"
+  rate_limit_rpm: 100                          # Richieste al minuto (free tier)
+  rate_limit_rpm_authenticated: 100            # Con API key
+  fields: "title,authors,year,venue,journal,citationCount,influentialCitationCount,fieldsOfStudy,publicationDate,externalIds,abstract,citationStyles"
+  search_fields: "title,authors,year,venue,externalIds,abstract,citationCount"
+  max_retries: 3
+  timeout: 30
+  cache_dir: "./cache/semantic_scholar"        # Cache locale risultati S2
+
+# --- Ingestion Pipeline ---
+ingestion:
+  pdf_base_dir: "./scaricati"                       # Directory radice PDF categorizzati
+  hash_registry_path: "./data/hash_registry.json"
+  chunk_size: 1500                             # Token per chunk (approssimativo in caratteri)
+  chunk_overlap: 200                           # Overlap tra chunk consecutivi
+  batch_size: 10                               # PDF per batch durante ingestion
+  fallback_to_pymupdf: false                    # Fallback a PyMuPDF se GROBID fallisce
+  use_best_fit_packing: true                   # Best-fit bin packing post-segmentazione GROBID
+  papers_per_category: 5                       # Numero target di paper per categoria (usato per budget)
+  # Mapping nome cartella → nome categoria human-readable
+  category_mapping:
+    Prompt_injections1: "Prompt Injection"
+    Hallucinations1: "LLM Hallucinations"
+    Data_and_Model_Poisoning1: "Data and Model Poisoning"
+    Adversarial_Code1: "Adversarial Attacks"
+
+# --- Hierarchical Summarization ---
+summarization:
+  l1_max_tokens: 2000                          # Max token per summary L1
+  l2_max_tokens: 6000                          # Max token per summary L2 (4-6k)
+  l2_invalidation_threshold: 1                 # Minimo nuovi paper per triggerare rigenerazione L2
+  use_pro_for_l1: false                        # V4 Flash con reasoning high
+  use_pro_for_l2: false                        # V4 Flash con reasoning high
+  allow_flash_fallback: false                   # Se false, insisti con Pro senza degradare a Flash
+  pro_max_retries: 6                           # Retry pazienti per Pro (delay lunghi)
+  pro_base_delay: 15                           # Delay base (sec) tra retry Pro
+  max_context_tokens: 150000                   # Budget token massimo per singola chiamata LLM
+  l1_target_chars_auto: true                   # Se true, calcola target L1 chars in base a papers_per_category
+  l1_min_chars: 2000                           # Floor: un L1 non sarà mai più corto di così
+  l2_recency_tiers:                            # Soglie di compressione per recency (anni fa)
+    full: 2                                    # Paper ≤2 anni: testo L1 completo
+    reduced: 4                                 # Paper 2-4 anni: ~70%
+    compressed: 999                            # Paper >4 anni: solo key_contributions + testing
+
+# --- Clustering (RAPTOR L1.5) ---
+clustering:
+  max_cluster_size: 20          # Massimo numero di paper per cluster L1.5
+  similarity_threshold: 0.75    # Soglia similarità coseno per il clustering
+
+# Vision e figure da PDF sono disabilitate dal profilo DeepSeek-only.
+
+# --- Hybrid Retrieval ---
+retrieval:
+  vector_weight: 0.6                           # Peso ricerca vettoriale in RRF
+  bm25_weight: 0.3                             # Peso BM25 in RRF
+  graph_weight: 0.1                            # Peso GraphRAG in RRF (se abilitato)
+  top_k_vector: 20                             # Candidati dalla ricerca vettoriale
+  top_k_bm25: 20                               # Candidati dal BM25
+  top_k_final: 10                              # Risultati finali dopo reranking
+  rerank_batch_size: 20                        # Max candidati per batch di reranking
+  bm25_index_path: "./data/bm25_index.pkl"
+  recency_boost: 0.1                           # Boost temporale post-RRF (0.0=disabilitato)
+  # --- Venue Ranking ---
+  venue_ranking_enabled: true                  # Abilita boost per venue autorevoli
+  venue_tier1_boost: 0.15                      # +0.15 per NeurIPS/ICML/ACL/IEEE S&P
+  venue_tier2_boost: 0.05                      # +0.05 per workshop ufficiali/AAAI
+  venue_tier3_penalty: 0.05                    # -0.05 per arXiv preprint
+
+# --- Agentic Writing Pipeline ---
+agents:
+  max_writer_iterations: 4                     # Max iterazioni writer↔critic per sezione (v3.6: 3→4)
+  min_section_words: 500                       # Minimo parole per sezione
+  max_section_words: 3000                      # Massimo parole per sezione
+  verification_threshold: 1.0                  # Tutte le citazioni devono risultare supportate
+  min_citations_per_section: 5                 # Copertura minima, senza sacrificare accuratezza
+  planner_model: "flash"                       # V4 Flash, reasoning high
+  writer_model: "flash"                        # V4 Flash, reasoning high
+  critic_model: "flash"                        # V4 Flash, reasoning high
+  assembler_model: "flash"                     # V4 Flash, reasoning high
+  writer_max_context_chars: 60000              # Max chars contesto per singola sezione writer
+  # This is a per-section budget. Dividing it by 11 left only ~5.4k chars,
+  # making the 5-distinct-source quality gate structurally impossible.
+  writer_budget_mode: "fixed"
+  # Retrieval is precomputed and diversified; one grounded call avoids
+  # repeated reasoning/tool turns and makes cost/output predictable.
+  writer_mode: "static"
+  # --- v3.6 Hardening (C4) ---
+  citation_whitelist_strict: true              # Writer rifiuta citazioni di paper non citable
+  critic_two_pass: true                        # Critic Pass 1 (atomic) + Pass 2 (holistic coherence)
+  critic_atomic_verification: true             # Verifica claim atomici quando disponibili in L1
+  use_cross_encoder_reranker: false            # Opzionale: cross-encoder per rerank top-20→10
+  cross_encoder_model: "BAAI/bge-reranker-v2-m3"
+
+# --- Output & Post-processing ---
+output:
+  base_dir: "./output"
+  versions_dir: "./output/versions"
+  checkpoints_dir: "./output/.checkpoints"
+  provenance_dir: "./output/provenance"
+  latex_template: "acl"                        # acl | ieeetran | plain
+  generate_latex: true
+  generate_bibtex: true
+  generate_provenance_json: true
+
+# --- Search (legacy PaperHunter) ---
+search:
+  max_results_per_source: 20
+  default_categories:
+    - "cs.CL"
+    - "cs.AI"
+    - "cs.CR"
+    - "cs.LG"
+
+# --- Download ---
+download:
+  download_dir: "./scaricati"
+  timeout: 30
+  headless: true
+  request_delay: 1.0
+  playwright_delay: 2.0
+
+# --- Rate Limiting Globale ---
+rate_limiting:
+  semantic_scholar_rpm: 100
+  grobid_concurrent: 5                         # Richieste GROBID concorrenti
+
+# Filtro e analisi immagini disabilitati dal profilo DeepSeek-only.
+
+# --- Logging ---
+logging:
+  level: "INFO"                                # DEBUG | INFO | WARNING | ERROR
+  rich_enabled: true                           # Usa rich per output formattato
+  log_file: "./logs/paperhunter.log"           # File di log (opzionale, stringa vuota per disabilitare)
+  show_progress_bars: true                     # Progress bar con rich/tqdm
+
+# --- Self-Evolution (Lessons from Failures) ---
+evolution:
+  enabled: true                                 # Abilita sistema di self-evolution (false = nessun overhead)
+  lessons_path: "./data/evolution/lessons.jsonl"  # File JSONL append-only per le lezioni
+  half_life_days: 30.0                           # Decadimento esponenziale peso lezioni (giorni)
+  expiry_days: 90.0                              # Rimozione lezioni più vecchie di N giorni
+  max_overlay_lessons: 5                         # Massimo lezioni iniettate per prompt
+  max_overlay_chars: 2000                        # Lunghezza massima overlay in caratteri
+  auto_prune: true                               # Prune automatico lezioni scadute a ogni record()
+
+# Generazione figure disabilitata dal profilo DeepSeek-only.
+
+# --- Skill Injection (Prompt Overlay persistenti) ---
+skills:
+  enabled: true                                      # Abilita skill persistenti nei prompt
+  skills_dir: "./data/skills"                        # Directory file .md skill
+  max_total_chars: 4000                              # Lunghezza massima totale skill
+
+# --- Citability / Two-Tier Corpus (v3.6) ---
+# Determina quali paper possono essere citati nel survey.
+# Tutti i paper vengono ingeriti per alimentare retrieval/L1/L1.5/L2,
+# ma solo `is_citable=True` finiscono in references.bib e nella whitelist writer.
+citability:
+  require_dblp: true                                 # Solo paper bibtex_source='dblp' sono citable
+  allow_s2_high_conf: false                          # Permetti S2 ad alta confidenza come citable
+  s2_min_citation_count: 50                          # Citazioni S2 minime per 'high_conf'
+  write_uncited_audit_bib: true                      # Salva references_uncited.bib parallelo
+  propagate_to_chunks: true                          # is_citable nei payload Qdrant per filtri
+  verify_each_source: true                           # Verifica individuale del record DBLP
+  fail_closed_on_dblp_error: true                    # Nessun fallback citable se DBLP non risponde
+  minimum_title_similarity: 0.90                     # Match conservativo del titolo
+  require_author_match: true                         # Almeno un autore deve coincidere
+  require_exact_year: true                           # Anno identico quando disponibile
+  final_latex_fail_on_error: true                    # Blocca LaTeX se una citazione non è perfetta

@@ -1,0 +1,3798 @@
+{
+  "Abbas_2025_Small_ea340ecf": {
+    "bibtex_sha256": "0e0274657615d2550e3ca44edbea98f5438e659d16ac5abca87f9d03fd058a8d",
+    "dblp_authors": [
+      "Chaymaa Abbas",
+      "Mariette Awad",
+      "Razane Tajeddine"
+    ],
+    "dblp_doi": "10.48550/ARXIV.2507.19195",
+    "dblp_key": "journals/corr/abs-2507-19195",
+    "dblp_record_url": "https://doi.org/10.48550/arXiv.2507.19195",
+    "dblp_title": "Can Small-Scale Data Poisoning Exacerbate Dialect-Linked Biases in\n                  Large Language Models?",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2507-19195",
+    "dblp_venue": "CoRR",
+    "dblp_year": 2025,
+    "title_similarity": 1.0,
+    "verified": true,
+    "verified_against_live_dblp_at": "2026-08-01T23:43:30.566032+02:00"
+  },
+  "Agarwal_2024_Zero_c32c29f4": {
+    "bibtex_sha256": "8524c769354dfa7744c8b133a7788b0c2a4bb870fcc38fb55e4d6da93e8c8228",
+    "dblp_key": "journals/corr/abs-2408-04114",
+    "dblp_title": "Zero-shot Factual Consistency Evaluation Across Domains",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2408-04114",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Agrawal_2026_Beyond_dbd81c1f": {
+    "bibtex_sha256": "194288966f14df6be3050d741a96ef63f27a6f2f308129562775f4a89cd29392",
+    "dblp_key": "journals/corr/abs-2604-12138",
+    "dblp_title": "Beyond Factual Grounding: The Case for Opinion-Aware Retrieval-Augmented Generation",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2604-12138",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Akhoundali_2025_Eradicating_fbf043e2": {
+    "bibtex_sha256": "db74e37d6b6777d13c21f5bdb6c909672a177470d59c3df9b412ca93b54d9024",
+    "dblp_key": "conf/asiaccs/AkhoundaliHRG25",
+    "dblp_title": "Eradicating the Unseen: Detecting, Exploiting, and Remediating a Path Traversal Vulnerability across GitHub",
+    "dblp_url": "https://dblp.org/rec/conf/asiaccs/AkhoundaliHRG25",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Akil_2025_Llmalmorph_876bb296": {
+    "bibtex_sha256": "8d4a0cb324537b24f944f207943c21068954032bcba4647576ebb03d6a706dc9",
+    "dblp_key": "conf/tpsisa/AkilLKIKPB25",
+    "dblp_title": "LLMalMorph: On the Feasibility of Generating Variant Malware Using Large-Language-Models",
+    "dblp_url": "https://dblp.org/rec/conf/tpsisa/AkilLKIKPB25",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Alizadeh_2025_LLM_821eedd9": {
+    "bibtex_sha256": "c6188d019e4dc458e4ce1f7779b8605b0dee23faceddcb6ea0b2a1e2374172b2",
+    "dblp_authors": [
+      "Meysam Alizadeh",
+      "Zeynab Samei",
+      "Daria Stetsenko",
+      "Fabrizio Gilardi"
+    ],
+    "dblp_doi": "10.48550/ARXIV.2506.01055",
+    "dblp_key": "journals/corr/abs-2506-01055",
+    "dblp_record_url": "https://doi.org/10.48550/arXiv.2506.01055",
+    "dblp_title": "Simple Prompt Injection Attacks Can Leak Personal Data Observed by\n                  {LLM} Agents During Task Execution",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2506-01055",
+    "dblp_venue": "CoRR",
+    "dblp_year": 2025,
+    "title_similarity": 1.0,
+    "verified": true,
+    "verified_against_live_dblp_at": "2026-08-01T23:43:30.566512+02:00"
+  },
+  "An_2025_LLM_2014b901": {
+    "bibtex_sha256": "34ee8f6170c4852b35dabcecfabab7a35f1d5d5557312caedbecc85521dd8bbb",
+    "dblp_authors": [
+      "Hengyu An",
+      "Jinghuai Zhang",
+      "Tianyu Du",
+      "Chunyi Zhou",
+      "Qingming Li",
+      "Tao Lin",
+      "Shouling Ji"
+    ],
+    "dblp_doi": "10.18653/V1/2025.EMNLP-MAIN.53",
+    "dblp_key": "conf/emnlp/AnZDZLLJ25",
+    "dblp_record_url": "https://doi.org/10.18653/v1/2025.emnlp-main.53",
+    "dblp_title": "IPIGuard: {A} Novel Tool Dependency Graph-Based Defense Against Indirect\n                  Prompt Injection in {LLM} Agents",
+    "dblp_url": "https://dblp.org/rec/conf/emnlp/AnZDZLLJ25",
+    "dblp_venue": "Proceedings of the 2025 Conference on Empirical Methods in Natural\n                  Language Processing, {EMNLP} 2025, Suzhou, China, November 4-9, 2025",
+    "dblp_year": 2025,
+    "title_similarity": 1.0,
+    "verified": true,
+    "verified_against_live_dblp_at": "2026-08-01T23:43:30.567197+02:00"
+  },
+  "Anaokar_2025_Halludetect_9248653c": {
+    "verified": true,
+    "dblp_key": "conf/emnlp/AnaokarGKBNSMHB25",
+    "dblp_url": "https://dblp.org/rec/conf/emnlp/AnaokarGKBNSMHB25",
+    "dblp_record_url": "https://dblp.org/rec/conf/emnlp/AnaokarGKBNSMHB25",
+    "dblp_title": "HalluDetect: Detecting, Mitigating, and Benchmarking Hallucinations in Conversational Systems in the Legal Domain",
+    "dblp_authors": [
+      "Spandan Anaokar",
+      "Shrey Ganatra",
+      "Harshvivek Kashid",
+      "Swapnil Bhattacharyya",
+      "Shruthi Nair",
+      "Reshma Sekhar",
+      "Siddharth Manohar",
+      "Rahul Hemrajani",
+      "Pushpak Bhattacharyya"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing, {EMNLP} 2025 - Industry Track, Suzhou, China, November 4-9, 2025",
+    "dblp_doi": "10.18653/V1/2025.EMNLP-INDUSTRY.128",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "f0032306030c92aea6ba964d3ecd24b013a64acd1be0ad4c446dd90e82165347",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Aravindan_2025_Sealing_a9a07dfb": {
+    "bibtex_sha256": "da27a68424d59489ecd7f82376d920e6fa99de712552cd7fa6ba0aee9eea6adb",
+    "dblp_key": "journals/corr/abs-2508-18235",
+    "dblp_title": "Sealing The Backdoor: Unlearning Adversarial Text Triggers In Diffusion Models Using Knowledge Distillation",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2508-18235",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Arazzi_2026_Securebreak_0e3adcf7": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2603-21975",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2603-21975",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2603-21975",
+    "dblp_title": "SecureBreak - {A} dataset towards safe and secure models",
+    "dblp_authors": [
+      "Marco Arazzi",
+      "Vignesh Kumar Kembu",
+      "Antonino Nocera"
+    ],
+    "dblp_year": 2026,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2603.21975",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "73f2623531958a4e7daa7a50dd4826da872a9112a06354e5cbfe5252a96a4331",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Ayabe_2025_Adversarial_bb5251ad": {
+    "bibtex_sha256": "ff2871b3c1aa6e2919c14d94150fde4fc8af3829f62958bac853f45b5c92d14f",
+    "dblp_key": "journals/corr/abs-2510-13358",
+    "dblp_title": "Adversarial Fine-tuning in Offline-to-Online Reinforcement Learning for Robust Robot Control",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2510-13358",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Ayub_2024_Embedding_60da77ad": {
+    "bibtex_sha256": "64718346ee14774f740971fe17d9a574560470f75b6675d17d2427b2216cb984",
+    "dblp_key": "conf/camlis/AyubM24",
+    "dblp_title": "Embedding-based classifiers can detect prompt injection attacks",
+    "dblp_url": "https://dblp.org/rec/conf/camlis/AyubM24",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Banyas_2025_LLMs_1637e6cc": {
+    "bibtex_sha256": "8401c4ac6d55583105cd636787d5489ad55814423462eba42a42e25e12f30fe2",
+    "dblp_key": "journals/corr/abs-2510-13852",
+    "dblp_title": "ConsistencyAI: A Benchmark to Assess LLMs' Factual Consistency When Responding to Different Demographic Groups",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2510-13852",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Baumgartner_2024_RLHF_f07e5209": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2404-05530",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2404-05530",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2404-05530",
+    "dblp_title": "Best-of-Venom: Attacking {RLHF} by Injecting Poisoned Preference Data",
+    "dblp_authors": [
+      "Tim Baumg{\\\"{a}}rtner",
+      "Yang Gao",
+      "Dana Alon",
+      "Donald Metzler"
+    ],
+    "dblp_year": 2024,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2404.05530",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "3081894a79503f1875d49c56cfe90262dca70446cada1703f2661319d88c82d6",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Bhagwatkar_2025_Indirect_2ccd3225": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2510-05244",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2510-05244",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2510-05244",
+    "dblp_title": "Indirect Prompt Injections: Are Firewalls All You Need, or Stronger Benchmarks?",
+    "dblp_authors": [
+      "Rishika Bhagwatkar",
+      "Kevin Kasa",
+      "Abhay Puri",
+      "Gabriel Huang",
+      "Irina Rish",
+      "Graham W. Taylor",
+      "Krishnamurthy Dj Dvijotham",
+      "Alexandre Lacoste"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2510.05244",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "b77905f5d366081c4c35e50e873f3668e95587548975308aeed443aa11b069a9",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Black_2025_Open_488df73e": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2511-19299",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2511-19299",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2511-19299",
+    "dblp_title": "Open-weight genome language model safeguards: Assessing robustness via adversarial fine-tuning",
+    "dblp_authors": [
+      "James R. M. Black",
+      "Moritz S. Hanke",
+      "Aaron Maiwald",
+      "Tina Hernandez{-}Boussard",
+      "Oliver M. Crook",
+      "Jaspreet Pannu"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2511.19299",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "36b5398db4c113aeac5adb7a1bad6154cca91b28ddc769b3d4c06eb53842a585",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Cai_2025_Graph_529f74cb": {
+    "bibtex_sha256": "1416a2122fa8e93f579513e71b7783d8a2571b331a4d1f45988eeff8579f2e1d",
+    "dblp_key": "journals/corr/abs-2511-07176",
+    "dblp_title": "Graph Representation-based Model Poisoning on the Heterogeneous Internet of Agents",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2511-07176",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Chang_2025_LLM_1f6233a6": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2509-22830",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2509-22830",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2509-22830",
+    "dblp_title": "ChatInject: Abusing Chat Templates for Prompt Injection in {LLM} Agents",
+    "dblp_authors": [
+      "Hwan Chang",
+      "Yonghyun Jun",
+      "Hwanhee Lee"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2509.22830",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "e1a34a8166942cbfc8ef5381beba853a4731f7090d2ea58bbcfaf9414da6e6c7",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Chaudhari_2025_Cascading_b31b2517": {
+    "bibtex_sha256": "eba1881134ec182de0ecae05a1fc5a5201136d0b6074c6128762a70d973b3432",
+    "dblp_key": "conf/ccs/ChaudhariHJSNO25",
+    "dblp_title": "Cascading Adversarial Bias from Injection to Distillation in Language Models",
+    "dblp_url": "https://dblp.org/rec/conf/ccs/ChaudhariHJSNO25",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Chen_2024_Defense_8078c2e8": {
+    "bibtex_sha256": "3573a4350719348fb2c42aec57d2956e1566f6948da15a9ba0fd5b4ed1f27fe7",
+    "dblp_key": "journals/corr/abs-2411-00459",
+    "dblp_title": "Defense Against Prompt Injection Attack by Leveraging Attack Techniques",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2411-00459",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Chen_2024_Rmcbench_19963c81": {
+    "verified": true,
+    "dblp_key": "conf/kbse/ChenZ0NLX00Z24",
+    "dblp_url": "https://dblp.org/rec/conf/kbse/ChenZ0NLX00Z24",
+    "dblp_record_url": "https://dblp.org/rec/conf/kbse/ChenZ0NLX00Z24",
+    "dblp_title": "RMCBench: Benchmarking Large Language Models' Resistance to Malicious Code",
+    "dblp_authors": [
+      "Jiachi Chen",
+      "Qingyuan Zhong",
+      "Yanlin Wang",
+      "Kaiwen Ning",
+      "Yongkun Liu",
+      "Zenan Xu",
+      "Zhe Zhao",
+      "Ting Chen",
+      "Zibin Zheng"
+    ],
+    "dblp_year": 2024,
+    "dblp_venue": "Proceedings of the 39th {IEEE/ACM} International Conference on Automated Software Engineering, {ASE} 2024, Sacramento, CA, USA, October 27 - November 1, 2024",
+    "dblp_doi": "10.1145/3691620.3695480",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "da5060f6256516d08e39185240ec823614b275d0042ba310ce6022cca2f96341",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Chen_2025_Attention_1c5885f7": {
+    "bibtex_sha256": "9b364da80dd3cf0bef6f06637b15a79126dee44fb41bc8f7386e4390a079d052",
+    "dblp_key": "journals/corr/abs-2503-08216",
+    "dblp_title": "Attention Hijackers: Detect and Disentangle Attention Hijacking in LVLMs for Hallucination Mitigation",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2503-08216",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Chen_2025_DL_5975588a": {
+    "bibtex_sha256": "fd37149ec073c6865911f808e090a97f9aca66a471b9ba9c9aade66a5c0dbb6f",
+    "dblp_key": "journals/corr/abs-2507-11092",
+    "dblp_title": "MT4DP: Data Poisoning Attack Detection for DL-based Code Search Models via Metamorphic Testing",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2507-11092",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Chen_2025_Defending_a14b0d1f": {
+    "bibtex_sha256": "cdbda19c98093d17e147cc2eb579cc86ed40fbc718300569b457cee1db435100",
+    "dblp_authors": [
+      "Sizhe Chen",
+      "Yizhu Wang",
+      "Nicholas Carlini",
+      "Chawin Sitawarin",
+      "David A. Wagner"
+    ],
+    "dblp_doi": "10.1145/3733799.3762982",
+    "dblp_key": "conf/aisec-ws/ChenWCSW25",
+    "dblp_record_url": "https://doi.org/10.1145/3733799.3762982",
+    "dblp_title": "Defending Against Prompt Injection With a Few DefensiveTokens",
+    "dblp_url": "https://dblp.org/rec/conf/aisec-ws/ChenWCSW25",
+    "dblp_venue": "Proceedings of the 18th {ACM} Workshop on Artificial Intelligence\n                  and Security, Taipei,Taiwan, October 13-17, 2025",
+    "dblp_year": 2025,
+    "title_similarity": 1.0,
+    "verified": true,
+    "verified_against_live_dblp_at": "2026-08-01T23:43:30.570880+02:00"
+  },
+  "Chen_2025_Indirect_11771399": {
+    "verified": true,
+    "dblp_key": "conf/acl/ChenLSH0SH25",
+    "dblp_url": "https://dblp.org/rec/conf/acl/ChenLSH0SH25",
+    "dblp_record_url": "https://dblp.org/rec/conf/acl/ChenLSH0SH25",
+    "dblp_title": "Can Indirect Prompt Injection Attacks Be Detected and Removed?",
+    "dblp_authors": [
+      "Yulin Chen",
+      "Haoran Li",
+      "Yuan Sui",
+      "Yufei He",
+      "Yue Liu",
+      "Yangqiu Song",
+      "Bryan Hooi"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers), {ACL} 2025, Vienna, Austria, July 27 - August 1, 2025",
+    "dblp_doi": "10.18653/V1/2025.ACL-LONG.890",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "b347d7c4fbc3b4c795d596bdb2ffb9682307895c5b4f9b98111f0d3bb68469dd",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Chen_2025_LLM_5eab5cd3": {
+    "bibtex_sha256": "70301b623c4c95dd53a5b0367b2e51d7fbe5a01fd283772fd30984e4a4f74d24",
+    "dblp_key": "journals/corr/abs-2507-02735",
+    "dblp_title": "Meta SecAlign: A Secure Foundation LLM Against Prompt Injection Attacks",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2507-02735",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Chen_2025_Topicattack_706b3fe7": {
+    "bibtex_sha256": "458dcb7181c637ddfbb6dc34e8a0d311a171e821b23f9da56bebe5fcc10c8f76",
+    "dblp_key": "conf/emnlp/ChenLLLSH25",
+    "dblp_title": "TopicAttack: An Indirect Prompt Injection Attack via Topic Transition",
+    "dblp_url": "https://dblp.org/rec/conf/emnlp/ChenLLLSH25",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Cheng_2024_Unit_26db3422": {
+    "bibtex_sha256": "37cf3963f4a80b3f9080effe1a097843c06af827288b2ba052a87fa204c07ec7",
+    "dblp_key": "conf/eccv/ChengSZTAGMZ24",
+    "dblp_title": "UNIT: Backdoor Mitigation via Automated Neural Distribution Tightening",
+    "dblp_url": "https://dblp.org/rec/conf/eccv/ChengSZTAGMZ24",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Chittepu_2025_Reinforcement_540113b3": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2506-08266",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2506-08266",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2506-08266",
+    "dblp_title": "Reinforcement Learning from Human Feedback with High-Confidence Safety Constraints",
+    "dblp_authors": [
+      "Yaswanth Chittepu",
+      "Blossom Metevier",
+      "Will Schwarzer",
+      "Austin Hoag",
+      "Scott Niekum",
+      "Philip S. Thomas"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2506.08266",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "816c5b4e2d5f379c4f85911007869476540f381d7d9b44d9fd9c96b9e4ea2c26",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Chizhov_2026_Words_4d0a28b1": {
+    "bibtex_sha256": "e85c421d217fef7a8c8687380a2641c552494c65e1a7f3923bbeb0c9f293c9e2",
+    "dblp_key": "conf/acl/ChizhovBY26",
+    "dblp_title": "From Where Words Come: Efficient Regularization of Code Tokenizers Through Source Attribution",
+    "dblp_url": "https://dblp.org/rec/conf/acl/ChizhovBY26",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Cho_2025_Querybandits_69b82ca4": {
+    "bibtex_sha256": "137b6b7916bf45082e4d5020b9a8d0a7b524b5606b258fc27d6fd343b9d56ab4",
+    "dblp_key": "journals/corr/abs-2508-16697",
+    "dblp_title": "QueryBandits for Hallucination Mitigation: Exploiting Semantic Features for No-Regret Rewriting",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2508-16697",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Chugh_2026_Recap_1686f96b": {
+    "bibtex_sha256": "261e92631b7676f4a0a8905d889b297e6871dfe2f1b70ed8f8cdb14b8403b03b",
+    "dblp_key": "journals/corr/abs-2601-15331",
+    "dblp_title": "RECAP: A Resource-Efficient Method for Adversarial Prompting in Large Language Models",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2601-15331",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Corll_2026_Mirror_7d32b67a": {
+    "bibtex_sha256": "5c45289114a022cfa52c235aa945bfee9f09fd352bcbb745873ef227a82baf8d",
+    "dblp_key": "journals/corr/abs-2603-11875",
+    "dblp_title": "The Mirror Design Pattern: Strict Data Geometry over Model Scale for Prompt Injection Detection",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2603-11875",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Cui_2025_LLMs_095e8484": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2510-04261",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2510-04261",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2510-04261",
+    "dblp_title": "VortexPIA: Indirect Prompt Injection Attack against LLMs for Efficient Extraction of User Privacy",
+    "dblp_authors": [
+      "Yu Cui",
+      "Sicheng Pan",
+      "Yifei Liu",
+      "Haibin Zhang",
+      "Cong Zuo"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2510.04261",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "a63a6ae3b2b5d798a999b540291b3a4191fd81be0c0e776dfbc2c39e3158c0c8",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Dang_2025_Rainbowplus_b158c5a2": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2504-15047",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2504-15047",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2504-15047",
+    "dblp_title": "RainbowPlus: Enhancing Adversarial Prompt Generation via Evolutionary Quality-Diversity Search",
+    "dblp_authors": [
+      "Quy{-}Anh Dang",
+      "Chris Ngo",
+      "Truong{-}Son Hy"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2504.15047",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "faf84c76fda52d5390260f4cf22ce7b2f703b6371e1cbf6661e94529777d9bc7",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Das_2025_System_cda316c4": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2505-23817",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2505-23817",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2505-23817",
+    "dblp_title": "System Prompt Extraction Attacks and Defenses in Large Language Models",
+    "dblp_authors": [
+      "Badhan Chandra Das",
+      "M. Hadi Amini",
+      "Yanzhao Wu"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2505.23817",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "cd3d3bf9dbac5d8be0f4ffa7e1fc557260d98889e8f1e3d0213b6dda7cb280d2",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Ding_2025_Explanation_b2519362": {
+    "bibtex_sha256": "9d5823ae4f6d6c260256d28924cbb9a60e63a8b444b67d2585c2a8a27fad089a",
+    "dblp_key": "journals/corr/abs-2510-00047",
+    "dblp_title": "Explanation-Driven Counterfactual Testing for Faithfulness in Vision-Language Model Explanations",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2510-00047",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Ding_2025_Gray_6118e3bb": {
+    "bibtex_sha256": "9016ce54afdacc13d46dbb3623f8904169a5896ea5fd914bc2ad9099556749c4",
+    "dblp_key": "journals/corr/abs-2510-21118",
+    "dblp_title": "The Gray Zone of Faithfulness: Taming Ambiguity in Unfaithfulness Detection",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2510-21118",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Ding_2025_Reward_4892f884": {
+    "bibtex_sha256": "c0726e6b26a77d4ec83cca43598082caf6fc7d2d82ea07e4ea5bd15168a36815",
+    "dblp_key": "journals/corr/abs-2505-24252",
+    "dblp_title": "A Reward-driven Automated Webshell Malicious-code Generator for Red-teaming",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2505-24252",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Duan_2025_RLHF_88790599": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2506-03234",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2506-03234",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2506-03234",
+    "dblp_title": "BadReward: Clean-Label Poisoning of Reward Models in Text-to-Image {RLHF}",
+    "dblp_authors": [
+      "Kaiwen Duan",
+      "Hongwei Yao",
+      "Yufei Chen",
+      "Ziyun Li",
+      "Tong Qiao",
+      "Zhan Qin",
+      "Cong Wang"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2506.03234",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "55ed8bd0b9d838e1d273294c5ca681d5707f979fc3494a2189c635c8b9d05c44",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Dutta_2025_RLHF_dbbb4564": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2510-09260",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2510-09260",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2510-09260",
+    "dblp_title": "{GREAT:} Generalizable Backdoor Attacks in {RLHF} via Emotion-Aware Trigger Synthesis",
+    "dblp_authors": [
+      "Subrat Kishore Dutta",
+      "Yuelin Xu",
+      "Piyush Pant",
+      "Xiao Zhang"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2510.09260",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "27f03e52c2a1bab92855ef85e9b833718488f670f01e8d7c499544e905612981",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Egler_2025_Detecting_6f5c47ea": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2510-16255",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2510-16255",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2510-16255",
+    "dblp_title": "Detecting Adversarial Fine-tuning with Auditing Agents",
+    "dblp_authors": [
+      "Sarah Egler",
+      "John Schulman",
+      "Nicholas Carlini"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2510.16255",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "0fc23e21e3bf0aa5731ef6560a5fda3602f75809caa858d6658c404a8b0670c0",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Elchafei_2025_LLM_94763a97": {
+    "verified": true,
+    "dblp_key": "conf/semeval/ElchafeiA25",
+    "dblp_url": "https://dblp.org/rec/conf/semeval/ElchafeiA25",
+    "dblp_record_url": "https://dblp.org/rec/conf/semeval/ElchafeiA25",
+    "dblp_title": "Hallucination Detectives at SemEval-2025 Task 3: Span-Level Hallucination Detection for LLM-Generated Answers",
+    "dblp_authors": [
+      "Passant Elchafei",
+      "Mervat Abu{-}Elkheir"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "Proceedings of the 19th International Workshop on Semantic Evaluation, SemEval@ACL 2025, Vienna, Austria, July 31 - August 1, 2025",
+    "dblp_doi": null,
+    "title_similarity": 1.0,
+    "bibtex_sha256": "e557efbce4878f7c3500100f9a615341e67a8a7b4d77dfe2939ef8fca05d7bce",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Fang_2024_LLM_4f30456c": {
+    "bibtex_sha256": "af9322707375fb72b7dd635e0390cc0f3491179769d2ffdbf84afefa78c51459",
+    "dblp_key": "journals/corr/abs-2404-08144",
+    "dblp_title": "LLM Agents can Autonomously Exploit One-day Vulnerabilities",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2404-08144",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Foerster_2025_Reasoning_70422133": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2509-05739",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2509-05739",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2509-05739",
+    "dblp_title": "Reasoning Introduces New Poisoning Attacks Yet Makes Them More Complicated",
+    "dblp_authors": [
+      "Hanna Foerster",
+      "Ilia Shumailov",
+      "Yiren Zhao",
+      "Harsh Chaudhari",
+      "Jamie Hayes",
+      "Robert Mullins",
+      "Yarin Gal"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2509.05739",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "bb0410028ad3196178b7239289eea7e3dd6d7a99404523d6cf2b54cf6fd23f59",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Gao_2025_Data_3be6eb74": {
+    "bibtex_sha256": "d2b9a7e8d9e14ff2a9a5dff796fd5df43fe334db58d40e5c6886964a0d072587",
+    "dblp_key": "conf/iclr/GaoZ00025",
+    "dblp_title": "Data-adaptive Differentially Private Prompt Synthesis for In-Context Learning",
+    "dblp_url": "https://dblp.org/rec/conf/iclr/GaoZ00025",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Geng_2025_LLMs_16cfd21e": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2511-10720",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2511-10720",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2511-10720",
+    "dblp_title": "PISanitizer: Preventing Prompt Injection to Long-Context LLMs via Prompt Sanitization",
+    "dblp_authors": [
+      "Runpeng Geng",
+      "Yanting Wang",
+      "Chenlong Yin",
+      "Minhao Cheng",
+      "Ying Chen",
+      "Jinyuan Jia"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2511.10720",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "8221bf2a3b2c38570427cd1fcd40b29f398de46ea33ed97abf22ac301c40bdf5",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Goel_2024_Corrective_b0759b2c": {
+    "bibtex_sha256": "2503824d2e8f96d6c49720eb0f05d2d6770e4ae0009cb997aae09965a140e805",
+    "dblp_key": "journals/tmlr/GoelP0KS24",
+    "dblp_title": "Corrective Machine Unlearning",
+    "dblp_url": "https://dblp.org/rec/journals/tmlr/GoelP0KS24",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Goel_2025_LLM_3bced8bb": {
+    "bibtex_sha256": "adbb30287670c48cdc185722079120fa9e4d11f2e9522fcb4944d3e952349081",
+    "dblp_key": "conf/emnlp/GoelSQ25",
+    "dblp_title": "Zero-knowledge LLM hallucination detection and mitigation through fine-grained cross-model consistency",
+    "dblp_url": "https://dblp.org/rec/conf/emnlp/GoelSQ25",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Gu_2024_Anah_c586886a": {
+    "verified": true,
+    "dblp_key": "conf/nips/GuJZLLC24",
+    "dblp_url": "https://dblp.org/rec/conf/nips/GuJZLLC24",
+    "dblp_record_url": "https://dblp.org/rec/conf/nips/GuJZLLC24",
+    "dblp_title": "ANAH-v2: Scaling Analytical Hallucination Annotation of Large Language Models",
+    "dblp_authors": [
+      "Yuzhe Gu",
+      "Ziwei Ji",
+      "Wenwei Zhang",
+      "Chengqi Lyu",
+      "Dahua Lin",
+      "Kai Chen"
+    ],
+    "dblp_year": 2024,
+    "dblp_venue": "Advances in Neural Information Processing Systems 37: Annual Conference on Neural Information Processing Systems 2024, NeurIPS 2024, Vancouver, BC, Canada, December 10 - 15, 2024",
+    "dblp_doi": null,
+    "title_similarity": 1.0,
+    "bibtex_sha256": "bde06ee4d02f58d17ad52a4326039135292f75d76dab58d445d48c896ea604c1",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Guo_2024_Redcode_01d5cd6a": {
+    "bibtex_sha256": "4716c4e7d4e5780f24e5e8f6548a9f61de5ae1c49b7d06433e464855cd786ff5",
+    "dblp_key": "conf/nips/GuoLXZZ0SL24",
+    "dblp_title": "RedCode: Risky Code Execution and Generation Benchmark for Code Agents",
+    "dblp_url": "https://dblp.org/rec/conf/nips/GuoLXZZ0SL24",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Hao_2024_Exploring_b21efaa1": {
+    "bibtex_sha256": "8e8466e3e486f72c81f436eee8fbac30de526d9144b99bb0d0166e200c3b4213",
+    "dblp_key": "journals/corr/abs-2404-02406",
+    "dblp_title": "Exploring Backdoor Vulnerabilities of Chat Models",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2404-02406",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Haque_2026_LLM_7c55cd36": {
+    "bibtex_sha256": "d37b5834f18674cf497819d9996fc7b70f5c36367c455c3df164905182edb512",
+    "dblp_key": "journals/corr/abs-2603-17872",
+    "dblp_title": "Mitigating LLM Hallucinations through Domain-Grounded Tiered Retrieval",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2603-17872",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Hossain_2024_Sim_55772ab5": {
+    "bibtex_sha256": "7bf48cbc4704d7f5fc02996ee574765f0906ea26f215f6ab96c209ca66f11542",
+    "dblp_key": "journals/corr/abs-2407-14971",
+    "dblp_title": "Sim-CLIP: Unsupervised Siamese Adversarial Fine-Tuning for Robust and Semantically-Rich Vision-Language Models",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2407-14971",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Hou_2024_LLM_1df5a9a5": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2406-06950",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2406-06950",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2406-06950",
+    "dblp_title": "A Probabilistic Framework for {LLM} Hallucination Detection via Belief Tree Propagation",
+    "dblp_authors": [
+      "Bairu Hou",
+      "Yang Zhang",
+      "Jacob Andreas",
+      "Shiyu Chang"
+    ],
+    "dblp_year": 2024,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2406.06950",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "9a10422ac72126d3a0d4274777c4d8de8ec00359721b5da4fe0bff19a435be63",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Hussain_2024_Measuring_595b1812": {
+    "bibtex_sha256": "efed2cfa25f1bdb2586433f4518d2f4dc2c004589f766c88ab78a208b3cb6599",
+    "dblp_key": "journals/corr/abs-2402-12936",
+    "dblp_title": "Measuring Impacts of Poisoning on Model Parameters and Neuron Activations: A Case Study of Poisoning CodeBERT",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2402-12936",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Ichinose_2026_Synthesizing_fa827970": {
+    "bibtex_sha256": "04dba16044c738303a7b968f02dd830ff5cf824370d3f8f595867e17297b3b56",
+    "dblp_key": "journals/corr/abs-2604-13538",
+    "dblp_title": "Synthesizing Instruction-Tuning Datasets with Contrastive Decoding",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2604-13538",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Improta_2023_AI_20bc1909": {
+    "verified": true,
+    "dblp_key": "conf/issre/Improta23",
+    "dblp_url": "https://dblp.org/rec/conf/issre/Improta23",
+    "dblp_record_url": "https://dblp.org/rec/conf/issre/Improta23",
+    "dblp_title": "Poisoning Programs by Un-Repairing Code: Security Concerns of AI-generated Code",
+    "dblp_authors": [
+      "Cristina Improta"
+    ],
+    "dblp_year": 2023,
+    "dblp_venue": "34th {IEEE} International Symposium on Software Reliability Engineering, {ISSRE} 2023 - Workshops, Florence, Italy, October 9-12, 2023",
+    "dblp_doi": "10.1109/ISSREW60843.2023.00060",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "6f066748356126b8b02006cede2583270dcd9e64992eb695d6a1135df29b37d2",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Islam_2024_LLM_940f243e": {
+    "bibtex_sha256": "fe740bd132602545633212bdc8d1c925527c9a6288fbaf5bfe659ce1c09b934f",
+    "dblp_key": "journals/corr/abs-2401-03374",
+    "dblp_title": "LLM-Powered Code Vulnerability Repair with Reinforcement Learning and Semantic Reward",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2401-03374",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Islam_2025_LLM_e0a71a22": {
+    "verified": true,
+    "dblp_key": "conf/emnlp/IslamLG25",
+    "dblp_url": "https://dblp.org/rec/conf/emnlp/IslamLG25",
+    "dblp_record_url": "https://dblp.org/rec/conf/emnlp/IslamLG25",
+    "dblp_title": "How Much Do LLMs Hallucinate across Languages? On Realistic Multilingual Estimation of {LLM} Hallucination",
+    "dblp_authors": [
+      "Saad Obaid ul Islam",
+      "Anne Lauscher",
+      "Goran Glavas"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing, {EMNLP} 2025, Suzhou, China, November 4-9, 2025",
+    "dblp_doi": "10.18653/V1/2025.EMNLP-MAIN.1481",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "9048f2807fcaa6ab7d9c6b03bdc8568b6ddeb7c859e027a0d4264e8ffaa9dd4e",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Islam_2025_LLMs_6a14de6a": {
+    "bibtex_sha256": "1ab4898f5a9a65dafe3d22d5e74b98a81ce25835538ca18852f7fde207b6d792",
+    "dblp_key": "journals/corr/abs-2510-11218",
+    "dblp_title": "The Curious Case of Factual (Mis)Alignment between LLMs' Short- and Long-Form Answers",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2510-11218",
+    "title_similarity": 0.9939393939393939,
+    "verified": true
+  },
+  "Itzhak_2026_LLMs_ba51c868": {
+    "bibtex_sha256": "06b8dc7d31d95648245bae9ed66619b17dee1731dca170ec8d42f40068e71956",
+    "dblp_key": "journals/corr/abs-2604-14137",
+    "dblp_title": "From Feelings to Metrics: Understanding and Formalizing How Users Vibe-Test LLMs",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2604-14137",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Ivry_2025_Paladin_f28189a5": {
+    "bibtex_sha256": "da96b3371a42bd2ffb33c6c6b9804678e70ec2c19d1927191ef84bd4fe5d4ff9",
+    "dblp_key": "journals/corr/abs-2506-20384",
+    "dblp_title": "Paladin-mini: A Compact and Efficient Grounding Model Excelling in Real-World Scenarios",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2506-20384",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Ivry_2025_Sentinel_a518d27a": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2506-05446",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2506-05446",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2506-05446",
+    "dblp_title": "Sentinel: {SOTA} model to protect against prompt injections",
+    "dblp_authors": [
+      "Dror Ivry",
+      "Oran Nahum"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2506.05446",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "51dfb527b68e16b3572f24b8034e35fc6447339766f82ed62775bcf5747875fa",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Jeong_2025_Agent_416c5e96": {
+    "bibtex_sha256": "dfc98a1703c1625f76955f355de3c7fb021932c877b9e6f032a5dad1ae39875d",
+    "dblp_key": "conf/emnlp/JeongKHK25",
+    "dblp_title": "Agent-as-Judge for Factual Summarization of Long Narratives",
+    "dblp_url": "https://dblp.org/rec/conf/emnlp/JeongKHK25",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Jeong_2025_Stylekeeper_219ded17": {
+    "bibtex_sha256": "39d70f0ab6d9126025cdc7358a05c357eb4c31a81342a3cf20154a55e6252fa5",
+    "dblp_key": "conf/iccv/JeongKLCU25",
+    "dblp_title": "Stylekeeper: Prevent Content Leakage using Negative Visual Query Guidance",
+    "dblp_url": "https://dblp.org/rec/conf/iccv/JeongKLCU25",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Jia_2025_LLM_604891e2": {
+    "verified": true,
+    "dblp_key": "conf/acl/JiaWQS25",
+    "dblp_url": "https://dblp.org/rec/conf/acl/JiaWQS25",
+    "dblp_record_url": "https://dblp.org/rec/conf/acl/JiaWQS25",
+    "dblp_title": "The Task Shield: Enforcing Task Alignment to Defend Against Indirect Prompt Injection in {LLM} Agents",
+    "dblp_authors": [
+      "Feiran Jia",
+      "Tong Wu",
+      "Xin Qin",
+      "Anna Cinzia Squicciarini"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers), {ACL} 2025, Vienna, Austria, July 27 - August 1, 2025",
+    "dblp_doi": "10.18653/V1/2025.ACL-LONG.1435",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "913c7f2ddf51a23cd729941a3223d9c236aa4e37edbc81465fde07d0d28cec45",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Jiang_2025_Jailbreaking_1f931b26": {
+    "bibtex_sha256": "c47673a74ed9a8407976ddd6082db57a094dd1437d6f2c0fe1bd28742d252e38",
+    "dblp_key": "journals/corr/abs-2503-01839",
+    "dblp_title": "Jailbreaking Safeguarded Text-to-Image Models via Large Language Models",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2503-01839",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Jin_2024_Saber_6f1a8480": {
+    "bibtex_sha256": "6a71732c353767d781cb3d91a8b6992d6f7138ae5964cef825ccaf22612e9d31",
+    "dblp_key": "journals/corr/abs-2412-05829",
+    "dblp_title": "SABER: Model-agnostic Backdoor Attack on Chain-of-Thought in Neural Code Generation",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2412-05829",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Jin_2025_Guard_4259ecf5": {
+    "bibtex_sha256": "5e54dbc7645da1280782194a125f18cf641f9ecac95e4641e44b9e76fb840318",
+    "dblp_key": "conf/seke/JinL0025",
+    "dblp_title": "GUARD: Dual-Agent based Backdoor Defense on Chain-of-Thought in Neural Code Generation",
+    "dblp_url": "https://dblp.org/rec/conf/seke/JinL0025",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Kabongo_2025_Factual_f5d367a2": {
+    "bibtex_sha256": "216d215f18063be11777c9db9bb24b5fee3c20e9f1a13f89e197c61d9c6a0009",
+    "dblp_key": "journals/corr/abs-2512-24366",
+    "dblp_title": "On the Factual Consistency of Text-based Explainable Recommendation Models",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2512-24366",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Kato_2024_Faithcamera_6d3fecf7": {
+    "bibtex_sha256": "6040a1dfbf09caba385546ce1adcfdaf0ae55ee7d40a7f5855c7968400d64940",
+    "dblp_key": "journals/corr/abs-2410-03839",
+    "dblp_title": "FaithCAMERA: Construction of a Faithful Dataset for Ad Text Generation",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2410-03839",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Kim_2024_Verifiner_66d6dc88": {
+    "bibtex_sha256": "c163ee68386cb1c6cc3c119ab77d54d438f81ecaf83ddd7f0da7c0fe9eb4a810",
+    "dblp_key": "conf/acl/KimSCYL24",
+    "dblp_title": "VerifiNER: Verification-augmented NER via Knowledge-grounded Reasoning with Large Language Models",
+    "dblp_url": "https://dblp.org/rec/conf/acl/KimSCYL24",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Kim_2025_LLM_2523db75": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2511-14140",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2511-14140",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2511-14140",
+    "dblp_title": "Beyond Fixed and Dynamic Prompts: Embedded Jailbreak Templates for Advancing {LLM} Security",
+    "dblp_authors": [
+      "Hajun Kim",
+      "Hyunsik Na",
+      "Daeseon Choi"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2511.14140",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "69c892150e6551204c44fe0398b7ea47b1600b875256198a326e5897bc299623",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Kim_2026_Merging_5ef69cbf": {
+    "verified": true,
+    "dblp_key": "conf/acl/KimL26",
+    "dblp_url": "https://dblp.org/rec/conf/acl/KimL26",
+    "dblp_record_url": "https://dblp.org/rec/conf/acl/KimL26",
+    "dblp_title": "Merging Triggers, Breaking Backdoors: Defensive Poisoning for Instruction-Tuned Language Models",
+    "dblp_authors": [
+      "San Kim",
+      "Gary Lee"
+    ],
+    "dblp_year": 2026,
+    "dblp_venue": "Proceedings of the 64th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers), {ACL} 2026, San Diego, California, United States, July 2-7, 2026",
+    "dblp_doi": "10.18653/V1/2026.ACL-LONG.1113",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "94ec516c4417fb38e2989b2b585454bc38a45f8a6f705d80fecb184233cc9f58",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Krau_2025_LLM_ba659fee": {
+    "verified": true,
+    "dblp_key": "conf/uss/KraussDD25",
+    "dblp_url": "https://dblp.org/rec/conf/uss/KraussDD25",
+    "dblp_record_url": "https://dblp.org/rec/conf/uss/KraussDD25",
+    "dblp_title": "TwinBreak: Jailbreaking {LLM} Security Alignments based on Twin Prompts",
+    "dblp_authors": [
+      "Torsten Krau{\\ss}",
+      "Hamid Dashtbani",
+      "Alexandra Dmitrienko"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "34th {USENIX} Security Symposium, {USENIX} Security 2025, Seattle, WA, USA, August 13-15, 2025",
+    "dblp_doi": null,
+    "title_similarity": 1.0,
+    "bibtex_sha256": "f270518f652cb05f862609f0bb7937fe6e1708c9dcc84029d214db05998b9553",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Kuchler_2025_Architectural_ad3cbc0d": {
+    "bibtex_sha256": "93cf9a018c60c76308a7bf2389980ac0e654c11512657f914e072ad13ee0fbf5",
+    "dblp_key": "journals/corr/abs-2505-18323",
+    "dblp_title": "Architectural Backdoors for Within-Batch Data Stealing and Model Inference Manipulation",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2505-18323",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Kumar_2024_LLMs_67538c80": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2410-22143",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2410-22143",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2410-22143",
+    "dblp_title": "AmpleGCG-Plus: {A} Strong Generative Model of Adversarial Suffixes to Jailbreak LLMs with Higher Success Rates in Fewer Attempts",
+    "dblp_authors": [
+      "Vishal Kumar",
+      "Zeyi Liao",
+      "Jaylen Jones",
+      "Huan Sun"
+    ],
+    "dblp_year": 2024,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2410.22143",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "552750a1b220003a5d83b39204450e8f5e4d7bb0ee9fbdcf1ad44cb99eb2324c",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Kusaka_2025_LLM_b1b5bb78": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2511-09105",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2511-09105",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2511-09105",
+    "dblp_title": "Cost-Minimized Label-Flipping Poisoning Attack to {LLM} Alignment",
+    "dblp_authors": [
+      "Shigeki Kusaka",
+      "Keita Saito",
+      "Mikoto Kudo",
+      "Takumi Tanabe",
+      "Akifumi Wachi",
+      "Youhei Akimoto"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2511.09105",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "ff6c3ffc25a864db5d6ef7d9772bd1317dffd16bc2e053024c077d8d289bf108",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Le_2025_Signature_fc7a3218": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2510-13992",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2510-13992",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2510-13992",
+    "dblp_title": "Signature in Code Backdoor Detection, how far are we?",
+    "dblp_authors": [
+      "Quoc Hung Le",
+      "Thanh Le{-}Cong",
+      "Bach Le",
+      "Bowen Xu"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2510.13992",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "6963ce1e49ab5cbac53536e011013834eaccf978e961090cc6443e4c7b89891a",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Lee_2026_LLMs_674de58f": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2602-06268",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2602-06268",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2602-06268",
+    "dblp_title": "{MPIB:} {A} Benchmark for Medical Prompt Injection Attacks and Clinical Safety in LLMs",
+    "dblp_authors": [
+      "Junhyeok Lee",
+      "Han Jang",
+      "Kyu Sung Choi"
+    ],
+    "dblp_year": 2026,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2602.06268",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "192af5e7196bb50bf9b761033915e49e59d4e44d0063ff8304cb8ea2c4ce35ed",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Levin_2025_System_7d8c96a0": {
+    "bibtex_sha256": "44975b2d677a7b84357501691989ad511c01492252612922afa0219fd29bf477",
+    "dblp_key": "journals/corr/abs-2502-09974",
+    "dblp_title": "Has My System Prompt Been Used? Large Language Model Prompt Membership Inference",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2502-09974",
+    "title_similarity": 0.9937106918238994,
+    "verified": true
+  },
+  "Li_2024_Badedit_b5ba8f82": {
+    "verified": true,
+    "dblp_key": "conf/iclr/LiLCZLW0024",
+    "dblp_url": "https://dblp.org/rec/conf/iclr/LiLCZLW0024",
+    "dblp_record_url": "https://dblp.org/rec/conf/iclr/LiLCZLW0024",
+    "dblp_title": "BadEdit: Backdooring Large Language Models by Model Editing",
+    "dblp_authors": [
+      "Yanzhou Li",
+      "Tianlin Li",
+      "Kangjie Chen",
+      "Jian Zhang",
+      "Shangqing Liu",
+      "Wenhan Wang",
+      "Tianwei Zhang",
+      "Yang Liu"
+    ],
+    "dblp_year": 2024,
+    "dblp_venue": "The Twelfth International Conference on Learning Representations, {ICLR} 2024, Vienna, Austria, May 7-11, 2024",
+    "dblp_doi": null,
+    "title_similarity": 1.0,
+    "bibtex_sha256": "e475d8943dfe9d99f03581d2cc1eadaa0204378ba75d9a161d3e107f376563ab",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Li_2024_Expose_67f90ce9": {
+    "bibtex_sha256": "8f11c2e1e036923b8fe711bee079276d42f6819c51b4fbaa6525778db7ff860c",
+    "dblp_key": "journals/corr/abs-2410-19427",
+    "dblp_title": "Expose Before You Defend: Unifying and Enhancing Backdoor Defenses via Exposed Models",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2410-19427",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Li_2025_Causal_28bef201": {
+    "bibtex_sha256": "abe09232511d461040e0b727c037e5a1aec627e9f53f2fa617e92ed6d9e176c5",
+    "dblp_key": "journals/corr/abs-2511-05923",
+    "dblp_title": "Causal Tracing of Object Representations in Large Vision Language Models: Mechanistic Interpretability and Hallucination Mitigation",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2511-05923",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Li_2025_Iag_0d53fa64": {
+    "bibtex_sha256": "b8f89f730ae985fe33fca33d62ac24b94bfa6910d55bb124a11f081a097292cd",
+    "dblp_key": "journals/corr/abs-2508-09456",
+    "dblp_title": "IAG: Input-aware Backdoor Attack on VLMs for Visual Grounding",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2508-09456",
+    "title_similarity": 0.9256198347107438,
+    "verified": true
+  },
+  "Li_2025_LLM_29a3a9ff": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2511-16709",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2511-16709",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2511-16709",
+    "dblp_title": "AutoBackdoor: Automating Backdoor Attacks via {LLM} Agents",
+    "dblp_authors": [
+      "Yige Li",
+      "Zhe Li",
+      "Wei Zhao",
+      "Nay Myat Min",
+      "Hanxun Huang",
+      "Xingjun Ma",
+      "Jun Sun"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2511.16709",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "284331ef9149cf583726053f132ecdcb851e1cfa95bdf605f7ae39d17aca5079",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Li_2025_LLM_6131fb27": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2502-08586",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2502-08586",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2502-08586",
+    "dblp_title": "Commercial {LLM} Agents Are Already Vulnerable to Simple Yet Dangerous Attacks",
+    "dblp_authors": [
+      "Ang Li",
+      "Yin Zhou",
+      "Vethavikashini Chithrra Raghuram",
+      "Tom Goldstein",
+      "Micah Goldblum"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2502.08586",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "dfe379cf42c0b27227e5d4f9ce02b48743e2f3212ffe25723c3fcaeb61c6d8ab",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Li_2025_LLM_c2206a72": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2509-25624",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2509-25624",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2509-25624",
+    "dblp_title": "{STAC:} When Innocent Tools Form Dangerous Chains to Jailbreak {LLM} Agents",
+    "dblp_authors": [
+      "Jing{-}Jing Li",
+      "Jianfeng He",
+      "Chao Shang",
+      "Devang Kulshreshtha",
+      "Xun Xian",
+      "Yi Zhang",
+      "Hang Su",
+      "Sandesh Swamy",
+      "Yanjun Qi"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2509.25624",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "4f1bfdcb609fd2de02bb62c562d4ef5aabb7d172bbf5c3061e00866ea1e89540",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Li_2025_LLM_e6bf58bd": {
+    "bibtex_sha256": "6c62582dee5e668fa3d9dc666059b3e84cb91d54b712e930a75f76d12f9368c4",
+    "dblp_key": "journals/corr/abs-2509-05360",
+    "dblp_title": "Beyond ROUGE: N-Gram Subspace Features for LLM Hallucination Detection",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2509-05360",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Li_2025_LLM_ff8c4a51": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2509-13154",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2509-13154",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2509-13154",
+    "dblp_title": "{LLM} Hallucination Detection: {A} Fast Fourier Transform Method Based on Hidden Layer Temporal Signals",
+    "dblp_authors": [
+      "Jinxin Li",
+      "Gang Tu",
+      "ShengYu Cheng",
+      "Junjie Hu",
+      "Jinting Wang",
+      "Rui Chen",
+      "Zhilong Zhou",
+      "Dongbo Shan"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2509.13154",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "976eb4fe595807242a44972b02ab09ed22d83dcee1bd1e2673a83ee1556bd7cc",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Li_2025_LLMs_be954860": {
+    "bibtex_sha256": "4481ca2a62e536b9e3451141cfc0a703639734275072c8187b7d01aeb038aae6",
+    "dblp_key": "journals/corr/abs-2506-17231",
+    "dblp_title": "Efficient and Stealthy Jailbreak Attacks via Adversarial Prompt Distillation from LLMs to SLMs",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2506-17231",
+    "title_similarity": 0.9726775956284153,
+    "verified": true
+  },
+  "Li_2025_Medfact_1826dab2": {
+    "bibtex_sha256": "bf0ee67d371ec4be9c8de17a2dde9b71f9b388f3ea8130246080c993b98252f1",
+    "dblp_key": "journals/corr/abs-2509-15154",
+    "dblp_title": "MedFact-R1: Towards Factual Medical Reasoning via Pseudo-Label Augmentation",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2509-15154",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Li_2026_Slowba_8caef5ae": {
+    "bibtex_sha256": "6a5063686e40e483e30dda9b435e0cfa156829340711943ba51e3fed45e5e4d0",
+    "dblp_key": "journals/corr/abs-2603-08316",
+    "dblp_title": "SlowBA: An efficiency backdoor attack towards VLM-based GUI agents",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2603-08316",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Lin_2025_Exploring_5b060412": {
+    "bibtex_sha256": "295ac8c4f6f0f5eeb542dc503257ec764a69feb42067b475a1cdffe71c1a1e1a",
+    "dblp_key": "journals/corr/abs-2502-03233",
+    "dblp_title": "Exploring the Security Threats of Knowledge Base Poisoning in Retrieval-Augmented Code Generation",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2502-03233",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Lin_2025_Uniguardian_552288e3": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2502-13141",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2502-13141",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2502-13141",
+    "dblp_title": "UniGuardian: {A} Unified Defense for Detecting Prompt Injection, Backdoor Attacks and Adversarial Attacks in Large Language Models",
+    "dblp_authors": [
+      "Huawei Lin",
+      "Yingjie Lao",
+      "Tong Geng",
+      "Tan Yu",
+      "Weijie Zhao"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2502.13141",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "cddd5c793d771737e1a629e7c1756c1bbc638d2bb15f247fa1e09e82f0ab6028",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Ling_2026_Correct_e651e59f": {
+    "bibtex_sha256": "5f3cb283aa73396868d561695004bf45c93283a75590bac4ebf6cdd655db2f29",
+    "dblp_key": "journals/corr/abs-2604-14121",
+    "dblp_title": "Correct Prediction, Wrong Steps? Consensus Reasoning Knowledge Graph for Robust Chain-of-Thought Synthesis",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2604-14121",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Liu_2024_LLMs_f40cf88b": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2410-05295",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2410-05295",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2410-05295",
+    "dblp_title": "AutoDAN-Turbo: {A} Lifelong Agent for Strategy Self-Exploration to Jailbreak LLMs",
+    "dblp_authors": [
+      "Xiaogeng Liu",
+      "Peiran Li",
+      "G. Edward Suh",
+      "Yevgeniy Vorobeychik",
+      "Zhuoqing Mao",
+      "Somesh Jha",
+      "Patrick McDaniel",
+      "Huan Sun",
+      "Bo Li",
+      "Chaowei Xiao"
+    ],
+    "dblp_year": 2024,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2410.05295",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "0fbc7f17e8756cf23886d21b2beae7b38d92aed73c96fb3b9cffcae299caba36",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Liu_2025_AI_ed04df60": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2509-22040",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2509-22040",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2509-22040",
+    "dblp_title": "\"Your AI, My Shell\": Demystifying Prompt Injection Attacks on Agentic {AI} Coding Editors",
+    "dblp_authors": [
+      "Yue Liu",
+      "Yanjie Zhao",
+      "Yunbo Lyu",
+      "Ting Zhang",
+      "Haoyu Wang",
+      "David Lo"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2509.22040",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "8086cd3e3766a732939ca49f0a37296dbc137483d309e17eec0e3906e3805115",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Liu_2025_Aegis_6081be1b": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2509-00088",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2509-00088",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2509-00088",
+    "dblp_title": "{AEGIS} : Automated Co-Evolutionary Framework for Guarding Prompt Injections Schema",
+    "dblp_authors": [
+      "Ting{-}Chun Liu",
+      "Ching Yu Hsu",
+      "Kuan{-}Yi Lee",
+      "Chi{-}An Fu",
+      "Hung{-}yi Lee"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2509.00088",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "020c74d615de407f293967a0e4257d227a8e8423e22b3eda9f568d509309abf1",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Liu_2025_LLM_27335912": {
+    "verified": true,
+    "dblp_key": "conf/emnlp/LiuSWLYC25",
+    "dblp_url": "https://dblp.org/rec/conf/emnlp/LiuSWLYC25",
+    "dblp_record_url": "https://dblp.org/rec/conf/emnlp/LiuSWLYC25",
+    "dblp_title": "Forewarned is Forearmed: Pre-Synthesizing Jailbreak-like Instructions to Enhance {LLM} Safety Guardrail to Potential Attacks",
+    "dblp_authors": [
+      "Sheng Liu",
+      "Qiang Sheng",
+      "Danding Wang",
+      "Yang Liu",
+      "Guang Yang",
+      "Juan Cao"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "Findings of the Association for Computational Linguistics: {EMNLP} 2025, Suzhou, China, November 4-9, 2025",
+    "dblp_doi": "10.18653/V1/2025.FINDINGS-EMNLP.266",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "656f19e3b57bcc875b1dcefbe28be91c5c2b6d1a18cdd40c4c1297d9773a57d6",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Liu_2025_Mitigating_b63ac3f0": {
+    "verified": true,
+    "dblp_key": "conf/nips/LiuSLWZYN25",
+    "dblp_url": "https://dblp.org/rec/conf/nips/LiuSLWZYN25",
+    "dblp_record_url": "https://dblp.org/rec/conf/nips/LiuSLWZYN25",
+    "dblp_title": "Mitigating Hallucination Through Theory-Consistent Symmetric Multimodal Preference Optimization",
+    "dblp_authors": [
+      "Wenqi Liu",
+      "Xuemeng Song",
+      "Jiaxi Li",
+      "Yinwei Wei",
+      "Na Zheng",
+      "Jianhua Yin",
+      "Liqiang Nie"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "Advances in Neural Information Processing Systems 38: Annual Conference on Neural Information Processing Systems 2025, NeurIPS 2025, San Diego, CA, USA, December 2-7, 2025 / Mexico City, Mexico, November 30 - December 5, 2025",
+    "dblp_doi": null,
+    "title_similarity": 1.0,
+    "bibtex_sha256": "74a29a0e5596fc0929d57ac9497e47329aee33a08abf003a548ec251c69f6f7b",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Liu_2025_Natural_fec51c12": {
+    "bibtex_sha256": "e8809639ce32ef0c1b70760cbdeb0e4aa501d578027f851dd0611f22d8267224",
+    "dblp_key": "journals/corr/abs-2505-06413",
+    "dblp_title": "Natural Reflection Backdoor Attack on Vision Language Model for Autonomous Driving",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2505-06413",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Liu_2025_Purpcode_d9f8defe": {
+    "bibtex_sha256": "81ed4272826c4651651f1e5eb7653b046109341ccbde11abdde980ad5dbdfc37",
+    "dblp_key": "journals/corr/abs-2507-19060",
+    "dblp_title": "PurpCode: Reasoning for Safer Code Generation",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2507-19060",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Lorenz_2024_Fullcert_7dbc4820": {
+    "verified": true,
+    "dblp_key": "conf/dagm/LorenzKF22",
+    "dblp_url": "https://dblp.org/rec/conf/dagm/LorenzKF22",
+    "dblp_record_url": "https://dblp.org/rec/conf/dagm/LorenzKF22",
+    "dblp_title": "FullCert: Deterministic End-to-End Certification for Training and Inference of Neural Networks",
+    "dblp_authors": [
+      "Tobias Lorenz",
+      "Marta Kwiatkowska",
+      "Mario Fritz"
+    ],
+    "dblp_year": 2024,
+    "dblp_venue": "Pattern Recognition - 46th {DAGM} German Conference, {DAGM} {GCPR} 2024, Munich, Germany, September 10-13, 2024, Proceedings, Part {I}",
+    "dblp_doi": "10.1007/978-3-031-85181-0\\_5",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "d90cab3d905ccb4033379a7189a97dc2b3de85b743c63307e7fd9fa01cae6e2b",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Lyu_2024_Trojvlm_32679ac9": {
+    "bibtex_sha256": "eabc17d31da7efbb753a1b1738ef775250f53068d742df984b1eecb0b841d0af",
+    "dblp_key": "conf/eccv/LyuPMLC24",
+    "dblp_title": "TrojVLM: Backdoor Attack Against Vision Language Models",
+    "dblp_url": "https://dblp.org/rec/conf/eccv/LyuPMLC24",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Ma_2026_LLM_dc1c6ad2": {
+    "bibtex_sha256": "3c6a6c3d7ce2cb03c84a79d4477ad2fa0606a416604bfde017c87fc63fa5682b",
+    "dblp_key": "journals/corr/abs-2604-14116",
+    "dblp_title": "TREX: Automating LLM Fine-tuning via Agent-Driven Tree-based Exploration",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2604-14116",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Mala_2025_Hybrid_48468dfd": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2504-05324",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2504-05324",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2504-05324",
+    "dblp_title": "Hybrid Retrieval for Hallucination Mitigation in Large Language Models: {A} Comparative Analysis",
+    "dblp_authors": [
+      "Chandana Sree Mala",
+      "Gizem Gezici",
+      "Fosca Giannotti"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2504.05324",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "f664fe2a2f776d3c73a9115f58aab20d082070e1eebf7b413d8f213cbfd26f9e",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Malin_2025_LLM_14099211": {
+    "bibtex_sha256": "0f983fdd4a42f4421aed09ad64eced591bb0dea90268ee3d95a3647cf8a57a69",
+    "dblp_key": "journals/corr/abs-2512-05700",
+    "dblp_title": "Faithfulness metric fusion: Improving the evaluation of LLM trustworthiness across domains",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2512-05700",
+    "title_similarity": 0.9726775956284153,
+    "verified": true
+  },
+  "Mamun_2025_LLMs_7b0b92b0": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2508-20333",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2508-20333",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2508-20333",
+    "dblp_title": "Poison Once, Refuse Forever: Weaponizing Alignment for Injecting Bias in LLMs",
+    "dblp_authors": [
+      "Md Abdullah Al Mamun",
+      "Ihsen Alouani",
+      "Nael B. Abu{-}Ghazaleh"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2508.20333",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "76c75dce8442a8ff67eae4e8618b158399a66f26140dcafa330b87a3ff0e535e",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Marinelli_2025_Harnessing_4bb6b9e1": {
+    "bibtex_sha256": "172eaa7f71e8774ef36c9dfc6a956fcfa28555322cc3f68ee470ea8dd230e12a",
+    "dblp_key": "journals/corr/abs-2503-21464",
+    "dblp_title": "Harnessing Chain-of-Thought Metadata for Task Routing and Adversarial Prompt Detection",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2503-21464",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Meek_2025_Measuring_1af5e040": {
+    "bibtex_sha256": "e0bb3f481cb985a0dac057b478d00b8f1392b46e9da543007df47456740ec661",
+    "dblp_key": "journals/corr/abs-2510-27378",
+    "dblp_title": "Measuring Chain-of-Thought Monitorability Through Faithfulness and Verbosity",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2510-27378",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Meftah_2025_Energy_79f84540": {
+    "bibtex_sha256": "21da19f129a253a486f33446fac3323cf12a227f04eb5e878528f8b3be6034f2",
+    "dblp_key": "conf/icassp/MeftahHFDK25",
+    "dblp_title": "Energy Backdoor Attack to Deep Neural Networks",
+    "dblp_url": "https://dblp.org/rec/conf/icassp/MeftahHFDK25",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Miculicich_2025_LLM_fdef6034": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2510-05156",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2510-05156",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2510-05156",
+    "dblp_title": "VeriGuard: Enhancing {LLM} Agent Safety via Verified Code Generation",
+    "dblp_authors": [
+      "Lesly Miculicich",
+      "Mihir Parmar",
+      "Hamid Palangi",
+      "Krishnamurthy Dj Dvijotham",
+      "Mirko Montanari",
+      "Tomas Pfister",
+      "Long T. Le"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2510.05156",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "5257b541ea80d9f9b42be26d2c83c05434a69979b6aaa37c1c46caa095bfa872",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Mo_2025_LLMs_eccb86af": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2507-22063",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2507-22063",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2507-22063",
+    "dblp_title": "RedCoder: Automated Multi-Turn Red Teaming for Code LLMs",
+    "dblp_authors": [
+      "Wenjie Jacky Mo",
+      "Qin Liu",
+      "Xiaofei Wen",
+      "Dongwon Jung",
+      "Hadi Askari",
+      "Wenxuan Zhou",
+      "Zhe Zhao",
+      "Muhao Chen"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2507.22063",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "17ec133a8a94aca3b29536e4f4e75a7f5f28b394a834d8d75bdcff82ee706975",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Morbiato_2025_Grounded_bdcf4cc5": {
+    "bibtex_sha256": "ec5fc0518e34ca1f7283e2f749bbd9536d47eeccd9fb6537014da66b08048cb3",
+    "dblp_key": "journals/corr/abs-2511-10671",
+    "dblp_title": "Grounded Visual Factualization: Factual Anchor-Based Finetuning for Enhancing MLLM Factual Consistency",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2511-10671",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Moslonka_2025_LLMs_76b3b56e": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2509-04492",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2509-04492",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2509-04492",
+    "dblp_title": "Learned Hallucination Detection in Black-Box LLMs using Token-level Entropy Production Rate",
+    "dblp_authors": [
+      "Charles Moslonka",
+      "Hicham Randrianarivo",
+      "Arthur Garnier",
+      "Emmanuel Malherbe"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2509.04492",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "6fe8e13e5ce079ebefd44bb0e1ac48d756bb036de2cf4e5ac15559d03b7c3e64",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Mu_2024_Codepurify_c5777b0e": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2410-20136",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2410-20136",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2410-20136",
+    "dblp_title": "CodePurify: Defend Backdoor Attacks on Neural Code Models via Entropy-based Purification",
+    "dblp_authors": [
+      "Fangwen Mu",
+      "Junjie Wang",
+      "Zhuohao Yu",
+      "Lin Shi",
+      "Song Wang",
+      "Mingyang Li",
+      "Qing Wang"
+    ],
+    "dblp_year": 2024,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2410.20136",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "9d8fe65496580b151ab917a5601ecd2fc491d7f027ea6cdfde66130325aa0e3b",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Nazary_2025_LLM_8902da68": {
+    "bibtex_sha256": "9c2492335b5d82786ea2985085561169bd348f98ad6ddbd366c27431295f22e9",
+    "dblp_key": "conf/um/NazaryDNS25",
+    "dblp_title": "Stealthy LLM-Driven Data Poisoning Attacks Against Embedding-Based Retrieval-Augmented Recommender Systems",
+    "dblp_url": "https://dblp.org/rec/conf/um/NazaryDNS25",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Nazary_2025_RAG_04ec01b9": {
+    "bibtex_sha256": "41b81918d86475cb7e9aa46b2217e0143851100f4f2b895ef6ebdd38cac9bcfd",
+    "dblp_key": "conf/ecir/NazaryDN25",
+    "dblp_title": "Poison-RAG: Adversarial Data Poisoning Attacks on Retrieval-Augmented Generation in Recommender Systems",
+    "dblp_url": "https://dblp.org/rec/conf/ecir/NazaryDN25",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Nguyen_2024_Pbp_ada953d6": {
+    "bibtex_sha256": "7b7e0b633468be311e94334b73e143cc121f83b7883f1e2ff1f78c0bab8d25bd",
+    "dblp_key": "journals/corr/abs-2412-03441",
+    "dblp_title": "PBP: Post-training Backdoor Purification for Malware Classifiers",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2412-03441",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Nguyen_2025_LLMs_fd21fb9b": {
+    "bibtex_sha256": "1d1e22d2f7e5942c394ea99306dc3cfe3e7300b4384381a44419e13bc11c88a4",
+    "dblp_key": "journals/corr/abs-2512-12313",
+    "dblp_title": "Taint-Based Code Slicing for LLMs-based Malicious NPM Package Detection",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2512-12313",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Nika_2025_Policy_b88b7229": {
+    "verified": true,
+    "dblp_key": "conf/aistats/NikaNMKSR25",
+    "dblp_url": "https://dblp.org/rec/conf/aistats/NikaNMKSR25",
+    "dblp_record_url": "https://dblp.org/rec/conf/aistats/NikaNMKSR25",
+    "dblp_title": "Policy Teaching via Data Poisoning in Learning from Human Preferences",
+    "dblp_authors": [
+      "Andi Nika",
+      "Jonathan N{\\\"{o}}ther",
+      "Debmalya Mandal",
+      "Parameswaran Kamalaruban",
+      "Adish Singla",
+      "Goran Radanovic"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "International Conference on Artificial Intelligence and Statistics, {AISTATS} 2025, Mai Khao, Thailand, 3-5 May 2025",
+    "dblp_doi": null,
+    "title_similarity": 1.0,
+    "bibtex_sha256": "c5103278db77ab272eb53f24316e2cf39803fecb2174ecd4443c7897764032c3",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Ning_2024_LLM_0e7d72dd": {
+    "bibtex_sha256": "685187e0c197ebb7b4be7b879c1bd67e3e269de1ead0ce219bbb25a205a6ec8e",
+    "dblp_key": "journals/corr/abs-2408-01354",
+    "dblp_title": "MCGMark: An Encodable and Robust Online Watermark for LLM-Generated Malicious Code",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2408-01354",
+    "title_similarity": 0.9529411764705882,
+    "verified": true
+  },
+  "Ouyang_2025_LLM_4ccbdde2": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2503-17953",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2503-17953",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2503-17953",
+    "dblp_title": "Smoke and Mirrors: Jailbreaking LLM-based Code Generation via Implicit Malicious Prompts",
+    "dblp_authors": [
+      "Sheng Ouyang",
+      "Yihao Qin",
+      "Bo Lin",
+      "Liqian Chen",
+      "Xiaoguang Mao",
+      "Shangwen Wang"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2503.17953",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "a58acb97f7993347a62f068c12f6c4529c1f508fcbb670ea6683c79d6e6fa458",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Panaitesculiess_2025_Poisonedparrot_7d66b400": {
+    "bibtex_sha256": "df6ad16c968b9eaeb56fc9dec9d9c988e0f47a1eed4f83f4509e2ab901945b1f",
+    "dblp_key": "conf/naacl/PanaitescuLiessPKCAZAH25",
+    "dblp_title": "PoisonedParrot: Subtle Data Poisoning Attacks to Elicit Copyright-Infringing Content from Large Language Models",
+    "dblp_url": "https://dblp.org/rec/conf/naacl/PanaitescuLiessPKCAZAH25",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Pathade_2026_AI_d9f29391": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2601-11664",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2601-11664",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2601-11664",
+    "dblp_title": "Serverless {AI} Security: Attack Surface Analysis and Runtime Protection Mechanisms for FaaS-Based Machine Learning",
+    "dblp_authors": [
+      "Chetan Pathade",
+      "Vinod Dhimam",
+      "Sheheryar Ahmad",
+      "Ilsa Lareb"
+    ],
+    "dblp_year": 2026,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2601.11664",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "85f5a97ec1c3dbc4438048a5d7390067969e97863fc918890b7f523caa638718",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Peisakhovsky_2025_LLMs_3d3735d3": {
+    "bibtex_sha256": "9969b7f9e1272a5b3f1c3d050e4570a39e1d68e9f480c630af4a540e55b00781",
+    "dblp_key": "journals/corr/abs-2509-22582",
+    "dblp_title": "Fine-Grained Detection of Context-Grounded Hallucinations Using LLMs",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2509-22582",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Pooladzandi_2024_Pureebm_229e120a": {
+    "bibtex_sha256": "0ff0c65950958d6fced43a5f9d9743da141a2dd40a4f7948b212857d2b749165",
+    "dblp_key": "journals/corr/abs-2405-19376",
+    "dblp_title": "PureEBM: Universal Poison Purification via Mid-Run Dynamics of Energy-Based Models",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2405-19376",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Qian_2025_LLM_1c4856fb": {
+    "bibtex_sha256": "756d819f928a89175be956ae20d3d22865e6480e55cd1d47cb67d3c9cbf8eea4",
+    "dblp_key": "conf/emnlp/QianZJJW25",
+    "dblp_title": "The Ranking Blind Spot: Decision Hijacking in LLM-based Text Ranking",
+    "dblp_url": "https://dblp.org/rec/conf/emnlp/QianZJJW25",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Ravi_2024_Lynx_ce273f20": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2407-08488",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2407-08488",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2407-08488",
+    "dblp_title": "Lynx: An Open Source Hallucination Evaluation Model",
+    "dblp_authors": [
+      "Selvan Sunitha Ravi",
+      "Bartosz Mielczarek",
+      "Anand Kannappan",
+      "Douwe Kiela",
+      "Rebecca Qian"
+    ],
+    "dblp_year": 2024,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2407.08488",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "f285540d00769f112c13e52edce6903cac37621d6e5e4e0dbfd4f3fc2dfb6097",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Roh_2025_LLMs_5fc70035": {
+    "bibtex_sha256": "9be7c14af374d7d62735eaac6d8ce77a20cca9d75914b32931c05801d50cc422",
+    "dblp_key": "journals/corr/abs-2506-06971",
+    "dblp_title": "Chain-of-Code Collapse: Reasoning Failures in LLMs via Adversarial Prompting in Code Generation",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2506-06971",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Rosati_2026_LLM_021508a3": {
+    "bibtex_sha256": "5d723bd7bb0beeb93e4a99e50aba415c7ed924f22e847edd42d98da79771df01",
+    "dblp_key": "journals/corr/abs-2604-11655",
+    "dblp_title": "RPA-Check: A Multi-Stage Automated Framework for Evaluating Dynamic LLM-based Role-Playing Agents",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2604-11655",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Rubel_2024_LLM_86f8e99d": {
+    "bibtex_sha256": "915e520937620292509fe4aafaf9e3f7693c69db21b7f8e13c365c86edf4debd",
+    "dblp_authors": [
+      "Karl Rubel",
+      "Maximilian Noppel",
+      "Christian Wressnegger"
+    ],
+    "dblp_doi": "10.48550/ARXIV.2410.10526",
+    "dblp_key": "journals/corr/abs-2410-10526",
+    "dblp_record_url": "https://doi.org/10.48550/arXiv.2410.10526",
+    "dblp_title": "Generalized Adversarial Code-Suggestions: Exploiting Contexts of LLM-based\n                  Code-Completion",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2410-10526",
+    "dblp_venue": "CoRR",
+    "dblp_year": 2024,
+    "title_similarity": 1.0,
+    "verified": true,
+    "verified_against_live_dblp_at": "2026-08-01T23:43:30.592664+02:00"
+  },
+  "Sandoval_2025_GPT_b45006a4": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2509-14271",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2509-14271",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2509-14271",
+    "dblp_title": "Early Approaches to Adversarial Fine-Tuning for Prompt Injection Defense: {A} 2022 Study of {GPT-3} and Contemporary Models",
+    "dblp_authors": [
+      "Gustavo Sandoval",
+      "Denys Fenchenko",
+      "Junyao Chen"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2509.14271",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "f86b1930af944ee8a6799dd7575264f5da5e91e61d572e248ae1afa447582134",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Schlarmann_2024_Robust_a56cf5e8": {
+    "bibtex_sha256": "7c4f497428ca47e3bded056c075418526c139105f3a2898bed85f7d05332a6f3",
+    "dblp_key": "conf/icml/SchlarmannSC024",
+    "dblp_title": "Robust CLIP: Unsupervised Adversarial Fine-Tuning of Vision Embeddings for Robust Large Vision-Language Models",
+    "dblp_url": "https://dblp.org/rec/conf/icml/SchlarmannSC024",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Schwartz_2025_LLM_24c9d04f": {
+    "bibtex_sha256": "cde35b025c24f3dab01b30d61ed51ea29a4409dad0c47612b92e4677f7f7e392",
+    "dblp_key": "conf/emnlp/SchwartzBWKQ25",
+    "dblp_title": "Graph of Attacks with Pruning: Optimizing Stealthy Jailbreak Prompt Generation for Enhanced LLM Content Moderation",
+    "dblp_url": "https://dblp.org/rec/conf/emnlp/SchwartzBWKQ25",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Shelmanov_2025_LLM_7172d579": {
+    "verified": true,
+    "dblp_key": "conf/emnlp/ShelmanovFTTXKDZVSNB25",
+    "dblp_url": "https://dblp.org/rec/conf/emnlp/ShelmanovFTTXKDZVSNB25",
+    "dblp_record_url": "https://dblp.org/rec/conf/emnlp/ShelmanovFTTXKDZVSNB25",
+    "dblp_title": "A Head to Predict and a Head to Question: Pre-trained Uncertainty Quantification Heads for Hallucination Detection in {LLM} Outputs",
+    "dblp_authors": [
+      "Artem Shelmanov",
+      "Ekaterina Fadeeva",
+      "Akim Tsvigun",
+      "Ivan Tsvigun",
+      "Zhuohan Xie",
+      "Igor Kiselev",
+      "Nico Daheim",
+      "Caiqi Zhang",
+      "Artem Vazhentsev",
+      "Mrinmaya Sachan",
+      "Preslav Nakov",
+      "Timothy Baldwin"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing, {EMNLP} 2025, Suzhou, China, November 4-9, 2025",
+    "dblp_doi": "10.18653/V1/2025.EMNLP-MAIN.1809",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "400ce020fef193b854160f17fe08d9a508916ed1d2952e308f68a69e82691fe6",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Shen_2025_Decepchain_37b2ebb0": {
+    "bibtex_sha256": "59a9917832a49621c1fddee016dfb305cc765bc2543843180c21b7e00db5f93e",
+    "dblp_key": "journals/corr/abs-2510-00319",
+    "dblp_title": "DecepChain: Inducing Deceptive Reasoning in Large Language Models",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2510-00319",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Sheshadri_2024_LLMs_ecd68cc1": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2407-15549",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2407-15549",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2407-15549",
+    "dblp_title": "Targeted Latent Adversarial Training Improves Robustness to Persistent Harmful Behaviors in LLMs",
+    "dblp_authors": [
+      "Abhay Sheshadri",
+      "Aidan Ewart",
+      "Phillip Guo",
+      "Aengus Lynch",
+      "Cindy Wu",
+      "Vivek Hebbar",
+      "Henry Sleight",
+      "Asa Cooper Stickland",
+      "Ethan Perez",
+      "Dylan Hadfield{-}Menell",
+      "Stephen Casper"
+    ],
+    "dblp_year": 2024,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2407.15549",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "88a3eaa3cbaa5b02578d88aa72631123349ddc56615d68c124e41d0853da7e42",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Shi_2025_LLM_f0833c22": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2504-19793",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2504-19793",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2504-19793",
+    "dblp_title": "Prompt Injection Attack to Tool Selection in {LLM} Agents",
+    "dblp_authors": [
+      "Jiawen Shi",
+      "Zenghui Yuan",
+      "Guiyao Tie",
+      "Pan Zhou",
+      "Neil Zhenqiang Gong",
+      "Lichao Sun"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2504.19793",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "d925d7191a1b11092f6066ea1214c930a3aaa4a57133a5876d2c35c4e5bd0bef",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Shi_2025_Promptarmor_d535ddee": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2507-15219",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2507-15219",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2507-15219",
+    "dblp_title": "PromptArmor: Simple yet Effective Prompt Injection Defenses",
+    "dblp_authors": [
+      "Tianneng Shi",
+      "Kaijie Zhu",
+      "Zhun Wang",
+      "Yuqi Jia",
+      "Will Cai",
+      "Weida Liang",
+      "Haonan Wang",
+      "Hend Alzahrani",
+      "Joshua Lu",
+      "Kenji Kawaguchi",
+      "Basel Alomair",
+      "Xuandong Zhao",
+      "William Yang Wang",
+      "Neil Gong",
+      "Wenbo Guo",
+      "Dawn Song"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2507.15219",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "c778b3f1e0fe997a539a530b5295581619b9b3a1b55535ff979b8607d69bbc21",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Shih_2025_AI_0f3eb425": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2509-21367",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2509-21367",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2509-21367",
+    "dblp_title": "Design and Implementation of a Secure RAG-Enhanced {AI} Chatbot for Smart Tourism Customer Service: Defending Against Prompt Injection Attacks - {A} Case Study of Hsinchu, Taiwan",
+    "dblp_authors": [
+      "Yu{-}Kai Shih",
+      "You{-}Kai Kang"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2509.21367",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "6e00292ebcf2f527b7f8d788380c4b50472d23fe0971d34f7de49686d0206771",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Somov_2026_LLM_56cf6e4d": {
+    "bibtex_sha256": "ba6761a64276077e880dedf130dd015cca525cd28a4101a07b86461443d93724",
+    "dblp_key": "journals/corr/abs-2603-16475",
+    "dblp_title": "Breaking the Chain: A Causal Analysis of LLM Faithfulness to Intermediate Structures",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2603-16475",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Song_2024_Claim_1cc99446": {
+    "bibtex_sha256": "bcc6409c4dcb5a07bfba6ddb0db6a4ca2035039706c1d4ddf10c1bfd7fec62d1",
+    "dblp_key": "journals/corr/abs-2409-16618",
+    "dblp_title": "Claim-Guided Textual Backdoor Attack for Practical Applications",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2409-16618",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Souly_2025_LLMs_4e3c2e97": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2510-07192",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2510-07192",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2510-07192",
+    "dblp_title": "Poisoning Attacks on LLMs Require a Near-constant Number of Poison Samples",
+    "dblp_authors": [
+      "Alexandra Souly",
+      "Javier Rando",
+      "Ed Chapman",
+      "Xander Davies",
+      "Burak Hasircioglu",
+      "Ezzeldin Shereen",
+      "Carlos Mougan",
+      "Vasilios Mavroudis",
+      "Erik Jones",
+      "Chris Hicks",
+      "Nicholas Carlini",
+      "Yarin Gal",
+      "Robert Kirk"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2510.07192",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "0d48fb2cadafd85a03daf74cf28e830c9dcdee3825ff1f2e3d765872e2c139b3",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Sun_2025_Detection_09010010": {
+    "bibtex_sha256": "a91365ecd743c7400a16b215112c1b0c3fa02fc19324f194b5322687bbb50d43",
+    "dblp_key": "journals/corr/abs-2505-12886",
+    "dblp_title": "Detection and Mitigation of Hallucination in Large Reasoning Models: A Mechanistic Perspective",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2505-12886",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Sun_2025_Show_ebe0c798": {
+    "bibtex_sha256": "96fd15941bb8a2ad1107ec5ae30be3acecfbf8227eb64b847ca144c2fa594d01",
+    "dblp_key": "conf/icse/SunCYFC00X025",
+    "dblp_title": "Show Me Your Code! Kill Code Poisoning: A Lightweight Method Based on Code Naturalness",
+    "dblp_url": "https://dblp.org/rec/conf/icse/SunCYFC00X025",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Suri_2025_Exploiting_a50a2301": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2507-08983",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2507-08983",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2507-08983",
+    "dblp_title": "Exploiting Leaderboards for Large-Scale Distribution of Malicious Models",
+    "dblp_authors": [
+      "Anshuman Suri",
+      "Harsh Chaudhari",
+      "Yuefeng Peng",
+      "Ali Naseh",
+      "Amir Houmansadr",
+      "Alina Oprea"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2507.08983",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "37da8dc273e53cd4a8cca8d440fc63350d2b9200d262126d1e6e07f166962abb",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Szalay_2026_Neural_637f52fc": {
+    "bibtex_sha256": "55974a84a58b561728788b78404699aae1c74f8fb9e49ce36425426fcf05b122",
+    "dblp_key": "journals/corr/abs-2604-14073",
+    "dblp_title": "Neural architectures for resolving references in program code",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2604-14073",
+    "title_similarity": 0.9312977099236641,
+    "verified": true
+  },
+  "Tang_2024_LLMs_a9a0eaf3": {
+    "bibtex_sha256": "be20bb726888361d81d7cf520114961eb0e8f897d372b112fdba20bc324a75b2",
+    "dblp_key": "conf/emnlp/TangLD24",
+    "dblp_title": "MiniCheck: Efficient Fact-Checking of LLMs on Grounding Documents",
+    "dblp_url": "https://dblp.org/rec/conf/emnlp/TangLD24",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Tang_2025_Cognibench_0b308648": {
+    "verified": true,
+    "dblp_key": "conf/acl/TangLHDLZSX25",
+    "dblp_url": "https://dblp.org/rec/conf/acl/TangLHDLZSX25",
+    "dblp_record_url": "https://dblp.org/rec/conf/acl/TangLHDLZSX25",
+    "dblp_title": "CogniBench: {A} Legal-inspired Framework and Dataset for Assessing Cognitive Faithfulness of Large Language Models",
+    "dblp_authors": [
+      "Xiaqiang Tang",
+      "Jian Li",
+      "Keyu Hu",
+      "Nan Du",
+      "Xiaolong Li",
+      "Xi Zhang",
+      "Weigao Sun",
+      "Sihong Xie"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers), {ACL} 2025, Vienna, Austria, July 27 - August 1, 2025",
+    "dblp_doi": "10.18653/V1/2025.ACL-LONG.1046",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "5804de3dfa3d171e960c0e9a082c9ffd055a1ffb211afe6ecf3038bfc75d1dc9",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Tang_2025_Mitigating_46f7eceb": {
+    "bibtex_sha256": "89472551720bddaca267e755273201b0b96049f552c06e2073cc2db2124e02f9",
+    "dblp_key": "conf/naacl/TangCG25",
+    "dblp_title": "Mitigating Hallucinated Translations in Large Language Models with Hallucination-focused Preference Optimization",
+    "dblp_url": "https://dblp.org/rec/conf/naacl/TangCG25",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Tejedor_2025_Elena_a76e13c1": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2504-03823",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2504-03823",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2504-03823",
+    "dblp_title": "The H-Elena Trojan Virus to Infect Model Weights: {A} Wake-Up Call on the Security Risks of Malicious Fine-Tuning",
+    "dblp_authors": [
+      "Virilo Tejedor",
+      "Cristina Zuheros",
+      "Carlos Pel{\\'{a}}ez{-}Gonz{\\'{a}}lez",
+      "David Herrera{-}Poyatos",
+      "Andr{\\'{e}}s Herrera{-}Poyatos",
+      "Francisco Herrera"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2504.03823",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "2083b61a69a977ca80ea1fb0e026fe492843fcee91f1d59faed5dec5c29bf5f9",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Thang_2026_LLM_b2a6d5a0": {
+    "bibtex_sha256": "9931a8c579c722cb18e55eb57fa345fbbf703c04c69e6d8b82cd756496494ba0",
+    "dblp_key": "journals/corr/abs-2602-10778",
+    "dblp_title": "GoodVibe: Security-by-Vibe for LLM-Based Code Generation",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2602-10778",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Thorat_2024_Summexecedit_20c7558a": {
+    "bibtex_sha256": "ad9713cdb3de710e6ff1ea4ccd870f0ae31c4226f7ccb76c81511a00a275a3b4",
+    "dblp_key": "journals/corr/abs-2412-13378",
+    "dblp_title": "SummExecEdit: A Factual Consistency Benchmark in Summarization with Executable Edits",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2412-13378",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Thulke_2025_Listen_49bf9359": {
+    "bibtex_sha256": "89a3d06c40c9fd0f382417e0084b6b146f00d3fb7ee7375e41b64bc9c0a4fbb5",
+    "dblp_key": "journals/corr/abs-2505-15633",
+    "dblp_title": "Listen to the Context: Towards Faithful Large Language Models for Retrieval Augmented Generation on Climate Questions",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2505-15633",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Tong_2025_LLM_559891bc": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2512-24562",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2512-24562",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2512-24562",
+    "dblp_title": "HaluNet: Multi-Granular Uncertainty Modeling for Efficient Hallucination Detection in {LLM} Question Answering",
+    "dblp_authors": [
+      "Chaodong Tong",
+      "Qi Zhang",
+      "Jiayang Gao",
+      "Lei Jiang",
+      "Yanbing Liu",
+      "Nannan Sun"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2512.24562",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "dfd61637f960d2e971345adc4b4b61f6ac485cdb267fabc46006cfda7a65f28f",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Triedman_2025_Multi_99df1b61": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2503-12188",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2503-12188",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2503-12188",
+    "dblp_title": "Multi-Agent Systems Execute Arbitrary Malicious Code",
+    "dblp_authors": [
+      "Harold Triedman",
+      "Rishi D. Jha",
+      "Vitaly Shmatikov"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2503.12188",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "36c4e9351be6a2af114e54f5f90e8a7a2f3b0cb969d53b7a4e2571e406139beb",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Tsai_2025_Beyond_3cf40d51": {
+    "bibtex_sha256": "54122fb7162d97c39e00e34a19087c51aeb94b2fa51289e3cd4ebdab16425d96",
+    "dblp_key": "journals/corr/abs-2502-20246",
+    "dblp_title": "Beyond Natural Language Perplexity: Detecting Dead Code Poisoning in Code Generation Datasets",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2502-20246",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Urlana_2025_LLM_d7c09bcb": {
+    "verified": true,
+    "dblp_key": "conf/ijcnlp/UrlanaKKGM25",
+    "dblp_url": "https://dblp.org/rec/conf/ijcnlp/UrlanaKKGM25",
+    "dblp_record_url": "https://dblp.org/rec/conf/ijcnlp/UrlanaKKGM25",
+    "dblp_title": "HalluCounter: Reference-free {LLM} Hallucination Detection in the Wild!",
+    "dblp_authors": [
+      "Ashok Urlana",
+      "Gopichand Kanumolu",
+      "Charaka Vinayak Kumar",
+      "Bala Mallikarjunarao Garlapati",
+      "Rahul Mishra"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "Proceedings of the 14th International Joint Conference on Natural Language Processing and the 4th Conference of the Asia-Pacific Chapter of the Association for Computational Linguistics, {IJCNLP-AACL} 2025, Mumbai, India, December 20-24, 2025",
+    "dblp_doi": "10.18653/V1/2025.FINDINGS-IJCNLP.20",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "39367f0c2e9e41ac96766ed909622294c787fbc02e50ba8cd7cdb8068283ae4c",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Vakhnovskyi_2026_Threat_1bc49f98": {
+    "bibtex_sha256": "07f623e0c8f020d1523a6bbe9da4defaf25eaadbba298c4a8e620d74256fa56c",
+    "dblp_key": "journals/corr/abs-2604-13308",
+    "dblp_title": "Threat Modeling and Attack Surface Analysis of IoT-Enabled Controlled Environment Agriculture Systems",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2604-13308",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Wadekar_2026_Patchpoison_82b1c9af": {
+    "bibtex_sha256": "b4cc95720524ad839c50d114102f4ea044afd4c48da8a5f342066f5b9b0dbb8f",
+    "dblp_key": "journals/corr/abs-2604-13153",
+    "dblp_title": "PatchPoison: Poisoning Multi-View Datasets to Degrade 3D Reconstruction",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2604-13153",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Wahed_2025_Mocha_c0ec2d2c": {
+    "verified": true,
+    "dblp_key": "conf/emnlp/WahedZNYDWHL25",
+    "dblp_url": "https://dblp.org/rec/conf/emnlp/WahedZNYDWHL25",
+    "dblp_record_url": "https://dblp.org/rec/conf/emnlp/WahedZNYDWHL25",
+    "dblp_title": "{MOCHA:} Are Code Language Models Robust Against Multi-Turn Malicious Coding Prompts?",
+    "dblp_authors": [
+      "Muntasir Wahed",
+      "Xiaona Zhou",
+      "Kiet A. Nguyen",
+      "Tianjiao Yu",
+      "Nirav Diwan",
+      "Gang Wang",
+      "Dilek Hakkani{-}T{\\\"{u}}r",
+      "Ismini Lourentzou"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "Findings of the Association for Computational Linguistics: {EMNLP} 2025, Suzhou, China, November 4-9, 2025",
+    "dblp_doi": "10.18653/V1/2025.FINDINGS-EMNLP.1249",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "12446968fb163eb905e980d4be862851240924abc262ac7af741480c07a3f3f8",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Wang_2024_Dual_2d14670a": {
+    "bibtex_sha256": "37be879e0c132dbffd606c26c56afd9573b89b542cbdb8c7add798bfb4a6d7a2",
+    "dblp_key": "journals/corr/abs-2404-13946",
+    "dblp_title": "Dual Model Replacement:invisible Multi-target Backdoor Attack based on Federal Learning",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2404-13946",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Wang_2024_LLM_7c0f7746": {
+    "verified": true,
+    "dblp_key": "conf/acl/WangXZQ24",
+    "dblp_url": "https://dblp.org/rec/conf/acl/WangXZQ24",
+    "dblp_record_url": "https://dblp.org/rec/conf/acl/WangXZQ24",
+    "dblp_title": "BadAgent: Inserting and Activating Backdoor Attacks in {LLM} Agents",
+    "dblp_authors": [
+      "Yifei Wang",
+      "Dizhan Xue",
+      "Shengjie Zhang",
+      "Shengsheng Qian"
+    ],
+    "dblp_year": 2024,
+    "dblp_venue": "Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers), {ACL} 2024, Bangkok, Thailand, August 11-16, 2024",
+    "dblp_doi": "10.18653/V1/2024.ACL-LONG.530",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "01192626fcc4ae518da33ec63bf564b45a6395ec99f8d13e505a6664b28104f5",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Wang_2024_LLMs_a70eec1a": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2406-18122",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2406-18122",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2406-18122",
+    "dblp_title": "Poisoned LangChain: Jailbreak LLMs by LangChain",
+    "dblp_authors": [
+      "Ziqiu Wang",
+      "Jun Liu",
+      "Shengkai Zhang",
+      "Yang Yang"
+    ],
+    "dblp_year": 2024,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2406.18122",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "fd261363f5d469258010d10fd054450151e035e1c1128beb28bd5efc096d457e",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Wang_2024_Mllm_5a671a19": {
+    "bibtex_sha256": "5cb58f304c9d2eb9b705079546b75cf5774bb38a2a1a764ab8fe1d992e95a68e",
+    "dblp_key": "journals/corr/abs-2410-11779",
+    "dblp_title": "MLLM can see? Dynamic Correction Decoding for Hallucination Mitigation",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2410-11779",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Wang_2025_Double_eb8e7cec": {
+    "bibtex_sha256": "842010fabce815d1dc6f7c3bbdd156c4e7409bcf98ddc9f1577dfbcd2aee54b7",
+    "dblp_key": "journals/corr/abs-2501-09446",
+    "dblp_title": "Double Visual Defense: Adversarial Pre-training and Instruction Tuning for Improving Vision-Language Model Robustness",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2501-09446",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Wang_2025_Draincode_7c48767d": {
+    "bibtex_sha256": "e5203ca064babd46f556714e140f049cad76cea8e32065def1be9a6df8bfff11",
+    "dblp_key": "conf/kbse/WangWJLCWSLMZ25",
+    "dblp_title": "DrainCode: Stealthy Energy Consumption Attacks on Retrieval-Augmented Code Generation via Context Poisoning",
+    "dblp_url": "https://dblp.org/rec/conf/kbse/WangWJLCWSLMZ25",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Wang_2025_LLM_8f63ddc1": {
+    "bibtex_sha256": "adb6bff51d743f33fc4b4d0c5e8386fc5376a5ea5ae01e34e77d13eeb573adce",
+    "dblp_authors": [
+      "Zhilong Wang",
+      "Neha Nagaraja",
+      "Lan Zhang",
+      "Hayretdin Bahsi",
+      "Pawan Patil",
+      "Peng Liu"
+    ],
+    "dblp_doi": "10.1109/DSN-S65789.2025.00037",
+    "dblp_key": "conf/dsn/WangN0BPL25",
+    "dblp_record_url": "https://doi.org/10.1109/DSN-S65789.2025.00037",
+    "dblp_title": "To Protect the {LLM} Agent Against the Prompt Injection Attack with\n                  Polymorphic Prompt",
+    "dblp_url": "https://dblp.org/rec/conf/dsn/WangN0BPL25",
+    "dblp_venue": "2025 55th Annual {IEEE/IFIP} International Conference on Dependable\n                  Systems and Networks, {DSN} 2025 - Supplemental Volume, Naples, Italy,\n                  June 23-26, 2025",
+    "dblp_year": 2025,
+    "title_similarity": 1.0,
+    "verified": true,
+    "verified_against_live_dblp_at": "2026-08-01T23:43:30.598814+02:00"
+  },
+  "Wang_2025_Promptsleuth_c8e9516a": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2508-20890",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2508-20890",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2508-20890",
+    "dblp_title": "PromptSleuth: Detecting Prompt Injection via Semantic Intent Invariance",
+    "dblp_authors": [
+      "Mengxiao Wang",
+      "Yuxuan Zhang",
+      "Guofei Gu"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2508.20890",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "1796c9dcfa93d01d149aea92ec86c40560248aef4893eb77d446a4abb076f573",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Wang_2025_Webinject_ce7712da": {
+    "bibtex_sha256": "321aaed21397bc35baf87aeef1d1333e076993e43abe136b7a0d9d6c67f4c30a",
+    "dblp_key": "conf/emnlp/WangBSHZG25",
+    "dblp_title": "WebInject: Prompt Injection Attack to Web Agents",
+    "dblp_url": "https://dblp.org/rec/conf/emnlp/WangBSHZG25",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Wang_2026_Badtemplate_5224c909": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2602-05401",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2602-05401",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2602-05401",
+    "dblp_title": "BadTemplate: {A} Training-Free Backdoor Attack via Chat Template Against Large Language Models",
+    "dblp_authors": [
+      "Zihan Wang",
+      "Hongwei Li",
+      "Rui Zhang",
+      "Wenbo Jiang",
+      "Guowen Xu"
+    ],
+    "dblp_year": 2026,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2602.05401",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "d8b66d0f444251384838d070d8ae0a232548a15e922b60110163fe700b0a5e50",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Wang_2026_LLM_56a1511e": {
+    "bibtex_sha256": "efa7cfae06df3a393de5e4052ebeebe3532f5adee7aee5dca10e48ba10dc3bce",
+    "dblp_key": "journals/corr/abs-2603-15611",
+    "dblp_title": "Code-A1: Adversarial Evolving of Code LLM and Test LLM via Reinforcement Learning",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2603-15611",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Wang_2026_LLM_627df593": {
+    "bibtex_sha256": "a2db085a3ac936dd82ab7234bd5f5f0a9b632a28cc98dbeaeda14854ad11a0f5",
+    "dblp_authors": [
+      "Yanshu Wang",
+      "Shuaishuai Yang",
+      "Jingjing He",
+      "Tong Yang"
+    ],
+    "dblp_doi": "10.48550/ARXIV.2602.04294",
+    "dblp_key": "journals/corr/abs-2602-04294",
+    "dblp_record_url": "https://doi.org/10.48550/arXiv.2602.04294",
+    "dblp_title": "How Few-shot Demonstrations Affect Prompt-based Defenses Against {LLM}\n                  Jailbreak Attacks",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2602-04294",
+    "dblp_venue": "CoRR",
+    "dblp_year": 2026,
+    "title_similarity": 1.0,
+    "verified": true,
+    "verified_against_live_dblp_at": "2026-08-01T23:43:30.599600+02:00"
+  },
+  "Wei_2025_Prompt_fe55d8a4": {
+    "bibtex_sha256": "27c65fe0b22d2f0c9fd1731ecd043372d15037112ac52259ce3040c1c474aa41",
+    "dblp_key": "conf/aaai/WeiFLS0H25",
+    "dblp_title": "Prompt-based Unifying Inference Attack on Graph Neural Networks",
+    "dblp_url": "https://dblp.org/rec/conf/aaai/WeiFLS0H25",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Wen_2025_Defending_cadb901b": {
+    "verified": true,
+    "dblp_key": "conf/emnlp/WenWYTXLDW25",
+    "dblp_url": "https://dblp.org/rec/conf/emnlp/WenWYTXLDW25",
+    "dblp_record_url": "https://dblp.org/rec/conf/emnlp/WenWYTXLDW25",
+    "dblp_title": "Defending against Indirect Prompt Injection by Instruction Detection",
+    "dblp_authors": [
+      "Tongyu Wen",
+      "Chenglong Wang",
+      "Xiyuan Yang",
+      "Haoyu Tang",
+      "Yueqi Xie",
+      "Lingjuan Lyu",
+      "Zhicheng Dou",
+      "Fangzhao Wu"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "Findings of the Association for Computational Linguistics: {EMNLP} 2025, Suzhou, China, November 4-9, 2025",
+    "dblp_doi": "10.18653/V1/2025.FINDINGS-EMNLP.1060",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "9cfe2f1751a3829dbfa3ff65d717613c42d97cc7a09e8f7972c2d64c4b3c8ea1",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Weng_2025_LLMs_9f971db3": {
+    "verified": true,
+    "dblp_key": "conf/emnlp/WengJJZ25",
+    "dblp_url": "https://dblp.org/rec/conf/emnlp/WengJJZ25",
+    "dblp_record_url": "https://dblp.org/rec/conf/emnlp/WengJJZ25",
+    "dblp_title": "Foot-In-The-Door: {A} Multi-turn Jailbreak for LLMs",
+    "dblp_authors": [
+      "Zixuan Weng",
+      "Xiaolong Jin",
+      "Jinyuan Jia",
+      "Xiangyu Zhang"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing, {EMNLP} 2025, Suzhou, China, November 4-9, 2025",
+    "dblp_doi": "10.18653/V1/2025.EMNLP-MAIN.100",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "5e6e8d7fd17fc85daad415a9de24a6c60b4963c6ff4bb5834af729396ea8988e",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Wu_2025_Generate_bd4421c2": {
+    "bibtex_sha256": "5765dede639179a00a84b7f6c0f96a8ce0316f5e3a57fc6a9738fe7b2e26b6cb",
+    "dblp_key": "journals/corr/abs-2504-13169",
+    "dblp_title": "Generate, but Verify: Reducing Hallucination in Vision-Language Models with Retrospective Resampling",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2504-13169",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Wu_2025_LLM_7fee400f": {
+    "verified": true,
+    "dblp_key": "conf/iclr/WuZSXZAI0MZ25",
+    "dblp_url": "https://dblp.org/rec/conf/iclr/WuZSXZAI0MZ25",
+    "dblp_record_url": "https://dblp.org/rec/conf/iclr/WuZSXZAI0MZ25",
+    "dblp_title": "Instructional Segment Embedding: Improving {LLM} Safety with Instruction Hierarchy",
+    "dblp_authors": [
+      "Tong Wu",
+      "Shujian Zhang",
+      "Kaiqiang Song",
+      "Silei Xu",
+      "Sanqiang Zhao",
+      "Ravi Agrawal",
+      "Sathish Reddy Indurthi",
+      "Chong Xiang",
+      "Prateek Mittal",
+      "Wenxuan Zhou"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "The Thirteenth International Conference on Learning Representations, {ICLR} 2025, Singapore, April 24-28, 2025",
+    "dblp_doi": null,
+    "title_similarity": 1.0,
+    "bibtex_sha256": "25dbffd15603886aaddff487b6e1132d093349a02b606930132aa8eebec67015",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Wu_2025_Say_448f0328": {
+    "bibtex_sha256": "8b35dfcff420d797cc3b3074bfb587219668ee6a9f56edf58c3167c060d2a7b0",
+    "dblp_key": "journals/corr/abs-2510-16281",
+    "dblp_title": "Do What You Say: Steering Vision-Language-Action Models via Runtime Reasoning-Action Alignment Verification",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2510-16281",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Wu_2026_Self_ae7eafa5": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2602-01137",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2602-01137",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2602-01137",
+    "dblp_title": "Self-Generative Adversarial Fine-Tuning for Large Language Models",
+    "dblp_authors": [
+      "Shiguang Wu",
+      "Yaqing Wang",
+      "Quanming Yao"
+    ],
+    "dblp_year": 2026,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2602.01137",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "8321a6c9892cf20446109b2e11023339af45e00fd331769d5308db258b4e4ecd",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Xiao_2025_LLM_7b988807": {
+    "bibtex_sha256": "075de8bea1697927973922437712a7c792277ce3cf5a6811c91b591c8d71ae24",
+    "dblp_key": "journals/corr/abs-2512-00591",
+    "dblp_title": "TrojanLoC: LLM-based Framework for RTL Trojan Localization",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2512-00591",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Xing_2024_Mitigating_9b7d8080": {
+    "bibtex_sha256": "89ae1375339ca53793c424d0c1b72bd3273fa6db6028fe1515d272cf35621d22",
+    "dblp_key": "conf/nips/XingLLL24",
+    "dblp_title": "Mitigating Object Hallucination via Concentric Causal Attention",
+    "dblp_url": "https://dblp.org/rec/conf/nips/XingLLL24",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Yan_2024_LLM_694cf462": {
+    "verified": true,
+    "dblp_key": "conf/uss/YanWDHLKH24",
+    "dblp_url": "https://dblp.org/rec/conf/uss/YanWDHLKH24",
+    "dblp_record_url": "https://dblp.org/rec/conf/uss/YanWDHLKH24",
+    "dblp_title": "An LLM-Assisted Easy-to-Trigger Backdoor Attack on Code Completion Models: Injecting Disguised Vulnerabilities against Strong Detection",
+    "dblp_authors": [
+      "Shenao Yan",
+      "Shen Wang",
+      "Yue Duan",
+      "Hanbin Hong",
+      "Kiho Lee",
+      "Doowon Kim",
+      "Yuan Hong"
+    ],
+    "dblp_year": 2024,
+    "dblp_venue": "33rd {USENIX} Security Symposium, {USENIX} Security 2024, Philadelphia, PA, USA, August 14-16, 2024",
+    "dblp_doi": null,
+    "title_similarity": 1.0,
+    "bibtex_sha256": "e3298fdf0104845e557b24f976bd12d675213c8c8db79249f324943a72e909e4",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Yan_2025_LLM_fd062fd7": {
+    "bibtex_sha256": "3d65cb7bf20254f293da6178edb5eda97a80e5563a7d9b5e538b3322889498a9",
+    "dblp_key": "journals/corr/abs-2511-13341",
+    "dblp_title": "An LLM-based Quantitative Framework for Evaluating High-Stealthy Backdoor Risks in OSS Supply Chains",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2511-13341",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Yang_2024_LLM_eba70536": {
+    "verified": true,
+    "dblp_key": "conf/nips/YangBLCZ024",
+    "dblp_url": "https://dblp.org/rec/conf/nips/YangBLCZ024",
+    "dblp_record_url": "https://dblp.org/rec/conf/nips/YangBLCZ024",
+    "dblp_title": "Watch Out for Your Agents! Investigating Backdoor Threats to LLM-Based Agents",
+    "dblp_authors": [
+      "Wenkai Yang",
+      "Xiaohan Bi",
+      "Yankai Lin",
+      "Sishuo Chen",
+      "Jie Zhou",
+      "Xu Sun"
+    ],
+    "dblp_year": 2024,
+    "dblp_venue": "Advances in Neural Information Processing Systems 37: Annual Conference on Neural Information Processing Systems 2024, NeurIPS 2024, Vancouver, BC, Canada, December 10 - 15, 2024",
+    "dblp_doi": null,
+    "title_similarity": 1.0,
+    "bibtex_sha256": "acec518a0d472a7e31b08b0da3c4687f9dba5ff02966fbfcf72cc374aad78628",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Yang_2025_Inex_187a262a": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2512-02981",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2512-02981",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2512-02981",
+    "dblp_title": "InEx: Hallucination Mitigation via Introspection and Cross-Modal Multi-Agent Collaboration",
+    "dblp_authors": [
+      "Zhongyu Yang",
+      "Yingfang Yuan",
+      "Xuanming Jiang",
+      "Baoyi An",
+      "Wei Pang"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2512.02981",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "101ebfbd972e607100edfced21ed56e9aa9feabb4e3abdb8ff47b53d05d41f17",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Yang_2025_Prsa_116f5a7b": {
+    "bibtex_sha256": "f8c7569a277cce0c75ab2d7534412bc61f5c6c590f34075563b4cf350bc6a867",
+    "dblp_key": "conf/uss/YangLLMWWGCJ25",
+    "dblp_title": "PRSA: Prompt Stealing Attacks against Real-World Prompt Services",
+    "dblp_url": "https://dblp.org/rec/conf/uss/YangLLMWWGCJ25",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Yao_2025_LLM_a1c8adc0": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2504-09593",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2504-09593",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2504-09593",
+    "dblp_title": "ControlNET: {A} Firewall for RAG-based {LLM} System",
+    "dblp_authors": [
+      "Hongwei Yao",
+      "Haoran Shi",
+      "Yidou Chen",
+      "Yixin Jiang",
+      "Cong Wang",
+      "Zhan Qin"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2504.09593",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "615b1842c1e3294d83674c5fb00e18eff83ba9fa809f20a9797ee3121458c278",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Yaron_2025_GPT_6755bc3e": {
+    "bibtex_sha256": "56ef496bd8698a87b557b6182b49c541c5548093d3ff0a5331eb95743a722da7",
+    "dblp_key": "journals/corr/abs-2510-25933",
+    "dblp_title": "Humains-Junior: A 3.8B Language Model Achieving GPT-4o-Level Factual Accuracy by Directed Exoskeleton Reasoning",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2510-25933",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Ye_2025_Importsnare_c7610029": {
+    "bibtex_sha256": "5406d7ba65dcb4c5213ff21667ab1331af02b45147ef86cadcbfc11bbf0bd383",
+    "dblp_key": "conf/ccs/YeSQ25",
+    "dblp_title": "ImportSnare:  Directed 'Code Manual' Hijacking in Retrieval-Augmented Code Generation",
+    "dblp_url": "https://dblp.org/rec/conf/ccs/YeSQ25",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Ye_2025_Semantically_dab07616": {
+    "bibtex_sha256": "da35b065a3adbb13561048fc8b1fe483ec794dcda24a235c0c5a2201e74c9d60",
+    "dblp_key": "journals/corr/abs-2512-19215",
+    "dblp_title": "Semantically-Equivalent Transformations-Based Backdoor Attacks against Neural Code Models: Characterization and Mitigation",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2512-19215",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Ye_2025_Visualtrap_16abd136": {
+    "bibtex_sha256": "1a586f6a14799504f29a0c7768362c345555fa62991d9e852a4a3833e59eeddd",
+    "dblp_key": "journals/corr/abs-2507-06899",
+    "dblp_title": "VisualTrap: A Stealthy Backdoor Attack on GUI Agents via Visual Grounding Manipulation",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2507-06899",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Yin_2024_LoRA_90edff2c": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2411-16746",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2411-16746",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2411-16746",
+    "dblp_title": "LoBAM: LoRA-Based Backdoor Attack on Model Merging",
+    "dblp_authors": [
+      "Ming Yin",
+      "Jingyang Zhang",
+      "Jingwei Sun",
+      "Minghong Fang",
+      "Hai Li",
+      "Yiran Chen"
+    ],
+    "dblp_year": 2024,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2411.16746",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "5fbd36613dab53e970f5069949fc0f7660ea2d4d551f56e4b7a8f778a81726bf",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Yin_2025_Clearsight_94074a8e": {
+    "bibtex_sha256": "7420913d087d62d0cba18f72a8a63a744731b1cc8c4fb02982972f8aaf25ab4c",
+    "dblp_key": "conf/cvpr/YinSW25a",
+    "dblp_title": "ClearSight: Visual Signal Enhancement for Object Hallucination Mitigation in Multimodal Large Language Models",
+    "dblp_url": "https://dblp.org/rec/conf/cvpr/YinSW25a",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Yin_2025_LLM_0af3f043": {
+    "bibtex_sha256": "572487afb55321331c996b6bea3f0cbd10a02fafc8b100d7017f29e0342d9a38",
+    "dblp_key": "journals/corr/abs-2507-13123",
+    "dblp_title": "Detecting LLM-generated Code with Subtle Modification by Adversarial Training",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2507-13123",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Ying_2024_Jailbreak_1125d3ba": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2406-04031",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2406-04031",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2406-04031",
+    "dblp_title": "Jailbreak Vision Language Models via Bi-Modal Adversarial Prompt",
+    "dblp_authors": [
+      "Zonghao Ying",
+      "Aishan Liu",
+      "Tianyuan Zhang",
+      "Zhengmin Yu",
+      "Siyuan Liang",
+      "Xianglong Liu",
+      "Dacheng Tao"
+    ],
+    "dblp_year": 2024,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2406.04031",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "21ff12e9339c869c2cba162c81aec7bacaddd57f640c1de649b34f9e794f13dc",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Yoon_2025_Safree_9ab2030a": {
+    "bibtex_sha256": "25b8b6fc9cbb34d232afa1f7c532897525a9cf036fc50c273d088150e075b14d",
+    "dblp_key": "conf/iclr/YoonYPYB25",
+    "dblp_title": "SAFREE: Training-Free and Adaptive Guard for Safe Text-to-Image And Video Generation",
+    "dblp_url": "https://dblp.org/rec/conf/iclr/YoonYPYB25",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "You_2025_Llada_7c4796cb": {
+    "bibtex_sha256": "bea9fe51b49448762abae71293315521229e55f2f55d8181abf4216248745898",
+    "dblp_key": "journals/corr/abs-2505-16933",
+    "dblp_title": "LLaDA-V: Large Language Diffusion Models with Visual Instruction Tuning",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2505-16933",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Young_2026_LLM_efb8be2f": {
+    "bibtex_sha256": "1d1a236da9679f3ab11db8d640d4e062f4d59ce86095b238f538e69f5bd43106",
+    "dblp_key": "journals/corr/abs-2603-20172",
+    "dblp_title": "Measuring Faithfulness Depends on How You Measure: Classifier Sensitivity in LLM Chain-of-Thought Evaluation",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2603-20172",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Yu_2025_Guard_acd0894f": {
+    "bibtex_sha256": "f9126328882c42ff3a58c6d525402b89d6a941f97ffdf27c5d22b5ae8440ff06",
+    "dblp_key": "conf/trustai/YuM25",
+    "dblp_title": "SP-Guard: Selective Prompt-adaptive Guidance for Safe Text-to-Image Generation",
+    "dblp_url": "https://dblp.org/rec/conf/trustai/YuM25",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Yu_2025_LLMs_ec551e66": {
+    "bibtex_sha256": "d741f65a6d4379d4cdfe6afd5c6f2d105a61bd80e42c3ac99ff18140d61424eb",
+    "dblp_key": "journals/corr/abs-2508-15495",
+    "dblp_title": "SynthCoder: A Synthetical Strategy to Tune LLMs for Code Completion",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2508-15495",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Yu_2026_Latentaudit_b824a339": {
+    "bibtex_sha256": "4c463ecc03f638d5b2507d7de7cd70e5e783e403a5131ec26208962efe64693e",
+    "dblp_key": "journals/corr/abs-2604-05358",
+    "dblp_title": "LatentAudit: Real-Time White-Box Faithfulness Monitoring for Retrieval-Augmented Generation with Verifiable Deployment",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2604-05358",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Zhan_2025_LLM_ab9a7822": {
+    "verified": true,
+    "dblp_key": "conf/naacl/ZhanFPK25",
+    "dblp_url": "https://dblp.org/rec/conf/naacl/ZhanFPK25",
+    "dblp_record_url": "https://dblp.org/rec/conf/naacl/ZhanFPK25",
+    "dblp_title": "Adaptive Attacks Break Defenses Against Indirect Prompt Injection Attacks on {LLM} Agents",
+    "dblp_authors": [
+      "Qiusi Zhan",
+      "Richard Fang",
+      "Henil Shalin Panchal",
+      "Daniel Kang"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "Findings of the Association for Computational Linguistics: {NAACL} 2025, Albuquerque, New Mexico, USA, April 29 - May 4, 2025",
+    "dblp_doi": "10.18653/V1/2025.FINDINGS-NAACL.395",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "ddc0268b979d729b6dccaf5bdab8d8b98b983bd0e53a4e14c16ffb0402222a11",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Zhang_2024_Attack_8b97fc92": {
+    "bibtex_sha256": "ec4003bcb76f35fa2634a4e762e19fea03629f4073a70f4572932e293cbdbf74",
+    "dblp_key": "journals/corr/abs-2410-14966",
+    "dblp_title": "Attack as Defense: Run-time Backdoor Implantation for Image Content Protection",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2410-14966",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Zhang_2024_Codefort_6ff66a41": {
+    "bibtex_sha256": "b1f6bd17375b95fcfb2aec5fd68b9d611cf5a0eafc85dfea7a3b250d3fbef0c8",
+    "dblp_key": "conf/emnlp/Zhang0Q0SLGRR0D24",
+    "dblp_title": "CodeFort: Robust Training for Code Generation Models",
+    "dblp_url": "https://dblp.org/rec/conf/emnlp/Zhang0Q0SLGRR0D24",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Zhang_2024_Comparative_d35d7fec": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2408-12398",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2408-12398",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2408-12398",
+    "dblp_title": "A Comparative Analysis of Faithfulness Metrics and Humans in Citation Evaluation",
+    "dblp_authors": [
+      "Weijia Zhang",
+      "Mohammad Aliannejadi",
+      "Jiahuan Pei",
+      "Yifei Yuan",
+      "Jia{-}Hong Huang",
+      "Evangelos Kanoulas"
+    ],
+    "dblp_year": 2024,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2408.12398",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "1a10360aa56abaab2eb9721ee2f612e4198091a3a0e5b0c9bf0629a361a0c65f",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Zhang_2024_Fine_79ed226e": {
+    "verified": true,
+    "dblp_key": "conf/inlg/ZhangAYPHK24",
+    "dblp_url": "https://dblp.org/rec/conf/inlg/ZhangAYPHK24",
+    "dblp_record_url": "https://dblp.org/rec/conf/inlg/ZhangAYPHK24",
+    "dblp_title": "Towards Fine-Grained Citation Evaluation in Generated Text: {A} Comparative Analysis of Faithfulness Metrics",
+    "dblp_authors": [
+      "Weijia Zhang",
+      "Mohammad Aliannejadi",
+      "Yifei Yuan",
+      "Jiahuan Pei",
+      "Jia{-}Hong Huang",
+      "Evangelos Kanoulas"
+    ],
+    "dblp_year": 2024,
+    "dblp_venue": "Proceedings of the 17th International Natural Language Generation Conference, {INLG} 2024, Tokyo, Japan, September 23 - 27, 2024",
+    "dblp_doi": "10.18653/V1/2024.INLG-MAIN.35",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "19811c49316c1e7c9887bb3e199e82c4c8867ba1fdceb7751a0aef64e488b1e3",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Zhang_2024_Improving_4d136f4d": {
+    "bibtex_sha256": "d97caf0fc17223d7bc6dd65a7566c4bb12592cbb845546a47f711e92973fa6fa",
+    "dblp_key": "journals/corr/abs-2401-16635",
+    "dblp_title": "Improving Reinforcement Learning from Human Feedback with Efficient Reward Model Ensemble",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2401-16635",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Zhang_2024_LLM_f647e875": {
+    "bibtex_sha256": "a97b61d8b5e555a0e1a927e125b71ae21051f452893c416a10d4596eed7bbcb6",
+    "dblp_key": "conf/issre/ZhangKDBH24",
+    "dblp_title": "A Study on Prompt Injection Attack Against LLM-Integrated Mobile Robotic Systems",
+    "dblp_url": "https://dblp.org/rec/conf/issre/ZhangKDBH24",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Zhang_2024_LLMs_6cc321bf": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2410-13722",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2410-13722",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2410-13722",
+    "dblp_title": "Persistent Pre-Training Poisoning of LLMs",
+    "dblp_authors": [
+      "Yiming Zhang",
+      "Javier Rando",
+      "Ivan Evtimov",
+      "Jianfeng Chi",
+      "Eric Michael Smith",
+      "Nicholas Carlini",
+      "Florian Tram{\\`{e}}r",
+      "Daphne Ippolito"
+    ],
+    "dblp_year": 2024,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2410.13722",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "0d115c8f9ea0b7b2f9d1b1f9357f7d91e4ca381aefac7901951ab73cb35b6b94",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Zhang_2025_AI_647785c1": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2511-20597",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2511-20597",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2511-20597",
+    "dblp_title": "BrowseSafe: Understanding and Preventing Prompt Injection Within {AI} Browser Agents",
+    "dblp_authors": [
+      "Kaiyuan Zhang",
+      "Mark Tenenholtz",
+      "Kyle Polley",
+      "Jerry Ma",
+      "Denis Yarats",
+      "Ninghui Li"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2511.20597",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "ca1039bcd7e7483bc062936e9d93876e895c0d903c1c0c12688c570ab0ddc3da",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Zhang_2025_Defense_e165b506": {
+    "bibtex_sha256": "6a406f4519aceb920d4a5deb4b6d47f97de5247fc0955ed7c50d6bf90f101251",
+    "dblp_authors": [
+      "Ruiyi Zhang",
+      "David Sullivan",
+      "Kyle Jackson",
+      "Pengtao Xie",
+      "Mei Chen"
+    ],
+    "dblp_doi": "10.18653/V1/2025.NAACL-SHORT.21",
+    "dblp_key": "conf/naacl/ZhangSJXC25",
+    "dblp_record_url": "https://doi.org/10.18653/v1/2025.naacl-short.21",
+    "dblp_title": "Defense against Prompt Injection Attacks via Mixture of Encodings",
+    "dblp_url": "https://dblp.org/rec/conf/naacl/ZhangSJXC25",
+    "dblp_venue": "Proceedings of the 2025 Conference of the Nations of the Americas\n                  Chapter of the Association for Computational Linguistics: Human Language\n                  Technologies, {NAACL} 2025 - Volume 2: Short Papers, Albuquerque,\n                  New Mexico, April 29 - May 4, 2025",
+    "dblp_year": 2025,
+    "title_similarity": 1.0,
+    "verified": true,
+    "verified_against_live_dblp_at": "2026-08-01T23:43:30.603889+02:00"
+  },
+  "Zhang_2025_LLM_d05436b9": {
+    "bibtex_sha256": "bb00ec0689b91ad485f0da8bbf65a1bd069d7752af253bb6ab4feee45bedac6b",
+    "dblp_key": "conf/uss/ZhangLW0025",
+    "dblp_title": "Low-Cost and Comprehensive Non-textual Input Fuzzing with LLM-Synthesized Input Generators",
+    "dblp_url": "https://dblp.org/rec/conf/uss/ZhangLW0025",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Zhang_2025_Pre_d3485102": {
+    "bibtex_sha256": "41dd7db8dc844500d468f68c3ff95bd8ea7720853c304f1a49387b36db4bc8cf",
+    "dblp_key": "conf/emnlp/ZhangGBZYWJC25",
+    "dblp_title": "Pre-training CLIP against Data Poisoning with Optimal Transport-based Matching and Alignment",
+    "dblp_url": "https://dblp.org/rec/conf/emnlp/ZhangGBZYWJC25",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Zhang_2025_Tokenswap_aaf55212": {
+    "bibtex_sha256": "21e31053ad0af05cba98685604e7a9ddc6631fb381bb7f82e5cdb3727a155cf5",
+    "dblp_key": "journals/corr/abs-2509-24566",
+    "dblp_title": "TokenSwap: Backdoor Attack on the Compositional Understanding of Large Vision-Language Models",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2509-24566",
+    "title_similarity": 0.9945945945945946,
+    "verified": true
+  },
+  "Zhang_2026_Semantic_f1ff85a3": {
+    "bibtex_sha256": "5f89a07b68b3eb4bb85d00395d6467dbcf2f5893654a5e2964e410b96db53f6f",
+    "dblp_key": "journals/tmlr/ZhangLHERL26",
+    "dblp_title": "Semantic-aware Adversarial Fine-tuning for CLIP",
+    "dblp_url": "https://dblp.org/rec/journals/tmlr/ZhangLHERL26",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Zhao_2024_Models_56e11b92": {
+    "bibtex_sha256": "53cb8f013b975d1427e094aa1c45018fe5a0055803163ecdb0c1922f99bf94ec",
+    "dblp_key": "conf/kbse/Zhao0ZHWGZW024",
+    "dblp_title": "Models Are Codes: Towards Measuring Malicious Code Poisoning Attacks on Pre-trained Model Hubs",
+    "dblp_url": "https://dblp.org/rec/conf/kbse/Zhao0ZHWGZW024",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Zhao_2025_LLM_45bb4e13": {
+    "verified": true,
+    "dblp_key": "conf/emnlp/ZhaoGHDZSHZQCL25",
+    "dblp_url": "https://dblp.org/rec/conf/emnlp/ZhaoGHDZSHZQCL25",
+    "dblp_record_url": "https://dblp.org/rec/conf/emnlp/ZhaoGHDZSHZQCL25",
+    "dblp_title": "AdaSteer: Your Aligned {LLM} is Inherently an Adaptive Jailbreak Defender",
+    "dblp_authors": [
+      "Weixiang Zhao",
+      "Jiahe Guo",
+      "Yulin Hu",
+      "Yang Deng",
+      "An Zhang",
+      "Xingyu Sui",
+      "Xinyang Han",
+      "Yanyan Zhao",
+      "Bing Qin",
+      "Tat{-}Seng Chua",
+      "Ting Liu"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing, {EMNLP} 2025, Suzhou, China, November 4-9, 2025",
+    "dblp_doi": "10.18653/V1/2025.EMNLP-MAIN.1248",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "9b3a6bcc42fa585209c9ee6fba10908d7442a4baca4b0f37233713635c381edd",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Zhao_2026_Protegofed_d6f6556a": {
+    "bibtex_sha256": "6eb5bcea557ea06823fce63dfa31f84836d5941a9af11c494c255c4878a03075",
+    "dblp_key": "journals/corr/abs-2603-00516",
+    "dblp_title": "ProtegoFed: Backdoor-Free Federated Instruction Tuning with Interspersed Poisoned Data",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2603-00516",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Zheng_2024_Improved_67ad35e0": {
+    "verified": true,
+    "dblp_key": "conf/nips/ZhengPDLJL24",
+    "dblp_url": "https://dblp.org/rec/conf/nips/ZhengPDLJL24",
+    "dblp_record_url": "https://dblp.org/rec/conf/nips/ZhengPDLJL24",
+    "dblp_title": "Improved Few-Shot Jailbreaking Can Circumvent Aligned Language Models and Their Defenses",
+    "dblp_authors": [
+      "Xiaosen Zheng",
+      "Tianyu Pang",
+      "Chao Du",
+      "Qian Liu",
+      "Jing Jiang",
+      "Min Lin"
+    ],
+    "dblp_year": 2024,
+    "dblp_venue": "Advances in Neural Information Processing Systems 37: Annual Conference on Neural Information Processing Systems 2024, NeurIPS 2024, Vancouver, BC, Canada, December 10 - 15, 2024",
+    "dblp_doi": null,
+    "title_similarity": 1.0,
+    "bibtex_sha256": "84a35b7a672b4fc323ede925ae666e8dd0a33c7c3bf27e8586200f9f5faf6aa1",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Zhong_2025_Backdoor_80a97c27": {
+    "bibtex_sha256": "ec1d30471835060b53fc79a19f13ad16c92ce74fd071d5aecebeb0f49055d822",
+    "dblp_key": "journals/corr/abs-2506-07214",
+    "dblp_title": "Backdoor Attack on Vision Language Models with Stealthy Semantic Manipulation",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2506-07214",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Zhou_2024_Graph_0378b811": {
+    "bibtex_sha256": "a77b4eb8f9e4c8a0164161bef96e4eaeaf2d552ee2f465b2130de6fe5a651417",
+    "dblp_key": "conf/bigdataconf/ZhouL24",
+    "dblp_title": "ID and Graph View Contrastive Learning with Multi-View Attention Fusion for Sequential Recommendation",
+    "dblp_url": "https://dblp.org/rec/conf/bigdataconf/ZhouL24",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Zhou_2025_Badvla_37c2f4ff": {
+    "verified": true,
+    "dblp_key": "conf/nips/ZhouTZWZS25",
+    "dblp_url": "https://dblp.org/rec/conf/nips/ZhouTZWZS25",
+    "dblp_record_url": "https://dblp.org/rec/conf/nips/ZhouTZWZS25",
+    "dblp_title": "BadVLA: Towards Backdoor Attacks on Vision-Language-Action Models via Objective-Decoupled Optimization",
+    "dblp_authors": [
+      "Xueyang Zhou",
+      "Guiyao Tie",
+      "Guowen Zhang",
+      "Hecheng Wang",
+      "Pan Zhou",
+      "Lichao Sun"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "Advances in Neural Information Processing Systems 38: Annual Conference on Neural Information Processing Systems 2025, NeurIPS 2025, San Diego, CA, USA, December 2-7, 2025 / Mexico City, Mexico, November 30 - December 5, 2025",
+    "dblp_doi": null,
+    "title_similarity": 1.0,
+    "bibtex_sha256": "f3976134b2b0fe503c2b913ba5338e06992aeae84136872ed8d8323fbde3a567",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Zhou_2025_Goal_cd2d4fa7": {
+    "bibtex_sha256": "1e525efa7234cfe9800dae8cbbb5634af57631885292fa1616026dc8eb11c76f",
+    "dblp_key": "journals/corr/abs-2510-09269",
+    "dblp_title": "Goal-oriented Backdoor Attack against Vision-Language-Action Models via Physical Objects",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2510-09269",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Zhu_2024_Factual_cf4fefe5": {
+    "bibtex_sha256": "ab80289d0479cee67bb3ba12dfb8036161b11dc272f65a12bf054d821a956f91",
+    "dblp_key": "journals/corr/abs-2406-14709",
+    "dblp_title": "Factual Dialogue Summarization via Learning from Large Language Models",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2406-14709",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Zhu_2024_RLHF_03b84bc6": {
+    "bibtex_sha256": "7a108f6e40cbb9e859af67703e4b688b9bb093bf71007845e6c1760c6e2fed8a",
+    "dblp_key": "conf/icml/ZhuJJ24",
+    "dblp_title": "Iterative Data Smoothing: Mitigating Reward Overfitting and Overoptimization in RLHF",
+    "dblp_url": "https://dblp.org/rec/conf/icml/ZhuJJ24",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Zhu_2025_AI_f84734e4": {
+    "bibtex_sha256": "038ea9daa9854d6f4d98ad1b07fc1bb3ec2e48ecdb0ee985a524ef12c8e9db56",
+    "dblp_key": "conf/icml/ZhuY00W25",
+    "dblp_title": "MELON: Provable Defense Against Indirect Prompt Injection Attacks in AI Agents",
+    "dblp_url": "https://dblp.org/rec/conf/icml/ZhuY00W25",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Zhu_2025_LLM_dbd8c508": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2510-10271",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2510-10271",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2510-10271",
+    "dblp_title": "MetaBreak: Jailbreaking Online {LLM} Services via Special Token Manipulation",
+    "dblp_authors": [
+      "Wentian Zhu",
+      "Zhen Xiang",
+      "Wei Niu",
+      "Le Guan"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2510.10271",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "cf3523b1690c42ce5a4b6695fe49d227a58fb2106bf1a61c6b5eddf3ac5e10b9",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Zhu_2025_LLM_dd9cc851": {
+    "verified": true,
+    "dblp_key": "conf/emnlp/ZhuZZYWS25",
+    "dblp_url": "https://dblp.org/rec/conf/emnlp/ZhuZZYWS25",
+    "dblp_record_url": "https://dblp.org/rec/conf/emnlp/ZhuZZYWS25",
+    "dblp_title": "DemonAgent: Dynamically Encrypted Multi-Backdoor Implantation Attack on LLM-based Agent",
+    "dblp_authors": [
+      "Pengyu Zhu",
+      "Zhenhong Zhou",
+      "Yuanhe Zhang",
+      "Shilinlu Yan",
+      "Kun Wang",
+      "Sen Su"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "Findings of the Association for Computational Linguistics: {EMNLP} 2025, Suzhou, China, November 4-9, 2025",
+    "dblp_doi": "10.18653/V1/2025.FINDINGS-EMNLP.157",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "997c11e750d1f52bfcfbff7558e9dda53220aebffbed02b2f229123d8b3c7bb7",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Zhuang_2025_Proxyprompt_3dce2ebe": {
+    "bibtex_sha256": "33cc69d2ee52b91e4151ded822eb8f7468babb6114c880f61959babcc6e3e06b",
+    "dblp_key": "journals/corr/abs-2505-11459",
+    "dblp_title": "ProxyPrompt: Securing System Prompts against Prompt Extraction Attacks",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2505-11459",
+    "title_similarity": 1.0,
+    "verified": true
+  },
+  "Anil_2024_ManyShot_08d20dea": {
+    "verified": true,
+    "dblp_key": "conf/nips/AnilDPSBKBTMFMA24",
+    "dblp_url": "https://dblp.org/rec/conf/nips/AnilDPSBKBTMFMA24",
+    "dblp_record_url": "https://dblp.org/rec/conf/nips/AnilDPSBKBTMFMA24",
+    "dblp_title": "Many-shot Jailbreaking",
+    "dblp_authors": [
+      "Cem Anil",
+      "Esin Durmus",
+      "Nina Panickssery",
+      "Mrinank Sharma",
+      "Joe Benton",
+      "Sandipan Kundu",
+      "Joshua Batson",
+      "Meg Tong",
+      "Jesse Mu",
+      "Daniel Ford",
+      "Francesco Mosconi",
+      "Rajashree Agrawal",
+      "Rylan Schaeffer",
+      "Naomi Bashkansky",
+      "Samuel Svenningsen",
+      "Mike Lambert",
+      "Ansh Radhakrishnan",
+      "Carson Denison",
+      "Evan Hubinger",
+      "Yuntao Bai",
+      "Trenton Bricken",
+      "Timothy Maxwell",
+      "Nicholas Schiefer",
+      "James Sully",
+      "Alex Tamkin",
+      "Tamera Lanham",
+      "Karina Nguyen",
+      "Tomek Korbak",
+      "Jared Kaplan",
+      "Deep Ganguli",
+      "Samuel R. Bowman",
+      "Ethan Perez",
+      "Roger B. Grosse",
+      "David Kristjanson Duvenaud"
+    ],
+    "dblp_year": 2024,
+    "dblp_venue": "Advances in Neural Information Processing Systems 37: Annual Conference on Neural Information Processing Systems 2024, NeurIPS 2024, Vancouver, BC, Canada, December 10 - 15, 2024",
+    "dblp_doi": null,
+    "title_similarity": 1.0,
+    "bibtex_sha256": "d1288d5547337bbf052d9fdf4b97e1d7af07835b51c779a92abd6e2119434c35",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Carlini_2024_WebScalePoisoning": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2302-10149",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2302-10149",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2302-10149",
+    "dblp_title": "Poisoning Web-Scale Training Datasets is Practical",
+    "dblp_authors": [
+      "Nicholas Carlini",
+      "Matthew Jagielski",
+      "Christopher A. Choquette{-}Choo",
+      "Daniel Paleka",
+      "Will Pearce",
+      "Hyrum S. Anderson",
+      "Andreas Terzis",
+      "Kurt Thomas",
+      "Florian Tram{\\`{e}}r"
+    ],
+    "dblp_year": 2023,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2302.10149",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "73afa50c0207542a64ac809c2d08c11a5cdb3e33b5d8705774dc9e59c85c139d",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Chao_2025_PAIR_590bf40a": {
+    "verified": true,
+    "dblp_key": "conf/satml/ChaoRDHP025",
+    "dblp_url": "https://dblp.org/rec/conf/satml/ChaoRDHP025",
+    "dblp_record_url": "https://dblp.org/rec/conf/satml/ChaoRDHP025",
+    "dblp_title": "Jailbreaking Black Box Large Language Models in Twenty Queries",
+    "dblp_authors": [
+      "Patrick Chao",
+      "Alexander Robey",
+      "Edgar Dobriban",
+      "Hamed Hassani",
+      "George J. Pappas",
+      "Eric Wong"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "{IEEE} Conference on Secure and Trustworthy Machine Learning, SaTML 2025, Copenhagen, Denmark, April 9-11, 2025",
+    "dblp_doi": "10.1109/SATML64287.2025.00010",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "292aa19e939663a417c82420e6e5a1d4d9f384bf0391b4129d696781b526f187",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Chen_2024_SecAlign": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2410-05451",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2410-05451",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2410-05451",
+    "dblp_title": "Aligning LLMs to Be Robust Against Prompt Injection",
+    "dblp_authors": [
+      "Sizhe Chen",
+      "Arman Zharmagambetov",
+      "Saeed Mahloujifar",
+      "Kamalika Chaudhuri",
+      "Chuan Guo"
+    ],
+    "dblp_year": 2024,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2410.05451",
+    "title_similarity": 0.5365853658536586,
+    "bibtex_sha256": "f68054da826b05ac7c7eac13c7846c96626bba2446d288bf3f1c40087d62862e",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Chen_2024_StruQ": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2402-06363",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2402-06363",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2402-06363",
+    "dblp_title": "StruQ: Defending Against Prompt Injection with Structured Queries",
+    "dblp_authors": [
+      "Sizhe Chen",
+      "Julien Piet",
+      "Chawin Sitawarin",
+      "David A. Wagner"
+    ],
+    "dblp_year": 2024,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2402.06363",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "0a51cced604a78274eab75b55b1cb6107bc5d59fad0d5218dee015a86970675c",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Debenedetti_2024_AgentDojo_349884ff": {
+    "verified": true,
+    "dblp_key": "conf/nips/DebenedettiZBB024",
+    "dblp_url": "https://dblp.org/rec/conf/nips/DebenedettiZBB024",
+    "dblp_record_url": "https://dblp.org/rec/conf/nips/DebenedettiZBB024",
+    "dblp_title": "AgentDojo: {A} Dynamic Environment to Evaluate Prompt Injection Attacks and Defenses for {LLM} Agents",
+    "dblp_authors": [
+      "Edoardo Debenedetti",
+      "Jie Zhang",
+      "Mislav Balunovic",
+      "Luca Beurer{-}Kellner",
+      "Marc Fischer",
+      "Florian Tram{\\`{e}}r"
+    ],
+    "dblp_year": 2024,
+    "dblp_venue": "Advances in Neural Information Processing Systems 37: Annual Conference on Neural Information Processing Systems 2024, NeurIPS 2024, Vancouver, BC, Canada, December 10 - 15, 2024",
+    "dblp_doi": null,
+    "title_similarity": 1.0,
+    "bibtex_sha256": "a86c2465119701d7a777aaeee1602c39e6c5c9ecf51a60889b3fc12569bc954e",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Greshake_2023_IndirectPI_428e23e8": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2302-12173",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2302-12173",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2302-12173",
+    "dblp_title": "More than you've asked for: {A} Comprehensive Analysis of Novel Prompt Injection Threats to Application-Integrated Large Language Models",
+    "dblp_authors": [
+      "Kai Greshake",
+      "Sahar Abdelnabi",
+      "Shailesh Mishra",
+      "Christoph Endres",
+      "Thorsten Holz",
+      "Mario Fritz"
+    ],
+    "dblp_year": 2023,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2302.12173",
+    "title_similarity": 0.3821138211382114,
+    "bibtex_sha256": "6ec933ebfa85f6f22bd92d15878f6d8f7ee7be18433754b7f99e0e7b057c88f9",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Huang_2024_GenerationExploitation": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2310-06987",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2310-06987",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2310-06987",
+    "dblp_title": "Catastrophic Jailbreak of Open-source LLMs via Exploiting Generation",
+    "dblp_authors": [
+      "Yangsibo Huang",
+      "Samyak Gupta",
+      "Mengzhou Xia",
+      "Kai Li",
+      "Danqi Chen"
+    ],
+    "dblp_year": 2023,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2310.06987",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "2c3a78dfbbc8be8b4c08e2a30db9e5a6cff347198a131d6f80a43db8a1b3186b",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Hubinger_2024_SleeperAgents": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2401-05566",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2401-05566",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2401-05566",
+    "dblp_title": "Sleeper Agents: Training Deceptive LLMs that Persist Through Safety Training",
+    "dblp_authors": [
+      "Evan Hubinger",
+      "Carson Denison",
+      "Jesse Mu",
+      "Mike Lambert",
+      "Meg Tong",
+      "Monte MacDiarmid",
+      "Tamera Lanham",
+      "Daniel M. Ziegler",
+      "Tim Maxwell",
+      "Newton Cheng",
+      "Adam S. Jermyn",
+      "Amanda Askell",
+      "Ansh Radhakrishnan",
+      "Cem Anil",
+      "David Duvenaud",
+      "Deep Ganguli",
+      "Fazl Barez",
+      "Jack Clark",
+      "Kamal Ndousse",
+      "Kshitij Sachan",
+      "Michael Sellitto",
+      "Mrinank Sharma",
+      "Nova DasSarma",
+      "Roger B. Grosse",
+      "Shauna Kravec",
+      "Yuntao Bai",
+      "Zachary Witten",
+      "Marina Favaro",
+      "Jan Brauner",
+      "Holden Karnofsky",
+      "Paul F. Christiano",
+      "Samuel R. Bowman",
+      "Logan Graham",
+      "Jared Kaplan",
+      "S{\\\"{o}}ren Mindermann",
+      "Ryan Greenblatt",
+      "Buck Shlegeris",
+      "Nicholas Schiefer",
+      "Ethan Perez"
+    ],
+    "dblp_year": 2024,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2401.05566",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "98100adf4694169d16820a71e7223140abc5b5ce4af95344036c42052e0ea573",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Li_2023_HaluEval": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2305-11747",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2305-11747",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2305-11747",
+    "dblp_title": "HaluEval: {A} Large-Scale Hallucination Evaluation Benchmark for Large Language Models",
+    "dblp_authors": [
+      "Junyi Li",
+      "Xiaoxue Cheng",
+      "Wayne Xin Zhao",
+      "Jian{-}Yun Nie",
+      "Ji{-}Rong Wen"
+    ],
+    "dblp_year": 2023,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2305.11747",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "12089d46d5ea8da3d3cea9735aedd18b308d9bd16a2e4739c89552329504ff90",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Liao_2024_AmpleGCG_938d71d1": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2404-07921",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2404-07921",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2404-07921",
+    "dblp_title": "AmpleGCG: Learning a Universal and Transferable Generative Model of Adversarial Suffixes for Jailbreaking Both Open and Closed LLMs",
+    "dblp_authors": [
+      "Zeyi Liao",
+      "Huan Sun"
+    ],
+    "dblp_year": 2024,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2404.07921",
+    "title_similarity": 0.9961685823754789,
+    "bibtex_sha256": "e745648e874c4b4f0e020e8e066f985b2bd6e2d3a5a8c678c41f0c6f6c6a0082",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Liu_2024_AutoDAN_1d6cff47": {
+    "verified": true,
+    "dblp_key": "conf/iclr/LiuXCX24",
+    "dblp_url": "https://dblp.org/rec/conf/iclr/LiuXCX24",
+    "dblp_record_url": "https://dblp.org/rec/conf/iclr/LiuXCX24",
+    "dblp_title": "AutoDAN: Generating Stealthy Jailbreak Prompts on Aligned Large Language Models",
+    "dblp_authors": [
+      "Xiaogeng Liu",
+      "Nan Xu",
+      "Muhao Chen",
+      "Chaowei Xiao"
+    ],
+    "dblp_year": 2024,
+    "dblp_venue": "The Twelfth International Conference on Learning Representations, {ICLR} 2024, Vienna, Austria, May 7-11, 2024",
+    "dblp_doi": null,
+    "title_similarity": 1.0,
+    "bibtex_sha256": "cbf59cc96154634974a8d72836c05cac7485056534070e7a02e4687b9b69ce81",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Manakul_2023_SelfCheckGPT": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2303-08896",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2303-08896",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2303-08896",
+    "dblp_title": "SelfCheckGPT: Zero-Resource Black-Box Hallucination Detection for Generative Large Language Models",
+    "dblp_authors": [
+      "Potsawee Manakul",
+      "Adian Liusie",
+      "Mark J. F. Gales"
+    ],
+    "dblp_year": 2023,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2303.08896",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "33e2d3637c48ba81db20f8c9918032de5e7ff6f9a0ff95ed7b278e0871eb9a9c",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Mazeika_2024_HarmBench": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2402-04249",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2402-04249",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2402-04249",
+    "dblp_title": "HarmBench: {A} Standardized Evaluation Framework for Automated Red Teaming and Robust Refusal",
+    "dblp_authors": [
+      "Mantas Mazeika",
+      "Long Phan",
+      "Xuwang Yin",
+      "Andy Zou",
+      "Zifan Wang",
+      "Norman Mu",
+      "Elham Sakhaee",
+      "Nathaniel Li",
+      "Steven Basart",
+      "Bo Li",
+      "David A. Forsyth",
+      "Dan Hendrycks"
+    ],
+    "dblp_year": 2024,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2402.04249",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "c60c2d1bbe39041df1f551ef39b107159c1cf529b936cfff8352556909937338",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Mehrotra_2024_TAP_b0ffafed": {
+    "verified": true,
+    "dblp_key": "conf/nips/MehrotraZKNASK24",
+    "dblp_url": "https://dblp.org/rec/conf/nips/MehrotraZKNASK24",
+    "dblp_record_url": "https://dblp.org/rec/conf/nips/MehrotraZKNASK24",
+    "dblp_title": "Tree of Attacks: Jailbreaking Black-Box LLMs Automatically",
+    "dblp_authors": [
+      "Anay Mehrotra",
+      "Manolis Zampetakis",
+      "Paul Kassianik",
+      "Blaine Nelson",
+      "Hyrum S. Anderson",
+      "Yaron Singer",
+      "Amin Karbasi"
+    ],
+    "dblp_year": 2024,
+    "dblp_venue": "Advances in Neural Information Processing Systems 37: Annual Conference on Neural Information Processing Systems 2024, NeurIPS 2024, Vancouver, BC, Canada, December 10 - 15, 2024",
+    "dblp_doi": null,
+    "title_similarity": 0.991304347826087,
+    "bibtex_sha256": "4d08ddac00fa1b91fa11af40d1f25efc8d0134acc03fe432dd35204fac3bde7c",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Paulus_2025_AdvPrompter_d888b27b": {
+    "verified": true,
+    "dblp_key": "conf/icml/PaulusZ0AT25",
+    "dblp_url": "https://dblp.org/rec/conf/icml/PaulusZ0AT25",
+    "dblp_record_url": "https://dblp.org/rec/conf/icml/PaulusZ0AT25",
+    "dblp_title": "AdvPrompter: Fast Adaptive Adversarial Prompting for LLMs",
+    "dblp_authors": [
+      "Anselm Paulus",
+      "Arman Zharmagambetov",
+      "Chuan Guo",
+      "Brandon Amos",
+      "Yuandong Tian"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "Forty-second International Conference on Machine Learning, {ICML} 2025, Vancouver, BC, Canada, July 13-19, 2025",
+    "dblp_doi": null,
+    "title_similarity": 0.9911504424778761,
+    "bibtex_sha256": "6625636c825cd7129c83c9dd83cc61ed5e127fe28dca29a4bd75645175c63fb4",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Pearce_2022_Copilot_3b1bf6d6": {
+    "verified": true,
+    "dblp_key": "conf/sp/PearceA0DK22",
+    "dblp_url": "https://dblp.org/rec/conf/sp/PearceA0DK22",
+    "dblp_record_url": "https://dblp.org/rec/conf/sp/PearceA0DK22",
+    "dblp_title": "Asleep at the Keyboard? Assessing the Security of GitHub Copilot's Code Contributions",
+    "dblp_authors": [
+      "Hammond Pearce",
+      "Baleegh Ahmad",
+      "Benjamin Tan",
+      "Brendan Dolan{-}Gavitt",
+      "Ramesh Karri"
+    ],
+    "dblp_year": 2022,
+    "dblp_venue": "43rd {IEEE} Symposium on Security and Privacy, {SP} 2022, San Francisco, CA, USA, May 22-26, 2022",
+    "dblp_doi": "10.1109/SP46214.2022.9833571",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "9c63772ded52f6951331fd42c0491ab3ec90c765280392694f0d934859d7baab",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Piet_2023_Jatmo": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2312-17673",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2312-17673",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2312-17673",
+    "dblp_title": "Jatmo: Prompt Injection Defense by Task-Specific Finetuning",
+    "dblp_authors": [
+      "Julien Piet",
+      "Maha Alrashed",
+      "Chawin Sitawarin",
+      "Sizhe Chen",
+      "Zeming Wei",
+      "Elizabeth Sun",
+      "Basel Alomair",
+      "David A. Wagner"
+    ],
+    "dblp_year": 2023,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2312.17673",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "192ade5a04181ded35fbc92cf3d60a2335170ef4c8fa65fec0dbfabaa7283d98",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Qi_2024_FineTuningSafety": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2310-03693",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2310-03693",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2310-03693",
+    "dblp_title": "Fine-tuning Aligned Language Models Compromises Safety, Even When Users Do Not Intend To!",
+    "dblp_authors": [
+      "Xiangyu Qi",
+      "Yi Zeng",
+      "Tinghao Xie",
+      "Pin{-}Yu Chen",
+      "Ruoxi Jia",
+      "Prateek Mittal",
+      "Peter Henderson"
+    ],
+    "dblp_year": 2023,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2310.03693",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "cd1f786e591b7f8832d953873ad24a2d126240d2ad8c6222d8470661017fd24a",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Qi_2025_ShallowAlignment": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2406-05946",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2406-05946",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2406-05946",
+    "dblp_title": "Safety Alignment Should Be Made More Than Just a Few Tokens Deep",
+    "dblp_authors": [
+      "Xiangyu Qi",
+      "Ashwinee Panda",
+      "Kaifeng Lyu",
+      "Xiao Ma",
+      "Subhrajit Roy",
+      "Ahmad Beirami",
+      "Prateek Mittal",
+      "Peter Henderson"
+    ],
+    "dblp_year": 2024,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2406.05946",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "8ad93eab8691f6ca2000cfa6c970580d8e23c5e195b3784018896c808903e439",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Shen_2024_DoAnything_0f50aa08": {
+    "verified": true,
+    "dblp_key": "conf/ccs/ShenC0SZ24",
+    "dblp_url": "https://dblp.org/rec/conf/ccs/ShenC0SZ24",
+    "dblp_record_url": "https://dblp.org/rec/conf/ccs/ShenC0SZ24",
+    "dblp_title": "\"Do Anything Now\": Characterizing and Evaluating In-The-Wild Jailbreak Prompts on Large Language Models",
+    "dblp_authors": [
+      "Xinyue Shen",
+      "Zeyuan Chen",
+      "Michael Backes",
+      "Yun Shen",
+      "Yang Zhang"
+    ],
+    "dblp_year": 2024,
+    "dblp_venue": "Proceedings of the 2024 on {ACM} {SIGSAC} Conference on Computer and Communications Security, {CCS} 2024, Salt Lake City, UT, USA, October 14-18, 2024",
+    "dblp_doi": "10.1145/3658644.3670388",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "f9e26c9bdbffc6ed8a2dc90862cf6c84c95077ba465f81f8a77fa691f51ff0c3",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Souly_2024_StrongREJECT": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2402-10260",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2402-10260",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2402-10260",
+    "dblp_title": "A StrongREJECT for Empty Jailbreaks",
+    "dblp_authors": [
+      "Alexandra Souly",
+      "Qingyuan Lu",
+      "Dillon Bowen",
+      "Tu Trinh",
+      "Elvis Hsieh",
+      "Sana Pandey",
+      "Pieter Abbeel",
+      "Justin Svegliato",
+      "Scott Emmons",
+      "Olivia Watkins",
+      "Sam Toyer"
+    ],
+    "dblp_year": 2024,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2402.10260",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "d058179afc96a1003a365559ce9577955403853e7715c5c888f775fb2a5cd0c3",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Tran_2018_SpectralSignatures": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-1811-00636",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-1811-00636",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-1811-00636",
+    "dblp_title": "Spectral Signatures in Backdoor Attacks",
+    "dblp_authors": [
+      "Brandon Tran",
+      "Jerry Li",
+      "Aleksander Madry"
+    ],
+    "dblp_year": 2018,
+    "dblp_venue": "CoRR",
+    "dblp_doi": null,
+    "title_similarity": 1.0,
+    "bibtex_sha256": "04d30f3994956245e3c5a38214bb799b4c1cc2b5423f6945426ff4fa95f441b1",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Wallace_2024_InstructionHierarchy": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2404-13208",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2404-13208",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2404-13208",
+    "dblp_title": "The Instruction Hierarchy: Training LLMs to Prioritize Privileged Instructions",
+    "dblp_authors": [
+      "Eric Wallace",
+      "Kai Xiao",
+      "Reimar Leike",
+      "Lilian Weng",
+      "Johannes Heidecke",
+      "Alex Beutel"
+    ],
+    "dblp_year": 2024,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2404.13208",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "c760dd2aa384ab5f3be2193f853018ee8bf1ee10ea509dccbdfe79c232a5720c",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Wang_2024_RLHFPoison": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2311-09641",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2311-09641",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2311-09641",
+    "dblp_title": "On the Exploitability of Reinforcement Learning with Human Feedback for Large Language Models",
+    "dblp_authors": [
+      "Jiongxiao Wang",
+      "Junlin Wu",
+      "Muhao Chen",
+      "Yevgeniy Vorobeychik",
+      "Chaowei Xiao"
+    ],
+    "dblp_year": 2023,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2311.09641",
+    "title_similarity": 0.7839195979899497,
+    "bibtex_sha256": "1a2b070f25af42f928884ec1a850a382ab8cab9a2606fc72a7486c952e06af8d",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Zhan_2024_InjecAgent_49e6e6a4": {
+    "verified": true,
+    "dblp_key": "conf/acl/ZhanLYK24",
+    "dblp_url": "https://dblp.org/rec/conf/acl/ZhanLYK24",
+    "dblp_record_url": "https://dblp.org/rec/conf/acl/ZhanLYK24",
+    "dblp_title": "InjecAgent: Benchmarking Indirect Prompt Injections in Tool-Integrated Large Language Model Agents",
+    "dblp_authors": [
+      "Qiusi Zhan",
+      "Zhixiang Liang",
+      "Zifan Ying",
+      "Daniel Kang"
+    ],
+    "dblp_year": 2024,
+    "dblp_venue": "Findings of the Association for Computational Linguistics, {ACL} 2024, Bangkok, Thailand and virtual meeting, August 11-16, 2024",
+    "dblp_doi": "10.18653/V1/2024.FINDINGS-ACL.624",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "775f4b377f5d3f5cd9afbe215b509a94afe80be9a9c5e57c4859a42191584358",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Zhang_2024_TruthX": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2402-17811",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2402-17811",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2402-17811",
+    "dblp_title": "TruthX: Alleviating Hallucinations by Editing Large Language Models in Truthful Space",
+    "dblp_authors": [
+      "Shaolei Zhang",
+      "Tian Yu",
+      "Yang Feng"
+    ],
+    "dblp_year": 2024,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2402.17811",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "e9048e2a1f25c1840ff2700d95075f937666a6db062659f856b1c3503c784a4e",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Zhu_2023_AutoDAN_2563e630": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2310-15140",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2310-15140",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2310-15140",
+    "dblp_title": "AutoDAN: Automatic and Interpretable Adversarial Attacks on Large Language Models",
+    "dblp_authors": [
+      "Sicheng Zhu",
+      "Ruiyi Zhang",
+      "Bang An",
+      "Gang Wu",
+      "Joe Barrow",
+      "Zichao Wang",
+      "Furong Huang",
+      "Ani Nenkova",
+      "Tong Sun"
+    ],
+    "dblp_year": 2023,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2310.15140",
+    "title_similarity": 0.8198757763975155,
+    "bibtex_sha256": "47a312a4e098624773f4c9ed6c41725acc52b83ed539cd5280d399da0dd83583",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Zou_2023_Universal_ab8745c2": {
+    "verified": true,
+    "dblp_key": "journals/corr/abs-2307-15043",
+    "dblp_url": "https://dblp.org/rec/journals/corr/abs-2307-15043",
+    "dblp_record_url": "https://dblp.org/rec/journals/corr/abs-2307-15043",
+    "dblp_title": "Universal and Transferable Adversarial Attacks on Aligned Language Models",
+    "dblp_authors": [
+      "Andy Zou",
+      "Zifan Wang",
+      "J. Zico Kolter",
+      "Matt Fredrikson"
+    ],
+    "dblp_year": 2023,
+    "dblp_venue": "CoRR",
+    "dblp_doi": "10.48550/ARXIV.2307.15043",
+    "title_similarity": 1.0,
+    "bibtex_sha256": "a4e39917d5ab3ee402da969d693c690d71d655d774d481b528dd149f1418990b",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  },
+  "Zou_2025_PoisonedRAG_f4ff19ff": {
+    "verified": true,
+    "dblp_key": "conf/uss/ZouGW025",
+    "dblp_url": "https://dblp.org/rec/conf/uss/ZouGW025",
+    "dblp_record_url": "https://dblp.org/rec/conf/uss/ZouGW025",
+    "dblp_title": "PoisonedRAG: Knowledge Corruption Attacks to Retrieval-Augmented Generation of Large Language Models",
+    "dblp_authors": [
+      "Wei Zou",
+      "Runpeng Geng",
+      "Binghui Wang",
+      "Jinyuan Jia"
+    ],
+    "dblp_year": 2025,
+    "dblp_venue": "34th {USENIX} Security Symposium, {USENIX} Security 2025, Seattle, WA, USA, August 13-15, 2025",
+    "dblp_doi": null,
+    "title_similarity": 1.0,
+    "bibtex_sha256": "92f55386666f806fce0af475a08e3ca587df048cf4c1253f992b5e241f81a9a9",
+    "verified_against_live_dblp_at": "2026-08-03T12:33:54.294890+02:00"
+  }
+}

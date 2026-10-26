@@ -1,0 +1,74 @@
+# ─────────────────────────────────────────────────────────────────────
+# AutoResearchClaw config per PaperHunter Bridge
+# Usa DeepSeek V4 Pro tramite API nativa OpenAI-compatible.
+# ─────────────────────────────────────────────────────────────────────
+
+project:
+  name: "paperhunter-experiment"
+  mode: "full-auto"
+
+research:
+  topic: "Security vulnerabilities and defenses in Large Language Models"
+  domains: ["llm-security", "adversarial-ml", "prompt-injection"]
+  daily_paper_count: 10
+  quality_threshold: 4.0
+
+runtime:
+  timezone: "Europe/Rome"
+  max_parallel_tasks: 1
+  approval_timeout_hours: 12
+  retry_limit: 2
+
+notifications:
+  channel: "console"
+  target: ""
+  on_stage_start: true
+  on_stage_fail: true
+  on_gate_required: true
+
+knowledge_base:
+  backend: "markdown"
+  root: "docs/kb"
+
+openclaw_bridge:
+  use_cron: false
+  use_message: false
+  use_memory: false
+  use_sessions_spawn: false
+  use_web_fetch: false
+  use_browser: false
+
+llm:
+  provider: "openai-compatible"
+  base_url: "https://api.deepseek.com"
+  api_key_env: "DEEPSEEK_API_KEY"
+  api_key: ""
+  primary_model: "deepseek-v4-pro"
+  fallback_models:
+    - "deepseek-v4-pro"
+  thinking:
+    type: "enabled"
+  reasoning_effort: "max"
+
+security:
+  hitl_required_stages: []
+  allow_publish_without_approval: true
+  redact_sensitive_logs: true
+
+experiment:
+  mode: "sandbox"
+  time_budget_sec: 600
+  max_iterations: 6
+  metric_key: "primary_metric"
+  metric_direction: "maximize"
+  sandbox:
+    python_path: "python3"
+    gpu_required: false
+    max_memory_mb: 4096
+  opencode:
+    enabled: false
+  figure_agent:
+    enabled: false
+
+metaclaw_bridge:
+  enabled: false
